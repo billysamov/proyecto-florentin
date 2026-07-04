@@ -625,8 +625,8 @@ export default function Home() {
             />
             <div className="logo-fallback hidden w-full h-full bg-[#080c14] text-white font-black text-xs items-center justify-center font-serif">F</div>
           </div>
-          <span className="font-serif font-bold text-sm sm:text-base tracking-tight text-white flex items-center gap-1">
-            Le français <span className="font-script text-[#ef4444] font-normal text-lg sm:text-xl capitalize ml-1">avec</span> Florentin
+          <span className="font-serif font-bold text-sm sm:text-base tracking-tight text-white flex items-center">
+            Le français <span className="font-sans text-white/50 font-medium text-xs lowercase mx-1.5">avec</span> <span className="font-script text-[#ef4444] font-normal text-2xl tracking-wide">Florentin</span>
           </span>
         </Link>
         <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-medium text-white/70">

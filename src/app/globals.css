@@ -9,11 +9,6 @@
   --accent-glow-hsl: 209, 79%, 52%;
   --secondary-hsl: 354, 76%, 52%;    /* Rojo Francés Vibrante */
   
-  /* Fuentes de la Marca */
-  --font-serif: var(--font-serif), "Playfair Display", serif;
-  --font-script: var(--font-script), "Great Vibes", cursive;
-  --font-sans: var(--font-sans), "Plus Jakarta Sans", sans-serif;
-  
   /* Fondos y Textos (Modo Oscuro Azul Marino Elegante) */
   --bg-main: #080c14;                /* Azul Marino muy profundo */
   --bg-card: rgba(13, 21, 38, 0.7);

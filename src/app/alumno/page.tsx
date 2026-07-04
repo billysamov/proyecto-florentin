@@ -952,8 +952,8 @@ export default function AlumnoPortal() {
       }}>
         <div style={{ maxWidth: "420px", width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: "24px" }}>
-            <Link href="/" style={{ fontSize: "28px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "var(--text-main)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
-              Le français <span style={{ fontFamily: "var(--font-script)", color: "hsl(var(--secondary-hsl))", textTransform: "capitalize", fontSize: "32px", fontWeight: "normal" }}>avec</span> Florentin
+            <Link href="/" style={{ fontSize: "28px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "var(--text-main)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+              Le français <span style={{ fontFamily: "var(--font-sans)", color: "var(--text-muted)", fontSize: "14px", textTransform: "lowercase", margin: "0 8px" }}>avec</span> <span style={{ fontFamily: "var(--font-script)", color: "hsl(var(--secondary-hsl))", fontSize: "36px", fontWeight: "normal", letterSpacing: "1px" }}>Florentin</span>
             </Link>
             <h2 style={{ fontSize: "20px", marginTop: "16px", color: "var(--text-main)", fontWeight: 700, fontFamily: "var(--font-serif)" }}>
               {isRegistering ? t.portalTitleRegister : t.portalTitleLogin}
@@ -1099,8 +1099,8 @@ export default function AlumnoPortal() {
       }}>
         <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <Link href="/" style={{ fontSize: "20px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "var(--text-main)", display: "inline-flex", alignItems: "center", gap: "5px" }}>
-              Le français <span style={{ fontFamily: "var(--font-script)", color: "hsl(var(--secondary-hsl))", textTransform: "capitalize", fontSize: "24px", fontWeight: "normal" }}>avec</span> Florentin
+            <Link href="/" style={{ fontSize: "20px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "var(--text-main)", display: "inline-flex", alignItems: "center" }}>
+              Le français <span style={{ fontFamily: "var(--font-sans)", color: "var(--text-muted)", fontSize: "11px", textTransform: "lowercase", margin: "0 6px" }}>avec</span> <span style={{ fontFamily: "var(--font-script)", color: "hsl(var(--secondary-hsl))", fontSize: "26px", fontWeight: "normal", letterSpacing: "0.5px" }}>Florentin</span>
             </Link>
             <span style={{
               fontSize: "11px",
