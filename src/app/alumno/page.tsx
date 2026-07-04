@@ -947,15 +947,15 @@ export default function AlumnoPortal() {
         minHeight: "100vh",
         alignItems: "center",
         justifyContent: "center",
-        background: "radial-gradient(circle at top right, rgba(212, 163, 89, 0.08), transparent 40%)",
+        background: "radial-gradient(circle at top right, rgba(59, 130, 246, 0.08), transparent 40%), var(--bg-main)",
         padding: "24px"
       }}>
         <div style={{ maxWidth: "420px", width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: "24px" }}>
-            <Link href="/" style={{ fontSize: "28px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "hsl(var(--primary-hsl))" }}>
-              Florentin<span style={{ color: "hsl(var(--accent-hsl))" }}>.</span>
+            <Link href="/" style={{ fontSize: "28px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "var(--text-main)", display: "inline-flex", alignItems: "center", justifyContent: "center", gap: "6px" }}>
+              Le français <span style={{ fontFamily: "var(--font-script)", color: "hsl(var(--secondary-hsl))", textTransform: "capitalize", fontSize: "32px", fontWeight: "normal" }}>avec</span> Florentin
             </Link>
-            <h2 style={{ fontSize: "20px", marginTop: "16px", color: "var(--text-main)" }}>
+            <h2 style={{ fontSize: "20px", marginTop: "16px", color: "var(--text-main)", fontWeight: 700, fontFamily: "var(--font-serif)" }}>
               {isRegistering ? t.portalTitleRegister : t.portalTitleLogin}
             </h2>
             <p style={{ fontSize: "14px", color: "var(--text-muted)", marginTop: "8px" }}>
@@ -1099,14 +1099,14 @@ export default function AlumnoPortal() {
       }}>
         <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <Link href="/" style={{ fontSize: "22px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "hsl(var(--primary-hsl))" }}>
-              Florentin<span style={{ color: "hsl(var(--accent-hsl))" }}>.</span>
+            <Link href="/" style={{ fontSize: "20px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "var(--text-main)", display: "inline-flex", alignItems: "center", gap: "5px" }}>
+              Le français <span style={{ fontFamily: "var(--font-script)", color: "hsl(var(--secondary-hsl))", textTransform: "capitalize", fontSize: "24px", fontWeight: "normal" }}>avec</span> Florentin
             </Link>
             <span style={{
               fontSize: "11px",
               fontWeight: 700,
-              backgroundColor: "rgba(212, 163, 89, 0.15)",
-              color: "hsl(var(--primary-hsl))",
+              backgroundColor: "rgba(59, 130, 246, 0.15)",
+              color: "#3b82f6",
               padding: "2px 8px",
               borderRadius: "100px",
               textTransform: "uppercase"

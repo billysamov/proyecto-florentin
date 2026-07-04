@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Outfit, Plus_Jakarta_Sans } from "next/font/google";
+import { Outfit, Plus_Jakarta_Sans, Playfair_Display, Great_Vibes } from "next/font/google";
 import "./globals.css";
 import { getSupabaseAdmin } from "@/lib/supabase";
 
@@ -13,6 +13,18 @@ const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
   weight: ["400", "500", "600", "700"],
+});
+
+const playfair = Playfair_Display({
+  subsets: ["latin"],
+  variable: "--font-serif",
+  weight: ["400", "500", "600", "700", "800", "900"],
+});
+
+const greatVibes = Great_Vibes({
+  subsets: ["latin"],
+  variable: "--font-script",
+  weight: ["400"],
 });
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -47,11 +59,11 @@ export default async function RootLayout({
     .single();
 
   return (
-    <html lang="es" className={`${outfit.variable} ${plusJakarta.variable} overflow-x-hidden w-full max-w-full`}>
+    <html lang="es" className={`${outfit.variable} ${plusJakarta.variable} ${playfair.variable} ${greatVibes.variable} overflow-x-hidden w-full max-w-full`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet" />
+        <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Great+Vibes&display=swap" rel="stylesheet" />
         
         {/* Google Analytics (Dinámico) */}
         {config?.google_analytics_id && (

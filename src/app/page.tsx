@@ -522,13 +522,13 @@ export default function Home() {
     if (!text) return "";
     const regex = /\{([^}]+)\}/g;
     
-    // Si no contiene llaves {}, buscar palabras clave para mantener el diseño original dorando la segunda mitad
+    // Si no contiene llaves {}, buscar palabras clave para mantener el diseño original coloreando la segunda mitad
     if (!text.includes("{")) {
       const parts = text.split(/(con un expert|con un parisi|con clases|con un native|con un nativ)/i);
       if (parts.length > 1) {
         return (
           <>
-            {parts[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#c99a3c] to-[#f3e5ab]">{parts.slice(1).join("")}</span>
+            {parts[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3b82f6] to-[#ef4444] font-serif font-bold">{parts.slice(1).join("")}</span>
           </>
         );
       }
@@ -544,7 +544,7 @@ export default function Home() {
         parts.push(text.substring(lastIndex, match.index));
       }
       parts.push(
-        <span key={match.index} className="text-transparent bg-clip-text bg-gradient-to-r from-[#c99a3c] to-[#f3e5ab]">
+        <span key={match.index} className="text-transparent bg-clip-text bg-gradient-to-r from-[#3b82f6] to-[#ef4444] font-serif font-bold">
           {match[1]}
         </span>
       );
@@ -608,8 +608,27 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           NAVBAR — Glass Pill Responsive
       ═══════════════════════════════════════ */}
-      <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl rounded-full bg-[#0a0a0c]/90 shadow-[0_0_20px_rgba(0,0,0,0.5)] backdrop-blur-xl border border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
-        <div className="font-[family-name:var(--font-outfit)] font-black text-lg sm:text-xl tracking-tighter text-white">FLORENTIN.</div>
+      <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl rounded-full bg-[#080c14]/90 shadow-[0_0_20px_rgba(0,0,0,0.5)] backdrop-blur-xl border border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
+        <Link href="/" className="flex items-center gap-2 sm:gap-3">
+          <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white overflow-hidden flex items-center justify-center border border-white/20">
+            <Image 
+              src="/logo.png" 
+              alt="Logo Florentin" 
+              fill
+              sizes="(max-width: 640px) 32px, 36px"
+              className="object-contain p-1"
+              onError={(e) => {
+                e.currentTarget.style.display = 'none';
+                const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
+                if (fallback) fallback.style.display = 'flex';
+              }}
+            />
+            <div className="logo-fallback hidden w-full h-full bg-[#080c14] text-white font-black text-xs items-center justify-center font-serif">F</div>
+          </div>
+          <span className="font-serif font-bold text-sm sm:text-base tracking-tight text-white flex items-center gap-1">
+            Le français <span className="font-script text-[#ef4444] font-normal text-lg sm:text-xl capitalize ml-1">avec</span> Florentin
+          </span>
+        </Link>
         <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-medium text-white/70">
           {navLinks.map((link) => (
             <a key={link.href} href={link.href} className="hover:text-white transition-colors">{link.label}</a>
@@ -617,19 +636,19 @@ export default function Home() {
         </div>
         <div className="hidden md:flex gap-3 items-center">
           {translating && (
-            <div className="flex items-center gap-1 bg-[#c99a3c]/10 text-[#c99a3c] border border-[#c99a3c]/20 px-2 py-1 rounded-md text-[10px] font-bold tracking-wider animate-pulse transition-opacity duration-300">
+            <div className="flex items-center gap-1 bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 px-2 py-1 rounded-md text-[10px] font-bold tracking-wider animate-pulse transition-opacity duration-300">
               ⚡ {lang === "es" ? "TRADUCIENDO..." : lang === "fr" ? "TRADUCTION..." : "TRANSLATING..."}
             </div>
           )}
           <div className="flex gap-1 text-xs font-bold">
             {(["es", "fr", "en"] as Language[]).map((l) => (
-              <button key={l} onClick={() => changeLang(l)} className={`px-2.5 py-1.5 rounded transition-colors ${lang === l ? "bg-white/10 text-[#c99a3c]" : "text-white/50 hover:bg-white/5"}`}>{l.toUpperCase()}</button>
+              <button key={l} onClick={() => changeLang(l)} className={`px-2.5 py-1.5 rounded transition-colors ${lang === l ? "bg-white/10 text-[#3b82f6]" : "text-white/50 hover:bg-white/5"}`}>{l.toUpperCase()}</button>
             ))}
           </div>
           <div className="w-px h-4 bg-white/20" />
           <div className="flex gap-1 text-xs font-bold">
             {(["eur", "usd"] as const).map((d) => (
-              <button key={d} onClick={() => changeDivisa(d)} className={`px-2.5 py-1.5 rounded transition-colors ${divisa === d ? "bg-white/10 text-[#c99a3c]" : "text-white/50 hover:bg-white/5"}`}>{d.toUpperCase()}</button>
+              <button key={d} onClick={() => changeDivisa(d)} className={`px-2.5 py-1.5 rounded transition-colors ${divisa === d ? "bg-white/10 text-[#3b82f6]" : "text-white/50 hover:bg-white/5"}`}>{d.toUpperCase()}</button>
             ))}
           </div>
           <Link href="/alumno" className="bg-white text-black px-5 py-2.5 rounded-full text-sm font-bold hover:scale-105 transition-transform duration-300">{t.navLogin}</Link>
@@ -672,11 +691,11 @@ export default function Home() {
       ═══════════════════════════════════════ */}
       <section className="relative min-h-[100svh] flex flex-col items-center justify-center pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(201,154,60,0.15)_0%,rgba(10,10,12,1)_70%)] z-10" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.15)_0%,rgba(8,12,20,1)_70%)] z-10" />
           <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop" alt="Paris" className="hero-bg-img w-full h-full object-cover opacity-25 mix-blend-luminosity scale-105" />
         </div>
         <div className="relative z-20 text-center max-w-5xl mx-auto flex flex-col items-center">
-          <span className="hero-text inline-block px-5 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wider bg-white/5 border border-white/10 text-[#c99a3c] mb-8">{t.heroBadge}</span>
+          <span className="hero-text inline-block px-5 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wider bg-white/5 border border-white/10 text-[#3b82f6] mb-8">{t.heroBadge}</span>
           <h1 className="hero-text text-[clamp(2.5rem,7.5vw,6.5rem)] font-black leading-[0.92] tracking-tighter text-white mb-6 sm:mb-8">
             {renderFormattedTitle(config?.titulo_hero || (t.heroTitle1 + " " + t.heroTitle2))}
           </h1>
@@ -684,7 +703,7 @@ export default function Home() {
             {config?.subtitulo_hero || t.heroSubtitle}
           </p>
           <div className="hero-btn flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-2 sm:px-0">
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="bg-[#c99a3c] hover:bg-[#d4a84e] text-black px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105 shadow-lg shadow-[#c99a3c]/20">
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="bg-[#3b82f6] hover:bg-[#2563eb] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105 shadow-lg shadow-[#3b82f6]/20">
               {t.heroBtn} <ArrowRight size={20} />
             </a>
             <a href="#plans" className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105">
@@ -701,7 +720,7 @@ export default function Home() {
       <section id="method" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#c99a3c]/10 text-[#c99a3c] border border-[#c99a3c]/20 mb-5">
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">
               {config?.ps_badge || t.psBadge}
             </span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter">
@@ -758,10 +777,10 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           3. PLANES — Prueba Gratis + De Pago
       ═══════════════════════════════════════ */}
-      <section id="plans" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#0a0a0c]">
+      <section id="plans" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#080c14]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#c99a3c]/10 text-[#c99a3c] border border-[#c99a3c]/20 mb-5">{t.plansBadge}</span>
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">{t.plansBadge}</span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter text-white mb-4">{t.plansTitle}</h2>
             <p className="reveal-item text-white/50 text-base sm:text-lg max-w-xl mx-auto">{t.plansSubtitle}</p>
             <div className="reveal-item flex justify-center gap-3 mt-6">
@@ -773,32 +792,32 @@ export default function Home() {
 
           <div className={`grid grid-cols-1 gap-6 sm:gap-8 ${planes.length > 0 ? `md:grid-cols-${Math.min(planes.length + 1, 4)}` : 'md:grid-cols-2'}`} style={{ gridTemplateColumns: `repeat(${Math.min((planes.length || 0) + 1, 4)}, minmax(0, 1fr))` }}>
             {/* Free Trial Card */}
-            <div className="reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-gradient-to-br from-[#c99a3c] to-[#e8c35a] text-black relative overflow-hidden md:scale-[1.03] shadow-2xl shadow-[#c99a3c]/20">
-              <div className="absolute top-4 right-4 px-3 py-1 bg-black/20 rounded-full text-xs font-bold text-black tracking-wider">
+            <div className="reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-gradient-to-br from-[#0f4c81] to-[#080c14] text-white relative overflow-hidden md:scale-[1.03] shadow-2xl shadow-[#3b82f6]/20 border border-[#3b82f6]/30">
+              <div className="absolute top-4 right-4 px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white tracking-wider">
                 {lang === 'es' ? '⭐ GRATIS' : lang === 'fr' ? '⭐ GRATUIT' : '⭐ FREE'}
               </div>
               <div>
                 <h3 className="text-2xl sm:text-3xl font-black mb-2">{t.planFreeName}</h3>
                 <div className="text-4xl sm:text-5xl font-black tracking-tighter mb-6">{t.planFreePrice}</div>
-                <p className="text-black/70 text-base font-medium mb-6">{t.planFreeDesc}</p>
+                <p className="text-white/70 text-base font-medium mb-6">{t.planFreeDesc}</p>
                 <ul className="space-y-3 mb-8">
                   {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2 text-sm font-medium text-black/80">
-                      <CheckCircle size={18} className="text-black/60 shrink-0 mt-0.5" />{detail}
+                    <li key={i} className="flex items-start gap-2 text-sm font-medium text-white/80">
+                      <CheckCircle size={18} className="text-[#3b82f6] shrink-0 mt-0.5" />{detail}
                     </li>
                   ))}
                 </ul>
               </div>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-black text-white hover:bg-black/80 transition-all hover:scale-105">
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-white text-black hover:bg-white/90 transition-all hover:scale-105">
                 {t.planFreeBtn}
               </a>
             </div>
 
             {/* Paid Plans from Supabase */}
             {planes.map((plan, idx) => (
-              <div key={plan.id} className={`reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-[#111115] text-white border border-white/10`}>
+              <div key={plan.id} className="reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-[#0d1526]/50 backdrop-blur-md text-white border border-white/10 relative">
                 {idx === 1 && (
-                  <div className="absolute -top-0 right-4 px-3 py-1 bg-[#c99a3c] rounded-b-lg text-xs font-bold text-black tracking-wider">{t.recommended}</div>
+                  <div className="absolute -top-0 right-4 px-3 py-1 bg-[#ef4444] rounded-b-lg text-xs font-bold text-white tracking-wider">{t.recommended}</div>
                 )}
                 <div>
                   <h3 className="text-2xl sm:text-3xl font-black mb-2">{plan.nombre}</h3>
@@ -808,7 +827,7 @@ export default function Home() {
                   <p className="text-white/40 text-sm font-medium mb-6">/ {plan.total_clases} {t.planClasses}</p>
                   <p className="text-white/60 text-base font-medium mb-8">{plan.descripcion}</p>
                 </div>
-                <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-white text-black hover:bg-white/90 transition-all hover:scale-105">
+                <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#3b82f6] text-white hover:bg-[#2563eb] transition-all hover:scale-105">
                   {t.planCta}
                 </Link>
               </div>
@@ -854,22 +873,22 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           5. TU PROFESOR — Florentin
       ═══════════════════════════════════════ */}
-      <section id="teacher" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#0a0a0c] relative overflow-hidden">
-        {/* Auroras Boreales de Fondo */}
+      <section id="teacher" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#080c14] relative overflow-hidden">
+        {/* Auroras de la Bandera de Francia de Fondo */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute -top-20 left-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(201,154,60,0.12)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-1" />
-          <div className="absolute -bottom-20 right-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(243,229,171,0.08)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-2" />
+          <div className="absolute -top-20 left-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(59,130,246,0.12)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-1" />
+          <div className="absolute -bottom-20 right-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(239,68,68,0.08)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-2" />
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#c99a3c]/10 text-[#c99a3c] border border-[#c99a3c]/20 mb-5">{t.teacherBadge}</span>
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">{t.teacherBadge}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
             {/* Photo */}
             <div className="reveal-item relative flex justify-center">
-              <div className="relative w-[280px] h-[350px] sm:w-[340px] sm:h-[420px] rounded-3xl overflow-hidden border-2 border-[#c99a3c]/30 shadow-2xl shadow-[#c99a3c]/10 animate-float-slow">
+              <div className="relative w-[280px] h-[350px] sm:w-[340px] sm:h-[420px] rounded-3xl overflow-hidden border-2 border-[#3b82f6]/30 shadow-2xl shadow-[#3b82f6]/10 animate-float-slow">
                 <Image src="/florentin-profile.png" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 340px" />
               </div>
               {/* Floating badges */}
@@ -881,9 +900,9 @@ export default function Home() {
                 ].map((badge, i) => (
                   <div 
                     key={i} 
-                    className="bg-[#111115] border border-white/10 rounded-full px-4 py-2 flex items-center gap-2 text-xs font-bold text-white/80 shadow-lg transition-all duration-300 hover:border-[#c99a3c]/40 hover:bg-[#1a1a1f]"
+                    className="bg-[#111115] border border-white/10 rounded-full px-4 py-2 flex items-center gap-2 text-xs font-bold text-white/80 shadow-lg transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-[#1a1a1f]"
                   >
-                    <span className="text-[#c99a3c]">{badge.icon}</span>{badge.text}
+                    <span className="text-[#3b82f6]">{badge.icon}</span>{badge.text}
                   </div>
                 ))}
               </div>
@@ -892,7 +911,7 @@ export default function Home() {
             {/* Bio */}
             <div className="reveal-item">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter">{config?.teacher_name || t.teacherName}</h2>
-              <p className="text-[#c99a3c] font-semibold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
+              <p className="text-[#3b82f6] font-semibold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
               <p className="text-white/55 text-base sm:text-lg leading-relaxed mb-8">{config?.teacher_bio || t.teacherBio}</p>
 
               {/* Certificates */}
@@ -902,9 +921,9 @@ export default function Home() {
                   {certs.map((cert: string, i: number) => (
                     <span 
                       key={i} 
-                      className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 transition-all duration-300 hover:border-[#c99a3c]/30 cursor-default"
+                      className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 transition-all duration-300 hover:border-[#3b82f6]/30 cursor-default"
                     >
-                      <Award size={16} className="text-[#c99a3c]" />{cert}
+                      <Award size={16} className="text-[#3b82f6]" />{cert}
                     </span>
                   ))}
                 </div>
@@ -925,7 +944,7 @@ export default function Home() {
                     return (
                       <span 
                         key={i} 
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#c99a3c]/10 border border-[#c99a3c]/20 rounded-full text-xs font-bold text-[#c99a3c] hover:bg-[#c99a3c]/20 transition-all duration-300 cursor-default"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded-full text-xs font-bold text-[#3b82f6] hover:bg-[#3b82f6]/20 transition-all duration-300 cursor-default"
                       >
                         {icons[i % icons.length]} {skill}
                       </span>
@@ -945,7 +964,7 @@ export default function Home() {
       <section id="faq" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#c99a3c]/10 text-[#c99a3c] border border-[#c99a3c]/20 mb-5">{t.faqBadge}</span>
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">{t.faqBadge}</span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter">{t.faqTitle}</h2>
           </div>
           <div className="flex flex-col gap-3">
@@ -956,7 +975,7 @@ export default function Home() {
                   className="w-full flex items-center justify-between p-5 sm:p-6 text-left hover:bg-black/[0.02] transition-colors"
                 >
                   <span className="font-bold text-base sm:text-lg pr-4">{item.q}</span>
-                  <ChevronDown size={20} className={`shrink-0 text-[#c99a3c] transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`} />
+                  <ChevronDown size={20} className={`shrink-0 text-[#3b82f6] transition-transform duration-300 ${openFaq === idx ? 'rotate-180' : ''}`} />
                 </button>
                 <div className={`grid transition-all duration-300 ease-out ${openFaq === idx ? 'grid-rows-[1fr]' : 'grid-rows-[0fr]'}`}>
                   <div className="overflow-hidden">
@@ -973,23 +992,23 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           7. TESTIMONIOS
       ═══════════════════════════════════════ */}
-      <section className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-[#0a0a0c]">
+      <section className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-[#080c14]">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#c99a3c]/10 text-[#c99a3c] border border-[#c99a3c]/20 mb-5">{t.testimBadge}</span>
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">{t.testimBadge}</span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-white">{t.testimTitle}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
             {testimonials.map((item, idx) => (
-              <div key={idx} className="reveal-item bg-[#111115] border border-white/5 rounded-2xl p-6 sm:p-8 hover:border-[#c99a3c]/20 transition-colors duration-500">
+              <div key={idx} className="reveal-item bg-[#0d1526]/50 backdrop-blur-md border border-white/5 rounded-2xl p-6 sm:p-8 hover:border-[#3b82f6]/20 transition-colors duration-500">
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: 5 }).map((_, i) => (
-                    <Star key={i} size={16} className="text-[#c99a3c] fill-[#c99a3c]" />
+                    <Star key={i} size={16} className="text-[#ef4444] fill-[#ef4444]" />
                   ))}
                 </div>
                 <p className="text-white/60 text-sm sm:text-base leading-relaxed mb-6 italic">&ldquo;{item.text}&rdquo;</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#c99a3c]/10 border border-[#c99a3c]/20 flex items-center justify-center text-[#c99a3c] font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-[#3b82f6]/10 border border-[#3b82f6]/20 flex items-center justify-center text-[#3b82f6] font-bold text-sm">
                     {(item.name || "").charAt(0)}
                   </div>
                   <div>
@@ -1007,12 +1026,12 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           8. CTA — WhatsApp (Glassmorphic Redesign)
       ═══════════════════════════════════════ */}
-      <section id="contact" className="reveal-section py-24 sm:py-32 px-4 sm:px-6 bg-[#0a0a0c] relative overflow-hidden">
-        {/* Radial Gold Glow behind the card */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(201,154,60,0.06)_0%,transparent_70%)] pointer-events-none" />
+      <section id="contact" className="reveal-section py-24 sm:py-32 px-4 sm:px-6 bg-[#080c14] relative overflow-hidden">
+        {/* Radial Blue Glow behind the card */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(59,130,246,0.06)_0%,transparent_70%)] pointer-events-none" />
 
-        <div className="reveal-item max-w-4xl mx-auto bg-[#111115]/80 border border-white/10 backdrop-blur-xl rounded-2xl sm:rounded-[2.5rem] p-8 sm:p-16 text-center relative z-10 shadow-2xl glow-gold">
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#c99a3c]/10 text-[#c99a3c] border border-[#c99a3c]/20 mb-6">
+        <div className="reveal-item max-w-4xl mx-auto bg-[#0d1526]/70 border border-white/10 backdrop-blur-xl rounded-2xl sm:rounded-[2.5rem] p-8 sm:p-16 text-center relative z-10 shadow-2xl glow-gold">
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-6">
             {config?.cta_badge || t.ctaBadge}
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-white mb-6">
@@ -1031,7 +1050,7 @@ export default function Home() {
               <Smartphone size={24} /> {config?.cta_btn_text || t.ctaBtn}
             </a>
           </div>
-          <a href="mailto:info@florentinfrench.com" className="inline-block text-sm text-white/40 hover:text-[#c99a3c] transition-colors mt-6 font-medium">
+          <a href="mailto:info@florentinfrench.com" className="inline-block text-sm text-white/40 hover:text-[#3b82f6] transition-colors mt-6 font-medium">
             {t.ctaBtnAlt}
           </a>
         </div>

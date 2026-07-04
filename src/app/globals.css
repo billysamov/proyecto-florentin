@@ -2,29 +2,34 @@
 
 /* Sistema de Diseño Premium en CSS Puro - Rediseño Total */
 :root {
-  /* Paleta de Colores Elegante - Inspiración Francesa Premium */
-  --primary-hsl: 222, 47%, 11%;      /* Azul Medianoche Profundo */
-  --primary-light-hsl: 222, 30%, 25%;
-  --accent-hsl: 43, 74%, 49%;        /* Oro Brillante/Champán intenso */
-  --accent-glow-hsl: 43, 74%, 65%;
-  --secondary-hsl: 355, 78%, 56%;    /* Rojo Francés Vibrante */
+  /* Paleta de Colores Elegante - Nueva Identidad visual Francesa */
+  --primary-hsl: 222, 53%, 12%;      /* Azul Marino/Medianoche Oscuro (#091021) */
+  --primary-light-hsl: 222, 40%, 22%;
+  --accent-hsl: 209, 79%, 40%;        /* Azul Real Francés */
+  --accent-glow-hsl: 209, 79%, 52%;
+  --secondary-hsl: 354, 76%, 52%;    /* Rojo Francés Vibrante */
   
-  /* Fondos y Textos (Modo Claro) */
-  --bg-main: #f8fafc;                /* Slate 50 - Muy limpio */
-  --bg-card: rgba(255, 255, 255, 0.7);
-  --bg-card-hover: rgba(255, 255, 255, 0.9);
-  --text-main: #0f172a;
-  --text-muted: #64748b;
-  --text-inverse: #ffffff;
+  /* Fuentes de la Marca */
+  --font-serif: var(--font-serif), "Playfair Display", serif;
+  --font-script: var(--font-script), "Great Vibes", cursive;
+  --font-sans: var(--font-sans), "Plus Jakarta Sans", sans-serif;
+  
+  /* Fondos y Textos (Modo Oscuro Azul Marino Elegante) */
+  --bg-main: #080c14;                /* Azul Marino muy profundo */
+  --bg-card: rgba(13, 21, 38, 0.7);
+  --bg-card-hover: rgba(13, 21, 38, 0.95);
+  --text-main: #f1f5f9;              /* Slate 100 - Texto claro legible */
+  --text-muted: #94a3b8;
+  --text-inverse: #0f172a;
   
   /* Bordes y Sombras */
-  --border-color: rgba(15, 23, 42, 0.08);
-  --border-color-focus: rgba(234, 179, 8, 0.5);
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
-  --shadow-glow: 0 0 25px rgba(234, 179, 8, 0.25);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+  --border-color: rgba(255, 255, 255, 0.08);
+  --border-color-focus: rgba(37, 99, 235, 0.5);
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
+  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
+  --shadow-glow: 0 0 25px rgba(37, 99, 235, 0.25);
+  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
   
   /* Radio de bordes y Transiciones */
   --radius-sm: 0.5rem;
@@ -83,16 +88,26 @@ button, input, select, textarea {
 
 /* Tipografía Premium */
 h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-outfit), system-ui, sans-serif;
-  font-weight: 800;
-  line-height: 1.1;
-  letter-spacing: -0.02em;
+  font-family: var(--font-serif), Georgia, serif;
+  font-weight: 700;
+  line-height: 1.2;
+  letter-spacing: -0.01em;
 }
 
+.font-serif {
+  font-family: var(--font-serif), Georgia, serif;
+}
 
+.font-script {
+  font-family: var(--font-script), cursive;
+}
+
+.font-sans {
+  font-family: var(--font-sans), sans-serif;
+}
 
 .text-gradient {
-  background: linear-gradient(135deg, hsl(var(--primary-hsl)), hsl(var(--accent-hsl)));
+  background: linear-gradient(135deg, #3b82f6, #ef4444); /* Azul a Rojo de la bandera francesa */
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

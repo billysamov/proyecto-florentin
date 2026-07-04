@@ -210,3 +210,16 @@ Se han implementado mejoras significativas en la robustez, seguridad y rendimien
 ### F. Esquema SQL y Políticas RLS Restringidas
 *   Se actualizó el script [supabase_schema.sql](file:///c:/xampp/htdocs/proyecto%20Florentin/supabase_schema.sql) para incluir las definiciones de la tabla `recursos_asignados` y las columnas faltantes de `clases` (`reprogramaciones_restantes` y `enlace_grabacion`).
 *   Se endureció el RLS: Los alumnos ya no pueden realizar `UPDATE` ni `DELETE` directos a la tabla `clases` (forzándolos a usar las APIs seguras), y la lectura de `recursos` se limitó únicamente a materiales asignados individualmente.
+
+### G. Fase 4: Rediseño Visual e Identidad Corporativa (Logotipo, Colores y Fuentes)
+*   **Tipografía Oficial de la Marca:**
+    *   Se integraron las fuentes oficiales de Google Fonts **Playfair Display** (Serif clásico refinado para títulos) y **Great Vibes** (Cursiva fina y fluida para firmas y énfasis) utilizando la optimización nativa de `next/font/google`.
+    *   Se inyectaron como variables y clases CSS globales (`.font-serif`, `.font-script`).
+*   **Nueva Paleta de Colores Patrios Franceses (Tema Oscuro Premium):**
+    *   Se estableció un fondo marino profundo (`#080c14` / `#0d1526`) en el modo oscuro global para dotar a la plataforma de una estética moderna e institucional de gran impacto.
+    *   Se definió el **Azul Real Francés** (`#3b82f6`) para estados activos, botones y glows de marca.
+    *   Se incorporó el **Rojo Francés Vibrante** (`#ef4444`) para insignias destacadas (como el plan recomendado) y acentos secundarios.
+*   **Rediseño de Componentes Clave:**
+    *   **Landing Page:** Se reemplazó el logotipo textual del Navbar por un componente `<Image>` dinámico con fallback integrado. El degradado del Hero ahora transiciona de Azul a Rojo, y se agregaron auroras de fondo en azul y rojo franceses de gran impacto.
+    *   **Portal de Alumnos:** Adaptada la visualización del Login y del Header logueado al estilo tipográfico e identidad cromática del nuevo logotipo oficial.
+
