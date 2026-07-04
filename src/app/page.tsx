@@ -610,20 +610,20 @@ export default function Home() {
       ═══════════════════════════════════════ */}
       <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl rounded-full bg-[#080c14]/90 shadow-[0_0_20px_rgba(0,0,0,0.5)] backdrop-blur-xl border border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
         <Link href="/" className="flex items-center">
-          <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white overflow-hidden flex items-center justify-center border border-white/20 hover:scale-105 transition-transform duration-300 shadow-md">
+          <div className="relative w-32 h-10 sm:w-40 sm:h-12 hover:scale-105 transition-transform duration-300">
             <Image 
               src="/logo.png" 
               alt="Logo Florentin" 
               fill
-              sizes="(max-width: 640px) 40px, 48px"
-              className="object-contain p-1"
+              sizes="(max-width: 640px) 128px, 160px"
+              className="object-contain object-left"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
                 if (fallback) fallback.style.display = 'flex';
               }}
             />
-            <div className="logo-fallback hidden w-full h-full bg-[#080c14] text-white font-black text-xs items-center justify-center font-serif">FLORENTIN</div>
+            <div className="logo-fallback hidden w-full h-full text-white font-black text-sm items-center justify-start font-serif">FLORENTIN</div>
           </div>
         </Link>
         <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-medium text-white/70">
