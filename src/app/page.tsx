@@ -905,10 +905,10 @@ export default function Home() {
       <section className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#c99a3c]/10 text-[#c99a3c] border border-[#c99a3c]/20 mb-5">
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">
               {config?.for_whom_badge || t.forWhomBadge}
             </span>
-            <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter">
+            <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-[#0c1b33] font-serif">
               {config?.for_whom_title || t.forWhomTitle}
             </h2>
           </div>
@@ -919,12 +919,12 @@ export default function Home() {
               { icon: <Heart size={32} />, title: config?.for_whom_3_title || t.forWhom3Title, desc: config?.for_whom_3_desc || t.forWhom3Desc },
               { icon: <Rocket size={32} />, title: config?.for_whom_4_title || t.forWhom4Title, desc: config?.for_whom_4_desc || t.forWhom4Desc },
             ].map((item, idx) => (
-              <div key={idx} className="forwhom-card group bg-[#fafafa] text-black border border-black/5 rounded-2xl p-7 sm:p-8 hover:bg-[#0a0a0c] hover:text-white hover:border-white/10 transition-all duration-500 cursor-default">
-                <div className="w-14 h-14 rounded-2xl bg-[#c99a3c]/10 group-hover:bg-[#c99a3c]/20 flex items-center justify-center text-[#c99a3c] mb-5 transition-colors">
+              <div key={idx} className="forwhom-card group bg-white border border-slate-200/80 rounded-2xl p-7 sm:p-8 hover:border-[#3b82f6]/30 hover:shadow-md hover:scale-[1.02] transition-all duration-500 cursor-default shadow-sm">
+                <div className="w-14 h-14 rounded-2xl bg-[#3b82f6]/8 group-hover:bg-[#3b82f6]/15 flex items-center justify-center text-[#3b82f6] mb-5 transition-colors">
                   {item.icon}
                 </div>
-                <h3 className="text-lg font-bold mb-2 text-black group-hover:text-white transition-colors">{item.title}</h3>
-                <p className="text-sm text-black/60 group-hover:text-white/70 leading-relaxed transition-colors">{item.desc}</p>
+                <h3 className="text-lg font-bold mb-2 text-[#0c1b33] transition-colors">{item.title}</h3>
+                <p className="text-sm text-slate-500 font-medium leading-relaxed transition-colors">{item.desc}</p>
               </div>
             ))}
           </div>
