@@ -13,7 +13,7 @@ import {
   Plane, Briefcase, Heart, Rocket,
   XCircle, CheckCircle, Clock, MessageCircle, CalendarCheck,
   Award, Globe2, Users, Star, BadgeCheck, BookOpen, Headphones, Building2,
-  Smartphone
+  Smartphone, Coins
 } from "lucide-react";
 
 if (typeof window !== "undefined") {
@@ -136,6 +136,8 @@ export default function Home() {
   const [originalConfig, setOriginalConfig] = useState<any>(null);
   const [translating, setTranslating] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const langRef = useRef<HTMLDivElement>(null);
+  const divisaRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
@@ -336,6 +338,19 @@ export default function Home() {
     const handleResize = () => { if (window.innerWidth >= 768) setMenuOpen(false); };
     window.addEventListener("resize", handleResize);
     return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (langRef.current && !langRef.current.contains(event.target as Node)) {
+        setLangDropdownOpen(false);
+      }
+      if (divisaRef.current && !divisaRef.current.contains(event.target as Node)) {
+        setDivisaDropdownOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
   useEffect(() => {
@@ -645,13 +660,12 @@ export default function Home() {
           )}
           
           {/* Dropdown de Idioma */}
-          <div className="relative flex items-center" onMouseLeave={() => setLangDropdownOpen(false)}>
+          <div ref={langRef} className="relative flex items-center">
             <button 
               onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-              onMouseEnter={() => setLangDropdownOpen(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 hover:bg-black/10 text-slate-700 text-xs font-bold transition-all"
             >
-              🌐 {lang.toUpperCase()} <ChevronDown size={12} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
+              <Globe2 size={14} className="text-slate-500 shrink-0" /> {lang.toUpperCase()} <ChevronDown size={12} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {langDropdownOpen && (
               <div className="absolute right-0 top-full mt-1.5 w-28 bg-white border border-slate-200/80 rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
@@ -674,13 +688,12 @@ export default function Home() {
           <div className="w-px h-4 bg-black/10" />
 
           {/* Dropdown de Divisa */}
-          <div className="relative flex items-center" onMouseLeave={() => setDivisaDropdownOpen(false)}>
+          <div ref={divisaRef} className="relative flex items-center">
             <button 
               onClick={() => setDivisaDropdownOpen(!divisaDropdownOpen)}
-              onMouseEnter={() => setDivisaDropdownOpen(true)}
               className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 hover:bg-black/10 text-slate-700 text-xs font-bold transition-all"
             >
-              💵 {divisa.toUpperCase()} <ChevronDown size={12} className={`transition-transform duration-200 ${divisaDropdownOpen ? 'rotate-180' : ''}`} />
+              <Coins size={14} className="text-slate-500 shrink-0" /> {divisa.toUpperCase()} <ChevronDown size={12} className={`transition-transform duration-200 ${divisaDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {divisaDropdownOpen && (
               <div className="absolute right-0 top-full mt-1.5 w-24 bg-white border border-slate-200/80 rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
