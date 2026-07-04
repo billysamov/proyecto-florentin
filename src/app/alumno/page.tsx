@@ -953,20 +953,20 @@ export default function AlumnoPortal() {
         <div style={{ maxWidth: "420px", width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: "24px" }}>
             <Link href="/" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-              <div style={{ position: "relative", width: "200px", height: "60px" }}>
+              <div style={{ position: "relative", width: "200px", height: "60px", backgroundColor: "#ffffff", padding: "8px", borderRadius: "12px", boxShadow: "var(--shadow-md)", display: "flex", alignItems: "center", justifyContent: "center" }}>
                 <Image 
                   src="/logo.png" 
                   alt="Logo Florentin" 
                   fill
                   sizes="200px"
-                  style={{ objectFit: "contain" }}
+                  style={{ objectFit: "contain", padding: "6px" }}
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                     const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
                     if (fallback) fallback.style.display = 'flex';
                   }}
                 />
-                <div className="logo-fallback" style={{ display: "none", width: "100%", height: "100%", color: "var(--text-main)", fontWeight: 900, fontSize: "18px", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-serif)" }}>
+                <div className="logo-fallback" style={{ display: "none", width: "100%", height: "100%", color: "#000000", fontWeight: 900, fontSize: "18px", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-serif)" }}>
                   FLORENTIN
                 </div>
               </div>
@@ -1116,20 +1116,20 @@ export default function AlumnoPortal() {
         <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             <Link href="/" style={{ display: "inline-flex", alignItems: "center" }}>
-              <div style={{ position: "relative", width: "120px", height: "36px" }}>
+              <div style={{ position: "relative", width: "120px", height: "36px", backgroundColor: "#ffffff", padding: "4px 8px", borderRadius: "8px", display: "flex", alignItems: "center", justifyContent: "center", boxShadow: "var(--shadow-sm)" }}>
                 <Image 
                   src="/logo.png" 
                   alt="Logo Florentin" 
                   fill
                   sizes="120px"
-                  style={{ objectFit: "contain", objectPosition: "left" }}
+                  style={{ objectFit: "contain", padding: "2px" }}
                   onError={(e) => {
                     e.currentTarget.style.display = 'none';
                     const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
                     if (fallback) fallback.style.display = 'flex';
                   }}
                 />
-                <div className="logo-fallback" style={{ display: "none", width: "100%", height: "100%", color: "var(--text-main)", fontWeight: 900, fontSize: "14px", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-serif)" }}>
+                <div className="logo-fallback" style={{ display: "none", width: "100%", height: "100%", color: "#000000", fontWeight: 900, fontSize: "14px", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-serif)" }}>
                   FLORENTIN
                 </div>
               </div>
