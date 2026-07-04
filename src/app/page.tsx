@@ -138,6 +138,8 @@ export default function Home() {
   const containerRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const [divisaDropdownOpen, setDivisaDropdownOpen] = useState(false);
 
   const t = translations[lang] as any;
 
@@ -522,44 +524,48 @@ export default function Home() {
     if (!text) return "";
     const regex = /\{([^}]+)\}/g;
     
-    // Si no contiene llaves {}, buscar palabras clave para mantener el diseño original coloreando la segunda mitad
-    if (!text.includes("{")) {
-      const parts = text.split(/(con un expert|con un parisi|con clases|con un native|con un nativ)/i);
-      if (parts.length > 1) {
-        return (
-          <>
-            {parts[0]} <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#3b82f6] to-[#ef4444] font-serif font-bold">{parts.slice(1).join("")}</span>
-          </>
-        );
-      }
-      return text;
+    // Si no contiene llaves, pero tiene la palabra "Florentin", le inyectamos las llaves dinámicamente
+    let processedText = text;
+    if (!text.includes("{") && /Florentin/i.test(text)) {
+      processedText = text.replace(/(Florentin)/i, "{$1}");
     }
 
     const parts = [];
     let lastIndex = 0;
     let match;
 
-    while ((match = regex.exec(text)) !== null) {
+    while ((match = regex.exec(processedText)) !== null) {
       if (match.index > lastIndex) {
-        parts.push(text.substring(lastIndex, match.index));
+        parts.push(processedText.substring(lastIndex, match.index));
       }
-      parts.push(
-        <span key={match.index} className="text-transparent bg-clip-text bg-gradient-to-r from-[#3b82f6] to-[#ef4444] font-serif font-bold">
-          {match[1]}
-        </span>
-      );
+      
+      const word = match[1];
+      if (/Florentin/i.test(word)) {
+        parts.push(
+          <span key={match.index} className="font-script text-[#ef4444] font-normal lowercase tracking-wide text-5xl sm:text-7xl inline-block align-middle mx-2 select-none">
+            Florentin
+          </span>
+        );
+      } else {
+        parts.push(
+          <span key={match.index} className="text-[#0f4c81] font-serif font-bold italic">
+            {word}
+          </span>
+        );
+      }
       lastIndex = regex.lastIndex;
     }
 
-    if (lastIndex < text.length) {
-      parts.push(text.substring(lastIndex));
+    if (lastIndex < processedText.length) {
+      parts.push(processedText.substring(lastIndex));
     }
 
+    if (parts.length === 0) return text;
     return <>{parts.map((p, i) => <React.Fragment key={i}>{p}</React.Fragment>)}</>;
   };
 
   return (
-    <main ref={containerRef} className="overflow-x-hidden w-full max-w-full bg-[#0a0a0c] text-white selection:bg-[#c99a3c] selection:text-white">
+    <main ref={containerRef} className="overflow-x-hidden w-full max-w-full bg-[#f8fafc] text-[#0c1b33] selection:bg-[#3b82f6]/20 selection:text-[#0c1b33] font-sans">
       {/* Estilos CSS Inyectados para efectos de Levitación y Auroras Boreales */}
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes float-slow {
@@ -608,27 +614,27 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           NAVBAR — Glass Pill Responsive
       ═══════════════════════════════════════ */}
-      <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl rounded-full bg-[#080c14]/90 shadow-[0_0_20px_rgba(0,0,0,0.5)] backdrop-blur-xl border border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
+      <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl rounded-full bg-white/85 shadow-md backdrop-blur-xl border border-black/5 px-4 sm:px-6 py-2 sm:py-3 flex justify-between items-center text-[#0c1b33]">
         <Link href="/" className="flex items-center">
-          <div className="relative w-32 h-10 sm:w-40 sm:h-12 bg-white rounded-xl px-3 py-1 flex items-center justify-center border border-white/20 shadow-md hover:scale-105 transition-transform duration-300">
+          <div className="relative w-40 h-12 sm:w-56 sm:h-16 hover:scale-105 transition-transform duration-300">
             <Image 
               src="/logo.png" 
               alt="Logo Florentin" 
               fill
-              sizes="(max-width: 640px) 128px, 160px"
-              className="object-contain p-1.5"
+              sizes="(max-width: 640px) 160px, 224px"
+              className="object-contain object-left"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
                 if (fallback) fallback.style.display = 'flex';
               }}
             />
-            <div className="logo-fallback hidden w-full h-full text-slate-800 font-black text-sm items-center justify-center font-serif">FLORENTIN</div>
+            <div className="logo-fallback hidden w-full h-full text-slate-800 font-black text-sm items-center justify-start font-serif">FLORENTIN</div>
           </div>
         </Link>
-        <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-medium text-white/70">
+        <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-semibold text-slate-600">
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="hover:text-white transition-colors">{link.label}</a>
+            <a key={link.href} href={link.href} className="hover:text-[#0c1b33] transition-colors">{link.label}</a>
           ))}
         </div>
         <div className="hidden md:flex gap-3 items-center">
@@ -637,45 +643,91 @@ export default function Home() {
               ⚡ {lang === "es" ? "TRADUCIENDO..." : lang === "fr" ? "TRADUCTION..." : "TRANSLATING..."}
             </div>
           )}
-          <div className="flex gap-1 text-xs font-bold">
-            {(["es", "fr", "en"] as Language[]).map((l) => (
-              <button key={l} onClick={() => changeLang(l)} className={`px-2.5 py-1.5 rounded transition-colors ${lang === l ? "bg-white/10 text-[#3b82f6]" : "text-white/50 hover:bg-white/5"}`}>{l.toUpperCase()}</button>
-            ))}
+          
+          {/* Dropdown de Idioma */}
+          <div className="relative flex items-center" onMouseLeave={() => setLangDropdownOpen(false)}>
+            <button 
+              onClick={() => setLangDropdownOpen(!langDropdownOpen)}
+              onMouseEnter={() => setLangDropdownOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 hover:bg-black/10 text-slate-700 text-xs font-bold transition-all"
+            >
+              🌐 {lang.toUpperCase()} <ChevronDown size={12} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {langDropdownOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-28 bg-white border border-slate-200/80 rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                {(["es", "fr", "en"] as Language[]).map((l) => (
+                  <button
+                    key={l}
+                    onClick={() => {
+                      changeLang(l);
+                      setLangDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-slate-50 transition-colors ${lang === l ? 'text-[#3b82f6] bg-[#3b82f6]/5' : 'text-slate-700'}`}
+                  >
+                    {l === 'es' ? 'Español' : l === 'fr' ? 'Français' : 'English'}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <div className="w-px h-4 bg-white/20" />
-          <div className="flex gap-1 text-xs font-bold">
-            {(["eur", "usd"] as const).map((d) => (
-              <button key={d} onClick={() => changeDivisa(d)} className={`px-2.5 py-1.5 rounded transition-colors ${divisa === d ? "bg-white/10 text-[#3b82f6]" : "text-white/50 hover:bg-white/5"}`}>{d.toUpperCase()}</button>
-            ))}
+
+          <div className="w-px h-4 bg-black/10" />
+
+          {/* Dropdown de Divisa */}
+          <div className="relative flex items-center" onMouseLeave={() => setDivisaDropdownOpen(false)}>
+            <button 
+              onClick={() => setDivisaDropdownOpen(!divisaDropdownOpen)}
+              onMouseEnter={() => setDivisaDropdownOpen(true)}
+              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 hover:bg-black/10 text-slate-700 text-xs font-bold transition-all"
+            >
+              💵 {divisa.toUpperCase()} <ChevronDown size={12} className={`transition-transform duration-200 ${divisaDropdownOpen ? 'rotate-180' : ''}`} />
+            </button>
+            {divisaDropdownOpen && (
+              <div className="absolute right-0 top-full mt-1.5 w-24 bg-white border border-slate-200/80 rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+                {(["eur", "usd"] as const).map((d) => (
+                  <button
+                    key={d}
+                    onClick={() => {
+                      changeDivisa(d);
+                      setDivisaDropdownOpen(false);
+                    }}
+                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-slate-50 transition-colors ${divisa === d ? 'text-[#3b82f6] bg-[#3b82f6]/5' : 'text-slate-700'}`}
+                  >
+                    {d.toUpperCase()}
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
-          <Link href="/alumno" className="bg-white text-black px-5 py-2.5 rounded-full text-sm font-bold hover:scale-105 transition-transform duration-300">{t.navLogin}</Link>
+
+          <Link href="/alumno" className="bg-[#0c1b33] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:scale-105 transition-transform duration-300">{t.navLogin}</Link>
         </div>
-        <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 text-white/80 hover:text-white" aria-label="Menu">
+        <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 text-slate-700 hover:text-black" aria-label="Menu">
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
       {/* Mobile Menu */}
-      <div className={`fixed inset-0 z-40 bg-[#0a0a0c]/98 backdrop-blur-2xl transition-all duration-500 md:hidden flex flex-col items-center justify-center gap-6 ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
-        <div className="flex flex-col items-center gap-5 text-2xl font-bold">
+      <div className={`fixed inset-0 z-40 bg-[#f8fafc]/98 backdrop-blur-2xl transition-all duration-500 md:hidden flex flex-col items-center justify-center gap-6 ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
+        <div className="flex flex-col items-center gap-5 text-2xl font-bold text-slate-800">
           {navLinks.map((link) => (
-            <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className="text-white/70 hover:text-white transition-colors">{link.label}</a>
+            <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className="text-slate-600 hover:text-[#0c1b33] transition-colors">{link.label}</a>
           ))}
         </div>
         <div className="flex flex-col items-center gap-4 mt-4">
           <div className="flex gap-2 text-sm font-bold">
             {(["es", "fr", "en"] as Language[]).map((l) => (
-              <button key={l} onClick={() => changeLang(l)} className={`px-4 py-2 rounded-full transition-colors ${lang === l ? "bg-[#c99a3c] text-black" : "bg-white/10 text-white/60"}`}>{l.toUpperCase()}</button>
+              <button key={l} onClick={() => changeLang(l)} className={`px-4 py-2 rounded-full transition-colors ${lang === l ? "bg-[#3b82f6]/15 text-[#3b82f6]" : "bg-black/5 text-slate-600"}`}>{l.toUpperCase()}</button>
             ))}
           </div>
           <div className="flex gap-2 text-sm font-bold">
             {(["eur", "usd"] as const).map((d) => (
-              <button key={d} onClick={() => changeDivisa(d)} className={`px-4 py-2 rounded-full transition-colors ${divisa === d ? "bg-white text-black" : "bg-white/10 text-white/60"}`}>{d.toUpperCase()}</button>
+              <button key={d} onClick={() => changeDivisa(d)} className={`px-4 py-2 rounded-full transition-colors ${divisa === d ? "bg-[#3b82f6]/15 text-[#3b82f6]" : "bg-black/5 text-slate-600"}`}>{d.toUpperCase()}</button>
             ))}
           </div>
-          <Link href="/alumno" onClick={() => setMenuOpen(false)} className="mt-2 bg-white text-black px-8 py-3 rounded-full text-lg font-bold">{t.navLogin}</Link>
+          <Link href="/alumno" onClick={() => setMenuOpen(false)} className="mt-2 bg-[#0c1b33] text-white px-8 py-3 rounded-full text-lg font-bold shadow-md hover:bg-[#0c1b33]/90">{t.navLogin}</Link>
           {translating && (
-            <div className="flex items-center gap-1 bg-[#c99a3c]/10 text-[#c99a3c] border border-[#c99a3c]/20 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider animate-pulse transition-opacity duration-300">
+            <div className="flex items-center gap-1 bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider animate-pulse transition-opacity duration-300">
               ⚡ {lang === "es" ? "TRADUCIENDO..." : lang === "fr" ? "TRADUCTION..." : "TRANSLATING..."}
             </div>
           )}
@@ -688,22 +740,22 @@ export default function Home() {
       ═══════════════════════════════════════ */}
       <section className="relative min-h-[100svh] flex flex-col items-center justify-center pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6">
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.15)_0%,rgba(8,12,20,1)_70%)] z-10" />
-          <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop" alt="Paris" className="hero-bg-img w-full h-full object-cover opacity-25 mix-blend-luminosity scale-105" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,rgba(248,250,252,1)_80%)] z-10" />
+          <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop" alt="Paris" className="hero-bg-img w-full h-full object-cover opacity-10 mix-blend-overlay scale-105" />
         </div>
         <div className="relative z-20 text-center max-w-5xl mx-auto flex flex-col items-center">
-          <span className="hero-text inline-block px-5 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wider bg-white/5 border border-white/10 text-[#3b82f6] mb-8">{t.heroBadge}</span>
-          <h1 className="hero-text text-[clamp(2.5rem,7.5vw,6.5rem)] font-black leading-[0.92] tracking-tighter text-white mb-6 sm:mb-8">
+          <span className="hero-text inline-block px-5 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wider bg-[#3b82f6]/8 border border-[#3b82f6]/15 text-[#3b82f6] mb-8">{t.heroBadge}</span>
+          <h1 className="hero-text text-[clamp(2.5rem,7.5vw,6.5rem)] font-black leading-[0.92] tracking-tighter text-[#0c1b33] mb-6 sm:mb-8 font-serif">
             {renderFormattedTitle(config?.titulo_hero || (t.heroTitle1 + " " + t.heroTitle2))}
           </h1>
-          <p className="hero-text text-base sm:text-lg md:text-xl font-medium text-white/55 max-w-2xl mb-10 px-2">
+          <p className="hero-text text-base sm:text-lg md:text-xl font-semibold text-slate-500 max-w-2xl mb-10 px-2 leading-relaxed">
             {config?.subtitulo_hero || t.heroSubtitle}
           </p>
           <div className="hero-btn flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-2 sm:px-0">
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="bg-[#3b82f6] hover:bg-[#2563eb] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105 shadow-lg shadow-[#3b82f6]/20">
+            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="bg-[#0c1b33] hover:bg-[#152e54] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105 shadow-lg shadow-[#0c1b33]/15">
               {t.heroBtn} <ArrowRight size={20} />
             </a>
-            <a href="#plans" className="bg-white/10 backdrop-blur-sm hover:bg-white/20 text-white border border-white/20 px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105">
+            <a href="#plans" className="bg-white/70 backdrop-blur-sm hover:bg-white text-slate-700 border border-slate-200 px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105 shadow-sm">
               {t.heroBtnSecondary}
             </a>
           </div>
@@ -774,22 +826,22 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           3. PLANES — Prueba Gratis + De Pago
       ═══════════════════════════════════════ */}
-      <section id="plans" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#080c14]">
+      <section id="plans" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#f1f5f9]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">{t.plansBadge}</span>
-            <h2 className="reveal-item text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter text-white mb-4">{t.plansTitle}</h2>
-            <p className="reveal-item text-white/50 text-base sm:text-lg max-w-xl mx-auto">{t.plansSubtitle}</p>
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.plansBadge}</span>
+            <h2 className="reveal-item text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter text-[#0c1b33] mb-4 font-serif">{t.plansTitle}</h2>
+            <p className="reveal-item text-slate-500 text-base sm:text-lg max-w-xl mx-auto font-medium">{t.plansSubtitle}</p>
             <div className="reveal-item flex justify-center gap-3 mt-6">
               {(["eur", "usd"] as const).map((d) => (
-                <button key={d} onClick={() => changeDivisa(d)} className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${divisa === d ? "bg-white text-black" : "bg-white/10 text-white hover:bg-white/20"}`}>{d.toUpperCase()}</button>
+                <button key={d} onClick={() => changeDivisa(d)} className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${divisa === d ? "bg-[#0c1b33] text-white" : "bg-[#0c1b33]/5 text-[#0c1b33] hover:bg-[#0c1b33]/10"}`}>{d.toUpperCase()}</button>
               ))}
             </div>
           </div>
 
           <div className={`grid grid-cols-1 gap-6 sm:gap-8 ${planes.length > 0 ? `md:grid-cols-${Math.min(planes.length + 1, 4)}` : 'md:grid-cols-2'}`} style={{ gridTemplateColumns: `repeat(${Math.min((planes.length || 0) + 1, 4)}, minmax(0, 1fr))` }}>
             {/* Free Trial Card */}
-            <div className="reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-gradient-to-br from-[#0f4c81] to-[#080c14] text-white relative overflow-hidden md:scale-[1.03] shadow-2xl shadow-[#3b82f6]/20 border border-[#3b82f6]/30">
+            <div className="reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-gradient-to-br from-[#0c1b33] to-[#152e54] text-white relative overflow-hidden md:scale-[1.03] shadow-xl shadow-[#0c1b33]/10 border border-white/10">
               <div className="absolute top-4 right-4 px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white tracking-wider">
                 {lang === 'es' ? '⭐ GRATIS' : lang === 'fr' ? '⭐ GRATUIT' : '⭐ FREE'}
               </div>
@@ -805,26 +857,26 @@ export default function Home() {
                   ))}
                 </ul>
               </div>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-white text-black hover:bg-white/90 transition-all hover:scale-105">
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#ef4444] text-white hover:bg-[#d9383a] transition-all hover:scale-105 shadow-md">
                 {t.planFreeBtn}
               </a>
             </div>
 
             {/* Paid Plans from Supabase */}
             {planes.map((plan, idx) => (
-              <div key={plan.id} className="reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-[#0d1526]/50 backdrop-blur-md text-white border border-white/10 relative">
+              <div key={plan.id} className={`reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-white text-slate-800 border border-slate-200/80 relative transition-transform hover:scale-[1.02] ${idx === 1 ? 'shadow-lg border-[#3b82f6]/20' : 'shadow-sm'}`}>
                 {idx === 1 && (
                   <div className="absolute -top-0 right-4 px-3 py-1 bg-[#ef4444] rounded-b-lg text-xs font-bold text-white tracking-wider">{t.recommended}</div>
                 )}
                 <div>
-                  <h3 className="text-2xl sm:text-3xl font-black mb-2">{plan.nombre}</h3>
-                  <div className="text-4xl sm:text-5xl font-black tracking-tighter mb-2">
+                  <h3 className="text-2xl sm:text-3xl font-black text-[#0c1b33] mb-2">{plan.nombre}</h3>
+                  <div className="text-4xl sm:text-5xl font-black tracking-tighter text-[#0c1b33] mb-2">
                     {formatPrecio(plan.precio)}
                   </div>
-                  <p className="text-white/40 text-sm font-medium mb-6">/ {plan.total_clases} {t.planClasses}</p>
-                  <p className="text-white/60 text-base font-medium mb-8">{plan.descripcion}</p>
+                  <p className="text-slate-400 text-sm font-medium mb-6">/ {plan.total_clases} {t.planClasses}</p>
+                  <p className="text-slate-600 text-base font-medium mb-8 leading-relaxed">{plan.descripcion}</p>
                 </div>
-                <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#3b82f6] text-white hover:bg-[#2563eb] transition-all hover:scale-105">
+                <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#0c1b33] text-white hover:bg-[#152e54] transition-all hover:scale-105 shadow-sm">
                   {t.planCta}
                 </Link>
               </div>
@@ -870,26 +922,26 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           5. TU PROFESOR — Florentin
       ═══════════════════════════════════════ */}
-      <section id="teacher" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#080c14] relative overflow-hidden">
+      <section id="teacher" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-white relative overflow-hidden">
         {/* Auroras de la Bandera de Francia de Fondo */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute -top-20 left-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(59,130,246,0.12)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-1" />
-          <div className="absolute -bottom-20 right-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(239,68,68,0.08)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-2" />
+          <div className="absolute -top-20 left-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(59,130,246,0.04)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-1" />
+          <div className="absolute -bottom-20 right-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(239,68,68,0.03)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-2" />
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">{t.teacherBadge}</span>
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.teacherBadge}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
             {/* Photo */}
             <div className="reveal-item relative flex justify-center">
-              <div className="relative w-[280px] h-[350px] sm:w-[340px] sm:h-[420px] rounded-3xl overflow-hidden border-2 border-[#3b82f6]/30 shadow-2xl shadow-[#3b82f6]/10 animate-float-slow">
+              <div className="relative w-[280px] h-[350px] sm:w-[340px] sm:h-[420px] rounded-3xl overflow-hidden border border-slate-200 shadow-xl animate-float-slow">
                 <Image src="/florentin-profile.png" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 340px" />
               </div>
               {/* Floating badges */}
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3">
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20">
                 {[
                   { icon: <Users size={16} />, text: config?.teacher_students || t.teacherStudents },
                   { icon: <Globe2 size={16} />, text: config?.teacher_countries || t.teacherCountries },
@@ -897,7 +949,7 @@ export default function Home() {
                 ].map((badge, i) => (
                   <div 
                     key={i} 
-                    className="bg-[#111115] border border-white/10 rounded-full px-4 py-2 flex items-center gap-2 text-xs font-bold text-white/80 shadow-lg transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-[#1a1a1f]"
+                    className="bg-white border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
                   >
                     <span className="text-[#3b82f6]">{badge.icon}</span>{badge.text}
                   </div>
@@ -907,18 +959,25 @@ export default function Home() {
 
             {/* Bio */}
             <div className="reveal-item">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-white mb-2 tracking-tighter">{config?.teacher_name || t.teacherName}</h2>
-              <p className="text-[#3b82f6] font-semibold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
-              <p className="text-white/55 text-base sm:text-lg leading-relaxed mb-8">{config?.teacher_bio || t.teacherBio}</p>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] mb-2 tracking-tighter font-serif">{config?.teacher_name || t.teacherName}</h2>
+              <p className="text-[#3b82f6] font-bold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
+              <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6 font-medium">
+                {config?.teacher_bio || t.teacherBio}
+                <div className="mt-4 flex justify-end">
+                  <span className="font-script text-[#ef4444] text-5xl sm:text-6xl select-none select-none tracking-wide transform -rotate-3 block pr-6">
+                    Florentin
+                  </span>
+                </div>
+              </div>
 
               {/* Certificates */}
               <div className="mb-8">
-                <h4 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-4">{lang === 'es' ? 'Certificaciones' : lang === 'fr' ? 'Certifications' : 'Certifications'}</h4>
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{lang === 'es' ? 'Certificaciones' : lang === 'fr' ? 'Certifications' : 'Certifications'}</h4>
                 <div className="flex flex-wrap gap-3">
                   {certs.map((cert: string, i: number) => (
                     <span 
                       key={i} 
-                      className="flex items-center gap-2 px-4 py-2 bg-white/5 border border-white/10 rounded-xl text-sm font-medium text-white/70 hover:bg-white/10 transition-all duration-300 hover:border-[#3b82f6]/30 cursor-default"
+                      className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all duration-300 hover:border-[#3b82f6]/30 cursor-default"
                     >
                       <Award size={16} className="text-[#3b82f6]" />{cert}
                     </span>
@@ -986,31 +1045,28 @@ export default function Home() {
       </section>
 
 
-      {/* ═══════════════════════════════════════
-          7. TESTIMONIOS
-      ═══════════════════════════════════════ */}
-      <section className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-[#080c14]">
+      <section className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-[#f8fafc]">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">{t.testimBadge}</span>
-            <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-white">{t.testimTitle}</h2>
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.testimBadge}</span>
+            <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-[#0c1b33] font-serif">{t.testimTitle}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
             {testimonials.map((item, idx) => (
-              <div key={idx} className="reveal-item bg-[#0d1526]/50 backdrop-blur-md border border-white/5 rounded-2xl p-6 sm:p-8 hover:border-[#3b82f6]/20 transition-colors duration-500">
+              <div key={idx} className="reveal-item bg-white border border-slate-200/80 rounded-2xl p-6 sm:p-8 hover:border-[#3b82f6]/20 transition-all duration-500 shadow-sm">
                 <div className="flex gap-1 mb-4">
                   {Array.from({ length: 5 }).map((_, i) => (
                     <Star key={i} size={16} className="text-[#ef4444] fill-[#ef4444]" />
                   ))}
                 </div>
-                <p className="text-white/60 text-sm sm:text-base leading-relaxed mb-6 italic">&ldquo;{item.text}&rdquo;</p>
+                <p className="text-slate-600 text-sm sm:text-base leading-relaxed mb-6 italic font-medium">&ldquo;{item.text}&rdquo;</p>
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-full bg-[#3b82f6]/10 border border-[#3b82f6]/20 flex items-center justify-center text-[#3b82f6] font-bold text-sm">
+                  <div className="w-10 h-10 rounded-full bg-[#3b82f6]/8 border border-[#3b82f6]/15 flex items-center justify-center text-[#3b82f6] font-bold text-sm">
                     {(item.name || "").charAt(0)}
                   </div>
                   <div>
-                    <p className="font-bold text-white text-sm">{item.name || ""}</p>
-                    <p className="text-white/40 text-xs">{item.country}</p>
+                    <p className="font-bold text-slate-800 text-sm">{item.name || ""}</p>
+                    <p className="text-slate-400 text-xs">{item.country}</p>
                   </div>
                 </div>
               </div>
@@ -1023,18 +1079,18 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           8. CTA — WhatsApp (Glassmorphic Redesign)
       ═══════════════════════════════════════ */}
-      <section id="contact" className="reveal-section py-24 sm:py-32 px-4 sm:px-6 bg-[#080c14] relative overflow-hidden">
+      <section id="contact" className="reveal-section py-24 sm:py-32 px-4 sm:px-6 bg-[#f1f5f9] relative overflow-hidden">
         {/* Radial Blue Glow behind the card */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(59,130,246,0.06)_0%,transparent_70%)] pointer-events-none" />
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(59,130,246,0.03)_0%,transparent_70%)] pointer-events-none" />
 
-        <div className="reveal-item max-w-4xl mx-auto bg-[#0d1526]/70 border border-white/10 backdrop-blur-xl rounded-2xl sm:rounded-[2.5rem] p-8 sm:p-16 text-center relative z-10 shadow-2xl glow-gold">
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-6">
+        <div className="reveal-item max-w-4xl mx-auto bg-white border border-slate-200/80 rounded-2xl sm:rounded-[2.5rem] p-8 sm:p-16 text-center relative z-10 shadow-lg">
+          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-6">
             {config?.cta_badge || t.ctaBadge}
           </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-white mb-6">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-[#0c1b33] mb-6 font-serif">
             {config?.cta_title || t.ctaTitle}
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-white/65 font-medium max-w-xl mx-auto mb-10 leading-relaxed">
+          <p className="text-base sm:text-lg md:text-xl text-slate-500 font-semibold max-w-xl mx-auto mb-10 leading-relaxed">
             {config?.cta_subtitle || t.ctaSubtitle}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
@@ -1042,12 +1098,12 @@ export default function Home() {
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="btn-shimmer text-white px-10 py-5 rounded-full text-lg font-bold flex items-center gap-3 transition-all hover:scale-105 shadow-xl hover:shadow-[#25D366]/20"
+              className="bg-[#0c1b33] hover:bg-[#152e54] text-white px-10 py-5 rounded-full text-lg font-bold flex items-center gap-3 transition-all hover:scale-105 shadow-xl shadow-[#0c1b33]/15"
             >
               <Smartphone size={24} /> {config?.cta_btn_text || t.ctaBtn}
             </a>
           </div>
-          <a href="mailto:info@florentinfrench.com" className="inline-block text-sm text-white/40 hover:text-[#3b82f6] transition-colors mt-6 font-medium">
+          <a href="mailto:info@florentinfrench.com" className="inline-block text-sm text-slate-400 hover:text-[#3b82f6] transition-colors mt-6 font-semibold">
             {t.ctaBtnAlt}
           </a>
         </div>

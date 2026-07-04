@@ -9,22 +9,22 @@
   --accent-glow-hsl: 209, 79%, 52%;
   --secondary-hsl: 354, 76%, 52%;    /* Rojo Francés Vibrante */
   
-  /* Fondos y Textos (Modo Oscuro Azul Marino Elegante) */
-  --bg-main: #080c14;                /* Azul Marino muy profundo */
-  --bg-card: rgba(13, 21, 38, 0.7);
-  --bg-card-hover: rgba(13, 21, 38, 0.95);
-  --text-main: #f1f5f9;              /* Slate 100 - Texto claro legible */
-  --text-muted: #94a3b8;
-  --text-inverse: #0f172a;
+  /* Fondos y Textos (Modo Claro Premium) */
+  --bg-main: #f8fafc;                /* Gris slate muy claro */
+  --bg-card: #ffffff;                /* Tarjetas blancas puras */
+  --bg-card-hover: rgba(255, 255, 255, 0.95);
+  --text-main: #0c1b33;              /* Azul Marino del logo para excelente lectura */
+  --text-muted: #475569;             /* Slate 600 - Texto atenuado legible */
+  --text-inverse: #ffffff;
   
-  /* Bordes y Sombras */
-  --border-color: rgba(255, 255, 255, 0.08);
-  --border-color-focus: rgba(37, 99, 235, 0.5);
-  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.25);
-  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.3), 0 2px 4px -2px rgb(0 0 0 / 0.3);
-  --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.4), 0 4px 6px -4px rgb(0 0 0 / 0.4);
-  --shadow-glow: 0 0 25px rgba(37, 99, 235, 0.25);
-  --shadow-xl: 0 20px 25px -5px rgb(0 0 0 / 0.5), 0 8px 10px -6px rgb(0 0 0 / 0.5);
+  /* Bordes y Sombras en Fondo Claro */
+  --border-color: rgba(12, 27, 51, 0.08);
+  --border-color-focus: rgba(59, 130, 246, 0.5);
+  --shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.03);
+  --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
+  --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.06), 0 4px 6px -4px rgba(0, 0, 0, 0.06);
+  --shadow-glow: 0 0 25px rgba(59, 130, 246, 0.08);
+  --shadow-xl: 0 20px 25px -5px rgba(0, 0, 0, 0.08), 0 8px 10px -6px rgba(0, 0, 0, 0.08);
   
   /* Radio de bordes y Transiciones */
   --radius-sm: 0.5rem;
