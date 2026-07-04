@@ -1126,28 +1126,63 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           9. FOOTER
       ═══════════════════════════════════════ */}
-      <footer className="py-10 sm:py-14 border-t border-slate-200 bg-white px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="font-black text-2xl text-[#0c1b33] tracking-tighter">FLORENTIN.</div>
-          <div className="flex gap-6 text-sm text-slate-400">
-            <a href="#" className="hover:text-[#0c1b33] transition-colors">{t.footerPrivacy}</a>
-            <a href="#" className="hover:text-[#0c1b33] transition-colors">{t.footerTerms}</a>
+      <footer className="py-16 border-t border-slate-200 bg-white px-4 sm:px-6">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 sm:gap-16 pb-12">
+          {/* Columna 1: Branding y Propósito */}
+          <div className="flex flex-col gap-4">
+            <div className="relative w-44 h-12">
+              <Image 
+                src="/logo.png" 
+                alt="Logo Florentin" 
+                fill
+                sizes="176px"
+                className="object-contain object-left"
+              />
+            </div>
+            <p className="text-slate-400 text-sm leading-relaxed max-w-sm mt-2 font-medium">
+              Academia de francés en línea del Profesor Florentin. Clases particulares y grupales adaptadas a tus objetivos, enfocadas en la conversación fluida.
+            </p>
+          </div>
+
+          {/* Columna 2: Navegación Rápida */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">Navegación</h4>
+            <div className="grid grid-cols-2 gap-2 text-sm text-slate-400 font-semibold">
+              <a href="#method" className="hover:text-[#0c1b33] transition-colors">Método</a>
+              <a href="#plans" className="hover:text-[#0c1b33] transition-colors">Planes</a>
+              <a href="#teacher" className="hover:text-[#0c1b33] transition-colors">Profesor</a>
+              <a href="#faq" className="hover:text-[#0c1b33] transition-colors">Preguntas</a>
+              <a href="#contact" className="hover:text-[#0c1b33] transition-colors">Contacto</a>
+              <Link href="/alumno" className="hover:text-[#0c1b33] transition-colors">Portal Alumnos</Link>
+            </div>
+          </div>
+
+          {/* Columna 3: Información Legal y Créditos */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">Políticas y Soporte</h4>
+            <div className="flex flex-col gap-2 text-sm text-slate-400 font-semibold">
+              <Link href="/privacidad" className="hover:text-[#0c1b33] transition-colors">{t.footerPrivacy}</Link>
+              <Link href="/terminos" className="hover:text-[#0c1b33] transition-colors">{t.footerTerms}</Link>
+              <a href="mailto:info@florentinfrench.com" className="hover:text-[#0c1b33] transition-colors">info@florentinfrench.com</a>
+            </div>
+          </div>
+        </div>
+
+        {/* Separador inferior */}
+        <div className="max-w-6xl mx-auto border-t border-slate-100 pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs font-semibold text-slate-400">
+          <div>
+            &copy; {new Date().getFullYear()} {config?.site_name || "Florentin French"}. {t.footerRights}
           </div>
           <div className="text-center sm:text-right">
-            <p className="text-slate-400 text-xs sm:text-sm">
-              &copy; {new Date().getFullYear()} {config?.site_name || "Florentin French"}. {t.footerRights}
-            </p>
-            <p className="text-slate-400 text-[10px] mt-1">
-              Desarrollado por{" "}
-              <a 
-                href="https://introspectiva.digital/" 
-                target="_blank" 
-                rel="noopener noreferrer" 
-                className="hover:text-[#3b82f6] font-bold underline underline-offset-2 transition-colors"
-              >
-                Introspectiva Studio
-              </a>
-            </p>
+            <span>Plataforma SaaS operada por </span>
+            <a 
+              href="https://introspectiva.digital/" 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="text-[#3b82f6] hover:text-[#2563eb] font-bold underline underline-offset-2 transition-colors"
+            >
+              Introspectiva Studio
+            </a>
           </div>
         </div>
       </footer>
