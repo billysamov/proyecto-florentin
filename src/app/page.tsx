@@ -609,13 +609,13 @@ export default function Home() {
           NAVBAR — Glass Pill Responsive
       ═══════════════════════════════════════ */}
       <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl rounded-full bg-[#080c14]/90 shadow-[0_0_20px_rgba(0,0,0,0.5)] backdrop-blur-xl border border-white/10 px-4 sm:px-6 py-3 sm:py-4 flex justify-between items-center">
-        <Link href="/" className="flex items-center gap-2 sm:gap-3">
-          <div className="relative w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-white overflow-hidden flex items-center justify-center border border-white/20">
+        <Link href="/" className="flex items-center">
+          <div className="relative w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-white overflow-hidden flex items-center justify-center border border-white/20 hover:scale-105 transition-transform duration-300 shadow-md">
             <Image 
               src="/logo.png" 
               alt="Logo Florentin" 
               fill
-              sizes="(max-width: 640px) 32px, 36px"
+              sizes="(max-width: 640px) 40px, 48px"
               className="object-contain p-1"
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
@@ -623,11 +623,8 @@ export default function Home() {
                 if (fallback) fallback.style.display = 'flex';
               }}
             />
-            <div className="logo-fallback hidden w-full h-full bg-[#080c14] text-white font-black text-xs items-center justify-center font-serif">F</div>
+            <div className="logo-fallback hidden w-full h-full bg-[#080c14] text-white font-black text-xs items-center justify-center font-serif">FLORENTIN</div>
           </div>
-          <span className="font-serif font-bold text-sm sm:text-base tracking-tight text-white flex items-center">
-            Le français <span className="font-sans text-white/50 font-medium text-xs lowercase mx-1.5">avec</span> <span className="font-script text-[#ef4444] font-normal text-2xl tracking-wide">Florentin</span>
-          </span>
         </Link>
         <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-medium text-white/70">
           {navLinks.map((link) => (

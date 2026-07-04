@@ -952,8 +952,24 @@ export default function AlumnoPortal() {
       }}>
         <div style={{ maxWidth: "420px", width: "100%" }}>
           <div style={{ textAlign: "center", marginBottom: "24px" }}>
-            <Link href="/" style={{ fontSize: "28px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "var(--text-main)", display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
-              Le français <span style={{ fontFamily: "var(--font-sans)", color: "var(--text-muted)", fontSize: "14px", textTransform: "lowercase", margin: "0 8px" }}>avec</span> <span style={{ fontFamily: "var(--font-script)", color: "hsl(var(--secondary-hsl))", fontSize: "36px", fontWeight: "normal", letterSpacing: "1px" }}>Florentin</span>
+            <Link href="/" style={{ display: "inline-flex", alignItems: "center", justifyContent: "center" }}>
+              <div style={{ position: "relative", width: "80px", height: "80px", borderRadius: "50%", backgroundColor: "#ffffff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: "2px solid rgba(255, 255, 255, 0.15)", boxShadow: "var(--shadow-lg)" }}>
+                <Image 
+                  src="/logo.png" 
+                  alt="Logo Florentin" 
+                  fill
+                  sizes="80px"
+                  style={{ objectFit: "contain", padding: "6px" }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+                <div className="logo-fallback" style={{ display: "none", width: "100%", height: "100%", backgroundColor: "var(--bg-card)", color: "var(--text-main)", fontWeight: 900, fontSize: "14px", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-serif)" }}>
+                  FLORENTIN
+                </div>
+              </div>
             </Link>
             <h2 style={{ fontSize: "20px", marginTop: "16px", color: "var(--text-main)", fontWeight: 700, fontFamily: "var(--font-serif)" }}>
               {isRegistering ? t.portalTitleRegister : t.portalTitleLogin}
@@ -1099,8 +1115,24 @@ export default function AlumnoPortal() {
       }}>
         <div className="container" style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-            <Link href="/" style={{ fontSize: "20px", fontWeight: 800, fontFamily: "var(--font-serif)", color: "var(--text-main)", display: "inline-flex", alignItems: "center" }}>
-              Le français <span style={{ fontFamily: "var(--font-sans)", color: "var(--text-muted)", fontSize: "11px", textTransform: "lowercase", margin: "0 6px" }}>avec</span> <span style={{ fontFamily: "var(--font-script)", color: "hsl(var(--secondary-hsl))", fontSize: "26px", fontWeight: "normal", letterSpacing: "0.5px" }}>Florentin</span>
+            <Link href="/" style={{ display: "inline-flex", alignItems: "center" }}>
+              <div style={{ position: "relative", width: "40px", height: "40px", borderRadius: "50%", backgroundColor: "#ffffff", overflow: "hidden", display: "flex", alignItems: "center", justifyContent: "center", border: "1px solid var(--border-color)", boxShadow: "var(--shadow-sm)" }}>
+                <Image 
+                  src="/logo.png" 
+                  alt="Logo Florentin" 
+                  fill
+                  sizes="40px"
+                  style={{ objectFit: "contain", padding: "3px" }}
+                  onError={(e) => {
+                    e.currentTarget.style.display = 'none';
+                    const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
+                    if (fallback) fallback.style.display = 'flex';
+                  }}
+                />
+                <div className="logo-fallback" style={{ display: "none", width: "100%", height: "100%", backgroundColor: "var(--bg-card)", color: "var(--text-main)", fontWeight: 900, fontSize: "10px", alignItems: "center", justifyContent: "center", fontFamily: "var(--font-serif)" }}>
+                  F
+                </div>
+              </div>
             </Link>
             <span style={{
               fontSize: "11px",
