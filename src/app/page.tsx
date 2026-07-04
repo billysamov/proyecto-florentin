@@ -1126,16 +1126,58 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           9. FOOTER
       ═══════════════════════════════════════ */}
-      <footer className="py-10 sm:py-14 border-t border-white/10 bg-[#0a0a0c] px-4 sm:px-6">
+      <footer className="py-10 sm:py-14 border-t border-slate-200 bg-white px-4 sm:px-6">
         <div className="max-w-6xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-6">
-          <div className="font-black text-2xl text-white tracking-tighter">FLORENTIN.</div>
-          <div className="flex gap-6 text-sm text-white/40">
-            <a href="#" className="hover:text-white transition-colors">{t.footerPrivacy}</a>
-            <a href="#" className="hover:text-white transition-colors">{t.footerTerms}</a>
+          <div className="font-black text-2xl text-[#0c1b33] tracking-tighter">FLORENTIN.</div>
+          <div className="flex gap-6 text-sm text-slate-400">
+            <a href="#" className="hover:text-[#0c1b33] transition-colors">{t.footerPrivacy}</a>
+            <a href="#" className="hover:text-[#0c1b33] transition-colors">{t.footerTerms}</a>
           </div>
-          <p className="text-white/30 text-xs sm:text-sm">{t.footerRights}</p>
+          <div className="text-center sm:text-right">
+            <p className="text-slate-400 text-xs sm:text-sm">
+              &copy; {new Date().getFullYear()} {config?.site_name || "Florentin French"}. {t.footerRights}
+            </p>
+            <p className="text-slate-400 text-[10px] mt-1">
+              Desarrollado por{" "}
+              <a 
+                href="https://introspectiva.digital/" 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-[#3b82f6] font-bold underline underline-offset-2 transition-colors"
+              >
+                Introspectiva Studio
+              </a>
+            </p>
+          </div>
         </div>
       </footer>
+
+      {/* Botón flotante de WhatsApp superpuesto */}
+      <a
+        href={whatsappUrl}
+        target="_blank"
+        rel="noopener noreferrer"
+        className="fixed bottom-6 right-6 z-40 bg-[#25D366] text-white pl-4 pr-6 py-2.5 rounded-full flex items-center gap-3 shadow-xl hover:scale-105 transition-all duration-300 group hover:bg-[#20ba59]"
+        style={{ boxShadow: "0 10px 25px -5px rgba(37, 211, 102, 0.4)" }}
+      >
+        <div className="relative">
+          <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
+            <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.333 4.982L2 22l5.202-1.362a9.92 9.92 0 004.808 1.258h.005c5.507 0 9.99-4.478 9.99-9.988C22.007 6.478 17.52 2 12.012 2zm6.657 14.184c-.273.768-1.579 1.393-2.185 1.48-.56.08-1.288.125-2.072-.125a10.05 10.05 0 01-4.444-2.82 10.15 10.15 0 01-2.316-3.878c-.286-.777.01-1.39.29-1.68.21-.22.47-.56.71-.85.24-.29.33-.48.49-.8.16-.33.08-.62-.04-.89-.12-.27-1.07-2.58-1.47-3.53-.39-.95-.79-.82-1.08-.83h-.92c-.31 0-.82.12-1.25.59-.43.47-1.64 1.6-1.64 3.9s1.68 4.52 1.91 4.83c.24.31 3.3 5.04 8.01 7.07 1.12.48 2 .77 2.68.99 1.13.36 2.16.31 2.97.19.9-.13 2.18-.89 2.49-1.75.31-.86.31-1.6.22-1.75-.09-.15-.35-.24-.76-.44z"/>
+          </svg>
+          <span className="absolute -top-1.5 -right-1 flex h-2.5 w-2.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-red-500"></span>
+          </span>
+        </div>
+        <div className="flex flex-col text-left">
+          <span className="text-[9px] font-extrabold uppercase tracking-wider text-white/85 leading-none">
+            {lang === 'es' ? 'DISPONIBLE AHORA' : lang === 'fr' ? 'DISPONIBLE MAINTENANT' : 'AVAILABLE NOW'}
+          </span>
+          <span className="text-sm font-bold leading-tight">
+            {lang === 'es' ? 'Asesoría Gratis' : lang === 'fr' ? 'Conseil Gratuit' : 'Free Consultation'}
+          </span>
+        </div>
+      </a>
 
     </main>
   );
