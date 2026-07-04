@@ -629,8 +629,8 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           NAVBAR — Glass Pill Responsive
       ═══════════════════════════════════════ */}
-      <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl rounded-full bg-white/85 shadow-md backdrop-blur-xl border border-black/5 px-4 sm:px-6 py-2 sm:py-3 flex justify-between items-center text-[#0c1b33]">
-        <Link href="/" className="flex items-center">
+      <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl rounded-full bg-white/85 shadow-md backdrop-blur-xl border border-black/5 px-4 sm:px-6 py-2 sm:py-3 flex justify-between items-center md:grid md:grid-cols-[1fr_auto_1fr] md:gap-4 text-[#0c1b33]">
+        <Link href="/" className="flex items-center md:justify-self-start">
           <div className="relative w-40 h-12 sm:w-56 sm:h-16 hover:scale-105 transition-transform duration-300">
             <Image 
               src="/logo.png" 
@@ -647,12 +647,12 @@ export default function Home() {
             <div className="logo-fallback hidden w-full h-full text-slate-800 font-black text-sm items-center justify-start font-serif">FLORENTIN</div>
           </div>
         </Link>
-        <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-semibold text-slate-600">
+        <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-semibold text-slate-600 md:justify-self-center">
           {navLinks.map((link) => (
             <a key={link.href} href={link.href} className="hover:text-[#0c1b33] transition-colors">{link.label}</a>
           ))}
         </div>
-        <div className="hidden md:flex gap-3 items-center">
+        <div className="hidden md:flex gap-3 items-center md:justify-self-end">
           {translating && (
             <div className="flex items-center gap-1 bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 px-2 py-1 rounded-md text-[10px] font-bold tracking-wider animate-pulse transition-opacity duration-300">
               ⚡ {lang === "es" ? "TRADUCIENDO..." : lang === "fr" ? "TRADUCTION..." : "TRANSLATING..."}
