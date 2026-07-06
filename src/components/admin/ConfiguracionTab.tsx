@@ -4,6 +4,7 @@ interface ConfiguracionTabProps {
   config: any;
   setConfig: (val: any) => void;
   configExito: boolean;
+  configError?: string;
   guardarConfiguracion: (e: React.FormEvent) => Promise<void>;
   subTabCMS: "general" | "profesor" | "metodo" | "destino" | "negocio";
   setSubTabCMS: (tab: "general" | "profesor" | "metodo" | "destino" | "negocio") => void;
@@ -13,6 +14,7 @@ export default function ConfiguracionTab({
   config,
   setConfig,
   configExito,
+  configError,
   guardarConfiguracion,
   subTabCMS,
   setSubTabCMS
@@ -24,6 +26,73 @@ export default function ConfiguracionTab({
     { id: "destino", label: "Para Quién y CTA" },
     { id: "negocio", label: "Límites y Horarios" }
   ];
+
+  const zonasHorarias = [
+    { value: "Europe/Paris", label: "París, Francia (CET/CEST)" },
+    { value: "Europe/Madrid", label: "Madrid, España (CET/CEST)" },
+    { value: "America/Lima", label: "Lima, Perú (PET - UTC-5)" },
+    { value: "America/Bogota", label: "Bogotá, Colombia (COT - UTC-5)" },
+    { value: "America/Mexico_City", label: "Ciudad de México (CST - UTC-6)" },
+    { value: "America/Santiago", label: "Santiago, Chile (CLT - UTC-4)" },
+    { value: "America/Argentina/Buenos_Aires", label: "Buenos Aires, Argentina (ART - UTC-3)" },
+    { value: "America/Caracas", label: "Caracas, Venezuela (VET - UTC-4)" },
+    { value: "America/New_York", label: "Nueva York, EE.UU. (EST/EDT)" },
+    { value: "America/Guayaquil", label: "Quito, Ecuador (ECT - UTC-5)" },
+    { value: "America/La_Paz", label: "La Paz, Bolivia (BOT - UTC-4)" },
+    { value: "America/Montevideo", label: "Montevideo, Uruguay (UYT - UTC-3)" },
+    { value: "America/Asuncion", label: "Asunción, Paraguay (PYT - UTC-4)" },
+  ];
+
+  const diasSemana = [
+    { id: 1, label: "Lunes", abr: "Lun" },
+    { id: 2, label: "Martes", abr: "Mar" },
+    { id: 3, label: "Miércoles", abr: "Mié" },
+    { id: 4, label: "Jueves", abr: "Jue" },
+    { id: 5, label: "Viernes", abr: "Vie" },
+    { id: 6, label: "Sábado", abr: "Sáb" },
+    { id: 0, label: "Domingo", abr: "Dom" }
+  ];
+
+  // Determinar los días laborables actuales parseados de forma segura
+  let diasActivos: number[] = [];
+  try {
+    diasActivos = JSON.parse(config.dias_laborables || "[1,2,3,4,5]");
+  } catch (e) {
+    if (typeof config.dias_laborables === "string") {
+      diasActivos = config.dias_laborables
+        .replace(/[\[\]]/g, "")
+        .split(",")
+        .map(Number)
+        .filter((n: number) => !isNaN(n));
+    } else {
+      diasActivos = [1,2,3,4,5];
+    }
+  }
+
+  const handleToggleDia = (diaId: number) => {
+    let nuevosDias: number[];
+    if (diasActivos.includes(diaId)) {
+      if (diasActivos.length <= 1) {
+        alert("Debes mantener al menos 1 día laboral abierto.");
+        return;
+      }
+      nuevosDias = diasActivos.filter(d => d !== diaId);
+    } else {
+      nuevosDias = [...diasActivos, diaId];
+    }
+    
+    // Ordenar de forma secuencial lógica 1, 2, 3, 4, 5, 6, 0
+    nuevosDias.sort((a, b) => {
+      if (a === 0) return 1;
+      if (b === 0) return -1;
+      return a - b;
+    });
+
+    setConfig({ ...config, dias_laborables: JSON.stringify(nuevosDias) });
+  };
+
+  const tzValue = config.zona_horaria || "Europe/Paris";
+  const esZonaComun = zonasHorarias.some(z => z.value === tzValue);
 
   return (
     <div className="card" style={{ padding: "28px" }}>
@@ -73,6 +142,34 @@ export default function ConfiguracionTab({
         </div>
       )}
 
+      {configError && (
+        <div style={{ padding: "16px", backgroundColor: "rgba(239,68,68,0.08)", color: "#ef4444", borderRadius: "var(--radius-sm)", marginBottom: "20px", fontSize: "14px", border: "1px solid rgba(239,68,68,0.15)" }}>
+          <p style={{ fontWeight: 700, marginBottom: "8px" }}>❌ Error al guardar configuración en Supabase:</p>
+          <code style={{ display: "block", backgroundColor: "rgba(0,0,0,0.05)", padding: "8px", borderRadius: "4px", marginBottom: "12px", fontSize: "12px" }}>{configError}</code>
+          
+          {(configError.includes("almuerzo_inicio") || configError.includes("almuerzo_fin")) && (
+            <div style={{ marginTop: "12px", borderTop: "1px dashed rgba(239,68,68,0.2)", paddingTop: "12px" }}>
+              <p style={{ fontWeight: 600, color: "#b91c1c", marginBottom: "4px" }}>💡 Solución recomendada:</p>
+              <p style={{ fontSize: "12px", marginBottom: "8px" }}>Faltan las columnas de almuerzo en tu base de datos de Supabase. Ejecuta este script en el SQL Editor de tu panel de Supabase:</p>
+              <pre style={{ backgroundColor: "#1e293b", color: "#f8fafc", padding: "12px", borderRadius: "6px", fontSize: "11px", overflowX: "auto" }}>
+{`ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_inicio TEXT DEFAULT '13:00';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAULT '14:00';`}
+              </pre>
+            </div>
+          )}
+
+          {configError.includes("enlace_meet_default") && (
+            <div style={{ marginTop: "12px", borderTop: "1px dashed rgba(239,68,68,0.2)", paddingTop: "12px" }}>
+              <p style={{ fontWeight: 600, color: "#b91c1c", marginBottom: "4px" }}>💡 Solución recomendada:</p>
+              <p style={{ fontSize: "12px", marginBottom: "8px" }}>Falta la columna para el enlace por defecto en tu base de datos de Supabase. Ejecuta este script en el SQL Editor de tu panel de Supabase:</p>
+              <pre style={{ backgroundColor: "#1e293b", color: "#f8fafc", padding: "12px", borderRadius: "6px", fontSize: "11px", overflowX: "auto" }}>
+{`ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS enlace_meet_default TEXT;`}
+              </pre>
+            </div>
+          )}
+        </div>
+      )}
+
       <form onSubmit={guardarConfiguracion}>
         {/* Pestaña: General y SEO */}
         {subTabCMS === "general" && (
@@ -89,13 +186,13 @@ export default function ConfiguracionTab({
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Google Meet Link por Defecto</label>
+                <label className="form-label">Enlace de Clase por Defecto (Meet, Zoom, Teams, etc.)</label>
                 <input
                   className="form-control"
                   type="text"
                   value={config.enlace_meet_default || ""}
                   onChange={(e) => setConfig({ ...config, enlace_meet_default: e.target.value })}
-                  placeholder="https://meet.google.com/..."
+                  placeholder="https://meet.google.com/... o https://zoom.us/j/..."
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -588,53 +685,155 @@ export default function ConfiguracionTab({
 
         {/* Pestaña: Límites y Horarios de Negocio */}
         {subTabCMS === "negocio" && (
-          <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+              
+              {/* Zona Horaria */}
               <div className="form-group">
-                <label className="form-label">Zona Horaria del Servidor</label>
+                <label className="form-label" style={{ fontWeight: 600, color: "#1e293b" }}>
+                  Zona Horaria del Servidor
+                </label>
+                <select
+                  className="form-control"
+                  value={esZonaComun ? tzValue : "otra"}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    if (val === "otra") {
+                      setConfig({ ...config, zona_horaria: "" });
+                    } else {
+                      setConfig({ ...config, zona_horaria: val });
+                    }
+                  }}
+                  style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #cbd5e1", backgroundColor: "#ffffff", cursor: "pointer" }}
+                >
+                  {zonasHorarias.map(z => (
+                    <option key={z.value} value={z.value}>{z.label}</option>
+                  ))}
+                  <option value="otra">Otra zona horaria (Escribir a mano)...</option>
+                </select>
+
+                {(!esZonaComun || tzValue === "") && (
+                  <div style={{ marginTop: "10px" }}>
+                    <input
+                      className="form-control"
+                      type="text"
+                      value={config.zona_horaria}
+                      onChange={(e) => setConfig({ ...config, zona_horaria: e.target.value })}
+                      placeholder="Ej: Europe/London o Asia/Tokyo"
+                      style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #cbd5e1" }}
+                    />
+                    <small style={{ color: "#64748b", fontSize: "11px", marginTop: "4px", display: "block" }}>
+                      Escribe la zona horaria en formato IANA (ej: America/Lima, Europe/Paris).
+                    </small>
+                  </div>
+                )}
+              </div>
+
+              {/* Días Laborables Abiertos */}
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 600, color: "#1e293b", marginBottom: "4px", display: "block" }}>
+                  Días Laborables Abiertos
+                </label>
+                <p style={{ color: "#64748b", fontSize: "11px", margin: "0 0 12px 0" }}>
+                  Selecciona los días en los que impartes clases. Los alumnos solo verán espacios en estos días.
+                </p>
+                <div style={{ display: "flex", gap: "8px", flexWrap: "wrap" }}>
+                  {diasSemana.map(dia => {
+                    const estaActivo = diasActivos.includes(dia.id);
+                    return (
+                      <button
+                        type="button"
+                        key={dia.id}
+                        onClick={() => handleToggleDia(dia.id)}
+                        style={{
+                          padding: "10px 16px",
+                          borderRadius: "30px",
+                          border: estaActivo ? "1.5px solid #0c1b33" : "1.5px solid #cbd5e1",
+                          backgroundColor: estaActivo ? "#0c1b33" : "#ffffff",
+                          color: estaActivo ? "#ffffff" : "#334155",
+                          cursor: "pointer",
+                          fontWeight: "600",
+                          fontSize: "13px",
+                          transition: "all 0.2s ease",
+                          outline: "none"
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!estaActivo) {
+                            e.currentTarget.style.backgroundColor = "#f1f5f9";
+                            e.currentTarget.style.borderColor = "#94a3b8";
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!estaActivo) {
+                            e.currentTarget.style.backgroundColor = "#ffffff";
+                            e.currentTarget.style.borderColor = "#cbd5e1";
+                          }
+                        }}
+                      >
+                        {dia.label}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+
+            {/* Horas de Inicio y Fin */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px" }}>
+              <div className="form-group">
+                <label className="form-label" style={{ fontWeight: 600, color: "#1e293b" }}>
+                  Hora de Inicio Clases
+                </label>
                 <input
                   className="form-control"
-                  type="text"
-                  value={config.zona_horaria}
-                  onChange={(e) => setConfig({ ...config, zona_horaria: e.target.value })}
-                  placeholder="Ej: Europe/Madrid"
-                  style={{ padding: "12px 16px" }}
+                  type="time"
+                  value={config.hora_inicio}
+                  onChange={(e) => setConfig({ ...config, hora_inicio: e.target.value })}
+                  style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #cbd5e1", cursor: "pointer" }}
+                  required
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Días Laborables Abiertos (Separados por comas - 0: Dom, 1: Lun...)</label>
+                <label className="form-label" style={{ fontWeight: 600, color: "#1e293b" }}>
+                  Hora de Fin Clases
+                </label>
                 <input
                   className="form-control"
-                  type="text"
-                  value={config.dias_laborables}
-                  onChange={(e) => setConfig({ ...config, dias_laborables: e.target.value })}
-                  placeholder="Ej: 1,2,3,4,5"
-                  style={{ padding: "12px 16px" }}
+                  type="time"
+                  value={config.hora_fin}
+                  onChange={(e) => setConfig({ ...config, hora_fin: e.target.value })}
+                  style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #cbd5e1", cursor: "pointer" }}
+                  required
                 />
               </div>
             </div>
 
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            {/* Horas de Almuerzo */}
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "24px", marginTop: "8px" }}>
               <div className="form-group">
-                <label className="form-label">Hora de Inicio Clases (Formato 24h - Ej: 08:00)</label>
+                <label className="form-label" style={{ fontWeight: 600, color: "#1e293b" }}>
+                  Inicio de Almuerzo (Bloqueo de clases)
+                </label>
                 <input
                   className="form-control"
-                  type="text"
-                  value={config.hora_inicio}
-                  onChange={(e) => setConfig({ ...config, hora_inicio: e.target.value })}
-                  placeholder="Ej: 08:00"
-                  style={{ padding: "12px 16px" }}
+                  type="time"
+                  value={config.almuerzo_inicio || "13:00"}
+                  onChange={(e) => setConfig({ ...config, almuerzo_inicio: e.target.value })}
+                  style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #cbd5e1", cursor: "pointer" }}
+                  required
                 />
               </div>
               <div className="form-group">
-                <label className="form-label">Hora de Fin Clases (Formato 24h - Ej: 21:00)</label>
+                <label className="form-label" style={{ fontWeight: 600, color: "#1e293b" }}>
+                  Fin de Almuerzo (Bloqueo de clases)
+                </label>
                 <input
                   className="form-control"
-                  type="text"
-                  value={config.hora_fin}
-                  onChange={(e) => setConfig({ ...config, hora_fin: e.target.value })}
-                  placeholder="Ej: 21:00"
-                  style={{ padding: "12px 16px" }}
+                  type="time"
+                  value={config.almuerzo_fin || "14:00"}
+                  onChange={(e) => setConfig({ ...config, almuerzo_fin: e.target.value })}
+                  style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #cbd5e1", cursor: "pointer" }}
+                  required
                 />
               </div>
             </div>

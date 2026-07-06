@@ -98,12 +98,11 @@ export default function ResumenTab({
         marginBottom: "32px"
       }}>
         <div className="card" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
-          <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Ingresos (Euros)</span>
-          <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-main)" }}>{ingresosEur.toFixed(2)}€</span>
-        </div>
-        <div className="card" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
-          <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Ingresos (Dólares)</span>
-          <span style={{ fontSize: "32px", fontWeight: 800, color: "#10b981" }}>${ingresosUsd.toFixed(2)}</span>
+          <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Ganancias Totales (Estimado)</span>
+          <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-main)" }}>{(ingresosEur + (ingresosUsd / 1.10)).toFixed(2)}€</span>
+          <span style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "-4px" }}>
+            Detalle: {ingresosEur.toFixed(2)}€ | ${ingresosUsd.toFixed(2)}
+          </span>
         </div>
         <div className="card" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
           <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>Clases Programadas</span>
@@ -135,7 +134,7 @@ export default function ResumenTab({
                   <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Estudiante</th>
                   <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Fecha</th>
                   <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Hora</th>
-                  <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Enlace de Clase (Meet)</th>
+                  <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Enlace de Clase (Meet, Zoom, Teams, etc.)</th>
                   <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Estado</th>
                   <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)", textAlign: "right" }}>Acciones</th>
                 </tr>

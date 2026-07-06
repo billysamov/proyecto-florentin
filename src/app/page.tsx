@@ -581,6 +581,38 @@ export default function Home() {
 
   return (
     <main ref={containerRef} className="overflow-x-hidden w-full max-w-full bg-[#f8fafc] text-[#0c1b33] selection:bg-[#3b82f6]/20 selection:text-[#0c1b33] font-sans">
+      {/* Datos Estructurados Schema.org JSON-LD para Google */}
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            "@context": "https://schema.org",
+            "@type": "EducationalOrganization",
+            "name": "Le Français avec Florentin",
+            "url": "https://lefrancaisavecflorentin.com",
+            "logo": "https://lefrancaisavecflorentin.com/icon.jpeg",
+            "image": "https://lefrancaisavecflorentin.com/icon.jpeg",
+            "description": "Aprende francés con clases personalizadas online 1 a 1 de la mano de Florentin, profesor nativo de París.",
+            "provider": {
+              "@type": "Person",
+              "name": "Florentin",
+              "jobTitle": "Profesor de Francés Nativo",
+              "address": {
+                "@type": "PostalAddress",
+                "addressLocality": "París",
+                "addressCountry": "FR"
+              }
+            },
+            "offers": {
+              "@type": "AggregateOffer",
+              "priceCurrency": "EUR",
+              "lowPrice": "0",
+              "offerCount": "3"
+            }
+          })
+        }}
+      />
+
       {/* Estilos CSS Inyectados para efectos de Levitación y Auroras Boreales */}
       <style dangerouslySetInnerHTML={{ __html: `
         @keyframes float-slow {
@@ -766,10 +798,10 @@ export default function Home() {
           </p>
           <div className="hero-btn flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-2 sm:px-0">
             <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="bg-[#0c1b33] hover:bg-[#152e54] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105 shadow-lg shadow-[#0c1b33]/15">
-              {t.heroBtn} <ArrowRight size={20} />
+              {lang === 'es' ? 'Agendar clase de francés gratis por WhatsApp' : lang === 'fr' ? 'Réserver un cours de français gratuit via WhatsApp' : 'Book a free French class via WhatsApp'} <ArrowRight size={20} />
             </a>
             <a href="#plans" className="bg-white/70 backdrop-blur-sm hover:bg-white text-slate-700 border border-slate-200 px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105 shadow-sm">
-              {t.heroBtnSecondary}
+              {lang === 'es' ? 'Ver planes y precios de clases de francés' : lang === 'fr' ? 'Voir nos formules et tarifs de cours' : 'View our class plans and pricing'}
             </a>
           </div>
         </div>
@@ -871,7 +903,7 @@ export default function Home() {
                 </ul>
               </div>
               <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#ef4444] text-white hover:bg-[#d9383a] transition-all hover:scale-105 shadow-md">
-                {t.planFreeBtn}
+                {lang === 'es' ? 'Agendar mi clase de prueba gratuita' : lang === 'fr' ? 'Réserver mon cours d\'essai gratuit' : 'Book my free trial class'}
               </a>
             </div>
 
@@ -890,7 +922,7 @@ export default function Home() {
                   <p className="text-slate-600 text-base font-medium mb-8 leading-relaxed">{plan.descripcion}</p>
                 </div>
                 <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#0c1b33] text-white hover:bg-[#152e54] transition-all hover:scale-105 shadow-sm">
-                  {t.planCta}
+                  {lang === 'es' ? `Inscribirme en el ${plan.nombre}` : lang === 'fr' ? `S'inscrire à la formule ${plan.nombre}` : `Enroll in ${plan.nombre}`}
                 </Link>
               </div>
             ))}
@@ -1213,6 +1245,101 @@ export default function Home() {
           </span>
         </div>
       </a>
+
+      {/* Botón flotante de Compartir (SEO & Redes Sociales) */}
+      <div 
+        style={{
+          position: "fixed",
+          bottom: "24px",
+          left: "24px",
+          zIndex: 40,
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "flex-start",
+          gap: "8px"
+        }}
+      >
+        <div 
+          className="share-menu"
+          style={{
+            display: "none",
+            flexDirection: "column",
+            gap: "6px",
+            backgroundColor: "white",
+            padding: "10px",
+            borderRadius: "12px",
+            boxShadow: "0 10px 25px -5px rgba(0, 0, 0, 0.1)",
+            border: "1px solid #e2e8f0",
+            marginBottom: "2px"
+          }}
+        >
+          <a 
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent("Aprende francés con el profesor Florentin. Visita su plataforma oficial en: https://lefrancaisavecflorentin.com")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "12px",
+              fontWeight: 700,
+              color: "#25d366",
+              textDecoration: "none",
+              padding: "4px 8px",
+              borderRadius: "6px"
+            }}
+            className="hover:bg-slate-50 transition-colors"
+          >
+            <span>💬 WhatsApp</span>
+          </a>
+          <a 
+            href={`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://lefrancaisavecflorentin.com")}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+              fontSize: "12px",
+              fontWeight: 700,
+              color: "#1877f2",
+              textDecoration: "none",
+              padding: "4px 8px",
+              borderRadius: "6px"
+            }}
+            className="hover:bg-slate-50 transition-colors"
+          >
+            <span>🔵 Facebook</span>
+          </a>
+        </div>
+        <button
+          type="button"
+          onClick={() => {
+            const el = document.querySelector(".share-menu") as HTMLElement;
+            if (el) el.style.display = el.style.display === "flex" ? "none" : "flex";
+          }}
+          style={{
+            backgroundColor: "#ffffff",
+            color: "#0c1b33",
+            border: "1px solid #cbd5e1",
+            width: "42px",
+            height: "42px",
+            borderRadius: "50%",
+            cursor: "pointer",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            boxShadow: "0 4px 12px rgba(0, 0, 0, 0.08)",
+            fontSize: "16px",
+            fontWeight: "bold",
+            transition: "transform 0.2s ease"
+          }}
+          className="hover:scale-105"
+          title="Compartir"
+        >
+          🔗
+        </button>
+      </div>
 
     </main>
   );

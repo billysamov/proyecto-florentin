@@ -9,6 +9,7 @@ import PlanesTab from "@/components/admin/PlanesTab";
 import RecursosTab from "@/components/admin/RecursosTab";
 import NotificacionesTab from "@/components/admin/NotificacionesTab";
 import ConfiguracionTab from "@/components/admin/ConfiguracionTab";
+import ManualTab from "@/components/admin/ManualTab";
 
 interface Alumno {
   id: string;
@@ -55,7 +56,7 @@ export default function AdminDashboard() {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Pestaña activa del dashboard
-  const [activeTab, setActiveTab] = useState<"resumen" | "recursos" | "alumnos" | "notificaciones" | "planes" | "configuracion">("resumen");
+  const [activeTab, setActiveTab] = useState<"resumen" | "recursos" | "alumnos" | "notificaciones" | "planes" | "configuracion" | "manual">("resumen");
 
   // --- Planes de Estudio ---
   const [planes, setPlanes] = useState<any[]>([]);
@@ -73,6 +74,8 @@ export default function AdminDashboard() {
     dias_laborables: "[1,2,3,4,5]",
     hora_inicio: "09:00",
     hora_fin: "18:00",
+    almuerzo_inicio: "13:00",
+    almuerzo_fin: "14:00",
     zona_horaria: "Europe/Paris",
     meta_titulo: "Florentin | Aprende Francés con un Experto Nativo",
     meta_descripcion: "Plataforma educativa para aprender francés. Reserva tus clases en tiempo real, accede a material didáctico exclusivo y sigue tu progreso personalizado.",
@@ -99,7 +102,7 @@ export default function AdminDashboard() {
     ps_prob_3_title: "Horarios rígidos",
     ps_prob_3_desc: "Las academias te obligan a adaptarte a sus horarios. Tú trabajas, viajas, vives.",
     ps_sol_3_title: "Flexibilidad total",
-    ps_sol_3_desc: "Tú eliges el día y la hora. Clases por Google Meet desde donde estés, en tu zona horaria.",
+    ps_sol_3_desc: "Tú eliges el día y la hora. Clases virtuales desde donde estés, en tu zona horaria.",
     // Sección Para Quién
     for_whom_badge: "¿PARA QUIÉN ES?",
     for_whom_title: "Florentin es para ti si…",
@@ -367,6 +370,8 @@ export default function AdminDashboard() {
           dias_laborables: configDb.dias_laborables || "[1,2,3,4,5]",
           hora_inicio: configDb.hora_inicio || "09:00",
           hora_fin: configDb.hora_fin || "18:00",
+          almuerzo_inicio: configDb.almuerzo_inicio || "13:00",
+          almuerzo_fin: configDb.almuerzo_fin || "14:00",
           zona_horaria: configDb.zona_horaria || "Europe/Paris",
           meta_titulo: configDb.meta_titulo || "Florentin | Aprende Francés con un Experto Nativo",
           meta_descripcion: configDb.meta_descripcion || "Plataforma educativa para aprender francés. Reserva tus clases en tiempo real, accede a material didáctico exclusivo y sigue tu progreso personalizado.",
@@ -392,7 +397,7 @@ export default function AdminDashboard() {
           ps_prob_3_title: configDb.ps_prob_3_title || "Horarios rígidos",
           ps_prob_3_desc: configDb.ps_prob_3_desc || "Las academias te obligan a adaptarte a sus horarios. Tú trabajas, viajas, vives.",
           ps_sol_3_title: configDb.ps_sol_3_title || "Flexibilidad total",
-          ps_sol_3_desc: configDb.ps_sol_3_desc || "Tú eliges el día y la hora. Clases por Google Meet desde donde estés, en tu zona horaria.",
+          ps_sol_3_desc: configDb.ps_sol_3_desc || "Tú eliges el día y la hora. Clases virtuales desde donde estés, en tu zona horaria.",
           for_whom_badge: configDb.for_whom_badge || "¿PARA QUIÉN ES?",
           for_whom_title: configDb.for_whom_title || "Florentin es para ti si…",
           for_whom_1_title: configDb.for_whom_1_title || "Quieres vivir en Francia",
@@ -767,6 +772,8 @@ export default function AdminDashboard() {
         dias_laborables: config.dias_laborables,
         hora_inicio: config.hora_inicio,
         hora_fin: config.hora_fin,
+        almuerzo_inicio: config.almuerzo_inicio,
+        almuerzo_fin: config.almuerzo_fin,
         zona_horaria: config.zona_horaria,
         meta_titulo: config.meta_titulo,
         meta_descripcion: config.meta_descripcion,
@@ -871,6 +878,15 @@ export default function AdminDashboard() {
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+        </svg>
+      )
+    },
+    {
+      id: "manual",
+      label: "Manual del Profesor",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       )
     }
@@ -1261,7 +1277,7 @@ export default function AdminDashboard() {
                 textTransform: "capitalize",
                 margin: 0
               }}>
-                {activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : "Configuración CMS"}
+                {activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : activeTab === "manual" ? "Manual de Operaciones" : "Configuración CMS"}
               </h1>
             </div>
 
@@ -1382,10 +1398,16 @@ export default function AdminDashboard() {
                 config={config}
                 setConfig={setConfig}
                 configExito={configExito}
+                configError={configError}
                 guardarConfiguracion={guardarConfiguracionCMS}
                 subTabCMS={subTabCMS}
                 setSubTabCMS={setSubTabCMS}
               />
+            )}
+
+            {/* TAB 7: MANUAL DE OPERACIONES */}
+            {activeTab === "manual" && (
+              <ManualTab />
             )}
 
           </div>

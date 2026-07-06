@@ -192,7 +192,7 @@ export default function PlanesTab({
                         <div style={{ display: "flex", gap: "8px" }}>
                           <input
                             type="number"
-                            defaultValue={p.total_clases}
+                            defaultValue={p.totalClases}
                             id={`edit-plan-clases-${p.id}`}
                             className="form-control"
                             style={{ padding: "4px 8px", fontSize: "12px", width: "70px" }}
@@ -213,7 +213,7 @@ export default function PlanesTab({
                         </div>
                       ) : (
                         <div>
-                          <div style={{ fontWeight: 600 }}>{p.total_clases} clases</div>
+                          <div style={{ fontWeight: 600 }}>{p.totalClases} clases</div>
                           <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>Nivel: {p.nivel}</div>
                         </div>
                       )}

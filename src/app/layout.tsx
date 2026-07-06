@@ -35,13 +35,42 @@ export async function generateMetadata(): Promise<Metadata> {
     .eq("id", 1)
     .single();
 
+  const title = config?.meta_titulo || "Florentin | Aprende Francés con un Experto Nativo";
+  const description = config?.meta_descripcion || "Plataforma educativa para aprender francés. Reserva tus clases en tiempo real, accede a material didáctico exclusivo y sigue tu progreso personalizado.";
+  const keywords = config?.palabras_clave 
+    ? config.palabras_clave.split(",").map((k: string) => k.trim()) 
+    : ["aprender frances", "clases de frances", "profesor de frances", "frances online", "reserva clases de frances"];
+
   return {
-    title: config?.meta_titulo || "Florentin | Aprende Francés con un Experto Nativo",
-    description: config?.meta_descripcion || "Plataforma educativa para aprender francés. Reserva tus clases en tiempo real, accede a material didáctico exclusivo y sigue tu progreso personalizado.",
-    keywords: config?.palabras_clave 
-      ? config.palabras_clave.split(",").map((k: string) => k.trim()) 
-      : ["aprender frances", "clases de frances", "profesor de frances", "frances online", "reserva clases de frances"],
+    title,
+    description,
+    keywords,
     authors: [{ name: "Profesor Florentin" }],
+    verification: {
+      google: "fb6CvN9aZsE8CUE_BBckn95nGP3lAc1XUvKiXOWcFLQ",
+    },
+    openGraph: {
+      title,
+      description,
+      url: "https://lefrancaisavecflorentin.com",
+      siteName: "Le Français avec Florentin",
+      images: [
+        {
+          url: "https://lefrancaisavecflorentin.com/icon.jpeg",
+          width: 512,
+          height: 512,
+          alt: "Profesor Florentin",
+        },
+      ],
+      locale: "es_ES",
+      type: "website",
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: ["https://lefrancaisavecflorentin.com/icon.jpeg"],
+    },
   };
 }
 
@@ -64,6 +93,7 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400..900&family=Plus+Jakarta+Sans:ital,wght@0,200..800;1,200..800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&family=Great+Vibes&display=swap" rel="stylesheet" />
+        <link rel="apple-touch-icon" href="/icon.jpeg" />
         
         {/* Google Analytics (Dinámico) */}
         {config?.google_analytics_id && (

@@ -137,6 +137,8 @@ CREATE TABLE configuracion_sitio (
   dias_laborables TEXT DEFAULT '[1,2,3,4,5]', -- 1:Lunes a 5:Viernes
   hora_inicio TEXT DEFAULT '09:00',
   hora_fin TEXT DEFAULT '18:00',
+  almuerzo_inicio TEXT DEFAULT '13:00',
+  almuerzo_fin TEXT DEFAULT '14:00',
   zona_horaria TEXT DEFAULT 'Europe/Paris',
   creado_en TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );

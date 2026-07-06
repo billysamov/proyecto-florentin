@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
 
@@ -109,9 +110,9 @@ export default function AlumnoPortal() {
     const details = encodeURIComponent(
       clase.link !== "pendiente" 
         ? `Bonjour! Aquí tienes el enlace para unirte a tu clase de francés: ${clase.link}` 
-        : "El profesor asignará el enlace de Google Meet pronto."
+        : "El profesor asignará el enlace de la clase pronto."
     );
-    const location = encodeURIComponent(clase.link !== "pendiente" ? clase.link : "Google Meet (Pendiente)");
+    const location = encodeURIComponent(clase.link !== "pendiente" ? clase.link : "Clase Online (Pendiente)");
 
     return `https://www.google.com/calendar/render?action=TEMPLATE&text=${title}&dates=${dates}&details=${details}&location=${location}`;
   };
@@ -126,8 +127,8 @@ export default function AlumnoPortal() {
     const title = "Clase de Frances con Florentin";
     const desc = clase.link !== "pendiente" 
       ? `Enlace a la clase: ${clase.link}` 
-      : "El profesor asignara el enlace de Google Meet pronto.";
-    const loc = clase.link !== "pendiente" ? clase.link : "Google Meet";
+      : "El profesor asignara el enlace de la clase pronto.";
+    const loc = clase.link !== "pendiente" ? clase.link : "Clase Online";
 
     const icsContent = [
       "BEGIN:VCALENDAR",
@@ -187,6 +188,8 @@ export default function AlumnoPortal() {
   const [diasLaborables, setDiasLaborables] = useState<number[]>([1,2,3,4,5]);
   const [horaInicio, setHoraInicio] = useState("09:00");
   const [horaFin, setHoraFin] = useState("18:00");
+  const [almuerzoInicio, setAlmuerzoInicio] = useState("13:00");
+  const [almuerzoFin, setAlmuerzoFin] = useState("14:00");
   const [zonaHorariaProfesor, setZonaHorariaProfesor] = useState("Europe/Paris");
   const [userTimeZone, setUserTimeZone] = useState("");
   const [horasOcupadas, setHorasOcupadas] = useState<string[]>([]);
@@ -202,6 +205,19 @@ export default function AlumnoPortal() {
   const [reproError, setReproError] = useState("");
   const [reproExito, setReproExito] = useState(false);
 
+  // Estados para modal de perfil
+  const [showPerfilModal, setShowPerfilModal] = useState(false);
+  const [perfilEditNombre, setPerfilEditNombre] = useState("");
+  const [perfilNewPassword, setPerfilNewPassword] = useState("");
+  const [perfilConfirmPassword, setPerfilConfirmPassword] = useState("");
+  const [perfilExitoMsg, setPerfilExitoMsg] = useState("");
+  const [perfilErrorMsg, setPerfilErrorMsg] = useState("");
+  const [guardandoPerfil, setGuardandoPerfil] = useState(false);
+
+  // Estados para calendario interactivo
+  const [mesVisible, setMesVisible] = useState<Date>(new Date());
+  const [ocupadasMes, setOcupadasMes] = useState<string[]>([]);
+
   const cargarDatos = async (userId: string) => {
     setLoading(true);
     try {
@@ -214,6 +230,7 @@ export default function AlumnoPortal() {
       
       if (perfil) {
         setAlumnoNombre(perfil.nombre || perfil.email);
+        setPerfilEditNombre(perfil.nombre || "");
       }
 
       // 2. Obtener plan/inscripción activa e historial (sin join directo para evitar errores de FK)
@@ -330,7 +347,7 @@ export default function AlumnoPortal() {
       // 5. Obtener configuración de horario
       const { data: configDb } = await supabase
         .from("configuracion_sitio")
-        .select("dias_laborables, hora_inicio, hora_fin, zona_horaria")
+        .select("dias_laborables, hora_inicio, hora_fin, almuerzo_inicio, almuerzo_fin, zona_horaria")
         .eq("id", 1)
         .single();
       
@@ -341,6 +358,8 @@ export default function AlumnoPortal() {
         } catch {}
         setHoraInicio(configDb.hora_inicio || "09:00");
         setHoraFin(configDb.hora_fin || "18:00");
+        setAlmuerzoInicio(configDb.almuerzo_inicio || "13:00");
+        setAlmuerzoFin(configDb.almuerzo_fin || "14:00");
         setZonaHorariaProfesor(configDb.zona_horaria || "Europe/Paris");
       }
 
@@ -561,37 +580,156 @@ export default function AlumnoPortal() {
     fetchDisponibilidad();
   }, [nuevaFecha]);
 
+  // Efecto para obtener la disponibilidad del mes actual
+  useEffect(() => {
+    const fetchDisponibilidadMes = async () => {
+      const year = mesVisible.getFullYear();
+      const month = String(mesVisible.getMonth() + 1).padStart(2, '0');
+      const mesStr = `${year}-${month}`;
+      try {
+        const res = await fetch(`/api/disponibilidad?mes=${mesStr}`);
+        if (res.ok) {
+          const data = await res.json();
+          setOcupadasMes(data.ocupadas || []);
+        }
+      } catch (err) {
+        console.error("Error fetching disponibilidad mes", err);
+      }
+    };
+    fetchDisponibilidadMes();
+  }, [mesVisible]);
+
+  // Función helper para calcular el estado de disponibilidad de un día del mes
+  const getEstadoDia = (diaNum: number) => {
+    const dateObj = new Date(mesVisible.getFullYear(), mesVisible.getMonth(), diaNum);
+    const dayOfWeek = dateObj.getDay();
+    if (!diasLaborables.includes(dayOfWeek)) {
+      return "cerrado";
+    }
+    
+    // Si el día es en el pasado (ayer o antes), no se puede reservar
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    if (dateObj < hoy) {
+      return "pasado";
+    }
+
+    // Límite de reserva: Máximo 60 días de anticipación
+    const limiteFuturo = new Date();
+    limiteFuturo.setDate(limiteFuturo.getDate() + 60);
+    limiteFuturo.setHours(23, 59, 59, 999);
+    if (dateObj > limiteFuturo) {
+      return "cerrado"; // Mostrado como deshabilitado
+    }
+
+    // Calcular slots totales y ocupados
+    const startHourTeacher = parseInt(horaInicio.split(":")[0], 10);
+    const endHourTeacher = parseInt(horaFin.split(":")[0], 10);
+    const startLunch = parseInt(almuerzoInicio.split(":")[0], 10);
+    const endLunch = parseInt(almuerzoFin.split(":")[0], 10);
+
+    let slotsTotales = 0;
+    let slotsOcupados = 0;
+
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(diaNum).padStart(2, '0');
+
+    // Revisar cada slot horario
+    for (let i = startHourTeacher; i < endHourTeacher; i++) {
+      const isLunch = i >= startLunch && i < endLunch;
+      if (!isLunch) {
+        slotsTotales++;
+        // Crear fecha del slot en la zona horaria del alumno
+        const slotDate = new Date(Number(y), dateObj.getMonth(), Number(d), i, 0, 0);
+        const isoString = slotDate.toISOString();
+        const isOccupied = ocupadasMes.some(occ => occ.startsWith(isoString.substring(0, 14)));
+        if (isOccupied) {
+          slotsOcupados++;
+        }
+      }
+    }
+
+    if (slotsTotales === 0) return "cerrado";
+    if (slotsOcupados >= slotsTotales) return "completo";
+    if (slotsOcupados > 0) return "parcial";
+    return "libre";
+  };
+
   // Efecto para calcular las horas disponibles
   useEffect(() => {
     if (!nuevaFecha || !userTimeZone) return;
     
     const startHourTeacher = parseInt(horaInicio.split(":")[0], 10);
     const endHourTeacher = parseInt(horaFin.split(":")[0], 10);
+    const startLunch = parseInt(almuerzoInicio.split(":")[0], 10);
+    const endLunch = parseInt(almuerzoFin.split(":")[0], 10);
     
     const horasCalculadas: { display: string, utc: string }[] = [];
     const [y, m, d] = nuevaFecha.split("-");
     
-    // Generar horas para el día seleccionado en la zona horaria del alumno
-    for (let i = 0; i < 24; i++) {
-      const slotDate = new Date(Number(y), Number(m)-1, Number(d), i, 0, 0);
-      
-      // Convertir a la zona horaria del profesor para comprobar si es su hora laboral
-      const teacherDateStr = slotDate.toLocaleString('en-US', { timeZone: zonaHorariaProfesor });
-      const teacherDate = new Date(teacherDateStr);
-      
-      const teacherDay = teacherDate.getDay();
-      const teacherHour = teacherDate.getHours();
-      
-      if (diasLaborables.includes(teacherDay) && teacherHour >= startHourTeacher && teacherHour < endHourTeacher) {
-        // Formato ISO
-        const isoString = slotDate.toISOString();
-        // Comprobar si ya existe una clase reservada en esa hora
-        const isOccupied = horasOcupadas.some(occ => occ.startsWith(isoString.substring(0, 14)));
+    // Iteramos directamente sobre cada hora laboral del profesor en París
+    for (let h = startHourTeacher; h < endHourTeacher; h++) {
+      const isLunch = h >= startLunch && h < endLunch;
+      if (isLunch) continue;
+
+      try {
+        // 1. Obtener la equivalencia UTC real de esa hora de París
+        const testDateUTC = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d), h, 0, 0));
         
-        if (!isOccupied) {
-           const horaLocalStr = slotDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-           horasCalculadas.push({ display: horaLocalStr, utc: isoString });
+        // 2. Formatearla a la zona horaria del profesor para ver qué hora da en París
+        const formatterTeacher = new Intl.DateTimeFormat('en-US', {
+          timeZone: zonaHorariaProfesor,
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: false
+        });
+        
+        const formattedStr = formatterTeacher.format(testDateUTC);
+        const match = formattedStr.match(/(\d+)\/(\d+)\/(\d+),\s+(\d+):(\d+):(\d+)/);
+
+        if (match) {
+          const [_, monthParis, dayParis, yearParis, hourParis, minParis, secParis] = match;
+          const dateParisAsUTC = Date.UTC(
+            Number(yearParis),
+            Number(monthParis) - 1,
+            Number(dayParis),
+            Number(hourParis),
+            Number(minParis),
+            Number(secParis)
+          );
+
+          // La diferencia pura en ms
+          const tzOffsetMs = dateParisAsUTC - testDateUTC.getTime();
+          // La fecha UTC real de ese slot en París
+          const targetParisAsUTC = Date.UTC(Number(y), Number(m) - 1, Number(d), h, 0, 0);
+          const realSlotDateUTC = new Date(targetParisAsUTC - tzOffsetMs);
+
+          // 3. Comprobar si ese día de la semana en París es laborable
+          const teacherDateInParisStr = realSlotDateUTC.toLocaleString('en-US', { timeZone: zonaHorariaProfesor });
+          const teacherDateInParis = new Date(teacherDateInParisStr);
+          const teacherDayNum = teacherDateInParis.getDay();
+
+          if (diasLaborables.includes(teacherDayNum)) {
+            const isoString = realSlotDateUTC.toISOString();
+            // Comprobar si ya existe una clase reservada en esa hora
+            const isOccupied = horasOcupadas.some(occ => occ.startsWith(isoString.substring(0, 14)));
+            
+            if (!isOccupied) {
+               // Formatear a la zona horaria del alumno
+               const formatterAlumno = new Intl.DateTimeFormat('es-ES', {
+                 timeZone: userTimeZone,
+                 hour: '2-digit',
+                 minute: '2-digit',
+                 hour12: true
+               });
+               const horaLocalStr = formatterAlumno.format(realSlotDateUTC);
+               horasCalculadas.push({ display: horaLocalStr, utc: isoString });
+            }
+          }
         }
+      } catch (err) {
+        console.error("Error calculando zona horaria", err);
       }
     }
     
@@ -602,7 +740,7 @@ export default function AlumnoPortal() {
     } else {
       setTimeout(() => setReservaError(""), 0);
     }
-  }, [nuevaFecha, horasOcupadas, horaInicio, horaFin, diasLaborables, zonaHorariaProfesor, userTimeZone, lang]);
+  }, [nuevaFecha, horasOcupadas, horaInicio, horaFin, almuerzoInicio, almuerzoFin, diasLaborables, zonaHorariaProfesor, userTimeZone, lang]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -676,6 +814,70 @@ export default function AlumnoPortal() {
   const handleSignOut = async () => {
     await supabase.auth.signOut();
     setIsLoggedIn(false);
+  };
+
+  const handleGuardarPerfil = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPerfilErrorMsg("");
+    setPerfilExitoMsg("");
+    setGuardandoPerfil(true);
+
+    try {
+      const { data: { user } } = await supabase.auth.getUser();
+      if (!user) throw new Error(lang === "fr" ? "Aucune session active" : lang === "en" ? "No active session" : "No hay sesión activa");
+
+      // 1. Actualizar Nombre en la tabla usuarios
+      const { error: nameError } = await supabase
+        .from("usuarios")
+        .update({ nombre: perfilEditNombre })
+        .eq("id", user.id);
+
+      if (nameError) throw nameError;
+      setAlumnoNombre(perfilEditNombre || user.email || "");
+
+      // 2. Actualizar Contraseña en Supabase Auth (si ingresó algo)
+      if (perfilNewPassword) {
+        if (perfilNewPassword !== perfilConfirmPassword) {
+          throw new Error(
+            lang === "fr" ? "Les mots de passe ne correspondent pas" :
+            lang === "en" ? "Passwords do not match" :
+            "Las contraseñas no coinciden"
+          );
+        }
+        if (perfilNewPassword.length < 6) {
+          throw new Error(
+            lang === "fr" ? "Le mot de passe doit comporter au menos 6 caractères" :
+            lang === "en" ? "Password must be at least 6 characters" :
+            "La contraseña debe tener al menos 6 caracteres"
+          );
+        }
+
+        const { error: pwdError } = await supabase.auth.updateUser({
+          password: perfilNewPassword
+        });
+
+        if (pwdError) throw pwdError;
+      }
+
+      setPerfilExitoMsg(
+        lang === "fr" ? "Profil mis à jour avec succès !" :
+        lang === "en" ? "Profile updated successfully!" :
+        "¡Perfil actualizado con éxito!"
+      );
+      setPerfilNewPassword("");
+      setPerfilConfirmPassword("");
+
+      // Ocultar modal tras 2 segundos
+      setTimeout(() => {
+        setShowPerfilModal(false);
+        setPerfilExitoMsg("");
+      }, 2000);
+
+    } catch (err: any) {
+      setPerfilErrorMsg(err.message);
+    } finally {
+      setGuardandoPerfil(false);
+    }
   };
 
   const handleReserva = async (e: React.FormEvent) => {
@@ -850,32 +1052,81 @@ export default function AlumnoPortal() {
 
     const startHourTeacher = parseInt(horaInicio.split(":")[0], 10);
     const endHourTeacher = parseInt(horaFin.split(":")[0], 10);
+    const startLunch = parseInt(almuerzoInicio.split(":")[0], 10);
+    const endLunch = parseInt(almuerzoFin.split(":")[0], 10);
+    
     const horasCalculadas: { display: string, utc: string }[] = [];
     const [y, m, d] = reprogramarFecha.split("-");
 
-    for (let i = startHourTeacher; i < endHourTeacher; i++) {
-      const slotDate = new Date(Number(y), Number(m) - 1, Number(d), i, 0, 0);
-      const teacherDateStr = slotDate.toLocaleString('en-US', { timeZone: zonaHorariaProfesor });
-      const teacherDate = new Date(teacherDateStr);
-      const teacherDay = teacherDate.getDay();
-      const teacherHour = teacherDate.getHours();
+    for (let h = startHourTeacher; h < endHourTeacher; h++) {
+      const isLunch = h >= startLunch && h < endLunch;
+      if (isLunch) continue;
 
-      if (diasLaborables.includes(teacherDay) && teacherHour >= startHourTeacher && teacherHour < endHourTeacher) {
-        const isoString = slotDate.toISOString();
-        const isOccupied = reproHorasOcupadas.some(occ => occ.startsWith(isoString.substring(0, 14)));
+      try {
+        // 1. Obtener la equivalencia UTC real de esa hora de París
+        const testDateUTC = new Date(Date.UTC(Number(y), Number(m) - 1, Number(d), h, 0, 0));
+        
+        // 2. Formatearla a la zona horaria del profesor
+        const formatterTeacher = new Intl.DateTimeFormat('en-US', {
+          timeZone: zonaHorariaProfesor,
+          year: 'numeric', month: '2-digit', day: '2-digit',
+          hour: '2-digit', minute: '2-digit', second: '2-digit',
+          hour12: false
+        });
+        
+        const formattedStr = formatterTeacher.format(testDateUTC);
+        const match = formattedStr.match(/(\d+)\/(\d+)\/(\d+),\s+(\d+):(\d+):(\d+)/);
 
-        if (!isOccupied) {
-          const horaLocalStr = slotDate.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-          horasCalculadas.push({
-            display: `${horaLocalStr}`,
-            utc: isoString
-          });
+        if (match) {
+          const [_, monthParis, dayParis, yearParis, hourParis, minParis, secParis] = match;
+          const dateParisAsUTC = Date.UTC(
+            Number(yearParis),
+            Number(monthParis) - 1,
+            Number(dayParis),
+            Number(hourParis),
+            Number(minParis),
+            Number(secParis)
+          );
+
+          // La diferencia pura en ms
+          const tzOffsetMs = dateParisAsUTC - testDateUTC.getTime();
+          // La fecha UTC real de ese slot en París
+          const targetParisAsUTC = Date.UTC(Number(y), Number(m) - 1, Number(d), h, 0, 0);
+          const realSlotDateUTC = new Date(targetParisAsUTC - tzOffsetMs);
+
+          // 3. Comprobar si ese día de la semana en París es laborable
+          const teacherDateInParisStr = realSlotDateUTC.toLocaleString('en-US', { timeZone: zonaHorariaProfesor });
+          const teacherDateInParis = new Date(teacherDateInParisStr);
+          const teacherDayNum = teacherDateInParis.getDay();
+
+          if (diasLaborables.includes(teacherDayNum)) {
+            const isoString = realSlotDateUTC.toISOString();
+            const isOccupied = reproHorasOcupadas.some(occ => occ.startsWith(isoString.substring(0, 14)));
+
+            if (!isOccupied) {
+              // Formatear a la zona horaria del alumno
+              const formatterAlumno = new Intl.DateTimeFormat('es-ES', {
+                timeZone: userTimeZone,
+                hour: '2-digit',
+                minute: '2-digit',
+                hour12: true
+              });
+              const horaLocalStr = formatterAlumno.format(realSlotDateUTC);
+              
+              horasCalculadas.push({
+                display: `${horaLocalStr}`,
+                utc: isoString
+              });
+            }
+          }
         }
+      } catch (err) {
+        console.error("Error calculando reprogramacion", err);
       }
     }
 
     setTimeout(() => setReproHorasDisponibles(horasCalculadas), 0);
-  }, [reprogramarFecha, reproHorasOcupadas, horaInicio, horaFin, diasLaborables, zonaHorariaProfesor]);
+  }, [reprogramarFecha, reproHorasOcupadas, horaInicio, horaFin, almuerzoInicio, almuerzoFin, diasLaborables, zonaHorariaProfesor, userTimeZone]);
 
   const handleReprogramarClase = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -1193,6 +1444,13 @@ export default function AlumnoPortal() {
             </div>
 
             <span style={{ fontSize: "14px", fontWeight: 600 }}>{alumnoNombre}</span>
+            <button 
+              className="btn btn-outline" 
+              style={{ padding: "6px 14px", fontSize: "12px", display: "inline-flex", alignItems: "center", gap: "4px", cursor: "pointer" }} 
+              onClick={() => setShowPerfilModal(true)}
+            >
+              ⚙️ {lang === "fr" ? "Profil" : lang === "en" ? "Profile" : "Mi Perfil"}
+            </button>
             <button className="btn btn-outline" style={{ padding: "6px 14px", fontSize: "12px" }} onClick={handleSignOut}>
               {t.logout}
             </button>
@@ -1590,36 +1848,296 @@ export default function AlumnoPortal() {
                 </p>
 
                 <form onSubmit={handleReserva}>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="reserva-fecha">{t.selectDate}</label>
-                    <input
-                      className="form-control"
-                      type="date"
-                      id="reserva-fecha"
-                      min={new Date().toISOString().split("T")[0]}
-                      value={nuevaFecha}
-                      onChange={(e) => setNuevaFecha(e.target.value)}
-                      required
-                    />
-                  </div>
-
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="reserva-hora">{t.selectTime}</label>
+                  <div className="form-group" style={{ marginBottom: "20px" }}>
+                    <label className="form-label" style={{ fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
+                      🌐 {lang === "fr" ? "Votre zone horaire" : lang === "en" ? "Your Time Zone" : "Tu Zona Horaria"}
+                    </label>
                     <select
                       className="form-control"
-                      id="reserva-hora"
-                      value={nuevaHora}
-                      onChange={(e) => setNuevaHora(e.target.value)}
-                      required
+                      value={userTimeZone}
+                      onChange={(e) => setUserTimeZone(e.target.value)}
+                      style={{ cursor: "pointer", padding: "10px 14px", borderRadius: "8px", border: "1px solid #cbd5e1" }}
                     >
-                      <option value="">{t.selectTimePlaceholder}</option>
-                      {horasDisponibles.map((h) => (
-                        <option key={h.utc} value={h.utc}>{h.display} ({userTimeZone})</option>
-                      ))}
+                      <option value="Europe/Paris">París, Francia (CET/CEST)</option>
+                      <option value="Europe/Madrid">Madrid, España (CET/CEST)</option>
+                      <option value="America/Lima">Lima, Perú (PET - UTC-5)</option>
+                      <option value="America/Bogota">Bogotá, Colombia (COT - UTC-5)</option>
+                      <option value="America/Mexico_City">Ciudad de México (CST - UTC-6)</option>
+                      <option value="America/Santiago">Santiago, Chile (CLT - UTC-4)</option>
+                      <option value="America/Argentina/Buenos_Aires">Buenos Aires, Argentina (ART - UTC-3)</option>
+                      <option value="America/Caracas">Caracas, Venezuela (VET - UTC-4)</option>
+                      <option value="America/New_York">Nueva York, EE.UU. (EST/EDT)</option>
+                      <option value="America/Guayaquil">Quito, Ecuador (ECT - UTC-5)</option>
+                      <option value="America/La_Paz">La Paz, Bolivia (BOT - UTC-4)</option>
+                      <option value="America/Montevideo">Montevideo, Uruguay (UYT - UTC-3)</option>
+                      <option value="America/Asuncion">Asunción, Paraguay (PYT - UTC-4)</option>
                     </select>
+                    <small style={{ color: "var(--text-muted)", fontSize: "11px", marginTop: "4px", display: "block" }}>
+                      {lang === "fr" 
+                        ? "*Les horaires des cours s'adapteront automatiquement à la zone horaire sélectionnée." 
+                        : lang === "en" 
+                        ? "*Class schedules will automatically convert to your selected time zone." 
+                        : "*Las horas de las clases se convertirán automáticamente a la zona horaria seleccionada."}
+                    </small>
                   </div>
 
-                  <button type="submit" className="btn btn-primary" style={{ width: "100%" }}>
+                  {/* Calendario Mensual Interactivo en Pantalla */}
+                  <div className="form-group" style={{ marginBottom: "20px" }}>
+                    <label className="form-label" style={{ fontWeight: 700, marginBottom: "12px", color: "var(--text-main)", display: "block" }}>
+                      📅 {lang === "fr" ? "Sélectionner la date" : lang === "en" ? "Select Date" : "Seleccionar Fecha"}
+                    </label>
+                    
+                    <div style={{
+                      border: "1px solid var(--border-color)",
+                      borderRadius: "12px",
+                      padding: "20px",
+                      backgroundColor: "#ffffff"
+                    }}>
+                      {/* Cabecera del Calendario */}
+                      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px" }}>
+                        <button 
+                          type="button" 
+                          className="btn btn-outline" 
+                          style={{ padding: "8px 12px", minWidth: "auto", cursor: "pointer", fontSize: "14px", fontWeight: "bold" }}
+                          onClick={() => {
+                            const prevMes = new Date(mesVisible.getFullYear(), mesVisible.getMonth() - 1, 1);
+                            const hoy = new Date();
+                            const mesMin = new Date(hoy.getFullYear(), hoy.getMonth(), 1);
+                            if (prevMes >= mesMin) {
+                              setMesVisible(prevMes);
+                            }
+                          }}
+                        >
+                          &lt;
+                        </button>
+                        <span style={{ fontWeight: 700, fontSize: "16px", textTransform: "capitalize", color: "var(--text-main)" }}>
+                          {mesVisible.toLocaleString("es-ES", { month: "long", year: "numeric" })}
+                        </span>
+                        <button 
+                          type="button" 
+                          className="btn btn-outline" 
+                          style={{ padding: "8px 12px", minWidth: "auto", cursor: "pointer", fontSize: "14px", fontWeight: "bold" }}
+                          onClick={() => {
+                            const nextMes = new Date(mesVisible.getFullYear(), mesVisible.getMonth() + 1, 1);
+                            const hoy = new Date();
+                            const limiteFuturo = new Date();
+                            limiteFuturo.setDate(limiteFuturo.getDate() + 60);
+                            const mesMax = new Date(limiteFuturo.getFullYear(), limiteFuturo.getMonth(), 1);
+                            if (nextMes <= mesMax) {
+                              setMesVisible(nextMes);
+                            } else {
+                              alert(
+                                lang === "fr" ? "Vous ne pouvez pas réserver plus de 60 jours à l'avance." : 
+                                lang === "en" ? "You cannot book more than 60 days in advance." : 
+                                "No puedes reservar con más de 60 días de anticipación."
+                              );
+                            }
+                          }}
+                        >
+                          &gt;
+                        </button>
+                      </div>
+
+                      {/* Nombres de los días de la semana */}
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "6px", textAlign: "center", fontWeight: 700, fontSize: "12px", color: "var(--text-muted)", marginBottom: "8px" }}>
+                        <div>L</div>
+                        <div>M</div>
+                        <div>M</div>
+                        <div>J</div>
+                        <div>V</div>
+                        <div>S</div>
+                        <div>D</div>
+                      </div>
+
+                      {/* Cuadrícula de días */}
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "6px" }}>
+                        {/* Relleno días mes anterior */}
+                        {(() => {
+                          const yr = mesVisible.getFullYear();
+                          const mth = mesVisible.getMonth();
+                          const tempStart = new Date(yr, mth, 1).getDay();
+                          const startDayIdx = tempStart === 0 ? 6 : tempStart - 1;
+                          const prevTotal = new Date(yr, mth, 0).getDate();
+
+                          return Array.from({ length: startDayIdx }).map((_, idx) => {
+                            const dNum = prevTotal - startDayIdx + idx + 1;
+                            return (
+                              <div 
+                                key={`prev-${idx}`} 
+                                style={{ 
+                                  display: "flex", 
+                                  alignItems: "center", 
+                                  justifyContent: "center", 
+                                  height: "38px", 
+                                  color: "#cbd5e1", 
+                                  fontSize: "12px" 
+                                }}
+                              >
+                                {dNum}
+                              </div>
+                            );
+                          });
+                        })()}
+
+                        {/* Días mes actual */}
+                        {(() => {
+                          const yr = mesVisible.getFullYear();
+                          const mth = mesVisible.getMonth();
+                          const totalDays = new Date(yr, mth + 1, 0).getDate();
+
+                          return Array.from({ length: totalDays }).map((_, idx) => {
+                            const dayNum = idx + 1;
+                            const estado = getEstadoDia(dayNum);
+                            const diaIsoStr = `${yr}-${String(mth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                            const isSelected = nuevaFecha === diaIsoStr;
+
+                            let bgColor = "#ffffff";
+                            let textColor = "var(--text-main)";
+                            let borderColor = "#cbd5e1";
+                            let dotColor = "transparent";
+                            let isClickable = true;
+
+                            if (estado === "cerrado") {
+                              bgColor = "#f8fafc";
+                              textColor = "#cbd5e1";
+                              borderColor = "#e2e8f0";
+                              isClickable = false;
+                            } else if (estado === "pasado") {
+                              bgColor = "#f8fafc";
+                              textColor = "#cbd5e1";
+                              borderColor = "#e2e8f0";
+                              isClickable = false;
+                            } else if (estado === "completo") {
+                              bgColor = "#fef2f2";
+                              textColor = "#94a3b8";
+                              borderColor = "#fca5a5";
+                              dotColor = "#ef4444";
+                              isClickable = false;
+                            } else if (estado === "parcial") {
+                              bgColor = "#fff7ed";
+                              borderColor = "#fdbb2d";
+                              dotColor = "#f97316";
+                            } else if (estado === "libre") {
+                              bgColor = "#f0fdf4";
+                              borderColor = "#86efac";
+                              dotColor = "#22c55e";
+                            }
+
+                            if (isSelected) {
+                              bgColor = "#0c1b33";
+                              textColor = "#ffffff";
+                              borderColor = "#0c1b33";
+                            }
+
+                            return (
+                              <button
+                                key={`day-${dayNum}`}
+                                type="button"
+                                disabled={!isClickable}
+                                onClick={() => {
+                                  setNuevaFecha(diaIsoStr);
+                                  setNuevaHora("");
+                                }}
+                                style={{
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  alignItems: "center",
+                                  justifyContent: "center",
+                                  height: "38px",
+                                  borderRadius: "8px",
+                                  border: `1px solid ${borderColor}`,
+                                  backgroundColor: bgColor,
+                                  color: textColor,
+                                  cursor: isClickable ? "pointer" : "not-allowed",
+                                  fontSize: "13px",
+                                  fontWeight: 600,
+                                  position: "relative",
+                                  transition: "all 0.2s ease"
+                                }}
+                              >
+                                <span>{dayNum}</span>
+                                {isClickable && !isSelected && (
+                                  <span style={{
+                                    width: "4px",
+                                    height: "4px",
+                                    borderRadius: "50%",
+                                    backgroundColor: dotColor,
+                                    position: "absolute",
+                                    bottom: "4px"
+                                  }} />
+                                )}
+                              </button>
+                            );
+                          });
+                        })()}
+                      </div>
+
+                      {/* Leyenda de Colores */}
+                      <div style={{ display: "flex", gap: "12px", justifyContent: "center", marginTop: "16px", fontSize: "11px", color: "var(--text-muted)", borderTop: "1px solid var(--border-color)", paddingTop: "12px" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#22c55e" }} />
+                          <span>{lang === "fr" ? "Disponible" : lang === "en" ? "Available" : "Libre"}</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#f97316" }} />
+                          <span>{lang === "fr" ? "Partiel" : lang === "en" ? "Partial" : "Parcial"}</span>
+                        </div>
+                        <div style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+                          <span style={{ width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#ef4444" }} />
+                          <span>{lang === "fr" ? "Complet" : lang === "en" ? "Full" : "Completo"}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Selector de Horas en cuadrícula de chips */}
+                  {nuevaFecha && (
+                    <div className="form-group" style={{ marginBottom: "20px" }}>
+                      <label className="form-label" style={{ fontWeight: 700, marginBottom: "12px", color: "var(--text-main)", display: "block" }}>
+                        🕒 {lang === "fr" ? "Sélectionner l'heure" : lang === "en" ? "Select Time Slot" : "Elige el Horario Disponible"}
+                      </label>
+
+                      {horasDisponibles.length === 0 ? (
+                        <div style={{ padding: "16px", backgroundColor: "#fef2f2", border: "1px solid #fca5a5", borderRadius: "8px", color: "#ef4444", fontSize: "13px", textAlign: "center" }}>
+                          ⚠️ {lang === "fr" ? "Aucun horaire disponible pour ce jour." : lang === "en" ? "No available slots for this day." : "El profesor no tiene horas disponibles este día."}
+                        </div>
+                      ) : (
+                        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(100px, 1fr))", gap: "10px" }}>
+                          {horasDisponibles.map((h) => {
+                            const isSelected = nuevaHora === h.utc;
+                            return (
+                              <button
+                                key={h.utc}
+                                type="button"
+                                onClick={() => setNuevaHora(h.utc)}
+                                style={{
+                                  padding: "10px 14px",
+                                  borderRadius: "8px",
+                                  border: isSelected ? "1.5px solid #0c1b33" : "1.5px solid #cbd5e1",
+                                  backgroundColor: isSelected ? "#0c1b33" : "#ffffff",
+                                  color: isSelected ? "#ffffff" : "var(--text-main)",
+                                  cursor: "pointer",
+                                  fontWeight: 700,
+                                  fontSize: "13px",
+                                  textAlign: "center",
+                                  transition: "all 0.2s ease"
+                                }}
+                              >
+                                {h.display}
+                              </button>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary" 
+                    style={{ width: "100%", padding: "14px", fontSize: "14px", fontWeight: 700, cursor: "pointer" }}
+                    disabled={!nuevaFecha || !nuevaHora}
+                  >
                     {t.confirmReservation}
                   </button>
 
@@ -1936,7 +2454,13 @@ export default function AlumnoPortal() {
               </div>
             ) : (
               <form onSubmit={handleReprogramarClase} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-                
+                <p style={{ color: "var(--text-muted)", fontSize: "12px", margin: "0 0 10px 0" }}>
+                  {lang === "fr" 
+                    ? `*Horaires convertis selon votre zone : ${userTimeZone || "Europe/Paris"}`
+                    : lang === "en" 
+                    ? `*Schedules converted to your timezone: ${userTimeZone || "Europe/Paris"}`
+                    : `*Horarios convertidos a tu zona horaria: ${userTimeZone || "Europe/Paris"}`}
+                </p>
                 <div className="form-group">
                   <label className="form-label" style={{ fontWeight: 600 }}>
                     {lang === "fr" ? "1. Choisir une date" : lang === "en" ? "1. Select date" : "1. Selecciona la nueva fecha"}
@@ -2042,6 +2566,165 @@ export default function AlumnoPortal() {
                 : "Si tienes problemas, ponte en contacto con el administrador por WhatsApp."}
             </div>
 
+          </div>
+        </div>
+      )}
+
+      {/* MODAL: MI PERFIL / AJUSTES DE CUENTA */}
+      {showPerfilModal && (
+        <div style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(15, 23, 42, 0.4)",
+          backdropFilter: "blur(4px)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 9999,
+          padding: "20px"
+        }}>
+          <div className="card" style={{
+            width: "100%",
+            maxWidth: "480px",
+            padding: "28px",
+            backgroundColor: "#ffffff",
+            borderRadius: "var(--radius-md)",
+            boxShadow: "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+            position: "relative"
+          }}>
+            {/* Cabecera del modal */}
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+              <h3 style={{ fontSize: "20px", fontWeight: 800, margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
+                ⚙️ {lang === "fr" ? "Mon Profil" : lang === "en" ? "My Profile" : "Mi Perfil"}
+              </h3>
+              <button
+                onClick={() => {
+                  setShowPerfilModal(false);
+                  setPerfilErrorMsg("");
+                  setPerfilExitoMsg("");
+                }}
+                style={{
+                  background: "none",
+                  border: "none",
+                  fontSize: "20px",
+                  cursor: "pointer",
+                  color: "var(--text-muted)",
+                  padding: "4px"
+                }}
+                aria-label="Cerrar modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            {perfilExitoMsg ? (
+              <div style={{
+                textAlign: "center",
+                padding: "24px",
+                color: "#10b981",
+                fontWeight: 700,
+                fontSize: "15px"
+              }}>
+                🎉 {perfilExitoMsg}
+              </div>
+            ) : (
+              <form onSubmit={handleGuardarPerfil} style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+                
+                {/* Nombre */}
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 600 }}>
+                    👤 {lang === "fr" ? "Nom complet" : lang === "en" ? "Full Name" : "Nombre Completo"}
+                  </label>
+                  <input
+                    type="text"
+                    className="form-control"
+                    value={perfilEditNombre}
+                    onChange={(e) => setPerfilEditNombre(e.target.value)}
+                    style={{ padding: "12px 16px" }}
+                    placeholder={lang === "fr" ? "Votre nom" : lang === "en" ? "Your name" : "Tu nombre"}
+                    required
+                  />
+                </div>
+
+                {/* Contraseña Nueva */}
+                <div className="form-group" style={{ borderTop: "1px solid var(--border-color)", paddingTop: "16px", marginTop: "4px" }}>
+                  <label className="form-label" style={{ fontWeight: 600 }}>
+                    🔒 {lang === "fr" ? "Nouveau mot de passe" : lang === "en" ? "New Password" : "Nueva Contraseña"}
+                  </label>
+                  <input
+                    type="password"
+                    className="form-control"
+                    value={perfilNewPassword}
+                    onChange={(e) => setPerfilNewPassword(e.target.value)}
+                    style={{ padding: "12px 16px" }}
+                    placeholder={lang === "fr" ? "Laisser vide pour ne pas changer" : lang === "en" ? "Leave empty to keep current" : "Dejar en blanco para no cambiar"}
+                    minLength={6}
+                  />
+                </div>
+
+                {/* Confirmar Contraseña */}
+                {perfilNewPassword && (
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 600 }}>
+                      🔒 {lang === "fr" ? "Confirmer le mot de passe" : lang === "en" ? "Confirm Password" : "Confirmar Contraseña"}
+                    </label>
+                    <input
+                      type="password"
+                      className="form-control"
+                      value={perfilConfirmPassword}
+                      onChange={(e) => setPerfilConfirmPassword(e.target.value)}
+                      style={{ padding: "12px 16px" }}
+                      placeholder={lang === "fr" ? "Ressaisir le mot de passe" : lang === "en" ? "Re-enter password" : "Confirmar nueva contraseña"}
+                      required
+                    />
+                  </div>
+                )}
+
+                {perfilErrorMsg && (
+                  <div style={{
+                    padding: "10px 14px",
+                    backgroundColor: "rgba(239, 68, 68, 0.08)",
+                    border: "1px solid rgba(239, 68, 68, 0.15)",
+                    borderRadius: "8px",
+                    color: "#ef4444",
+                    fontSize: "12px",
+                    lineHeight: "1.4"
+                  }}>
+                    ⚠️ {perfilErrorMsg}
+                  </div>
+                )}
+
+                <div style={{ display: "flex", gap: "12px", marginTop: "12px" }}>
+                  <button
+                    type="button"
+                    className="btn btn-outline"
+                    onClick={() => {
+                      setShowPerfilModal(false);
+                      setPerfilErrorMsg("");
+                      setPerfilExitoMsg("");
+                    }}
+                    style={{ flex: 1, padding: "12px" }}
+                    disabled={guardandoPerfil}
+                  >
+                    {lang === "fr" ? "Annuler" : lang === "en" ? "Cancel" : "Cancelar"}
+                  </button>
+                  <button
+                    type="submit"
+                    className="btn btn-primary"
+                    style={{ flex: 1, padding: "12px" }}
+                    disabled={guardandoPerfil}
+                  >
+                    {guardandoPerfil 
+                      ? (lang === "fr" ? "Enregistrement..." : lang === "en" ? "Saving..." : "Guardando...") 
+                      : (lang === "fr" ? "Enregistrer" : lang === "en" ? "Save" : "Guardar Perfil")}
+                  </button>
+                </div>
+
+              </form>
+            )}
           </div>
         </div>
       )}
