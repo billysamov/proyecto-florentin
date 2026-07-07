@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { Calendar, Edit } from "lucide-react";
 
 interface ClaseAdmin {
   id: string;
@@ -119,7 +120,7 @@ export default function ResumenTab({
       {/* Listado de Clases */}
       <div className="card" style={{ padding: "28px" }}>
         <h3 style={{ fontSize: "20px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
-          📅 Agenda y Listado de Clases
+          <Calendar size={20} className="text-[#3b82f6] shrink-0" /> Agenda y Listado de Clases
         </h3>
         
         {clases.length === 0 ? (
@@ -191,7 +192,7 @@ export default function ResumenTab({
                             }}
                             title="Editar Enlace"
                           >
-                            ✏️
+                            <Edit size={14} className="text-[#3b82f6]" />
                           </button>
 
                           {c.link && c.link !== "pendiente" && (
@@ -207,7 +208,7 @@ export default function ResumenTab({
                                 }}
                                 title="Agregar a mi Calendario"
                               >
-                                📅
+                                <Calendar size={14} className="text-[#3b82f6]" />
                               </button>
 
                               {activeCalendarMenu === c.id && (
@@ -243,7 +244,7 @@ export default function ResumenTab({
                                     }}
                                     className="calendar-dropdown-item"
                                   >
-                                    🔵 Google Calendar
+                                    Google Calendar
                                   </a>
                                   <button
                                     onClick={() => {
@@ -264,7 +265,7 @@ export default function ResumenTab({
                                     }}
                                     className="calendar-dropdown-item"
                                   >
-                                    📅 Apple / Outlook (.ics)
+                                    Apple / Outlook (.ics)
                                   </button>
                                 </div>
                               )}

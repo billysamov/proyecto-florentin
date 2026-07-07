@@ -1,4 +1,5 @@
 import React from "react";
+import { Mail, MessageSquare, Send } from "lucide-react";
 
 interface Alumno {
   id: string;
@@ -57,7 +58,7 @@ export default function NotificacionesTab({
   return (
     <div className="card" style={{ padding: "28px" }}>
       <h3 style={{ fontSize: "20px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-        ✉️ Centro de Comunicaciones
+        <Mail size={20} className="text-[#3b82f6] shrink-0" /> Centro de Comunicaciones
       </h3>
       <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
         Envía notificaciones, avisos de reprogramación de clases o plantillas de estudio a tus alumnos por Correo Electrónico o prepara un mensaje rápido para WhatsApp.
@@ -80,7 +81,7 @@ export default function NotificacionesTab({
                 checked={canalEnvio === "correo"}
                 onChange={() => setCanalEnvio("correo")}
               />
-              📧 Correo Electrónico (Vía Resend/SMTP)
+              Correo Electrónico (Vía Resend/SMTP)
             </label>
             <label style={{ display: "flex", alignItems: "center", gap: "8px", cursor: "pointer", fontSize: "14px" }}>
               <input
@@ -88,7 +89,7 @@ export default function NotificacionesTab({
                 checked={canalEnvio === "whatsapp"}
                 onChange={() => setCanalEnvio("whatsapp")}
               />
-              💬 Preparar para WhatsApp
+              Preparar para WhatsApp
             </label>
           </div>
         </div>
@@ -160,7 +161,7 @@ export default function NotificacionesTab({
                 color: "#000"
               }}
             >
-              💬 Abrir WhatsApp y Enviar Plantilla
+              <MessageSquare size={16} /> Abrir WhatsApp y Enviar Plantilla
             </a>
             <p style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "6px" }}>
               * Al hacer clic, se abrirá tu aplicación de WhatsApp (Web o Escritorio) con el mensaje redactado listo para enviar al alumno.
@@ -177,7 +178,7 @@ export default function NotificacionesTab({
               alignSelf: "flex-start"
             }}
           >
-            📧 Despachar Correo Electrónico
+            <div style={{ display: "flex", alignItems: "center", gap: "8px" }}><Send size={16} /> Despachar Correo Electrónico</div>
           </button>
         )}
       </form>

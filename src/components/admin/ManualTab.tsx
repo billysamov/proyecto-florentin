@@ -129,7 +129,7 @@ export default function ManualTab() {
               <br />
               1. Ve a la pestaña <em>Resumen y Agenda</em>.
               <br />
-              2. Busca la clase programada del alumno y haz clic en el botón de edición (icono del lápiz ✏️).
+              2. Busca la clase programada del alumno y haz clic en el botón de edición (icono del lápiz).
               <br />
               3. Pega el enlace de la reunión real (Meet, Zoom, etc.) y haz clic en <em>Guardar</em>.
             </li>
@@ -137,7 +137,7 @@ export default function ManualTab() {
               <strong>Regla de Bloqueo del Alumno:</strong> Para garantizar una experiencia sin fallos, el alumno **no podrá ver las opciones de agendamiento en su calendario (Google Calendar o iCal) si el enlace está configurado en estado "pendiente"**. Solo cuando el profesor asigne un enlace real se habilitará la opción para que el alumno agende la sesión a su calendario personal con un clic.
             </li>
             <li>
-              <strong>Calendario del Profesor:</strong> Al lado del enlace de clase guardado en la pestaña de <em>Resumen y Agenda</em>, el profesor tiene un botón de calendario 📅 para añadir la sesión a su propio Google Calendar o descargar el archivo de invitación `.ics` directamente.
+              <strong>Calendario del Profesor:</strong> Al lado del enlace de clase guardado en la pestaña de <em>Resumen y Agenda</em>, el profesor tiene un botón de calendario para añadir la sesión a su propio Google Calendar o descargar el archivo de invitación `.ics` directamente.
             </li>
           </ul>
         </div>

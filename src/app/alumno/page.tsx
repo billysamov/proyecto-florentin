@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
+import { MessageSquare, Calendar, BookOpen, Download, TrendingUp, HelpCircle } from "lucide-react";
 
 interface Clase {
   id: string;
@@ -1603,7 +1604,7 @@ export default function AlumnoPortal() {
               {/* Clases Agendadas */}
               <div className="card" style={{ padding: "28px" }}>
                 <h3 style={{ fontSize: "20px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
-                  {t.scheduledClasses}
+                  <Calendar size={20} className="text-[#3b82f6] shrink-0" /> {t.scheduledClasses}
                 </h3>
                 {clases.length === 0 ? (
                   <p style={{ color: "var(--text-muted)", fontSize: "14px", textAlign: "center", padding: "20px 0" }}>
@@ -1834,7 +1835,7 @@ export default function AlumnoPortal() {
                         gap: "4px"
                       }}
                     >
-                      💬 {lang === "fr" ? "Contacter Support" : lang === "en" ? "Contact Support" : "Contactar al Administrador"}
+                      <MessageSquare size={14} className="shrink-0" /> {lang === "fr" ? "Contacter Support" : lang === "en" ? "Contact Support" : "Contactar al Administrador"}
                     </a>
                   </div>
                 </div>
@@ -2180,7 +2181,7 @@ export default function AlumnoPortal() {
               {/* Material Didáctico */}
               <div className="card" style={{ padding: "28px" }}>
                 <h3 style={{ fontSize: "20px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-                  {t.resourcesTitle}
+                  <BookOpen size={20} className="text-[#3b82f6] shrink-0" /> {t.resourcesTitle}
                 </h3>
                 <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
                   {t.resourcesDesc}
@@ -2245,7 +2246,7 @@ export default function AlumnoPortal() {
               {/* Historial e Informes de Progreso */}
               <div className="card" style={{ padding: "28px" }}>
                 <h3 style={{ fontSize: "20px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-                  {t.progressTitle}
+                  <TrendingUp size={20} className="text-[#3b82f6] shrink-0" /> {t.progressTitle}
                 </h3>
                 <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
                   {t.progressDesc}

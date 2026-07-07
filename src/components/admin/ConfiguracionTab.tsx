@@ -1,4 +1,5 @@
 import React from "react";
+import { Settings } from "lucide-react";
 
 interface ConfiguracionTabProps {
   config: any;
@@ -97,7 +98,7 @@ export default function ConfiguracionTab({
   return (
     <div className="card" style={{ padding: "28px" }}>
       <h3 style={{ fontSize: "20px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-        ⚙️ Configuración del Negocio y Contenidos
+        <Settings size={20} className="text-[#3b82f6] shrink-0" /> Configuración del Negocio y Contenidos
       </h3>
       <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
         Gestiona las llaves de pasarela de pago, el SEO para Google y edita todos los textos de la Landing Page en tiempo real.

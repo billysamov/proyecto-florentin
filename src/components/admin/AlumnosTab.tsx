@@ -1,4 +1,5 @@
 import React from "react";
+import { UserPlus, Users, FileText, Video, Edit, BookOpen } from "lucide-react";
 
 interface Alumno {
   id: string;
@@ -78,7 +79,7 @@ export default function AlumnosTab({
       {/* Crear Alumno Manual */}
       <div className="card" style={{ padding: "28px" }}>
         <h3 style={{ fontSize: "20px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-          👤 Registrar Alumno Manualmente
+          <UserPlus size={20} className="text-[#3b82f6] shrink-0" /> Registrar Alumno Manualmente
         </h3>
         <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
           Inscribe un alumno y asígnale un plan de clases en el sistema (por ejemplo, si te pagó en efectivo o por fuera).
@@ -145,7 +146,7 @@ export default function AlumnosTab({
         {/* Listado de Alumnos */}
         <div className="card" style={{ padding: "28px" }}>
           <h3 style={{ fontSize: "20px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
-            👥 Expedientes de Alumnos Inscritos
+            <Users size={20} className="text-[#3b82f6] shrink-0" /> Expedientes de Alumnos Inscritos
           </h3>
 
           {alumnos.length === 0 ? (
@@ -241,7 +242,7 @@ export default function AlumnosTab({
               {/* Sección 1: Clases y Grabaciones */}
               <div>
                 <h4 style={{ fontSize: "14px", color: "hsl(var(--accent-hsl))", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  📝 Retroalimentación y Clases Grabadas
+                  <FileText size={16} className="text-[#3b82f6] shrink-0" style={{ display: "inline-flex", verticalAlign: "middle", marginRight: "6px" }} /> Retroalimentación y Clases Grabadas
                 </h4>
 
                 {clases.filter(c => c.alumno === selectedAlumno.nombre).length === 0 ? (
@@ -331,7 +332,7 @@ export default function AlumnosTab({
                                       rel="noopener noreferrer"
                                       style={{ color: "hsl(var(--accent-hsl))", fontSize: "11px", textDecoration: "none", fontWeight: 700 }}
                                     >
-                                      🎥 Clase Grabada disponible
+                                      <div style={{ display: "inline-flex", alignItems: "center", gap: "4px" }}><Video size={14} className="text-[#ef4444]" /> Clase Grabada disponible</div>
                                     </a>
                                   </div>
                                 )}
@@ -355,7 +356,7 @@ export default function AlumnosTab({
                                       borderColor: "rgba(201, 154, 60, 0.2)"
                                     }}
                                   >
-                                    ✍️ Editar Notas y Grabación
+                                      <Edit size={12} /> Editar Notas y Grabación
                                   </button>
                                 )}
                               </div>
@@ -370,7 +371,7 @@ export default function AlumnosTab({
               {/* Sección 2: Biblioteca de Recursos Asignados */}
               <div>
                 <h4 style={{ fontSize: "14px", color: "hsl(var(--accent-hsl))", marginBottom: "12px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
-                  📚 Biblioteca y Materiales Compartidos
+                  <BookOpen size={16} className="text-[#3b82f6] shrink-0" style={{ display: "inline-flex", verticalAlign: "middle", marginRight: "6px" }} /> Biblioteca y Materiales Compartidos
                 </h4>
                 <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "12px" }}>
                   Asigna o retira recursos multimedia para que el alumno pueda visualizarlos y descargarlos desde su panel.

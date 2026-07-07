@@ -85,7 +85,7 @@ export async function enviarCorreoConfirmacionPago(email: string, nombreAlumno: 
 
   return sendEmail({
     to: email,
-    subject: `🇫🇷 ¡Bienvenido a Florentin! Confirmación de inscripción en ${planNombre}`,
+    subject: `¡Bienvenido a Florentin! Confirmación de inscripción en ${planNombre}`,
     html: htmlContent
   });
 }
@@ -129,7 +129,7 @@ export async function enviarCorreoRecordatorioClase(email: string, nombreAlumno:
 
   return sendEmail({
     to: email,
-    subject: `⏰ Recordatorio de Clase de Francés - ${fecha} a las ${hora}`,
+    subject: `Recordatorio de Clase de Francés - ${fecha} a las ${hora}`,
     html: htmlContent
   });
 }

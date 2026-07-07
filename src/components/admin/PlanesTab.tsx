@@ -1,4 +1,5 @@
 import React from "react";
+import { Shield, Edit, Trash2 } from "lucide-react";
 
 interface PlanesTabProps {
   planes: any[];
@@ -30,7 +31,7 @@ export default function PlanesTab({
       {/* Crear Plan Nuevo */}
       <div className="card" style={{ padding: "28px" }}>
         <h3 style={{ fontSize: "20px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-          💎 Registrar Nuevo Plan / Suscripción
+          <Shield size={20} className="text-[#3b82f6] shrink-0" /> Registrar Nuevo Plan / Suscripción
         </h3>
         <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
           Define un nuevo paquete de clases o suscripción mensual para comercializar en la Landing Page.
@@ -278,7 +279,7 @@ export default function PlanesTab({
                             style={{ padding: "4px 8px", fontSize: "11px" }}
                             title="Editar Plan"
                           >
-                            ✏️
+                            <Edit size={14} className="text-[#3b82f6]" />
                           </button>
                           <button
                             onClick={() => {
@@ -290,7 +291,7 @@ export default function PlanesTab({
                             style={{ padding: "4px 8px", fontSize: "11px", borderColor: "rgba(239,68,68,0.2)", color: "#ef4444" }}
                             title="Eliminar Plan"
                           >
-                            🗑️
+                            <Trash2 size={14} />
                           </button>
                         </div>
                       )}

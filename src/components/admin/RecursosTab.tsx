@@ -1,4 +1,5 @@
 import React from "react";
+import { BookOpen, FileText, Music, Video, Trash2, Upload } from "lucide-react";
 
 interface Alumno {
   id: string;
@@ -51,7 +52,7 @@ export default function RecursosTab({
       {/* Listado de Recursos en Biblioteca */}
       <div className="card" style={{ padding: "28px" }}>
         <h3 style={{ fontSize: "20px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
-          📚 Biblioteca Multimedia de Recursos
+          <BookOpen size={20} className="text-[#3b82f6] shrink-0" /> Biblioteca Multimedia de Recursos
         </h3>
 
         {recursos.length === 0 ? (
@@ -77,7 +78,7 @@ export default function RecursosTab({
                       <td style={{ padding: "16px", fontSize: "14px" }}>
                         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
                           <span style={{ fontSize: "20px" }}>
-                            {rec.tipo === "pdf" ? "📄" : rec.tipo === "audio" ? "🎵" : "🎥"}
+                            {rec.tipo === "pdf" ? <FileText size={18} className="text-blue-500" /> : rec.tipo === "audio" ? <Music size={18} className="text-purple-500" /> : <Video size={18} className="text-red-500" />}
                           </span>
                           <div>
                             <div style={{ fontWeight: 700 }}>{rec.titulo}</div>
@@ -130,7 +131,7 @@ export default function RecursosTab({
                           className="btn btn-outline"
                           style={{ padding: "6px 12px", fontSize: "11px", borderColor: "rgba(239, 68, 68, 0.2)", color: "#ef4444" }}
                         >
-                          🗑️ Eliminar
+                          <div style={{ display: "flex", alignItems: "center", gap: "4px" }}><Trash2 size={12} /> Eliminar</div>
                         </button>
                       </td>
                     </tr>
@@ -145,7 +146,7 @@ export default function RecursosTab({
       {/* Agregar Recurso Nuevo */}
       <div className="card" style={{ padding: "28px" }}>
         <h3 style={{ fontSize: "20px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-          📤 Subir Nuevo Recurso Didáctico
+          <Upload size={20} className="text-[#3b82f6] shrink-0" /> Subir Nuevo Recurso Didáctico
         </h3>
         <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
           Sube guías PDF, grabaciones de audio o videos explicativos directamente a Supabase Storage y compártelos con tus alumnos.
