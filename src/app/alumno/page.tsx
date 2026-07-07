@@ -1817,7 +1817,7 @@ export default function AlumnoPortal() {
                       </code>
                     </span>
                     <a
-                      href={`https://wa.me/34600000000?text=${encodeURIComponent(
+                      href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33685744973'}?text=${encodeURIComponent(
                         lang === "fr" ? "Bonjour Florentin, j'ai besoin d'aide pour reprogrammer un cours. Mon ID d'achat est : " : 
                         lang === "en" ? "Hello Florentin, I need help rescheduling a class. My Purchase ID is: " :
                         "Hola Florentin, necesito ayuda para reprogramar una clase. Mi ID de Compra es: "

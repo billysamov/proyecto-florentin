@@ -399,7 +399,7 @@ export default function Home() {
     }).format(precioEur);
   };
 
-  const whatsappUrl = `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '34600000000'}?text=${encodeURIComponent(lang === 'es' ? 'Hola Florentin, quiero agendar mi clase de prueba gratuita.' : lang === 'fr' ? 'Bonjour Florentin, je voudrais réserver mon cours d\'essai gratuit.' : 'Hi Florentin, I want to book my free trial class.')}`;
+  const whatsappUrl = `https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33685744973'}?text=${encodeURIComponent(lang === 'es' ? 'Hola Florentin, quiero agendar mi clase de prueba gratuita.' : lang === 'fr' ? 'Bonjour Florentin, je voudrais réserver mon cours d\'essai gratuit.' : 'Hi Florentin, I want to book my free trial class.')}`;
 
   // GSAP Animations (Optimized for Mobile & Desktop)
   useGSAP(() => {
@@ -983,7 +983,7 @@ export default function Home() {
             {/* Photo */}
             <div className="reveal-item relative flex justify-center">
               <div className="relative w-[280px] h-[350px] sm:w-[340px] sm:h-[420px] rounded-3xl overflow-hidden border border-slate-200 shadow-xl animate-float-slow">
-                <Image src="/florentin-profile.png" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 340px" />
+                <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 340px" />
               </div>
               {/* Floating badges */}
               <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20">
