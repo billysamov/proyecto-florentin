@@ -775,6 +775,14 @@ export default function AlumnoPortal() {
       setLoading(false);
       setLoginError("Error al registrarse: " + error.message);
     } else if (data.user) {
+      // Crear perfil público en la tabla 'usuarios' para asegurar robustez en el registro autónomo
+      await supabase.from("usuarios").insert({
+        id: data.user.id,
+        email: email,
+        nombre: nombre,
+        rol: "alumno"
+      });
+
       // Si se registró con un plan específico, redireccionar de inmediato a Stripe Checkout
       if (selectedPlanId) {
         try {

@@ -71,7 +71,31 @@ export async function POST(request: Request) {
         return NextResponse.json({ received: true, message: "Webhook ya procesado con éxito" }, { status: 200 });
       }
 
-      // A. Registrar la inscripción y pago en la base de datos
+      // A1. Asegurar la existencia del perfil del usuario en la tabla 'usuarios' para evitar errores de clave foránea
+      const { data: usuarioPerfil } = await supabaseAdmin
+        .from("usuarios")
+        .select("id")
+        .eq("id", usuarioId)
+        .maybeSingle();
+
+      if (!usuarioPerfil) {
+        console.log(`[Stripe Webhook] Creando perfil faltante para el usuario ${usuarioId} en tabla usuarios.`);
+        const { error: errorCrearPerfil } = await supabaseAdmin
+          .from("usuarios")
+          .insert({
+            id: usuarioId,
+            email: emailAlumno || "",
+            nombre: nombreAlumno,
+            rol: "alumno"
+          });
+
+        if (errorCrearPerfil) {
+          console.error("Error al crear perfil en webhook de Stripe:", errorCrearPerfil);
+          return NextResponse.json({ error: "Error de consistencia de usuario en base de datos" }, { status: 500 });
+        }
+      }
+
+      // A2. Registrar la inscripción y pago en la base de datos
       const { error: errorInscripcion } = await supabaseAdmin
         .from("inscripciones")
         .insert({
