@@ -45,6 +45,22 @@ export async function POST(request: Request) {
 
     const clasesTotales = planDb.total_clases;
 
+    // 2.5. Crear el perfil del usuario en la tabla pública 'usuarios'
+    const { error: perfilError } = await supabaseAdmin
+      .from("usuarios")
+      .insert({
+        id: user.id,
+        email: email,
+        nombre: nombre,
+        rol: "alumno"
+      });
+
+    if (perfilError) {
+      console.error("Error al crear perfil en tabla usuarios:", perfilError);
+      await supabaseAdmin.auth.admin.deleteUser(user.id);
+      return NextResponse.json({ error: `Error al crear perfil en la base de datos: ${perfilError.message}` }, { status: 500 });
+    }
+
     // 3. Crear la inscripción en la base de datos
     const { error: inscripcionError } = await supabaseAdmin
       .from("inscripciones")
