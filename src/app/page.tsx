@@ -190,7 +190,7 @@ export default function Home() {
 
       // Lista COMPLETA de todas las claves traducibles del CMS
       const allTranslatableKeys = [
-        "titulo_hero", "subtitulo_hero",
+        "titulo_hero", "subtitulo_hero", "hero_badge",
         "teacher_name", "teacher_title", "teacher_bio",
         "teacher_skills", "teacher_certs",
         "teacher_students", "teacher_countries", "teacher_experience",
@@ -789,7 +789,7 @@ export default function Home() {
           <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop" alt="Paris" className="hero-bg-img w-full h-full object-cover opacity-10 mix-blend-overlay scale-105" />
         </div>
         <div className="relative z-20 text-center max-w-5xl mx-auto flex flex-col items-center">
-          <span className="hero-text inline-block px-5 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wider bg-[#3b82f6]/8 border border-[#3b82f6]/15 text-[#3b82f6] mb-8">{t.heroBadge}</span>
+          <span className="hero-text inline-block px-5 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wider bg-[#3b82f6]/8 border border-[#3b82f6]/15 text-[#3b82f6] mb-8">{config?.hero_badge || t.heroBadge}</span>
           <h1 className="hero-text text-[clamp(2.5rem,7.5vw,6.5rem)] font-black leading-[0.92] tracking-tighter text-[#0c1b33] mb-6 sm:mb-8 font-serif">
             {renderFormattedTitle(config?.titulo_hero || (t.heroTitle1 + " " + t.heroTitle2))}
           </h1>

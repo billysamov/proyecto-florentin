@@ -131,6 +131,7 @@ CREATE TABLE configuracion_sitio (
   id INT PRIMARY KEY DEFAULT 1,
   titulo_hero TEXT DEFAULT 'Domina el francés con clases personalizadas',
   subtitulo_hero TEXT DEFAULT 'Aprende a tu ritmo con un profesor nativo. Flexibilidad, material exclusivo y enfoque en la conversación fluida.',
+  hero_badge TEXT DEFAULT 'Profesor Nativo de París',
   stripe_public_key TEXT,
   google_analytics_id TEXT,
   meta_pixel_id TEXT,
