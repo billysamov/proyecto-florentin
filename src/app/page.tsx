@@ -512,9 +512,10 @@ export default function Home() {
   }, { scope: containerRef });
 
   const navLinks = [
-    { href: "#method", label: t.navMethod },
-    { href: "#plans", label: t.navPlans },
     { href: "#teacher", label: t.navTeacher },
+    { href: "#method", label: t.navMethod },
+    { href: "#for-whom", label: lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom' },
+    { href: "#plans", label: t.navPlans },
     { href: "#faq", label: t.navFaq },
     { href: "#contact", label: t.navContact },
   ];
@@ -809,7 +810,102 @@ export default function Home() {
 
 
       {/* ═══════════════════════════════════════
-          2. PROBLEMA → SOLUCIÓN
+          2. TU PROFESOR — Florentin
+      ═══════════════════════════════════════ */}
+      <section id="teacher" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-white relative overflow-hidden">
+        {/* Auroras de la Bandera de Francia de Fondo */}
+        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
+          <div className="absolute -top-20 left-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(59,130,246,0.04)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-1" />
+          <div className="absolute -bottom-20 right-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(239,68,68,0.03)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-2" />
+        </div>
+
+        <div className="max-w-6xl mx-auto relative z-10">
+          <div className="text-center mb-14 sm:mb-20">
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.teacherBadge}</span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
+            {/* Photo */}
+            <div className="reveal-item relative flex justify-center">
+              <div className="relative w-[280px] h-[350px] sm:w-[340px] sm:h-[420px] rounded-3xl overflow-hidden border border-slate-200 shadow-xl animate-float-slow">
+                <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 340px" />
+              </div>
+              {/* Floating badges */}
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+                {[
+                  { icon: <Users size={16} />, text: config?.teacher_students || t.teacherStudents },
+                  { icon: <Globe2 size={16} />, text: config?.teacher_countries || t.teacherCountries },
+                  { icon: <Clock size={16} />, text: config?.teacher_experience || t.teacherExperience },
+                ].map((badge, i) => (
+                  <div 
+                    key={i} 
+                    className="bg-white border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
+                  >
+                    <span className="text-[#3b82f6]">{badge.icon}</span>{badge.text}
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Bio */}
+            <div className="reveal-item">
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] mb-2 tracking-tighter font-serif">{config?.teacher_name || t.teacherName}</h2>
+              <p className="text-[#3b82f6] font-bold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
+              <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6 font-medium">
+                {config?.teacher_bio || t.teacherBio}
+                <div className="mt-4 flex justify-end">
+                  <span className="font-script text-[#ef4444] text-5xl sm:text-6xl select-none tracking-wide transform -rotate-3 block pr-6">
+                    Florentin
+                  </span>
+                </div>
+              </div>
+
+              {/* Certificates */}
+              <div className="mb-8">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{lang === 'es' ? 'Certificaciones' : lang === 'fr' ? 'Certifications' : 'Certifications'}</h4>
+                <div className="flex flex-wrap gap-3">
+                  {certs.map((cert: string, i: number) => (
+                    <span 
+                      key={i} 
+                      className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all duration-300 hover:border-[#3b82f6]/30 cursor-default"
+                    >
+                      <Award size={16} className="text-[#3b82f6]" />{cert}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Skills */}
+              <div>
+                <h4 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-4">{lang === 'es' ? 'Habilidades' : lang === 'fr' ? 'Compétences' : 'Skills'}</h4>
+                <div className="flex flex-wrap gap-2">
+                  {skillsList.map((skill: string, i: number) => {
+                    const icons = [
+                      <Headphones size={14} key="1" />,
+                      <Globe2 size={14} key="2" />,
+                      <BookOpen size={14} key="3" />,
+                      <BadgeCheck size={14} key="4" />,
+                      <Building2 size={14} key="5" />
+                    ];
+                    return (
+                      <span 
+                        key={i} 
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded-full text-xs font-bold text-[#3b82f6] hover:bg-[#3b82f6]/20 transition-all duration-300 cursor-default"
+                      >
+                        {icons[i % icons.length]} {skill}
+                      </span>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+
+      {/* ═══════════════════════════════════════
+          3. PROBLEMA → SOLUCIÓN (Método)
       ═══════════════════════════════════════ */}
       <section id="method" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
@@ -869,7 +965,40 @@ export default function Home() {
 
 
       {/* ═══════════════════════════════════════
-          3. PLANES — Prueba Gratis + De Pago
+          4. PARA QUIÉN
+      ═══════════════════════════════════════ */}
+      <section id="for-whom" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
+        <div className="max-w-6xl mx-auto">
+          <div className="text-center mb-14 sm:mb-20">
+            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">
+              {config?.for_whom_badge || t.forWhomBadge}
+            </span>
+            <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-[#0c1b33] font-serif">
+              {config?.for_whom_title || t.forWhomTitle}
+            </h2>
+          </div>
+          <div className="forwhom-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
+            {[
+              { icon: <Plane size={32} />, title: config?.for_whom_1_title || t.forWhom1Title, desc: config?.for_whom_1_desc || t.forWhom1Desc },
+              { icon: <Briefcase size={32} />, title: config?.for_whom_2_title || t.forWhom2Title, desc: config?.for_whom_2_desc || t.forWhom2Desc },
+              { icon: <Heart size={32} />, title: config?.for_whom_3_title || t.forWhom3Title, desc: config?.for_whom_3_desc || t.forWhom3Desc },
+              { icon: <Rocket size={32} />, title: config?.for_whom_4_title || t.forWhom4Title, desc: config?.for_whom_4_desc || t.forWhom4Desc },
+            ].map((item, idx) => (
+              <div key={idx} className="forwhom-card group bg-white border border-slate-200/80 rounded-2xl p-7 sm:p-8 hover:border-[#3b82f6]/30 hover:shadow-md hover:scale-[1.02] transition-all duration-500 cursor-default shadow-sm">
+                <div className="w-14 h-14 rounded-2xl bg-[#3b82f6]/8 group-hover:bg-[#3b82f6]/15 flex items-center justify-center text-[#3b82f6] mb-5 transition-colors">
+                  {item.icon}
+                </div>
+                <h3 className="text-lg font-bold mb-2 text-[#0c1b33] transition-colors">{item.title}</h3>
+                <p className="text-sm text-slate-500 font-medium leading-relaxed transition-colors">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+
+      {/* ═══════════════════════════════════════
+          5. PLANES — Prueba Gratis + De Pago
       ═══════════════════════════════════════ */}
       <section id="plans" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#f1f5f9]">
         <div className="max-w-7xl mx-auto">
@@ -926,134 +1055,6 @@ export default function Home() {
                 </Link>
               </div>
             ))}
-          </div>
-        </div>
-      </section>
-
-
-      {/* ═══════════════════════════════════════
-          4. PARA QUIÉN
-      ═══════════════════════════════════════ */}
-      <section className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
-        <div className="max-w-6xl mx-auto">
-          <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">
-              {config?.for_whom_badge || t.forWhomBadge}
-            </span>
-            <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-[#0c1b33] font-serif">
-              {config?.for_whom_title || t.forWhomTitle}
-            </h2>
-          </div>
-          <div className="forwhom-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
-            {[
-              { icon: <Plane size={32} />, title: config?.for_whom_1_title || t.forWhom1Title, desc: config?.for_whom_1_desc || t.forWhom1Desc },
-              { icon: <Briefcase size={32} />, title: config?.for_whom_2_title || t.forWhom2Title, desc: config?.for_whom_2_desc || t.forWhom2Desc },
-              { icon: <Heart size={32} />, title: config?.for_whom_3_title || t.forWhom3Title, desc: config?.for_whom_3_desc || t.forWhom3Desc },
-              { icon: <Rocket size={32} />, title: config?.for_whom_4_title || t.forWhom4Title, desc: config?.for_whom_4_desc || t.forWhom4Desc },
-            ].map((item, idx) => (
-              <div key={idx} className="forwhom-card group bg-white border border-slate-200/80 rounded-2xl p-7 sm:p-8 hover:border-[#3b82f6]/30 hover:shadow-md hover:scale-[1.02] transition-all duration-500 cursor-default shadow-sm">
-                <div className="w-14 h-14 rounded-2xl bg-[#3b82f6]/8 group-hover:bg-[#3b82f6]/15 flex items-center justify-center text-[#3b82f6] mb-5 transition-colors">
-                  {item.icon}
-                </div>
-                <h3 className="text-lg font-bold mb-2 text-[#0c1b33] transition-colors">{item.title}</h3>
-                <p className="text-sm text-slate-500 font-medium leading-relaxed transition-colors">{item.desc}</p>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-
-      {/* ═══════════════════════════════════════
-          5. TU PROFESOR — Florentin
-      ═══════════════════════════════════════ */}
-      <section id="teacher" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-white relative overflow-hidden">
-        {/* Auroras de la Bandera de Francia de Fondo */}
-        <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-          <div className="absolute -top-20 left-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(59,130,246,0.04)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-1" />
-          <div className="absolute -bottom-20 right-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(239,68,68,0.03)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-2" />
-        </div>
-
-        <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.teacherBadge}</span>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
-            {/* Photo */}
-            <div className="reveal-item relative flex justify-center">
-              <div className="relative w-[280px] h-[350px] sm:w-[340px] sm:h-[420px] rounded-3xl overflow-hidden border border-slate-200 shadow-xl animate-float-slow">
-                <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 340px" />
-              </div>
-              {/* Floating badges */}
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20">
-                {[
-                  { icon: <Users size={16} />, text: config?.teacher_students || t.teacherStudents },
-                  { icon: <Globe2 size={16} />, text: config?.teacher_countries || t.teacherCountries },
-                  { icon: <Clock size={16} />, text: config?.teacher_experience || t.teacherExperience },
-                ].map((badge, i) => (
-                  <div 
-                    key={i} 
-                    className="bg-white border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
-                  >
-                    <span className="text-[#3b82f6]">{badge.icon}</span>{badge.text}
-                  </div>
-                ))}
-              </div>
-            </div>
-
-            {/* Bio */}
-            <div className="reveal-item">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] mb-2 tracking-tighter font-serif">{config?.teacher_name || t.teacherName}</h2>
-              <p className="text-[#3b82f6] font-bold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
-              <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6 font-medium">
-                {config?.teacher_bio || t.teacherBio}
-                <div className="mt-4 flex justify-end">
-                  <span className="font-script text-[#ef4444] text-5xl sm:text-6xl select-none select-none tracking-wide transform -rotate-3 block pr-6">
-                    Florentin
-                  </span>
-                </div>
-              </div>
-
-              {/* Certificates */}
-              <div className="mb-8">
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{lang === 'es' ? 'Certificaciones' : lang === 'fr' ? 'Certifications' : 'Certifications'}</h4>
-                <div className="flex flex-wrap gap-3">
-                  {certs.map((cert: string, i: number) => (
-                    <span 
-                      key={i} 
-                      className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all duration-300 hover:border-[#3b82f6]/30 cursor-default"
-                    >
-                      <Award size={16} className="text-[#3b82f6]" />{cert}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Skills */}
-              <div>
-                <h4 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-4">{lang === 'es' ? 'Habilidades' : lang === 'fr' ? 'Compétences' : 'Skills'}</h4>
-                <div className="flex flex-wrap gap-2">
-                  {skillsList.map((skill: string, i: number) => {
-                    const icons = [
-                      <Headphones size={14} key="1" />,
-                      <Globe2 size={14} key="2" />,
-                      <BookOpen size={14} key="3" />,
-                      <BadgeCheck size={14} key="4" />,
-                      <Building2 size={14} key="5" />
-                    ];
-                    return (
-                      <span 
-                        key={i} 
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded-full text-xs font-bold text-[#3b82f6] hover:bg-[#3b82f6]/20 transition-all duration-300 cursor-default"
-                      >
-                        {icons[i % icons.length]} {skill}
-                      </span>
-                    );
-                  })}
-                </div>
-              </div>
-            </div>
           </div>
         </div>
       </section>
