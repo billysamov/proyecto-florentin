@@ -3,9 +3,6 @@ import Stripe from "stripe";
 
 export async function POST(request: Request) {
   try {
-    const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "", {
-      apiVersion: "2023-10-16" as any,
-    });
     const { planId, usuarioId, email, nombre, divisa } = await request.json();
 
     if (!planId || !usuarioId || !email) {
@@ -14,7 +11,7 @@ export async function POST(request: Request) {
 
     const currency = divisa && divisa.toLowerCase() === "usd" ? "usd" : "eur";
 
-    // 1. Obtener el plan directamente de la base de datos para mantener consistencia
+    // 1. Obtener el plan y la configuración directamente de la base de datos para mantener consistencia
     const { getSupabaseAdmin } = await import("@/lib/supabase");
     const supabaseAdmin = getSupabaseAdmin();
     
@@ -27,6 +24,21 @@ export async function POST(request: Request) {
     if (planErr || !planDb) {
       return NextResponse.json({ error: "ID de plan inválido o no encontrado en la base de datos" }, { status: 400 });
     }
+
+    const { data: configDb } = await supabaseAdmin
+      .from("configuracion_sitio")
+      .select("stripe_secret_key")
+      .eq("id", 1)
+      .single();
+
+    const stripeSecret = configDb?.stripe_secret_key || process.env.STRIPE_SECRET_KEY || "";
+    if (!stripeSecret) {
+      return NextResponse.json({ error: "Credenciales de Stripe no configuradas en el servidor ni en la base de datos" }, { status: 500 });
+    }
+
+    const stripe = new Stripe(stripeSecret, {
+      apiVersion: "2023-10-16" as any,
+    });
 
     const planNombre = planDb.nombre;
     const clasesTotales = planDb.total_clases;
