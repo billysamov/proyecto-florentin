@@ -9,7 +9,7 @@ import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  ArrowRight, Menu, X, ChevronDown,
+  ArrowRight, Menu, X, ChevronDown, ChevronLeft, ChevronRight,
   Plane, Briefcase, Heart, Rocket,
   XCircle, CheckCircle, Clock, MessageCircle, CalendarCheck,
   Award, Globe2, Users, Star, BadgeCheck, BookOpen, Headphones, Building2,
@@ -1007,51 +1007,43 @@ export default function Home() {
             <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.plansBadge}</span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter text-[#0c1b33] mb-4 font-serif">{t.plansTitle}</h2>
             <p className="reveal-item text-slate-500 text-base sm:text-lg max-w-xl mx-auto font-medium">{t.plansSubtitle}</p>
-            <div className="reveal-item flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
+            <div className="reveal-item flex justify-center items-center mt-6">
               {/* Selector de divisa */}
               <div className="flex gap-2">
                 {(["eur", "usd"] as const).map((d) => (
                   <button key={d} onClick={() => changeDivisa(d)} className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${divisa === d ? "bg-[#0c1b33] text-white" : "bg-[#0c1b33]/5 text-[#0c1b33] hover:bg-[#0c1b33]/10"}`}>{d.toUpperCase()}</button>
                 ))}
               </div>
-
-              {/* Botones de navegación (solo se muestran si el total de planes incluyendo gratis supera los 3 y en pantallas medianas/grandes) */}
-              {(planes.length + 1 > 3) && (
-                <div className="hidden md:flex gap-2 ml-4">
-                  <button 
-                    onClick={() => {
-                      if (plansContainerRef.current) {
-                        plansContainerRef.current.scrollBy({ left: -380, behavior: 'smooth' });
-                      }
-                    }}
-                    className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-[#0c1b33] hover:text-white hover:border-[#0c1b33] transition-all duration-300 shadow-sm"
-                    aria-label="Anterior"
-                  >
-                    ←
-                  </button>
-                  <button 
-                    onClick={() => {
-                      if (plansContainerRef.current) {
-                        plansContainerRef.current.scrollBy({ left: 380, behavior: 'smooth' });
-                      }
-                    }}
-                    className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-[#0c1b33] hover:text-white hover:border-[#0c1b33] transition-all duration-300 shadow-sm"
-                    aria-label="Siguiente"
-                  >
-                    →
-                  </button>
-                </div>
-              )}
             </div>
           </div>
 
           {/* Carrusel Deslizable Lateralmente */}
-          <div className="relative w-full">
-            {/* Sombra de desvanecimiento derecha e izquierda para desktop */}
+          <div className="relative w-full px-2 sm:px-4 md:px-0">
+            {/* Botones de navegación flotantes (solo si hay más de 3 planes en total y en pantallas medianas/grandes) */}
             {(planes.length + 1 > 3) && (
               <>
-                <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#f1f5f9] to-transparent pointer-events-none z-10 hidden lg:block" />
-                <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#f1f5f9] to-transparent pointer-events-none z-10 hidden lg:block" />
+                <button 
+                  onClick={() => {
+                    if (plansContainerRef.current) {
+                      plansContainerRef.current.scrollBy({ left: -380, behavior: 'smooth' });
+                    }
+                  }}
+                  className="absolute -left-4 lg:-left-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white text-slate-800 border border-slate-200/80 hover:bg-[#0c1b33] hover:text-white hover:border-[#0c1b33] flex items-center justify-center transition-all duration-300 shadow-xl z-30 hover:scale-105 active:scale-95 hidden md:flex"
+                  aria-label="Anterior"
+                >
+                  <ChevronLeft size={28} />
+                </button>
+                <button 
+                  onClick={() => {
+                    if (plansContainerRef.current) {
+                      plansContainerRef.current.scrollBy({ left: 380, behavior: 'smooth' });
+                    }
+                  }}
+                  className="absolute -right-4 lg:-right-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white text-slate-800 border border-slate-200/80 hover:bg-[#0c1b33] hover:text-white hover:border-[#0c1b33] flex items-center justify-center transition-all duration-300 shadow-xl z-30 hover:scale-105 active:scale-95 hidden md:flex"
+                  aria-label="Siguiente"
+                >
+                  <ChevronRight size={28} />
+                </button>
               </>
             )}
 
