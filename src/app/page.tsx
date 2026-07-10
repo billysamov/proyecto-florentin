@@ -136,6 +136,7 @@ export default function Home() {
   const [originalConfig, setOriginalConfig] = useState<any>(null);
   const [translating, setTranslating] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
+  const plansContainerRef = useRef<HTMLDivElement>(null);
   const langRef = useRef<HTMLDivElement>(null);
   const divisaRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -1006,55 +1007,113 @@ export default function Home() {
             <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.plansBadge}</span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter text-[#0c1b33] mb-4 font-serif">{t.plansTitle}</h2>
             <p className="reveal-item text-slate-500 text-base sm:text-lg max-w-xl mx-auto font-medium">{t.plansSubtitle}</p>
-            <div className="reveal-item flex justify-center gap-3 mt-6">
-              {(["eur", "usd"] as const).map((d) => (
-                <button key={d} onClick={() => changeDivisa(d)} className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${divisa === d ? "bg-[#0c1b33] text-white" : "bg-[#0c1b33]/5 text-[#0c1b33] hover:bg-[#0c1b33]/10"}`}>{d.toUpperCase()}</button>
-              ))}
+            <div className="reveal-item flex flex-col sm:flex-row justify-center items-center gap-4 mt-6">
+              {/* Selector de divisa */}
+              <div className="flex gap-2">
+                {(["eur", "usd"] as const).map((d) => (
+                  <button key={d} onClick={() => changeDivisa(d)} className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${divisa === d ? "bg-[#0c1b33] text-white" : "bg-[#0c1b33]/5 text-[#0c1b33] hover:bg-[#0c1b33]/10"}`}>{d.toUpperCase()}</button>
+                ))}
+              </div>
+
+              {/* Botones de navegación (solo se muestran si el total de planes incluyendo gratis supera los 3 y en pantallas medianas/grandes) */}
+              {(planes.length + 1 > 3) && (
+                <div className="hidden md:flex gap-2 ml-4">
+                  <button 
+                    onClick={() => {
+                      if (plansContainerRef.current) {
+                        plansContainerRef.current.scrollBy({ left: -380, behavior: 'smooth' });
+                      }
+                    }}
+                    className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-[#0c1b33] hover:text-white hover:border-[#0c1b33] transition-all duration-300 shadow-sm"
+                    aria-label="Anterior"
+                  >
+                    ←
+                  </button>
+                  <button 
+                    onClick={() => {
+                      if (plansContainerRef.current) {
+                        plansContainerRef.current.scrollBy({ left: 380, behavior: 'smooth' });
+                      }
+                    }}
+                    className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center text-slate-700 hover:bg-[#0c1b33] hover:text-white hover:border-[#0c1b33] transition-all duration-300 shadow-sm"
+                    aria-label="Siguiente"
+                  >
+                    →
+                  </button>
+                </div>
+              )}
             </div>
           </div>
 
-          <div className={`grid grid-cols-1 gap-6 sm:gap-8 ${planes.length > 0 ? `md:grid-cols-${Math.min(planes.length + 1, 4)}` : 'md:grid-cols-2'}`} style={{ gridTemplateColumns: `repeat(${Math.min((planes.length || 0) + 1, 4)}, minmax(0, 1fr))` }}>
-            {/* Free Trial Card */}
-            <div className="reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-gradient-to-br from-[#0c1b33] to-[#152e54] text-white relative overflow-hidden md:scale-[1.03] shadow-xl shadow-[#0c1b33]/10 border border-white/10">
-              <div className="absolute top-4 right-4 px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white tracking-wider">
-                {lang === 'es' ? '⭐ GRATIS' : lang === 'fr' ? '⭐ GRATUIT' : '⭐ FREE'}
-              </div>
-              <div>
-                <h3 className="text-2xl sm:text-3xl font-black mb-2">{t.planFreeName}</h3>
-                <div className="text-4xl sm:text-5xl font-black tracking-tighter mb-6">{t.planFreePrice}</div>
-                <p className="text-white/70 text-base font-medium mb-6">{t.planFreeDesc}</p>
-                <ul className="space-y-3 mb-8">
-                  {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2 text-sm font-medium text-white/80">
-                      <CheckCircle size={18} className="text-[#3b82f6] shrink-0 mt-0.5" />{detail}
-                    </li>
-                  ))}
-                </ul>
-              </div>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#ef4444] text-white hover:bg-[#d9383a] transition-all hover:scale-105 shadow-md">
-                {lang === 'es' ? 'Agendar mi clase de prueba gratuita' : lang === 'fr' ? 'Réserver mon cours d\'essai gratuit' : 'Book my free trial class'}
-              </a>
-            </div>
+          {/* Carrusel Deslizable Lateralmente */}
+          <div className="relative w-full">
+            {/* Sombra de desvanecimiento derecha e izquierda para desktop */}
+            {(planes.length + 1 > 3) && (
+              <>
+                <div className="absolute left-0 top-0 bottom-0 w-16 bg-gradient-to-r from-[#f1f5f9] to-transparent pointer-events-none z-10 hidden lg:block" />
+                <div className="absolute right-0 top-0 bottom-0 w-16 bg-gradient-to-l from-[#f1f5f9] to-transparent pointer-events-none z-10 hidden lg:block" />
+              </>
+            )}
 
-            {/* Paid Plans from Supabase */}
-            {planes.map((plan, idx) => (
-              <div key={plan.id} className={`reveal-item p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-white text-slate-800 border border-slate-200/80 relative transition-transform hover:scale-[1.02] ${idx === 1 ? 'shadow-lg border-[#3b82f6]/20' : 'shadow-sm'}`}>
-                {idx === 1 && (
-                  <div className="absolute -top-0 right-4 px-3 py-1 bg-[#ef4444] rounded-b-lg text-xs font-bold text-white tracking-wider">{t.recommended}</div>
-                )}
-                <div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-[#0c1b33] mb-2">{plan.nombre}</h3>
-                  <div className="text-4xl sm:text-5xl font-black tracking-tighter text-[#0c1b33] mb-2">
-                    {formatPrecio(plan.precio)}
-                  </div>
-                  <p className="text-slate-400 text-sm font-medium mb-6">/ {plan.total_clases} {t.planClasses}</p>
-                  <p className="text-slate-600 text-base font-medium mb-8 leading-relaxed">{plan.descripcion}</p>
+            <div 
+              ref={plansContainerRef}
+              className={`flex flex-row overflow-x-auto gap-6 sm:gap-8 pb-10 pt-4 px-4 sm:px-6 md:px-2 scroll-smooth snap-x snap-mandatory ${
+                (planes.length + 1) <= 3 ? "md:justify-center" : "md:justify-start"
+              }`}
+              style={{
+                scrollbarWidth: 'none', /* Firefox */
+                msOverflowStyle: 'none', /* IE/Edge */
+              }}
+            >
+              {/* Ocultar barra de scroll para Webkit */}
+              <style dangerouslySetInnerHTML={{ __html: `
+                #plans div::-webkit-scrollbar {
+                  display: none !important;
+                }
+              `}} />
+
+              {/* Free Trial Card */}
+              <div className="reveal-item shrink-0 w-[290px] sm:w-[340px] md:w-[350px] snap-start p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-gradient-to-br from-[#0c1b33] to-[#152e54] text-white relative overflow-hidden shadow-xl shadow-[#0c1b33]/10 border border-white/10">
+                <div className="absolute top-4 right-4 px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white tracking-wider">
+                  {lang === 'es' ? '⭐ GRATIS' : lang === 'fr' ? '⭐ GRATUIT' : '⭐ FREE'}
                 </div>
-                <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#0c1b33] text-white hover:bg-[#152e54] transition-all hover:scale-105 shadow-sm">
-                  {lang === 'es' ? `Inscribirme en el ${plan.nombre}` : lang === 'fr' ? `S'inscrire à la formule ${plan.nombre}` : `Enroll in ${plan.nombre}`}
-                </Link>
+                <div>
+                  <h3 className="text-2xl sm:text-3xl font-black mb-2">{t.planFreeName}</h3>
+                  <div className="text-4xl sm:text-5xl font-black tracking-tighter mb-6">{t.planFreePrice}</div>
+                  <p className="text-white/70 text-base font-medium mb-6">{t.planFreeDesc}</p>
+                  <ul className="space-y-3 mb-8">
+                    {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
+                      <li key={i} className="flex items-start gap-2 text-sm font-medium text-white/80">
+                        <CheckCircle size={18} className="text-[#3b82f6] shrink-0 mt-0.5" />{detail}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#ef4444] text-white hover:bg-[#d9383a] transition-all hover:scale-105 shadow-md">
+                  {lang === 'es' ? 'Agendar mi clase de prueba gratuita' : lang === 'fr' ? 'Réserver mon cours d\'essai gratuit' : 'Book my free trial class'}
+                </a>
               </div>
-            ))}
+
+              {/* Paid Plans from Supabase */}
+              {planes.map((plan, idx) => (
+                <div key={plan.id} className={`reveal-item shrink-0 w-[290px] sm:w-[340px] md:w-[350px] snap-start p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-white text-slate-800 border border-slate-200/80 relative transition-transform hover:scale-[1.02] ${idx === 1 ? 'shadow-lg border-[#3b82f6]/20' : 'shadow-sm'}`}>
+                  {idx === 1 && (
+                    <div className="absolute -top-0 right-4 px-3 py-1 bg-[#ef4444] rounded-b-lg text-xs font-bold text-white tracking-wider">{t.recommended}</div>
+                  )}
+                  <div>
+                    <h3 className="text-2xl sm:text-3xl font-black text-[#0c1b33] mb-2">{plan.nombre}</h3>
+                    <div className="text-4xl sm:text-5xl font-black tracking-tighter text-[#0c1b33] mb-2">
+                      {formatPrecio(plan.precio)}
+                    </div>
+                    <p className="text-slate-400 text-sm font-medium mb-6">/ {plan.total_clases} {t.planClasses}</p>
+                    <p className="text-slate-600 text-base font-medium mb-8 leading-relaxed h-[72px] overflow-hidden line-clamp-3">{plan.descripcion}</p>
+                  </div>
+                  <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#0c1b33] text-white hover:bg-[#152e54] transition-all hover:scale-105 shadow-sm">
+                    {lang === 'es' ? `Inscribirme en el ${plan.nombre}` : lang === 'fr' ? `S'inscrire à la formule ${plan.nombre}` : `Enroll in ${plan.nombre}`}
+                  </Link>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
       </section>
