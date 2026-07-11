@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
-import { enviarCorreoConfirmacionPago } from "@/lib/emails";
+import { enviarCorreoConfirmacionPago, enviarCorreoNotificacionProfesor } from "@/lib/emails";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_placeholder", {
   apiVersion: "2025-01-27.accommodations" as never, // Api version estable
@@ -119,9 +119,36 @@ export async function POST(request: Request) {
         .update({ rol: "alumno" })
         .eq("id", usuarioId);
 
-      // C. Enviar correo de confirmación de pago automatizado
+      // C. Enviar correo de confirmación de pago automatizado al alumno
       if (emailAlumno) {
         await enviarCorreoConfirmacionPago(emailAlumno, nombreAlumno, planNombre, totalClases);
+      }
+
+      // D. Notificar al profesor (Florentin) por correo
+      try {
+        const { data: configSitio } = await supabaseAdmin
+          .from("configuracion_sitio")
+          .select("email_notificaciones")
+          .eq("id", 1)
+          .maybeSingle();
+
+        const emailProfesor = configSitio?.email_notificaciones || process.env.SMTP_USER || "lefrancaisavecflorentin@outlook.com";
+        const monto = session.amount_total ? session.amount_total / 100 : 0;
+        const divisa = session.currency || "eur";
+
+        if (emailProfesor) {
+          await enviarCorreoNotificacionProfesor(
+            emailProfesor,
+            nombreAlumno,
+            emailAlumno || "Estudiante",
+            planNombre,
+            totalClases,
+            monto,
+            divisa
+          );
+        }
+      } catch (errProf) {
+        console.error("Error al notificar al profesor de la venta:", errProf);
       }
 
       console.log(`✅ Inscripción procesada con éxito para el usuario ${usuarioId}. Plan: ${planNombre}`);

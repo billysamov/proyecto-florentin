@@ -136,7 +136,8 @@ export default function AdminDashboard() {
     cta_title: "Agenda tu clase gratuita",
     cta_subtitle: "Escríbeme por WhatsApp y coordinamos tu primera sesión de prueba. Sin compromiso, sin pagos.",
     cta_btn_text: "Agendar por WhatsApp",
-    enlace_meet_default: ""
+    enlace_meet_default: "",
+    email_notificaciones: ""
   });
   const [configExito, setConfigExito] = useState(false);
   const [configError, setConfigError] = useState("");
@@ -430,7 +431,8 @@ export default function AdminDashboard() {
           cta_title: configDb.cta_title || "Agenda tu clase gratuita",
           cta_subtitle: configDb.cta_subtitle || "Escríbeme por WhatsApp y coordinamos tu primera sesión de prueba. Sin compromiso, sin pagos.",
           cta_btn_text: configDb.cta_btn_text || "Agendar por WhatsApp",
-          enlace_meet_default: configDb.enlace_meet_default || ""
+          enlace_meet_default: configDb.enlace_meet_default || "",
+          email_notificaciones: configDb.email_notificaciones || ""
         });
       }
 
@@ -839,7 +841,8 @@ export default function AdminDashboard() {
         cta_title: config.cta_title,
         cta_subtitle: config.cta_subtitle,
         cta_btn_text: config.cta_btn_text,
-        enlace_meet_default: config.enlace_meet_default
+        enlace_meet_default: config.enlace_meet_default,
+        email_notificaciones: config.email_notificaciones
       });
       
     if (error) {

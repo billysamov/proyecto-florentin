@@ -133,3 +133,53 @@ export async function enviarCorreoRecordatorioClase(email: string, nombreAlumno:
     html: htmlContent
   });
 }
+
+/**
+ * Notificación al profesor sobre una nueva venta/inscripción.
+ */
+export async function enviarCorreoNotificacionProfesor(
+  emailProfesor: string,
+  nombreAlumno: string,
+  emailAlumno: string,
+  planNombre: string,
+  clasesAsignadas: number,
+  monto: number,
+  divisa: string
+) {
+  const htmlContent = `
+    <div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 12px;">
+      <h2 style="color: #1a2530; font-family: 'Playfair Display', Georgia, serif;">Bonjour Florentin,</h2>
+      <p style="font-size: 15px; color: #5a5a5a; line-height: 1.6;">
+        Felicidades, has recibido un nuevo pago y una nueva inscripción en tu sitio web.
+      </p>
+      <div style="background-color: #fcfbfa; padding: 16px; border-radius: 8px; margin: 20px 0; border: 1px solid #e2e8f0;">
+        <h4 style="margin: 0 0 10px 0; color: #1a2530;">Detalles de la Transacción:</h4>
+        <ul style="padding-left: 20px; margin: 0; font-size: 14px; color: #5a5a5a;">
+          <li><strong>Alumno:</strong> ${nombreAlumno} (${emailAlumno})</li>
+          <li><strong>Plan Adquirido:</strong> ${planNombre}</li>
+          <li><strong>Clases Asignadas:</strong> ${clasesAsignadas} clases particulares</li>
+          <li><strong>Monto del Pago:</strong> ${monto.toFixed(2)} ${divisa.toUpperCase()}</li>
+        </ul>
+      </div>
+      <p style="font-size: 15px; color: #5a5a5a;">
+        El alumno ya ha recibido su correo de bienvenida y tiene acceso a su panel para agendar sus clases.
+      </p>
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'}/admin" 
+           style="background-color: #1a2530; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: 600; display: inline-block;">
+          Ir al Panel de Administrador
+        </a>
+      </div>
+      <hr style="border: 0; border-top: 1px solid #eaeaea; margin: 30px 0;" />
+      <p style="font-size: 12px; color: #9a9a9a; text-align: center;">
+        Florentin French. Sistema Automático de Notificaciones.
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    to: emailProfesor,
+    subject: `💰 ¡Nueva Venta! ${nombreAlumno} se ha inscrito en ${planNombre}`,
+    html: htmlContent
+  });
+}
