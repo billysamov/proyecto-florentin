@@ -209,6 +209,10 @@ export default function AlumnoPortal() {
   // Estados para modal de perfil
   const [showPerfilModal, setShowPerfilModal] = useState(false);
   const [perfilEditNombre, setPerfilEditNombre] = useState("");
+  const [perfilEditTelefono, setPerfilEditTelefono] = useState("");
+  const [perfilEditNivel, setPerfilEditNivel] = useState("A1");
+  const [perfilEditZonaHoraria, setPerfilEditZonaHoraria] = useState("Europe/Paris");
+  const [perfilEditObjetivos, setPerfilEditObjetivos] = useState("");
   const [perfilNewPassword, setPerfilNewPassword] = useState("");
   const [perfilConfirmPassword, setPerfilConfirmPassword] = useState("");
   const [perfilExitoMsg, setPerfilExitoMsg] = useState("");
@@ -232,6 +236,10 @@ export default function AlumnoPortal() {
       if (perfil) {
         setAlumnoNombre(perfil.nombre || perfil.email);
         setPerfilEditNombre(perfil.nombre || "");
+        setPerfilEditTelefono(perfil.telefono || "");
+        setPerfilEditNivel(perfil.nivel_frances || "A1");
+        setPerfilEditZonaHoraria(perfil.zona_horaria || "Europe/Paris");
+        setPerfilEditObjetivos(perfil.objetivos || "");
       }
 
       // 2. Obtener plan/inscripción activa e historial (sin join directo para evitar errores de FK)
@@ -835,13 +843,31 @@ export default function AlumnoPortal() {
       const { data: { user } } = await supabase.auth.getUser();
       if (!user) throw new Error(lang === "fr" ? "Aucune session active" : lang === "en" ? "No active session" : "No hay sesión activa");
 
-      // 1. Actualizar Nombre en la tabla usuarios
+      // 1. Actualizar Datos en la tabla usuarios
       const { error: nameError } = await supabase
         .from("usuarios")
-        .update({ nombre: perfilEditNombre })
+        .update({ 
+          nombre: perfilEditNombre,
+          telefono: perfilEditTelefono,
+          nivel_frances: perfilEditNivel,
+          zona_horaria: perfilEditZonaHoraria,
+          objetivos: perfilEditObjetivos
+        })
         .eq("id", user.id);
 
-      if (nameError) throw nameError;
+      if (nameError) {
+        // Capturar error si falta alguna columna en la base de datos
+        if (nameError.message.includes("column")) {
+          throw new Error(
+            lang === "fr" 
+              ? "Erreur de base de données : Veuillez demander à l'administrateur d'exécuter la migration SQL." 
+              : lang === "en" 
+              ? "Database error: Please ask the administrator to run the SQL migration." 
+              : "Error de base de datos: Por favor ejecuta el script de migración SQL en Supabase:\n\nALTER TABLE usuarios ADD COLUMN IF NOT EXISTS telefono TEXT, ADD COLUMN IF NOT EXISTS nivel_frances TEXT DEFAULT 'A1', ADD COLUMN IF NOT EXISTS zona_horaria TEXT DEFAULT 'Europe/Paris', ADD COLUMN IF NOT EXISTS objetivos TEXT;"
+          );
+        }
+        throw nameError;
+      }
       setAlumnoNombre(perfilEditNombre || user.email || "");
 
       // 2. Actualizar Contraseña en Supabase Auth (si ingresó algo)
@@ -2657,6 +2683,79 @@ export default function AlumnoPortal() {
                     required
                   />
                 </div>
+
+                {/* WhatsApp / Teléfono */}
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 600 }}>
+                    📞 {lang === "fr" ? "Numéro WhatsApp" : lang === "en" ? "WhatsApp Number" : "Número de WhatsApp"}
+                  </label>
+                  <input
+                    type="tel"
+                    className="form-control"
+                    value={perfilEditTelefono}
+                    onChange={(e) => setPerfilEditTelefono(e.target.value)}
+                    style={{ padding: "12px 16px" }}
+                    placeholder="ej: +51 987 654 321 o +33 6 12 34 56 78"
+                  />
+                </div>
+
+                {/* Nivel de Francés y Zona Horaria en grid */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 600 }}>
+                      🎓 {lang === "fr" ? "Niveau de Français" : lang === "en" ? "French Level" : "Nivel de Francés"}
+                    </label>
+                    <select
+                      className="form-control"
+                      value={perfilEditNivel}
+                      onChange={(e) => setPerfilEditNivel(e.target.value)}
+                      style={{ padding: "12px 16px", appearance: "auto" }}
+                    >
+                      <option value="A1">A1 (Débutant / Principiante)</option>
+                      <option value="A2">A2 (Élémentaire / Básico)</option>
+                      <option value="B1">B1 (Intermédiaire / Intermedio)</option>
+                      <option value="B2">B2 (Intermédiaire Supérieur / Avanzado)</option>
+                      <option value="C1">C1 (Autonome / Experto)</option>
+                      <option value="C2">C2 (Maîtrise / Bilingüe)</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" style={{ fontWeight: 600 }}>
+                      🌐 {lang === "fr" ? "Fuseau Horaire" : lang === "en" ? "Timezone" : "Zona Horaria"}
+                    </label>
+                    <select
+                      className="form-control"
+                      value={perfilEditZonaHoraria}
+                      onChange={(e) => setPerfilEditZonaHoraria(e.target.value)}
+                      style={{ padding: "12px 16px", appearance: "auto" }}
+                    >
+                      <option value="Europe/Paris">Europe/Paris (Francia/España)</option>
+                      <option value="America/Bogota">America/Bogota (Colombia/Perú/Ecuador)</option>
+                      <option value="America/Mexico_City">America/Mexico_City (México)</option>
+                      <option value="America/Santiago">America/Santiago (Chile)</option>
+                      <option value="America/Argentina/Buenos_Aires">America/Buenos_Aires (Argentina)</option>
+                      <option value="America/Caracas">America/Caracas (Venezuela)</option>
+                      <option value="America/New_York">America/New_York (Nueva York/Miami)</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Objetivos de Aprendizaje */}
+                <div className="form-group">
+                  <label className="form-label" style={{ fontWeight: 600 }}>
+                    🎯 {lang === "fr" ? "Objectifs d'apprentissage" : lang === "en" ? "Learning Goals" : "Objetivos y Metas"}
+                  </label>
+                  <textarea
+                    className="form-control"
+                    rows={2}
+                    value={perfilEditObjetivos}
+                    onChange={(e) => setPerfilEditObjetivos(e.target.value)}
+                    style={{ padding: "12px 16px", resize: "none" }}
+                    placeholder={lang === "fr" ? "Quels sont vos objectifs (ex: Déménager en France, examen DELF) ?" : lang === "en" ? "What are your goals (e.g. Move to France, DELF exam)?" : "¿Cuáles son tus metas con el francés?"}
+                  ></textarea>
+                </div>
+
 
                 {/* Contraseña Nueva */}
                 <div className="form-group" style={{ borderTop: "1px solid var(--border-color)", paddingTop: "16px", marginTop: "4px" }}>
