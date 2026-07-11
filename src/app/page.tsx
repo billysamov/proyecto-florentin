@@ -147,18 +147,74 @@ export default function Home() {
     }
   };
 
+  const parseMultilingualText = (text: string, targetLang: string): string => {
+    if (!text) return "";
+    const tLang = targetLang.toLowerCase();
+    
+    // Formato 1: [:es]Texto[:fr]Texte[:en]Text
+    if (text.includes("[:")) {
+      const regex = new RegExp(`\\[:${tLang}\\](.*?)(?=\\[:|$)/?`, "i");
+      const match = text.match(regex);
+      if (match && match[1]) return match[1].trim();
+      
+      // Fallback a español
+      const fallbackMatch = text.match(/\[:es\](.*?)(?=\[:|$)/i);
+      if (fallbackMatch && fallbackMatch[1]) return fallbackMatch[1].trim();
+    }
+    
+    // Formato 2: [ES] Texto [FR] Texte [EN] Text
+    if (text.includes("[ES]") || text.includes("[FR]") || text.includes("[EN]")) {
+      const regex = new RegExp(`\\[${tLang.toUpperCase()}\\](.*?)(?=\\[[A-Z]{2}\\]|$)`, "i");
+      const match = text.match(regex);
+      if (match && match[1]) return match[1].trim();
+      
+      const fallbackMatch = text.match(/\[ES\](.*?)(?=\[[A-Z]{2}\]|$)/i);
+      if (fallbackMatch && fallbackMatch[1]) return fallbackMatch[1].trim();
+    }
+    
+    return text;
+  };
+
   const translateConfigObject = async (sourceConfig: any, targetLang: string) => {
     if (!sourceConfig) return null;
-    if (targetLang === "es") return sourceConfig;
 
-    // Cache key basado en hash simple del contenido para invalidar al cambiar textos
+    // Procesar todos los campos para decodificar shortcodes (incluso si está en español)
+    const translatedConfig = { ...sourceConfig };
+    const allTranslatableKeys = [
+      "titulo_hero", "subtitulo_hero", "hero_badge",
+      "teacher_name", "teacher_title", "teacher_bio",
+      "teacher_skills", "teacher_certs",
+      "teacher_students", "teacher_countries", "teacher_experience",
+      "ps_badge", "ps_title",
+      "ps_prob_1_title", "ps_prob_1_desc", "ps_sol_1_title", "ps_sol_1_desc",
+      "ps_prob_2_title", "ps_prob_2_desc", "ps_sol_2_title", "ps_sol_2_desc",
+      "ps_prob_3_title", "ps_prob_3_desc", "ps_sol_3_title", "ps_sol_3_desc",
+      "for_whom_badge", "for_whom_title",
+      "for_whom_1_title", "for_whom_1_desc",
+      "for_whom_2_title", "for_whom_2_desc",
+      "for_whom_3_title", "for_whom_3_desc",
+      "for_whom_4_title", "for_whom_4_desc",
+      "cta_badge", "cta_title", "cta_subtitle", "cta_btn_text"
+    ];
+
+    // Decodificar etiquetas multilingües primero en cualquier idioma (incluido español)
+    allTranslatableKeys.forEach(key => {
+      const val = sourceConfig[key];
+      if (val && (val.includes("[:") || val.includes("[ES]") || val.includes("[FR]"))) {
+        translatedConfig[key] = parseMultilingualText(val, targetLang);
+      }
+    });
+
+    if (targetLang === "es") return translatedConfig;
+
+    // Si es otro idioma y no tiene shortcodes, usar caché y traducción de MyMemory
     const configHash = Object.values(sourceConfig).join("").length;
     const cacheKey = `florentin_tr_v3_${targetLang}_${configHash}`;
     if (typeof window !== "undefined") {
       const cached = sessionStorage.getItem(cacheKey);
       if (cached) {
         try {
-          return JSON.parse(cached);
+          return { ...translatedConfig, ...JSON.parse(cached) };
         } catch (e) {}
       }
     }
@@ -166,37 +222,20 @@ export default function Home() {
     setTranslating(true);
 
     try {
-      const translatedConfig = { ...sourceConfig };
       const dict = translations[targetLang as Language] as any;
-
-      // 1. Para cada clave traducible, si el valor en sourceConfig es el por defecto (en español),
-      // usar el diccionario estático local translations[targetLang].
-      // De esta forma evitamos el 100% de llamadas HTTP para configuraciones estándar.
-      const allTranslatableKeys = [
-        "titulo_hero", "subtitulo_hero", "hero_badge",
-        "teacher_name", "teacher_title", "teacher_bio",
-        "teacher_skills", "teacher_certs",
-        "teacher_students", "teacher_countries", "teacher_experience",
-        "ps_badge", "ps_title",
-        "ps_prob_1_title", "ps_prob_1_desc", "ps_sol_1_title", "ps_sol_1_desc",
-        "ps_prob_2_title", "ps_prob_2_desc", "ps_sol_2_title", "ps_sol_2_desc",
-        "ps_prob_3_title", "ps_prob_3_desc", "ps_sol_3_title", "ps_sol_3_desc",
-        "for_whom_badge", "for_whom_title",
-        "for_whom_1_title", "for_whom_1_desc",
-        "for_whom_2_title", "for_whom_2_desc",
-        "for_whom_3_title", "for_whom_3_desc",
-        "for_whom_4_title", "for_whom_4_desc",
-        "cta_badge", "cta_title", "cta_subtitle", "cta_btn_text"
-      ];
-
-      // Filtrar cuáles claves realmente han cambiado respecto a defaultSpanishConfig
       const changedKeys: string[] = [];
 
       allTranslatableKeys.forEach(key => {
+        const val = sourceConfig[key];
+        // Si ya fue traducido por shortcode, no enviarlo a la API
+        if (val && (val.includes("[:") || val.includes("[ES]") || val.includes("[FR]"))) {
+          return;
+        }
+
         const defaultVal = (defaultSpanishConfig as any)[key];
         const currentVal = sourceConfig[key];
 
-        // Si el valor actual es igual al default en español, traducirlo localmente al instante
+        // Si el valor actual es igual al default en español, traducirlo localmente
         if (currentVal === defaultVal || !currentVal) {
           const dictKey = defaultKeysMap[key];
           if (dictKey === "heroTitleCombined") {
@@ -205,12 +244,12 @@ export default function Home() {
             translatedConfig[key] = dict[dictKey];
           }
         } else {
-          // Ha cambiado (el profesor lo editó en la base de datos), se debe traducir por API
+          // Ha cambiado y no tiene shortcodes: requiere traducción por API
           changedKeys.push(key);
         }
       });
 
-      // 2. Si hay claves personalizadas que cambiaron, traducirlas en un único lote
+      // Traducir las claves personalizadas que cambiaron y no tienen shortcodes
       if (changedKeys.length > 0) {
         const texts = changedKeys.map(k => String(sourceConfig[k]));
         const joined = texts.join(" [SEP999] ");
@@ -236,7 +275,7 @@ export default function Home() {
       return translatedConfig;
     } catch (e) {
       console.warn("Error general al traducir config:", e);
-      return sourceConfig;
+      return translatedConfig;
     } finally {
       setTranslating(false);
     }

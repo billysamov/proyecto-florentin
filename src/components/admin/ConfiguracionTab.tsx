@@ -23,6 +23,74 @@ export default function ConfiguracionTab({
   lang = "es"
 }: ConfiguracionTabProps) {
   const isFr = lang === "fr";
+  const [editLang, setEditLang] = React.useState<"es" | "fr">("es");
+
+  const getFieldValue = (fieldKey: string): string => {
+    const val = config?.[fieldKey] || "";
+    if (typeof val !== "string") return String(val);
+
+    // Formato 1: [:es]Texto[:fr]Texte[:en]Text
+    if (val.includes("[:")) {
+      const regex = new RegExp(`\\[:${editLang}\\](.*?)(?=\\[:|$)/?`, "i");
+      const match = val.match(regex);
+      if (match && match[1]) return match[1].trim();
+      
+      // Fallback
+      if (editLang === "es") {
+        const esMatch = val.match(/\[:es\](.*?)(?=\[:|$)/i);
+        if (esMatch && esMatch[1]) return esMatch[1].trim();
+      }
+      return "";
+    }
+
+    // Formato 2: [ES] Texto [FR] Texte
+    if (val.includes("[ES]") || val.includes("[FR]")) {
+      const regex = new RegExp(`\\[${editLang.toUpperCase()}\\](.*?)(?=\\[[A-Z]{2}\\]|$)`, "i");
+      const match = val.match(regex);
+      if (match && match[1]) return match[1].trim();
+
+      if (editLang === "es") {
+        const esMatch = val.match(/\[ES\](.*?)(?=\[[A-Z]{2}\]|$)/i);
+        if (esMatch && esMatch[1]) return esMatch[1].trim();
+      }
+      return "";
+    }
+
+    // Si no contiene etiquetas, se asume que todo el valor está en Español (idioma máster)
+    return editLang === "es" ? val : "";
+  };
+
+  const setFieldValue = (fieldKey: string, newValue: string) => {
+    const val = config?.[fieldKey] || "";
+    let esText = "";
+    let frText = "";
+
+    // 1. Extraer los textos actuales
+    if (val.includes("[:")) {
+      const esMatch = val.match(/\[:es\](.*?)(?=\[:|$)/i);
+      const frMatch = val.match(/\[:fr\](.*?)(?=\[:|$)/i);
+      esText = esMatch ? esMatch[1].trim() : "";
+      frText = frMatch ? frMatch[1].trim() : "";
+    } else if (val.includes("[ES]") || val.includes("[FR]")) {
+      const esMatch = val.match(/\[ES\](.*?)(?=\[[A-Z]{2}\]|$)/i);
+      const frMatch = val.match(/\[FR\](.*?)(?=\[[A-Z]{2}\]|$)/i);
+      esText = esMatch ? esMatch[1].trim() : "";
+      frText = frMatch ? frMatch[1].trim() : "";
+    } else {
+      esText = val;
+    }
+
+    // 2. Actualizar el idioma que se edita actualmente
+    if (editLang === "es") {
+      esText = newValue;
+    } else {
+      frText = newValue;
+    }
+
+    // 3. Reensamblar y actualizar estado
+    const combined = `[:es]${esText}[:fr]${frText}`;
+    setConfig({ ...config, [fieldKey]: combined });
+  };
 
   const subTabs = [
     { id: "general", label: isFr ? "Général & SEO" : "General y SEO" },
@@ -246,6 +314,65 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
         </div>
       )}
 
+      {/* Pestañas de idioma de edición del CMS */}
+      {subTabCMS !== "negocio" && (
+        <div style={{
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          marginBottom: "24px",
+          padding: "12px 16px",
+          backgroundColor: "rgba(0,0,0,0.02)",
+          borderRadius: "var(--radius-md)",
+          border: "1px solid var(--border-color)"
+        }}>
+          <span style={{ fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>
+            {isFr ? "Langue d'édition du contenu :" : "Idioma de edición del contenido:"}
+          </span>
+          <div style={{ display: "flex", gap: "6px" }}>
+            <button
+              type="button"
+              onClick={() => setEditLang("es")}
+              className="btn"
+              style={{
+                padding: "6px 12px",
+                fontSize: "12px",
+                fontWeight: 700,
+                backgroundColor: editLang === "es" ? "#ef4444" : "white",
+                color: editLang === "es" ? "white" : "#0c1b33",
+                border: editLang === "es" ? "1px solid #ef4444" : "1px solid var(--border-color)",
+                borderRadius: "var(--radius-sm)",
+                cursor: "pointer"
+              }}
+            >
+              🇪🇸 Español (Máster)
+            </button>
+            <button
+              type="button"
+              onClick={() => setEditLang("fr")}
+              className="btn"
+              style={{
+                padding: "6px 12px",
+                fontSize: "12px",
+                fontWeight: 700,
+                backgroundColor: editLang === "fr" ? "#3b82f6" : "white",
+                color: editLang === "fr" ? "white" : "#0c1b33",
+                border: editLang === "fr" ? "1px solid #3b82f6" : "1px solid var(--border-color)",
+                borderRadius: "var(--radius-sm)",
+                cursor: "pointer"
+              }}
+            >
+              🇫🇷 Français
+            </button>
+          </div>
+          <span style={{ fontSize: "11px", color: "var(--text-muted)", marginLeft: "auto" }}>
+            {isFr 
+              ? "Les textes standard en Français seront traduits automatiquement si ce champ reste vide."
+              : "Los textos estándar en Francés se traducirán automáticamente si dejas el campo vacío."}
+          </span>
+        </div>
+      )}
+
       <form onSubmit={guardarConfiguracion}>
         {/* Pestaña: General y SEO */}
         {subTabCMS === "general" && (
@@ -256,8 +383,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <input
                   className="form-control"
                   type="text"
-                  value={config.titulo_hero}
-                  onChange={(e) => setConfig({ ...config, titulo_hero: e.target.value })}
+                  value={getFieldValue("titulo_hero")}
+                  onChange={(e) => setFieldValue("titulo_hero", e.target.value)}
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -279,8 +406,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <textarea
                 className="form-control"
                 rows={3}
-                value={config.subtitulo_hero}
-                onChange={(e) => setConfig({ ...config, subtitulo_hero: e.target.value })}
+                value={getFieldValue("subtitulo_hero")}
+                onChange={(e) => setFieldValue("subtitulo_hero", e.target.value)}
                 style={{ padding: "16px", resize: "none" }}
               ></textarea>
             </div>
@@ -290,8 +417,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <input
                 className="form-control"
                 type="text"
-                value={config.hero_badge || ""}
-                onChange={(e) => setConfig({ ...config, hero_badge: e.target.value })}
+                value={getFieldValue("hero_badge")}
+                onChange={(e) => setFieldValue("hero_badge", e.target.value)}
                 placeholder="Profesor Nativo de París"
                 style={{ padding: "12px 16px" }}
               />
@@ -306,8 +433,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <input
                 className="form-control"
                 type="text"
-                value={config.meta_titulo}
-                onChange={(e) => setConfig({ ...config, meta_titulo: e.target.value })}
+                value={getFieldValue("meta_titulo")}
+                onChange={(e) => setFieldValue("meta_titulo", e.target.value)}
                 style={{ padding: "12px 16px" }}
               />
             </div>
@@ -317,8 +444,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <textarea
                 className="form-control"
                 rows={2}
-                value={config.meta_descripcion}
-                onChange={(e) => setConfig({ ...config, meta_descripcion: e.target.value })}
+                value={getFieldValue("meta_descripcion")}
+                onChange={(e) => setFieldValue("meta_descripcion", e.target.value)}
                 style={{ padding: "16px", resize: "none" }}
               ></textarea>
             </div>
@@ -328,8 +455,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <input
                 className="form-control"
                 type="text"
-                value={config.palabras_clave}
-                onChange={(e) => setConfig({ ...config, palabras_clave: e.target.value })}
+                value={getFieldValue("palabras_clave")}
+                onChange={(e) => setFieldValue("palabras_clave", e.target.value)}
                 style={{ padding: "12px 16px" }}
               />
             </div>
@@ -398,8 +525,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <input
                   className="form-control"
                   type="text"
-                  value={config.teacher_name}
-                  onChange={(e) => setConfig({ ...config, teacher_name: e.target.value })}
+                  value={getFieldValue("teacher_name")}
+                  onChange={(e) => setFieldValue("teacher_name", e.target.value)}
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -408,8 +535,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <input
                   className="form-control"
                   type="text"
-                  value={config.teacher_title}
-                  onChange={(e) => setConfig({ ...config, teacher_title: e.target.value })}
+                  value={getFieldValue("teacher_title")}
+                  onChange={(e) => setFieldValue("teacher_title", e.target.value)}
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -420,8 +547,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <textarea
                 className="form-control"
                 rows={4}
-                value={config.teacher_bio}
-                onChange={(e) => setConfig({ ...config, teacher_bio: e.target.value })}
+                value={getFieldValue("teacher_bio")}
+                onChange={(e) => setFieldValue("teacher_bio", e.target.value)}
                 style={{ padding: "16px", resize: "none" }}
               ></textarea>
             </div>
@@ -464,8 +591,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <input
                 className="form-control"
                 type="text"
-                value={config.teacher_skills}
-                onChange={(e) => setConfig({ ...config, teacher_skills: e.target.value })}
+                value={getFieldValue("teacher_skills")}
+                onChange={(e) => setFieldValue("teacher_skills", e.target.value)}
                 style={{ padding: "12px 16px" }}
               />
             </div>
@@ -475,8 +602,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <input
                 className="form-control"
                 type="text"
-                value={config.teacher_certs}
-                onChange={(e) => setConfig({ ...config, teacher_certs: e.target.value })}
+                value={getFieldValue("teacher_certs")}
+                onChange={(e) => setFieldValue("teacher_certs", e.target.value)}
                 style={{ padding: "12px 16px" }}
               />
             </div>
@@ -496,8 +623,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <input
                   className="form-control"
                   type="text"
-                  value={config.ps_badge}
-                  onChange={(e) => setConfig({ ...config, ps_badge: e.target.value })}
+                  value={getFieldValue("ps_badge")}
+                  onChange={(e) => setFieldValue("ps_badge", e.target.value)}
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -506,8 +633,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <input
                   className="form-control"
                   type="text"
-                  value={config.ps_title}
-                  onChange={(e) => setConfig({ ...config, ps_title: e.target.value })}
+                  value={getFieldValue("ps_title")}
+                  onChange={(e) => setFieldValue("ps_title", e.target.value)}
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -521,8 +648,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.ps_prob_1_title}
-                    onChange={(e) => setConfig({ ...config, ps_prob_1_title: e.target.value })}
+                    value={getFieldValue("ps_prob_1_title")}
+                    onChange={(e) => setFieldValue("ps_prob_1_title", e.target.value)}
                     style={{ padding: "10px 14px" }}
                   />
                 </div>
@@ -531,8 +658,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.ps_sol_1_title}
-                    onChange={(e) => setConfig({ ...config, ps_sol_1_title: e.target.value })}
+                    value={getFieldValue("ps_sol_1_title")}
+                    onChange={(e) => setFieldValue("ps_sol_1_title", e.target.value)}
                     style={{ padding: "10px 14px" }}
                   />
                 </div>
@@ -543,8 +670,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.ps_prob_1_desc}
-                    onChange={(e) => setConfig({ ...config, ps_prob_1_desc: e.target.value })}
+                    value={getFieldValue("ps_prob_1_desc")}
+                    onChange={(e) => setFieldValue("ps_prob_1_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -553,8 +680,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.ps_sol_1_desc}
-                    onChange={(e) => setConfig({ ...config, ps_sol_1_desc: e.target.value })}
+                    value={getFieldValue("ps_sol_1_desc")}
+                    onChange={(e) => setFieldValue("ps_sol_1_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -569,8 +696,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.ps_prob_2_title}
-                    onChange={(e) => setConfig({ ...config, ps_prob_2_title: e.target.value })}
+                    value={getFieldValue("ps_prob_2_title")}
+                    onChange={(e) => setFieldValue("ps_prob_2_title", e.target.value)}
                     style={{ padding: "10px 14px" }}
                   />
                 </div>
@@ -579,8 +706,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.ps_sol_2_title}
-                    onChange={(e) => setConfig({ ...config, ps_sol_2_title: e.target.value })}
+                    value={getFieldValue("ps_sol_2_title")}
+                    onChange={(e) => setFieldValue("ps_sol_2_title", e.target.value)}
                     style={{ padding: "10px 14px" }}
                   />
                 </div>
@@ -591,8 +718,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.ps_prob_2_desc}
-                    onChange={(e) => setConfig({ ...config, ps_prob_2_desc: e.target.value })}
+                    value={getFieldValue("ps_prob_2_desc")}
+                    onChange={(e) => setFieldValue("ps_prob_2_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -601,8 +728,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.ps_sol_2_desc}
-                    onChange={(e) => setConfig({ ...config, ps_sol_2_desc: e.target.value })}
+                    value={getFieldValue("ps_sol_2_desc")}
+                    onChange={(e) => setFieldValue("ps_sol_2_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -617,8 +744,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.ps_prob_3_title}
-                    onChange={(e) => setConfig({ ...config, ps_prob_3_title: e.target.value })}
+                    value={getFieldValue("ps_prob_3_title")}
+                    onChange={(e) => setFieldValue("ps_prob_3_title", e.target.value)}
                     style={{ padding: "10px 14px" }}
                   />
                 </div>
@@ -627,8 +754,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.ps_sol_3_title}
-                    onChange={(e) => setConfig({ ...config, ps_sol_3_title: e.target.value })}
+                    value={getFieldValue("ps_sol_3_title")}
+                    onChange={(e) => setFieldValue("ps_sol_3_title", e.target.value)}
                     style={{ padding: "10px 14px" }}
                   />
                 </div>
@@ -639,8 +766,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.ps_prob_3_desc}
-                    onChange={(e) => setConfig({ ...config, ps_prob_3_desc: e.target.value })}
+                    value={getFieldValue("ps_prob_3_desc")}
+                    onChange={(e) => setFieldValue("ps_prob_3_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -649,8 +776,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.ps_sol_3_desc}
-                    onChange={(e) => setConfig({ ...config, ps_sol_3_desc: e.target.value })}
+                    value={getFieldValue("ps_sol_3_desc")}
+                    onChange={(e) => setFieldValue("ps_sol_3_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -672,8 +799,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <input
                   className="form-control"
                   type="text"
-                  value={config.for_whom_badge}
-                  onChange={(e) => setConfig({ ...config, for_whom_badge: e.target.value })}
+                  value={getFieldValue("for_whom_badge")}
+                  onChange={(e) => setFieldValue("for_whom_badge", e.target.value)}
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -682,8 +809,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <input
                   className="form-control"
                   type="text"
-                  value={config.for_whom_title}
-                  onChange={(e) => setConfig({ ...config, for_whom_title: e.target.value })}
+                  value={getFieldValue("for_whom_title")}
+                  onChange={(e) => setFieldValue("for_whom_title", e.target.value)}
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -697,16 +824,16 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.for_whom_1_title}
-                    onChange={(e) => setConfig({ ...config, for_whom_1_title: e.target.value })}
+                    value={getFieldValue("for_whom_1_title")}
+                    onChange={(e) => setFieldValue("for_whom_1_title", e.target.value)}
                     style={{ padding: "10px 14px", marginBottom: "8px" }}
                   />
                   <label className="form-label">{t.dest1Desc}</label>
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.for_whom_1_desc}
-                    onChange={(e) => setConfig({ ...config, for_whom_1_desc: e.target.value })}
+                    value={getFieldValue("for_whom_1_desc")}
+                    onChange={(e) => setFieldValue("for_whom_1_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -717,16 +844,16 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.for_whom_2_title}
-                    onChange={(e) => setConfig({ ...config, for_whom_2_title: e.target.value })}
+                    value={getFieldValue("for_whom_2_title")}
+                    onChange={(e) => setFieldValue("for_whom_2_title", e.target.value)}
                     style={{ padding: "10px 14px", marginBottom: "8px" }}
                   />
                   <label className="form-label">{t.dest2Desc}</label>
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.for_whom_2_desc}
-                    onChange={(e) => setConfig({ ...config, for_whom_2_desc: e.target.value })}
+                    value={getFieldValue("for_whom_2_desc")}
+                    onChange={(e) => setFieldValue("for_whom_2_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -741,16 +868,16 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.for_whom_3_title}
-                    onChange={(e) => setConfig({ ...config, for_whom_3_title: e.target.value })}
+                    value={getFieldValue("for_whom_3_title")}
+                    onChange={(e) => setFieldValue("for_whom_3_title", e.target.value)}
                     style={{ padding: "10px 14px", marginBottom: "8px" }}
                   />
                   <label className="form-label">{t.dest3Desc}</label>
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.for_whom_3_desc}
-                    onChange={(e) => setConfig({ ...config, for_whom_3_desc: e.target.value })}
+                    value={getFieldValue("for_whom_3_desc")}
+                    onChange={(e) => setFieldValue("for_whom_3_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -761,16 +888,16 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   <input
                     className="form-control"
                     type="text"
-                    value={config.for_whom_4_title}
-                    onChange={(e) => setConfig({ ...config, for_whom_4_title: e.target.value })}
+                    value={getFieldValue("for_whom_4_title")}
+                    onChange={(e) => setFieldValue("for_whom_4_title", e.target.value)}
                     style={{ padding: "10px 14px", marginBottom: "8px" }}
                   />
                   <label className="form-label">{t.dest4Desc}</label>
                   <textarea
                     className="form-control"
                     rows={2}
-                    value={config.for_whom_4_desc}
-                    onChange={(e) => setConfig({ ...config, for_whom_4_desc: e.target.value })}
+                    value={getFieldValue("for_whom_4_desc")}
+                    onChange={(e) => setFieldValue("for_whom_4_desc", e.target.value)}
                     style={{ padding: "12px", resize: "none" }}
                   ></textarea>
                 </div>
@@ -787,8 +914,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <input
                   className="form-control"
                   type="text"
-                  value={config.cta_badge}
-                  onChange={(e) => setConfig({ ...config, cta_badge: e.target.value })}
+                  value={getFieldValue("cta_badge")}
+                  onChange={(e) => setFieldValue("cta_badge", e.target.value)}
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -797,8 +924,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <input
                   className="form-control"
                   type="text"
-                  value={config.cta_title}
-                  onChange={(e) => setConfig({ ...config, cta_title: e.target.value })}
+                  value={getFieldValue("cta_title")}
+                  onChange={(e) => setFieldValue("cta_title", e.target.value)}
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -809,8 +936,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <textarea
                 className="form-control"
                 rows={2}
-                value={config.cta_subtitle}
-                onChange={(e) => setConfig({ ...config, cta_subtitle: e.target.value })}
+                value={getFieldValue("cta_subtitle")}
+                onChange={(e) => setFieldValue("cta_subtitle", e.target.value)}
                 style={{ padding: "12px", resize: "none" }}
               ></textarea>
             </div>
@@ -820,8 +947,8 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <input
                 className="form-control"
                 type="text"
-                value={config.cta_btn_text}
-                onChange={(e) => setConfig({ ...config, cta_btn_text: e.target.value })}
+                value={getFieldValue("cta_btn_text")}
+                onChange={(e) => setFieldValue("cta_btn_text", e.target.value)}
                 style={{ padding: "12px 16px" }}
               />
             </div>
