@@ -104,34 +104,12 @@ const defaultKeysMap: Record<string, string> = {
 };
 
 export default function Home() {
-  const [lang, setLang] = useState<Language>(() => {
-    if (typeof window !== "undefined") {
-      return (localStorage.getItem("florentin_lang") as Language) || "es";
-    }
-    return "es";
-  });
+  const [lang, setLang] = useState<Language>("es");
   const [divisa, setDivisa] = useState<"eur" | "usd">("eur");
   const [planes, setPlanes] = useState<any[]>([]);
-
-  // Inicializar síncronamente config traduciendo los defaults locales para evitar FOUC
-  const [config, setConfig] = useState<any>(() => {
-    const initialLang = typeof window !== "undefined" ? (localStorage.getItem("florentin_lang") || "es") : "es";
-    if (initialLang === "es") return defaultSpanishConfig;
-
-    // Traducir dinámicamente desde el diccionario estático local
-    const dict = translations[initialLang as Language] as any;
-    const translated: Record<string, string> = { ...defaultSpanishConfig };
-    
-    Object.keys(defaultKeysMap).forEach(key => {
-      const dictKey = defaultKeysMap[key];
-      if (dictKey === "heroTitleCombined") {
-        translated[key] = dict.heroTitle1 + " " + dict.heroTitle2;
-      } else if (dict[dictKey]) {
-        translated[key] = dict[dictKey];
-      }
-    });
-    return translated;
-  });
+  const [originalPlanes, setOriginalPlanes] = useState<any[]>([]);
+  const [config, setConfig] = useState<any>(defaultSpanishConfig);
+  const [isHydrated, setIsHydrated] = useState(false);
 
   const [originalConfig, setOriginalConfig] = useState<any>(null);
   const [translating, setTranslating] = useState(false);
@@ -161,9 +139,10 @@ export default function Home() {
       if (data?.responseStatus === 200 && data?.responseData?.translatedText) {
         return data.responseData.translatedText;
       }
-      throw new Error("Fallo en MyMemory API");
+      console.warn("MyMemory API rate limit alcanzado o inactivo. Usando texto por defecto.");
+      return text;
     } catch (err) {
-      console.error("Error al traducir texto de base de datos:", err);
+      console.warn("Error al conectar con MyMemory API. Usando texto por defecto.");
       return text;
     }
   };
@@ -188,8 +167,11 @@ export default function Home() {
 
     try {
       const translatedConfig = { ...sourceConfig };
+      const dict = translations[targetLang as Language] as any;
 
-      // Lista COMPLETA de todas las claves traducibles del CMS
+      // 1. Para cada clave traducible, si el valor en sourceConfig es el por defecto (en español),
+      // usar el diccionario estático local translations[targetLang].
+      // De esta forma evitamos el 100% de llamadas HTTP para configuraciones estándar.
       const allTranslatableKeys = [
         "titulo_hero", "subtitulo_hero", "hero_badge",
         "teacher_name", "teacher_title", "teacher_bio",
@@ -207,48 +189,43 @@ export default function Home() {
         "cta_badge", "cta_title", "cta_subtitle", "cta_btn_text"
       ];
 
-      // Filtrar solo claves que tienen valor en el config de la BD
-      const keysWithValues = allTranslatableKeys.filter(k => sourceConfig[k] && String(sourceConfig[k]).trim());
+      // Filtrar cuáles claves realmente han cambiado respecto a defaultSpanishConfig
+      const changedKeys: string[] = [];
 
-      // Agrupar en lotes por límite de caracteres (~400 chars para respetar el límite de MyMemory)
-      const MAX_CHARS_PER_BATCH = 400;
-      const batches: string[][] = [];
-      let currentBatch: string[] = [];
-      let currentChars = 0;
+      allTranslatableKeys.forEach(key => {
+        const defaultVal = (defaultSpanishConfig as any)[key];
+        const currentVal = sourceConfig[key];
 
-      for (const key of keysWithValues) {
-        const textLen = String(sourceConfig[key]).length + 10; // +10 para separador
-        if (currentChars + textLen > MAX_CHARS_PER_BATCH && currentBatch.length > 0) {
-          batches.push([...currentBatch]);
-          currentBatch = [key];
-          currentChars = textLen;
+        // Si el valor actual es igual al default en español, traducirlo localmente al instante
+        if (currentVal === defaultVal || !currentVal) {
+          const dictKey = defaultKeysMap[key];
+          if (dictKey === "heroTitleCombined") {
+            translatedConfig[key] = dict.heroTitle1 + " " + dict.heroTitle2;
+          } else if (dict[dictKey]) {
+            translatedConfig[key] = dict[dictKey];
+          }
         } else {
-          currentBatch.push(key);
-          currentChars += textLen;
+          // Ha cambiado (el profesor lo editó en la base de datos), se debe traducir por API
+          changedKeys.push(key);
         }
-      }
-      if (currentBatch.length > 0) batches.push(currentBatch);
+      });
 
-      // Traducir cada lote secuencialmente con pausas anti-rate-limit
-      for (let i = 0; i < batches.length; i++) {
-        const batchKeys = batches[i];
-        const texts = batchKeys.map(k => String(sourceConfig[k]));
+      // 2. Si hay claves personalizadas que cambiaron, traducirlas en un único lote
+      if (changedKeys.length > 0) {
+        const texts = changedKeys.map(k => String(sourceConfig[k]));
         const joined = texts.join(" [SEP999] ");
-
         try {
-          const translated = await translateText(joined, "es", targetLang);
-          const parts = translated.split(/\s*\[SEP999\]\s*/i);
-
-          batchKeys.forEach((key, idx) => {
-            translatedConfig[key] = (parts[idx] || texts[idx]).trim();
-          });
+          const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(joined)}&langpair=es|${targetLang}`);
+          const data = await res.json();
+          if (data?.responseStatus === 200 && data?.responseData?.translatedText) {
+            const translated = data.responseData.translatedText;
+            const parts = translated.split(/\s*\[SEP999\]\s*/i);
+            changedKeys.forEach((key, idx) => {
+              translatedConfig[key] = (parts[idx] || texts[idx]).trim();
+            });
+          }
         } catch (err) {
-          console.warn(`Lote ${i} falló, manteniendo textos originales`);
-        }
-
-        // Pausa de 500ms entre lotes para evitar error 429
-        if (i < batches.length - 1) {
-          await new Promise(r => setTimeout(r, 500));
+          console.warn("Fallo de API de traducción para textos personalizados del CMS, usando español");
         }
       }
 
@@ -258,10 +235,122 @@ export default function Home() {
 
       return translatedConfig;
     } catch (e) {
-      console.error("Error al traducir objeto de configuración:", e);
+      console.warn("Error general al traducir config:", e);
       return sourceConfig;
     } finally {
       setTranslating(false);
+    }
+  };
+
+  const planesStaticTranslations: Record<string, Record<string, string>> = {
+    es: {
+      "classe libre": "Clase individual",
+      "classe d'un heure élaborée pour tout type d'objectifs": "Clase de una hora diseñada para todo tipo de objetivos.",
+      "deux cours par semaine": "Dos clases por semana",
+      "cours personnalisé d'une heure en fonction de vos objectifs": "Clase personalizada de una hora según tus objetivos.",
+      "un cours par semana": "Una clase por semana",
+      "un cours par semaine": "Una clase por semana",
+      "trois cours par semaine": "Tres clases por semana",
+      "4 cours par semaine": "4 clases por semana",
+      "un curso por semana": "Una clase por semana",
+      "dos clases por semana": "Dos clases por semana",
+      "tres clases por semana": "Tres clases por semana",
+      "4 clases por semana": "4 clases por semana",
+      "clase individual": "Clase individual",
+    },
+    fr: {
+      "clase individual": "Classe individuelle",
+      "clase de una hora diseñada para todo tipo de objetivos": "Cours d'une heure conçu pour tout type d'objectifs.",
+      "clase de una hora diseñada para todo tipo de objetivos.": "Cours d'une heure conçu pour tout type d'objectifs.",
+      "dos clases por semana": "Deux cours par semaine",
+      "clase personalizada de una hora según tus objetivos": "Cours personnalisé d'une heure en fonction de vos objectifs.",
+      "clase personalizada de una hora según tus objetivos.": "Cours personnalisé d'une heure en fonction de vos objectifs.",
+      "una clase por semana": "Un cours par semaine",
+      "tres clases por semana": "Trois cours par semaine",
+      "4 clases por semana": "4 cours par semaine",
+      "un curso por semana": "Un cours par semaine",
+      "un cours par semaine": "Un cours par semaine",
+      "deux cours par semana": "Deux cours par semaine",
+      "deux cours par semaine": "Deux cours par semaine",
+      "trois cours par semaine": "Trois cours par semaine",
+      "4 cours par semaine": "4 cours par semaine",
+    },
+    en: {
+      "classe libre": "Individual class",
+      "classe d'un heure élaborée pour tout type d'objectifs": "1-hour class tailored for all types of goals.",
+      "deux cours par semaine": "Two classes per week",
+      "cours personnalisé d'une heure en fonction de vos objectifs": "Personalized 1-hour class based on your goals.",
+      "un cours par semaine": "One class per week",
+      "trois cours par semaine": "Three classes per week",
+      "4 cours par semaine": "4 classes per week",
+      "un curso por semana": "One class per week",
+      "dos clases por semana": "Two classes per week",
+      "tres clases por semana": "Three classes per week",
+      "4 clases por semana": "4 classes per week",
+      "clase individual": "Individual class",
+      "clase de una hora diseñada para todo tipo de objetivos.": "1-hour class tailored for all types of goals.",
+      "clase personalizada de una hora según tus objetivos.": "Personalized 1-hour class based on your goals.",
+    }
+  };
+
+  const translatePlanesObject = async (sourcePlanes: any[], targetLang: string) => {
+    if (!sourcePlanes || sourcePlanes.length === 0) return sourcePlanes;
+
+    try {
+      const translatedPlanes = sourcePlanes.map(p => ({ ...p }));
+      
+      for (const p of translatedPlanes) {
+        // Normalizar clave de búsqueda estática (sin puntos al final y en minúsculas)
+        const nombreNormalized = (p.nombre || "").trim().toLowerCase().replace(/\.$/, "");
+        const descNormalized = (p.descripcion || "").trim().toLowerCase().replace(/\.$/, "");
+
+        // 1. Intentar traducción estática
+        const staticDict = planesStaticTranslations[targetLang];
+        let translatedNombre = staticDict?.[nombreNormalized];
+        let translatedDesc = staticDict?.[descNormalized];
+
+        // 2. Si no hay traducción estática, detectar idioma y usar API
+        const textoAnalizar = ((p.nombre || "") + " " + (p.descripcion || "")).toLowerCase();
+        const esFrances = textoAnalizar.includes("cours") || 
+                           textoAnalizar.includes("semaine") || 
+                           textoAnalizar.includes("forfait") || 
+                           textoAnalizar.includes("leçon") || 
+                           textoAnalizar.includes("apprendre") || 
+                           textoAnalizar.includes("trois");
+        
+        const langOrigen = esFrances ? "fr" : "es";
+
+        if (langOrigen !== targetLang) {
+          if (!translatedNombre && p.nombre) {
+            const cacheKey = `florentin_plan_name_${p.id}_${targetLang}`;
+            let cached = sessionStorage.getItem(cacheKey);
+            if (!cached) {
+              cached = await translateText(p.nombre, langOrigen, targetLang);
+              sessionStorage.setItem(cacheKey, cached);
+            }
+            translatedNombre = cached;
+          }
+
+          if (!translatedDesc && p.descripcion) {
+            const cacheKey = `florentin_plan_desc_${p.id}_${targetLang}`;
+            let cached = sessionStorage.getItem(cacheKey);
+            if (!cached) {
+              cached = await translateText(p.descripcion, langOrigen, targetLang);
+              sessionStorage.setItem(cacheKey, cached);
+            }
+            translatedDesc = cached;
+          }
+        }
+
+        // Asignar los valores traducidos
+        if (translatedNombre) p.nombre = translatedNombre;
+        if (translatedDesc) p.descripcion = translatedDesc;
+      }
+
+      return translatedPlanes;
+    } catch (e) {
+      console.error("Error al traducir planes:", e);
+      return sourcePlanes;
     }
   };
 
@@ -272,9 +361,25 @@ export default function Home() {
       if (savedLang) {
         setLang(savedLang);
         activeLang = savedLang;
+        
+        // Traducir localmente la configuración por defecto para evitar FOUC
+        if (savedLang !== "es") {
+          const dict = translations[savedLang] as any;
+          const translated: Record<string, string> = { ...defaultSpanishConfig };
+          Object.keys(defaultKeysMap).forEach(key => {
+            const dictKey = defaultKeysMap[key];
+            if (dictKey === "heroTitleCombined") {
+              translated[key] = dict.heroTitle1 + " " + dict.heroTitle2;
+            } else if (dict[dictKey]) {
+              translated[key] = dict[dictKey];
+            }
+          });
+          setConfig(translated);
+        }
       }
       const savedDivisa = localStorage.getItem("florentin_divisa") as "eur" | "usd";
       if (savedDivisa) setDivisa(savedDivisa);
+      setIsHydrated(true);
     }
     const fetchCMSData = async () => {
       try {
@@ -283,7 +388,16 @@ export default function Home() {
           .select("id, nombre, descripcion, precio, total_clases")
           .eq("activo", true)
           .order("id", { ascending: true });
-        if (planesData && planesData.length > 0) setPlanes(planesData);
+        if (planesData && planesData.length > 0) {
+          setOriginalPlanes(planesData);
+          if (activeLang !== "es") {
+            const translatedPlanes = await translatePlanesObject(planesData, activeLang);
+            setPlanes(translatedPlanes || planesData);
+          } else {
+            const translatedPlanes = await translatePlanesObject(planesData, "es");
+            setPlanes(translatedPlanes || planesData);
+          }
+        }
 
         const { data: configData } = await supabase
           .from("configuracion_sitio")
@@ -379,6 +493,10 @@ export default function Home() {
     if (originalConfig) {
       const translated = await translateConfigObject(originalConfig, newLang);
       if (translated) setConfig(translated);
+    }
+    if (originalPlanes.length > 0) {
+      const translatedP = await translatePlanesObject(originalPlanes, newLang);
+      if (translatedP) setPlanes(translatedP);
     }
   };
   const changeDivisa = (newDivisa: "eur" | "usd") => { setDivisa(newDivisa); localStorage.setItem("florentin_divisa", newDivisa); };
@@ -1101,7 +1219,7 @@ export default function Home() {
                     <p className="text-slate-600 text-base font-medium mb-8 leading-relaxed h-[72px] overflow-hidden line-clamp-3">{plan.descripcion}</p>
                   </div>
                   <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#0c1b33] text-white hover:bg-[#152e54] transition-all hover:scale-105 shadow-sm">
-                    {lang === 'es' ? `Inscribirme en el ${plan.nombre}` : lang === 'fr' ? `S'inscrire à la formule ${plan.nombre}` : `Enroll in ${plan.nombre}`}
+                    {lang === 'es' ? 'Elegir este plan' : lang === 'fr' ? 'Choisir cette formule' : 'Choose this plan'}
                   </Link>
                 </div>
               ))}
@@ -1224,26 +1342,47 @@ export default function Home() {
               />
             </div>
             <p className="text-slate-400 text-sm leading-relaxed max-w-sm mt-2 font-medium">
-              Academia de francés en línea del Profesor Florentin. Clases particulares y grupales adaptadas a tus objetivos, enfocadas en la conversación fluida.
+              {lang === 'es' 
+                ? 'Academia de francés en línea del Profesor Florentin. Clases particulares y grupales adaptadas a tus objetivos, enfocadas en la conversación fluida.'
+                : lang === 'fr'
+                ? "Académie de français en ligne du Professeur Florentin. Cours particuliers et en groupe adaptés à vos objectifs, axés sur la conversation fluide."
+                : "Professor Florentin's online French academy. Private and group classes tailored to your goals, focused on fluent conversation."
+              }
             </p>
           </div>
 
           {/* Columna 2: Navegación Rápida */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">Navegación</h4>
+            <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">
+              {lang === 'es' ? 'Navegación' : lang === 'fr' ? 'Navigation' : 'Navigation'}
+            </h4>
             <div className="grid grid-cols-2 gap-2 text-sm text-slate-400 font-semibold">
-              <a href="#method" className="hover:text-[#0c1b33] transition-colors">Método</a>
-              <a href="#plans" className="hover:text-[#0c1b33] transition-colors">Planes</a>
-              <a href="#teacher" className="hover:text-[#0c1b33] transition-colors">Profesor</a>
-              <a href="#faq" className="hover:text-[#0c1b33] transition-colors">Preguntas</a>
-              <a href="#contact" className="hover:text-[#0c1b33] transition-colors">Contacto</a>
-              <Link href="/alumno" className="hover:text-[#0c1b33] transition-colors">Portal Alumnos</Link>
+              <a href="#method" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Método' : lang === 'fr' ? 'Méthode' : 'Method'}
+              </a>
+              <a href="#plans" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Planes' : lang === 'fr' ? 'Formules' : 'Plans'}
+              </a>
+              <a href="#teacher" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Profesor' : lang === 'fr' ? 'Professeur' : 'Teacher'}
+              </a>
+              <a href="#faq" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Preguntas' : lang === 'fr' ? 'FAQ' : 'FAQ'}
+              </a>
+              <a href="#contact" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Contacto' : lang === 'fr' ? 'Contact' : 'Contact'}
+              </a>
+              <Link href="/alumno" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Portal Alumnos' : lang === 'fr' ? "Portail de l'Élève" : 'Student Portal'}
+              </Link>
             </div>
           </div>
 
           {/* Columna 3: Información Legal y Créditos */}
           <div className="flex flex-col gap-4">
-            <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">Políticas y Soporte</h4>
+            <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">
+              {lang === 'es' ? 'Políticas y Soporte' : lang === 'fr' ? 'Soutien et Politiques' : 'Policies & Support'}
+            </h4>
             <div className="flex flex-col gap-2 text-sm text-slate-400 font-semibold">
               <Link href="/privacidad" className="hover:text-[#0c1b33] transition-colors">{t.footerPrivacy}</Link>
               <Link href="/terminos" className="hover:text-[#0c1b33] transition-colors">{t.footerTerms}</Link>
@@ -1258,7 +1397,9 @@ export default function Home() {
             &copy; {new Date().getFullYear()} {config?.site_name || "Florentin French"}. {t.footerRights}
           </div>
           <div className="text-center sm:text-right">
-            <span>Plataforma SaaS operada por </span>
+            <span>
+              {lang === 'es' ? 'Plataforma SaaS operada por ' : lang === 'fr' ? 'Plateforme SaaS opérée par ' : 'SaaS Platform operated by '}
+            </span>
             <a 
               href="https://introspectiva.digital/" 
               target="_blank" 
@@ -1270,6 +1411,7 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
 
       {/* Botón flotante de WhatsApp superpuesto */}
       <a

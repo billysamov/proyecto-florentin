@@ -511,3 +511,52 @@ export const translations = {
     simBtn3: "Simulate Pro (4 classes)",
   }
 };
+
+export const adminTranslations = {
+  es: {
+    resumen: "Resumen y Agenda",
+    alumnos: "Gestión de Alumnos",
+    planes: "Planes de Estudio",
+    recursos: "Biblioteca / Material",
+    notificaciones: "Enviar Mensajes",
+    configuracion: "Configuración CMS",
+    manual: "Manual del Profesor",
+    logout: "Cerrar Sesión",
+    administrator: "Administrador Principal",
+    teacher: "PROFESOR",
+    loading: "Cargando portal de administración...",
+    panelTitle: "Panel del Profesor",
+    panelDesc: "Acceso restringido para la administración académica.",
+    emailLabel: "Correo Administrativo",
+    passLabel: "Contraseña de Acceso",
+    loginBtn: "Entrar al Panel de Control",
+    backHome: "← Volver al Inicio",
+    cargandoDatos: "Cargando datos...",
+    guardando: "Guardando...",
+    errorGuardar: "Error al guardar",
+    successGuardar: "Guardado con éxito"
+  },
+  fr: {
+    resumen: "Résumé & Agenda",
+    alumnos: "Gestion des Élèves",
+    planes: "Formules de Cours",
+    recursos: "Bibliothèque / Matériel",
+    notificaciones: "Envoyer des Messages",
+    configuracion: "Configuration CMS",
+    manual: "Manuel du Professeur",
+    logout: "Se déconnecter",
+    administrator: "Administrateur Principal",
+    teacher: "PROFESSEUR",
+    loading: "Chargement du tableau de bord...",
+    panelTitle: "Espace Professeur",
+    panelDesc: "Accès restreint pour l'administration académique.",
+    emailLabel: "E-mail Administratif",
+    passLabel: "Mot de passe d'accès",
+    loginBtn: "Se connecter au tableau de bord",
+    backHome: "← Retour à l'accueil",
+    cargandoDatos: "Chargement des données...",
+    guardando: "Enregistrement...",
+    errorGuardar: "Erreur lors de l'enregistrement",
+    successGuardar: "Enregistré avec succès"
+  }
+};

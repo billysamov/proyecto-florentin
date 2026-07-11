@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
+import { adminTranslations } from "@/lib/translations";
 import ResumenTab from "@/components/admin/ResumenTab";
 import AlumnosTab from "@/components/admin/AlumnosTab";
 import PlanesTab from "@/components/admin/PlanesTab";
@@ -54,6 +55,21 @@ export default function AdminDashboard() {
 
   // Estado del menú móvil lateral
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Estado del idioma del panel administrativo
+  const [adminLang, setAdminLang] = useState<"es" | "fr">(() => {
+    if (typeof window !== "undefined") {
+      return (localStorage.getItem("florentin_admin_lang") as "es" | "fr") || "es";
+    }
+    return "es";
+  });
+
+  const changeAdminLang = (l: "es" | "fr") => {
+    setAdminLang(l);
+    localStorage.setItem("florentin_admin_lang", l);
+  };
+
+  const at = adminTranslations[adminLang];
 
   // Pestaña activa del dashboard
   const [activeTab, setActiveTab] = useState<"resumen" | "recursos" | "alumnos" | "notificaciones" | "planes" | "configuracion" | "manual">("resumen");
@@ -831,7 +847,7 @@ export default function AdminDashboard() {
   const sidebarItems = [
     {
       id: "resumen",
-      label: "Resumen y Agenda",
+      label: at.resumen,
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 002 2h2a2 2 0 002-2" />
@@ -840,7 +856,7 @@ export default function AdminDashboard() {
     },
     {
       id: "alumnos",
-      label: "Gestión de Alumnos",
+      label: at.alumnos,
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
@@ -849,7 +865,7 @@ export default function AdminDashboard() {
     },
     {
       id: "planes",
-      label: "Planes de Estudio",
+      label: at.planes,
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
@@ -858,7 +874,7 @@ export default function AdminDashboard() {
     },
     {
       id: "recursos",
-      label: "Biblioteca / Material",
+      label: at.recursos,
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 7v8a2 2 0 002 2h6M8 7V5a2 2 0 012-2h4.586a1 1 0 01.707.293l4.414 4.414a1 1 0 01.293.707V15a2 2 0 01-2 2h-2M8 7H6a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2v-2" />
@@ -867,7 +883,7 @@ export default function AdminDashboard() {
     },
     {
       id: "notificaciones",
-      label: "Enviar Mensajes",
+      label: at.notificaciones,
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
@@ -876,7 +892,7 @@ export default function AdminDashboard() {
     },
     {
       id: "configuracion",
-      label: "Configuración CMS",
+      label: at.configuracion,
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -886,7 +902,7 @@ export default function AdminDashboard() {
     },
     {
       id: "manual",
-      label: "Manual del Profesor",
+      label: at.manual,
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
@@ -913,7 +929,7 @@ export default function AdminDashboard() {
             margin: "0 auto 16px auto"
           }}></div>
           <p style={{ fontSize: "16px", fontWeight: 600, color: "var(--text-muted)", fontFamily: "var(--font-outfit)" }}>
-            Cargando portal de administración...
+            {at.loading}
           </p>
         </div>
       </div>
@@ -937,16 +953,33 @@ export default function AdminDashboard() {
               Florentin<span style={{ color: "hsl(var(--accent-hsl))" }}>.</span>
             </Link>
             <h2 style={{ fontSize: "22px", marginTop: "16px", color: "var(--text-main)", fontWeight: 800, fontFamily: "var(--font-outfit)", letterSpacing: "-0.5px" }}>
-              Panel del Profesor
+              {at.panelTitle}
             </h2>
             <p style={{ fontSize: "14px", color: "var(--text-muted)", marginTop: "6px" }}>
-              Acceso restringido para la administración académica.
+              {at.panelDesc}
             </p>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "center", gap: "8px", marginBottom: "20px" }}>
+            <button 
+              type="button" 
+              onClick={() => changeAdminLang("es")} 
+              style={{ padding: "6px 16px", borderRadius: "100px", fontSize: "12px", fontWeight: 800, backgroundColor: adminLang === "es" ? "hsl(var(--accent-hsl))" : "rgba(15,23,42,0.05)", border: "none", cursor: "pointer", color: adminLang === "es" ? "#0f172a" : "var(--text-muted)", transition: "all 0.3s" }}
+            >
+              ESPAÑOL
+            </button>
+            <button 
+              type="button" 
+              onClick={() => changeAdminLang("fr")} 
+              style={{ padding: "6px 16px", borderRadius: "100px", fontSize: "12px", fontWeight: 800, backgroundColor: adminLang === "fr" ? "hsl(var(--accent-hsl))" : "rgba(15,23,42,0.05)", border: "none", cursor: "pointer", color: adminLang === "fr" ? "#0f172a" : "var(--text-muted)", transition: "all 0.3s" }}
+            >
+              FRANÇAIS
+            </button>
           </div>
 
           <form onSubmit={handleAdminLogin} className="card" style={{ padding: "32px", borderRadius: "var(--radius-lg)", boxShadow: "0 20px 40px -15px rgba(15,23,42,0.06)", border: "1px solid rgba(15,23,42,0.06)" }}>
             <div className="form-group">
-              <label className="form-label" htmlFor="admin-email">Correo Administrativo</label>
+              <label className="form-label" htmlFor="admin-email">{at.emailLabel}</label>
               <input
                 className="form-control"
                 type="email"
@@ -960,7 +993,7 @@ export default function AdminDashboard() {
             </div>
 
             <div className="form-group" style={{ marginBottom: "28px" }}>
-              <label className="form-label" htmlFor="admin-password">Contraseña de Acceso</label>
+              <label className="form-label" htmlFor="admin-password">{at.passLabel}</label>
               <input
                 className="form-control"
                 type="password"
@@ -974,7 +1007,7 @@ export default function AdminDashboard() {
             </div>
 
             <button type="submit" className="btn btn-primary" style={{ width: "100%", padding: "14px 0", borderRadius: "100px", fontSize: "15px", fontWeight: 700 }}>
-              Entrar al Panel de Control
+              {at.loginBtn}
             </button>
 
             {adminError && (
@@ -996,7 +1029,7 @@ export default function AdminDashboard() {
 
           <p style={{ textAlign: "center", marginTop: "24px", fontSize: "14px" }}>
             <Link href="/" style={{ color: "hsl(var(--accent-hsl))", fontWeight: 700, display: "inline-flex", alignItems: "center", gap: "6px" }}>
-              <span>←</span> Volver al Inicio
+              <span>←</span> {at.backHome}
             </Link>
           </p>
         </div>
@@ -1112,29 +1145,48 @@ export default function AdminDashboard() {
             borderRadius: "100px",
             border: "1px solid rgba(201, 154, 60, 0.3)"
           }}>
-            PROFESOR
+            {at.teacher}
           </span>
         </div>
 
         {/* Info Perfil */}
-        <div style={{ padding: "20px 24px", display: "flex", alignItems: "center", gap: "12px", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
-          <div style={{
-            width: "40px",
-            height: "40px",
-            borderRadius: "50%",
-            backgroundColor: "hsl(var(--accent-hsl))",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            color: "#0f172a",
-            fontWeight: 800,
-            fontSize: "16px"
-          }}>
-            F
+        <div style={{ padding: "20px 24px", borderBottom: "1px solid rgba(255, 255, 255, 0.05)" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "12px" }}>
+            <div style={{
+              width: "40px",
+              height: "40px",
+              borderRadius: "50%",
+              backgroundColor: "hsl(var(--accent-hsl))",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#0f172a",
+              fontWeight: 800,
+              fontSize: "16px"
+            }}>
+              F
+            </div>
+            <div>
+              <div style={{ fontWeight: 700, fontSize: "14px", color: "#f8fafc" }}>Florentin</div>
+              <div style={{ fontSize: "11px", color: "#94a3b8" }}>{at.administrator}</div>
+            </div>
           </div>
-          <div>
-            <div style={{ fontWeight: 700, fontSize: "14px", color: "#f8fafc" }}>Florentin</div>
-            <div style={{ fontSize: "11px", color: "#94a3b8" }}>Administrador Principal</div>
+          {/* Selector de Idioma de Interfaz */}
+          <div style={{ display: "flex", gap: "6px", marginTop: "8px" }}>
+            <button 
+              type="button" 
+              onClick={() => changeAdminLang("es")} 
+              style={{ flex: 1, padding: "4px 0", borderRadius: "6px", fontSize: "10px", fontWeight: 800, backgroundColor: adminLang === "es" ? "hsl(var(--accent-hsl))" : "rgba(255,255,255,0.05)", border: "none", cursor: "pointer", color: adminLang === "es" ? "#0f172a" : "#94a3b8", transition: "all 0.2s" }}
+            >
+              ESPAÑOL
+            </button>
+            <button 
+              type="button" 
+              onClick={() => changeAdminLang("fr")} 
+              style={{ flex: 1, padding: "4px 0", borderRadius: "6px", fontSize: "10px", fontWeight: 800, backgroundColor: adminLang === "fr" ? "hsl(var(--accent-hsl))" : "rgba(255,255,255,0.05)", border: "none", cursor: "pointer", color: adminLang === "fr" ? "#0f172a" : "#94a3b8", transition: "all 0.2s" }}
+            >
+              FRANÇAIS
+            </button>
           </div>
         </div>
 
@@ -1204,7 +1256,7 @@ export default function AdminDashboard() {
             <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
             </svg>
-            Cerrar Sesión
+            {at.logout}
           </button>
         </div>
       </aside>
@@ -1280,7 +1332,11 @@ export default function AdminDashboard() {
                 textTransform: "capitalize",
                 margin: 0
               }}>
-                {activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : activeTab === "manual" ? "Manual de Operaciones" : "Configuración CMS"}
+                {adminLang === "fr" ? (
+                  activeTab === "resumen" ? "Résumé des Cours" : activeTab === "alumnos" ? "Dossiers des Élèves" : activeTab === "planes" ? "Catalogue de Formules" : activeTab === "recursos" ? "Médiathèque" : activeTab === "notificaciones" ? "Centre de Communication" : activeTab === "manual" ? "Manuel Opérationnel" : "Configuration du Site"
+                ) : (
+                  activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : activeTab === "manual" ? "Manual de Operaciones" : "Configuración CMS"
+                )}
               </h1>
             </div>
 
@@ -1293,7 +1349,7 @@ export default function AdminDashboard() {
                 padding: "6px 12px",
                 borderRadius: "100px"
               }} className="hidden sm:inline-block">
-                📅 {new Date().toLocaleDateString("es-ES", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+                📅 {new Date().toLocaleDateString(adminLang === "fr" ? "fr-FR" : "es-ES", { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
               </span>
             </div>
           </div>
@@ -1315,6 +1371,7 @@ export default function AdminDashboard() {
                 setEditingLinkValue={setEditingLinkValue}
                 guardarLinkClase={guardarLinkClase}
                 cambiarEstadoClase={cambiarEstadoClase}
+                lang={adminLang}
               />
             )}
 
@@ -1341,6 +1398,7 @@ export default function AdminDashboard() {
                 guardarFeedbackClase={guardarFeedbackClase}
                 toggleAsignacionRecurso={toggleAsignacionRecurso}
                 planes={planes}
+                lang={adminLang}
               />
             )}
 
@@ -1357,6 +1415,7 @@ export default function AdminDashboard() {
                 guardarEdicionPlan={guardarEdicionPlan}
                 toggleEstadoPlan={toggleEstadoPlan}
                 eliminarPlan={eliminarPlan}
+                lang={adminLang}
               />
             )}
 
@@ -1375,6 +1434,7 @@ export default function AdminDashboard() {
                 setArchivoSeleccionado={setArchivoSeleccionado}
                 crearRecurso={handleCrearRecursoSubmit}
                 eliminarRecurso={eliminarRecurso}
+                lang={adminLang}
               />
             )}
 
@@ -1392,6 +1452,7 @@ export default function AdminDashboard() {
                 setCuerpoMsg={setCuerpoMsg}
                 envioExito={envioExito}
                 enviarMensaje={enviarMensaje}
+                lang={adminLang}
               />
             )}
 
@@ -1405,12 +1466,13 @@ export default function AdminDashboard() {
                 guardarConfiguracion={guardarConfiguracionCMS}
                 subTabCMS={subTabCMS}
                 setSubTabCMS={setSubTabCMS}
+                lang={adminLang}
               />
             )}
 
             {/* TAB 7: MANUAL DE OPERACIONES */}
             {activeTab === "manual" && (
-              <ManualTab />
+              <ManualTab lang={adminLang} />
             )}
 
           </div>
@@ -1426,7 +1488,11 @@ export default function AdminDashboard() {
           color: "var(--text-muted)"
         }}>
           <div className="container">
-            © {new Date().getFullYear()} Florentin. Panel Educativo del Profesor. Todos los derechos reservados.
+            {adminLang === "fr" ? (
+              `© ${new Date().getFullYear()} Florentin. Espace Éducatif du Professeur. Tous droits réservés.`
+            ) : (
+              `© ${new Date().getFullYear()} Florentin. Panel Educativo del Profesor. Todos los derechos reservados.`
+            )}
           </div>
         </footer>
       </div>

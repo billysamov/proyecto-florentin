@@ -12,6 +12,7 @@ interface PlanesTabProps {
   guardarEdicionPlan: (id: number, fields: any) => Promise<void>;
   toggleEstadoPlan: (id: number) => Promise<void>;
   eliminarPlan: (id: number) => Promise<void>;
+  lang?: "es" | "fr";
 }
 
 export default function PlanesTab({
@@ -24,28 +25,76 @@ export default function PlanesTab({
   crearPlan,
   guardarEdicionPlan,
   toggleEstadoPlan,
-  eliminarPlan
+  eliminarPlan,
+  lang = "es"
 }: PlanesTabProps) {
+  const isFr = lang === "fr";
+
+  const t = {
+    tituloRegistrar: isFr ? "Enregistrer une Nouvelle Formule / Abonnement" : "Registrar Nuevo Plan / Suscripción",
+    descRegistrar: isFr ? "Définissez un nouveau forfait de cours ou un abonnement mensuel à commercialiser sur la Landing Page." : "Define un nuevo paquete de clases o suscripción mensual para comercializar en la Landing Page.",
+    exitoRegistrar: isFr ? "✓ Formule enregistrée avec succès dans la base de données." : "✓ Plan registrado correctamente en la base de datos.",
+    nombrePlan: isFr ? "Nom de la Formule" : "Nombre del Plan",
+    precioPlan: isFr ? "Prix (€ dans la base de données)" : "Precio (€ en base de datos)",
+    totalClases: isFr ? "Nombre Total de Cours" : "Total de Clases del Plan",
+    tipoPlan: isFr ? "Type de Formule" : "Tipo de Plan",
+    optPaquete: isFr ? "Forfait de Cours" : "Paquete de Clases",
+    optSuscripcion: isFr ? "Abonnement Mensuel" : "Suscripción Mensual",
+    optIndividual: isFr ? "Cours Individuel" : "Clase Individual",
+    nivelRecomendado: isFr ? "Niveau Recommandé" : "Nivel Recomendado",
+    nivelTodos: isFr ? "Tous les niveaux" : "Todos los niveles",
+    nivelA1: isFr ? "Débutant (A1)" : "Principiante (A1)",
+    nivelA2: isFr ? "Élémentaire (A2)" : "Elemental (A2)",
+    nivelB1: isFr ? "Intermédiaire (B1)" : "Intermedio (B1)",
+    nivelB2: isFr ? "Intermédiaire Supérieur (B2)" : "Intermedio Alto (B2)",
+    nivelC1: isFr ? "Avancé (C1)" : "Avanzado (C1)",
+    descPlan: isFr ? "Brève Description (Affichée sur le site)" : "Breve Descripción (Aparece en la Landing)",
+    btnCrear: isFr ? "Créer la Formule" : "Crear Plan",
+    tituloCatalogo: isFr ? "💎 Offre de Formules et Abonnements" : "💎 Oferta de Planes y Suscripciones",
+    thDetalles: isFr ? "Détails de la Formule" : "Detalles del Plan",
+    thTipo: isFr ? "Type de Facturation" : "Tipo de Cobro",
+    thClasesNivel: isFr ? "Cours / Niveau" : "Clases / Nivel",
+    thPrecio: isFr ? "Prix" : "Precio",
+    thAcciones: isFr ? "Actions" : "Acciones",
+    lblMensual: isFr ? "Mensuel" : "Mensual",
+    lblIndividual: isFr ? "Individuel" : "Individual",
+    lblPaquete: isFr ? "Forfait" : "Paquete",
+    lblClases: isFr ? "cours" : "clases",
+    lblNivel: isFr ? "Niveau :" : "Nivel:",
+    btnGuardar: isFr ? "Enregistrer" : "Guardar",
+    btnCancelar: isFr ? "Annuler" : "Cancelar",
+    activo: isFr ? "Actif" : "Activo",
+    desactivar: isFr ? "Désactiver" : "Desactivar",
+    activar: isFr ? "Activer" : "Activar",
+    eliminarConfirm: isFr ? "Voulez-vous vraiment supprimer cette formule ?" : "¿Seguro que deseas eliminar este plan?"
+  };
+
+  const handleEliminar = async (id: number) => {
+    if (window.confirm(t.eliminarConfirm)) {
+      await eliminarPlan(id);
+    }
+  };
+
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
       {/* Crear Plan Nuevo */}
       <div className="card" style={{ padding: "28px" }}>
         <h3 style={{ fontSize: "20px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
-          <Shield size={20} className="text-[#3b82f6] shrink-0" /> Registrar Nuevo Plan / Suscripción
+          <Shield size={20} className="text-[#3b82f6] shrink-0" /> {t.tituloRegistrar}
         </h3>
         <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
-          Define un nuevo paquete de clases o suscripción mensual para comercializar en la Landing Page.
+          {t.descRegistrar}
         </p>
 
         {planExito && (
           <div style={{ padding: "12px 16px", backgroundColor: "rgba(16,185,129,0.08)", color: "#10b981", borderRadius: "var(--radius-sm)", marginBottom: "16px", fontSize: "14px", border: "1px solid rgba(16,185,129,0.15)" }}>
-            ✓ Plan registrado correctamente en la base de datos.
+            {t.exitoRegistrar}
           </div>
         )}
 
         <form onSubmit={crearPlan} style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "16px", alignItems: "end" }}>
           <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label" style={{ fontSize: "12px" }}>Nombre del Plan</label>
+            <label className="form-label" style={{ fontSize: "12px" }}>{t.nombrePlan}</label>
             <input
               type="text"
               className="form-control"
@@ -57,7 +106,7 @@ export default function PlanesTab({
             />
           </div>
           <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label" style={{ fontSize: "12px" }}>Precio (€ en base de datos)</label>
+            <label className="form-label" style={{ fontSize: "12px" }}>{t.precioPlan}</label>
             <input
               type="number"
               step="0.01"
@@ -70,7 +119,7 @@ export default function PlanesTab({
             />
           </div>
           <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label" style={{ fontSize: "12px" }}>Total de Clases del Plan</label>
+            <label className="form-label" style={{ fontSize: "12px" }}>{t.totalClases}</label>
             <input
               type="number"
               className="form-control"
@@ -82,48 +131,48 @@ export default function PlanesTab({
             />
           </div>
           <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label" style={{ fontSize: "12px" }}>Tipo de Plan</label>
+            <label className="form-label" style={{ fontSize: "12px" }}>{t.tipoPlan}</label>
             <select
               className="form-control"
               value={nuevoPlan.tipo}
               onChange={(e) => setNuevoPlan({ ...nuevoPlan, tipo: e.target.value })}
               style={{ padding: "8px 12px" }}
             >
-              <option value="paquete">Paquete de Clases</option>
-              <option value="suscripcion">Suscripción Mensual</option>
-              <option value="clase_individual">Clase Individual</option>
+              <option value="paquete">{t.optPaquete}</option>
+              <option value="suscripcion">{t.optSuscripcion}</option>
+              <option value="clase_individual">{t.optIndividual}</option>
             </select>
           </div>
           <div className="form-group" style={{ margin: 0 }}>
-            <label className="form-label" style={{ fontSize: "12px" }}>Nivel Recomendado</label>
+            <label className="form-label" style={{ fontSize: "12px" }}>{t.nivelRecomendado}</label>
             <select
               className="form-control"
               value={nuevoPlan.nivel}
               onChange={(e) => setNuevoPlan({ ...nuevoPlan, nivel: e.target.value })}
               style={{ padding: "8px 12px" }}
             >
-              <option value="Todos">Todos los niveles</option>
-              <option value="A1">Principiante (A1)</option>
-              <option value="A2">Elemental (A2)</option>
-              <option value="B1">Intermedio (B1)</option>
-              <option value="B2">Intermedio Alto (B2)</option>
-              <option value="C1">Avanzado (C1)</option>
+              <option value="Todos">{t.nivelTodos}</option>
+              <option value="A1">{t.nivelA1}</option>
+              <option value="A2">{t.nivelA2}</option>
+              <option value="B1">{t.nivelB1}</option>
+              <option value="B2">{t.nivelB2}</option>
+              <option value="C1">{t.nivelC1}</option>
             </select>
           </div>
           <div className="form-group" style={{ margin: 0, gridColumn: "span 2" }}>
-            <label className="form-label" style={{ fontSize: "12px" }}>Breve Descripción (Aparece en la Landing)</label>
+            <label className="form-label" style={{ fontSize: "12px" }}>{t.descPlan}</label>
             <input
               type="text"
               className="form-control"
               value={nuevoPlan.descripcion}
               onChange={(e) => setNuevoPlan({ ...nuevoPlan, descripcion: e.target.value })}
-              placeholder="Ej: Acceso a clases personalizadas con soporte vía WhatsApp..."
+              placeholder="Ej: Acceso a clases..."
               style={{ padding: "8px 12px" }}
               required
             />
           </div>
           <button type="submit" className="btn btn-primary" style={{ padding: "10px 16px" }}>
-            Crear Plan
+            {t.btnCrear}
           </button>
         </form>
       </div>
@@ -131,18 +180,18 @@ export default function PlanesTab({
       {/* Listado de Planes */}
       <div className="card" style={{ padding: "28px" }}>
         <h3 style={{ fontSize: "20px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
-          💎 Oferta de Planes y Suscripciones
+          {t.tituloCatalogo}
         </h3>
         
         <div className="table-responsive" style={{ overflowX: "auto" }}>
           <table className="table" style={{ width: "100%", borderCollapse: "collapse" }}>
             <thead>
               <tr style={{ borderBottom: "2px solid var(--border-color)", textAlign: "left" }}>
-                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Detalles del Plan</th>
-                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Tipo de Cobro</th>
-                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Clases / Nivel</th>
-                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>Precio</th>
-                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)", textAlign: "right" }}>Acciones</th>
+                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thDetalles}</th>
+                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thTipo}</th>
+                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thClasesNivel}</th>
+                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thPrecio}</th>
+                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)", textAlign: "right" }}>{t.thAcciones}</th>
               </tr>
             </thead>
             <tbody>
@@ -185,7 +234,7 @@ export default function PlanesTab({
                         color: p.tipo === "suscripcion" ? "hsl(var(--accent-hsl))" : p.tipo === "clase_individual" ? "var(--text-muted)" : "#3b82f6",
                         border: p.tipo === "suscripcion" ? "1px solid rgba(201, 154, 60, 0.15)" : p.tipo === "clase_individual" ? "1px solid #e2e8f0" : "1px solid rgba(59, 130, 246, 0.15)"
                       }}>
-                        {p.tipo === "suscripcion" ? "Mensual" : p.tipo === "clase_individual" ? "Individual" : "Paquete"}
+                        {p.tipo === "suscripcion" ? t.lblMensual : p.tipo === "clase_individual" ? t.lblIndividual : t.lblPaquete}
                       </span>
                     </td>
                     <td style={{ padding: "16px", fontSize: "14px" }}>
@@ -204,18 +253,18 @@ export default function PlanesTab({
                             className="form-control"
                             style={{ padding: "4px 8px", fontSize: "12px" }}
                           >
-                            <option value="Todos">Todos</option>
-                            <option value="A1">A1</option>
-                            <option value="A2">A2</option>
-                            <option value="B1">B1</option>
-                            <option value="B2">B2</option>
-                            <option value="C1">C1</option>
+                            <option value="Todos">{t.nivelTodos}</option>
+                            <option value="A1">{t.nivelA1}</option>
+                            <option value="A2">{t.nivelA2}</option>
+                            <option value="B1">{t.nivelB1}</option>
+                            <option value="B2">{t.nivelB2}</option>
+                            <option value="C1">{t.nivelC1}</option>
                           </select>
                         </div>
                       ) : (
                         <div>
-                          <div style={{ fontWeight: 600 }}>{p.totalClases} clases</div>
-                          <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>Nivel: {p.nivel}</div>
+                          <div style={{ fontWeight: 600 }}>{p.totalClases} {t.lblClases}</div>
+                          <div style={{ fontSize: "11px", color: "var(--text-muted)" }}>{t.lblNivel} {p.nivel}</div>
                         </div>
                       )}
                     </td>
@@ -248,50 +297,38 @@ export default function PlanesTab({
                             className="btn btn-primary"
                             style={{ padding: "4px 10px", fontSize: "11px" }}
                           >
-                            ✓ Guardar
+                            {t.btnGuardar}
                           </button>
                           <button
                             onClick={() => setEditingPlanId(null)}
-                            className="btn btn-outline"
+                            className="btn btn-secondary"
                             style={{ padding: "4px 10px", fontSize: "11px" }}
                           >
-                            Cancelar
+                            {t.btnCancelar}
                           </button>
                         </div>
                       ) : (
                         <div style={{ display: "inline-flex", gap: "8px", alignItems: "center" }}>
                           <button
                             onClick={() => toggleEstadoPlan(p.id)}
-                            className="btn"
-                            style={{
-                              padding: "4px 10px",
-                              fontSize: "11px",
-                              backgroundColor: p.activo ? "rgba(16,185,129,0.08)" : "rgba(239,68,68,0.08)",
-                              color: p.activo ? "#10b981" : "#ef4444",
-                              border: p.activo ? "1px solid rgba(16,185,129,0.15)" : "1px solid rgba(239,68,68,0.15)"
-                            }}
+                            className={`btn ${p.activo ? 'btn-secondary' : 'btn-accent'}`}
+                            style={{ padding: "4px 10px", fontSize: "11px" }}
                           >
-                            ● {p.activo ? "Activo" : "Pausado"}
+                            {p.activo ? t.desactivar : t.activar}
                           </button>
                           <button
                             onClick={() => setEditingPlanId(p.id)}
-                            className="btn btn-outline"
-                            style={{ padding: "4px 8px", fontSize: "11px" }}
-                            title="Editar Plan"
+                            style={{ background: "none", border: "none", cursor: "pointer", padding: "4px" }}
+                            title={t.btnGuardar}
                           >
-                            <Edit size={14} className="text-[#3b82f6]" />
+                            <Edit size={16} className="text-[#3b82f6]" />
                           </button>
                           <button
-                            onClick={() => {
-                              if (confirm("¿Estás seguro de eliminar este plan?")) {
-                                eliminarPlan(p.id);
-                              }
-                            }}
-                            className="btn btn-outline"
-                            style={{ padding: "4px 8px", fontSize: "11px", borderColor: "rgba(239,68,68,0.2)", color: "#ef4444" }}
-                            title="Eliminar Plan"
+                            onClick={() => handleEliminar(p.id)}
+                            style={{ background: "none", border: "none", cursor: "pointer", padding: "4px" }}
+                            title="Eliminar"
                           >
-                            <Trash2 size={14} />
+                            <Trash2 size={16} className="text-[#ef4444]" />
                           </button>
                         </div>
                       )}
