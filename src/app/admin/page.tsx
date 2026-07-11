@@ -752,9 +752,15 @@ export default function AdminDashboard() {
     setNotifExito(false);
     setNotifError("");
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch("/api/admin/enviar-notificacion", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ destinatarioId, canal, asunto, mensaje })
       });
 
