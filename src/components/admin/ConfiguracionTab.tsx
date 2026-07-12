@@ -111,6 +111,7 @@ export default function ConfiguracionTab({
     tituloHero: isFr ? "Titre Principal (Hero Banner)" : "Título Principal (Hero Banner)",
     enlaceMeet: isFr ? "Lien du cours par défaut (Meet, Zoom, etc.)" : "Enlace de Clase por Defecto (Meet, Zoom, Teams, etc.)",
     emailNotificaciones: isFr ? "E-mail de Notification des Ventes" : "Correo de Notificaciones de Ventas",
+    whatsappNumber: isFr ? "Numéro WhatsApp du Professeur" : "Número de WhatsApp / Celular del Profesor",
     subtituloHero: isFr ? "Sous-titre descriptif (Hero Banner)" : "Subtítulo Descriptivo (Hero Banner)",
     tagHero: isFr ? "Badge / Tag du Hero Banner (ex: Professeur Natif de Paris)" : "Etiqueta / Tag del Hero Banner (ej: Profesor Nativo de París)",
     seoGoogle: isFr ? "Référencement Google (SEO / Métadonnées)" : "Posicionamiento en Google (SEO / Metadatos)",
@@ -322,6 +323,16 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               </pre>
             </div>
           )}
+
+          {configError.includes("whatsapp_number") && (
+            <div style={{ marginTop: "12px", borderTop: "1px dashed rgba(239,68,68,0.2)", paddingTop: "12px" }}>
+              <p style={{ fontWeight: 600, color: "#b91c1c", marginBottom: "4px" }}>💡 {t.solucionRecomendada}</p>
+              <p style={{ fontSize: "12px", marginBottom: "8px" }}>{t.ejecutaScript}</p>
+              <pre style={{ backgroundColor: "#1e293b", color: "#f8fafc", padding: "12px", borderRadius: "6px", fontSize: "11px", overflowX: "auto" }}>
+{`ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS whatsapp_number TEXT DEFAULT '33685744973';`}
+              </pre>
+            </div>
+          )}
         </div>
       )}
 
@@ -388,7 +399,7 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
         {/* Pestaña: General y SEO */}
         {subTabCMS === "general" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
               <div className="form-group">
                 <label className="form-label">{t.tituloHero}</label>
                 <input
@@ -399,6 +410,20 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   style={{ padding: "12px 16px" }}
                 />
               </div>
+              <div className="form-group">
+                <label className="form-label">{t.whatsappNumber}</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  value={config.whatsapp_number || ""}
+                  onChange={(e) => setConfig({ ...config, whatsapp_number: e.target.value })}
+                  placeholder="Ej. 33685744973"
+                  style={{ padding: "12px 16px" }}
+                />
+              </div>
+            </div>
+
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
               <div className="form-group">
                 <label className="form-label">{t.emailNotificaciones}</label>
                 <input
