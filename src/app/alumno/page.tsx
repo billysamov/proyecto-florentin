@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
-import { MessageSquare, Calendar, BookOpen, Download, TrendingUp, HelpCircle } from "lucide-react";
+import { MessageSquare, Calendar, BookOpen, Download, TrendingUp, HelpCircle, User, Mail, Lock, Phone, GraduationCap, Globe, Target } from "lucide-react";
 
 interface Clase {
   id: string;
@@ -1411,8 +1411,9 @@ export default function AlumnoPortal() {
 
                 {/* WhatsApp */}
                 <div className="form-group">
-                  <label className="form-label" htmlFor="register-telefono">
-                    📞 {lang === "fr" ? "Numéro WhatsApp" : lang === "en" ? "WhatsApp Number" : "Número de WhatsApp"}
+                  <label className="form-label" htmlFor="register-telefono" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Phone size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                    {lang === "fr" ? "Numéro WhatsApp" : lang === "en" ? "WhatsApp Number" : "Número de WhatsApp"}
                   </label>
                   <input
                     className="form-control"
@@ -1427,8 +1428,9 @@ export default function AlumnoPortal() {
                 {/* Grid para Nivel y Zona Horaria */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
                   <div className="form-group">
-                    <label className="form-label" htmlFor="register-nivel">
-                      🎓 {lang === "fr" ? "Niveau" : lang === "en" ? "Level" : "Nivel"}
+                    <label className="form-label" htmlFor="register-nivel" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <GraduationCap size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                      {lang === "fr" ? "Niveau" : lang === "en" ? "Level" : "Nivel"}
                     </label>
                     <select
                       className="form-control"
@@ -1447,8 +1449,9 @@ export default function AlumnoPortal() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" htmlFor="register-timezone">
-                      🌐 {lang === "fr" ? "Timezone" : lang === "en" ? "Timezone" : "Zona Horaria"}
+                    <label className="form-label" htmlFor="register-timezone" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <Globe size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                      {lang === "fr" ? "Timezone" : lang === "en" ? "Timezone" : "Zona Horaria"}
                     </label>
                     <select
                       className="form-control"
@@ -1470,8 +1473,9 @@ export default function AlumnoPortal() {
 
                 {/* Objetivos */}
                 <div className="form-group">
-                  <label className="form-label" htmlFor="register-objetivos">
-                    🎯 {lang === "fr" ? "Objectifs" : lang === "en" ? "Goals" : "Objetivos y Metas"}
+                  <label className="form-label" htmlFor="register-objetivos" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                    <Target size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                    {lang === "fr" ? "Objectifs" : lang === "en" ? "Goals" : "Objetivos y Metas"}
                   </label>
                   <textarea
                     className="form-control"
@@ -2787,7 +2791,8 @@ export default function AlumnoPortal() {
             {/* Cabecera del modal */}
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
               <h3 style={{ fontSize: "20px", fontWeight: 800, margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
-                ⚙️ {lang === "fr" ? "Mon Profil" : lang === "en" ? "My Profile" : "Mi Perfil"}
+                <User size={20} style={{ color: "hsl(var(--accent-hsl))" }} />
+                {lang === "fr" ? "Mon Profil" : lang === "en" ? "My Profile" : "Mi Perfil"}
               </h3>
               <button
                 onClick={() => {
@@ -2824,8 +2829,9 @@ export default function AlumnoPortal() {
                 
                 {/* Nombre */}
                 <div className="form-group">
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    👤 {lang === "fr" ? "Nom complet" : lang === "en" ? "Full Name" : "Nombre Completo"}
+                  <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600 }}>
+                    <User size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                    {lang === "fr" ? "Nom complet" : lang === "en" ? "Full Name" : "Nombre Completo"}
                   </label>
                   <input
                     type="text"
@@ -2840,8 +2846,9 @@ export default function AlumnoPortal() {
 
                 {/* WhatsApp / Teléfono */}
                 <div className="form-group">
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    📞 {lang === "fr" ? "Numéro WhatsApp" : lang === "en" ? "WhatsApp Number" : "Número de WhatsApp"}
+                  <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600 }}>
+                    <Phone size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                    {lang === "fr" ? "Numéro WhatsApp" : lang === "en" ? "WhatsApp Number" : "Número de WhatsApp"}
                   </label>
                   <input
                     type="tel"
@@ -2856,8 +2863,9 @@ export default function AlumnoPortal() {
                 {/* Nivel de Francés y Zona Horaria en grid */}
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
                   <div className="form-group">
-                    <label className="form-label" style={{ fontWeight: 600 }}>
-                      🎓 {lang === "fr" ? "Niveau de Français" : lang === "en" ? "French Level" : "Nivel de Francés"}
+                    <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600 }}>
+                      <GraduationCap size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                      {lang === "fr" ? "Niveau de Français" : lang === "en" ? "French Level" : "Nivel de Francés"}
                     </label>
                     <select
                       className="form-control"
@@ -2875,8 +2883,9 @@ export default function AlumnoPortal() {
                   </div>
 
                   <div className="form-group">
-                    <label className="form-label" style={{ fontWeight: 600 }}>
-                      🌐 {lang === "fr" ? "Fuseau Horaire" : lang === "en" ? "Timezone" : "Zona Horaria"}
+                    <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600 }}>
+                      <Globe size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                      {lang === "fr" ? "Fuseau Horaire" : lang === "en" ? "Timezone" : "Zona Horaria"}
                     </label>
                     <select
                       className="form-control"
@@ -2897,8 +2906,9 @@ export default function AlumnoPortal() {
 
                 {/* Objetivos de Aprendizaje */}
                 <div className="form-group">
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    🎯 {lang === "fr" ? "Objectifs d'apprentissage" : lang === "en" ? "Learning Goals" : "Objetivos y Metas"}
+                  <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600 }}>
+                    <Target size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                    {lang === "fr" ? "Objectifs d'apprentissage" : lang === "en" ? "Learning Goals" : "Objetivos y Metas"}
                   </label>
                   <textarea
                     className="form-control"
@@ -2913,8 +2923,9 @@ export default function AlumnoPortal() {
 
                 {/* Contraseña Nueva */}
                 <div className="form-group" style={{ borderTop: "1px solid var(--border-color)", paddingTop: "16px", marginTop: "4px" }}>
-                  <label className="form-label" style={{ fontWeight: 600 }}>
-                    🔒 {lang === "fr" ? "Nouveau mot de passe" : lang === "en" ? "New Password" : "Nueva Contraseña"}
+                  <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600 }}>
+                    <Lock size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                    {lang === "fr" ? "Nouveau mot de passe" : lang === "en" ? "New Password" : "Nueva Contraseña"}
                   </label>
                   <input
                     type="password"
@@ -2930,8 +2941,9 @@ export default function AlumnoPortal() {
                 {/* Confirmar Contraseña */}
                 {perfilNewPassword && (
                   <div className="form-group">
-                    <label className="form-label" style={{ fontWeight: 600 }}>
-                      🔒 {lang === "fr" ? "Confirmer le mot de passe" : lang === "en" ? "Confirm Password" : "Confirmar Contraseña"}
+                    <label className="form-label" style={{ display: "flex", alignItems: "center", gap: "6px", fontWeight: 600 }}>
+                      <Lock size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                      {lang === "fr" ? "Confirmer le mot de passe" : lang === "en" ? "Confirm Password" : "Confirmar Contraseña"}
                     </label>
                     <input
                       type="password"
