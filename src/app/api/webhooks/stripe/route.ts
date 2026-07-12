@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import Stripe from "stripe";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { enviarCorreoConfirmacionPago, enviarCorreoNotificacionProfesor } from "@/lib/emails";
+import { enviarWhatsAppBienvenida } from "@/lib/whatsapp";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_placeholder", {
   apiVersion: "2025-01-27.accommodations" as never, // Api version estable
@@ -149,6 +150,29 @@ export async function POST(request: Request) {
         }
       } catch (errProf) {
         console.error("Error al notificar al profesor de la venta:", errProf);
+      }
+
+      // E. Enviar WhatsApp de bienvenida al alumno (si tiene teléfono configurado)
+      try {
+        const { data: usuarioDb } = await supabaseAdmin
+          .from("usuarios")
+          .select("telefono")
+          .eq("id", usuarioId)
+          .maybeSingle();
+
+        const telefonoAlumno = usuarioDb?.telefono || session.metadata?.telefono || session.customer_details?.phone;
+
+        if (telefonoAlumno) {
+          await enviarWhatsAppBienvenida({
+            to: telefonoAlumno,
+            nombreAlumno,
+            planNombre
+          });
+        } else {
+          console.log(`[Stripe Webhook] No se encontró número de teléfono para el usuario ${usuarioId}. WhatsApp omitido.`);
+        }
+      } catch (errWa) {
+        console.error("[Stripe Webhook] Error al enviar notificación de WhatsApp:", errWa);
       }
 
       console.log(`✅ Inscripción procesada con éxito para el usuario ${usuarioId}. Plan: ${planNombre}`);
