@@ -165,6 +165,13 @@ export default function AlumnoPortal() {
   const [selectedPlanId, setSelectedPlanId] = useState<number | null>(null);
   const [showSuccessBanner, setShowSuccessBanner] = useState(false);
   const [minDateReprogramar, setMinDateReprogramar] = useState("");
+  
+  // Estados adicionales para el wizard de registro
+  const [stepRegister, setStepRegister] = useState(1);
+  const [registerTelefono, setRegisterTelefono] = useState("");
+  const [registerNivel, setRegisterNivel] = useState("A1");
+  const [registerZonaHoraria, setRegisterZonaHoraria] = useState("Europe/Paris");
+  const [registerObjetivos, setRegisterObjetivos] = useState("");
 
   // Datos del alumno
   const [alumnoNombre, setAlumnoNombre] = useState("");
@@ -788,7 +795,11 @@ export default function AlumnoPortal() {
         id: data.user.id,
         email: email,
         nombre: nombre,
-        rol: "alumno"
+        rol: "alumno",
+        telefono: registerTelefono,
+        nivel_frances: registerNivel,
+        zona_horaria: registerZonaHoraria,
+        objetivos: registerObjetivos
       });
 
       // Si se registró con un plan específico, redireccionar de inmediato a Stripe Checkout
@@ -1309,51 +1320,192 @@ export default function AlumnoPortal() {
             </select>
           </div>
 
-          <form onSubmit={isRegistering ? handleRegister : handleLogin} className="card">
-            {isRegistering && (
-              <div className="form-group">
-                <label className="form-label" htmlFor="register-nombre">{t.fullName}</label>
-                <input
-                  className="form-control"
-                  type="text"
-                  id="register-nombre"
-                  placeholder="Ej. Sofía Pérez"
-                  value={nombre}
-                  onChange={(e) => setNombre(e.target.value)}
-                  required
-                />
-              </div>
+          <form 
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (isRegistering && stepRegister === 1) {
+                // Prevenir envío y avanzar al paso 2
+                if (!nombre || !email || !password) {
+                  setLoginError(lang === "fr" ? "Veuillez remplir tous les champs." : lang === "en" ? "Please fill all fields." : "Por favor, completa todos los campos.");
+                  return;
+                }
+                if (password.length < 6) {
+                  setLoginError(lang === "fr" ? "Le mot de passe doit comporter au moins 6 caractères." : lang === "en" ? "Password must be at least 6 characters." : "La contraseña debe tener al menos 6 caracteres.");
+                  return;
+                }
+                setStepRegister(2);
+                setLoginError("");
+                return;
+              }
+              isRegistering ? handleRegister(e) : handleLogin(e);
+            }} 
+            className="card"
+          >
+            {/* Registro Paso 1 o Login Normal */}
+            {(!isRegistering || (isRegistering && stepRegister === 1)) && (
+              <>
+                {isRegistering && (
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="register-nombre">{t.fullName}</label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      id="register-nombre"
+                      placeholder="Ej. Sofía Pérez"
+                      value={nombre}
+                      onChange={(e) => setNombre(e.target.value)}
+                      required
+                    />
+                  </div>
+                )}
+
+                <div className="form-group">
+                  <label className="form-label" htmlFor="login-email">{t.email}</label>
+                  <input
+                    className="form-control"
+                    type="email"
+                    id="login-email"
+                    placeholder="alumno@prueba.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label" htmlFor="login-password">{t.password}</label>
+                  <input
+                    className="form-control"
+                    type="password"
+                    id="login-password"
+                    placeholder="••••••••"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </div>
+
+                <button 
+                  type="submit" 
+                  className="btn btn-primary" 
+                  style={{ width: "100%", marginTop: "8px" }}
+                >
+                  {isRegistering 
+                    ? (lang === "fr" ? "Étape Suivante ➔" : lang === "en" ? "Next Step ➔" : "Siguiente Paso ➔") 
+                    : t.loginBtn}
+                </button>
+              </>
             )}
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="login-email">{t.email}</label>
-              <input
-                className="form-control"
-                type="email"
-                id="login-email"
-                placeholder="alumno@prueba.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </div>
+            {/* Registro Paso 2: Información de Aprendizaje */}
+            {isRegistering && stepRegister === 2 && (
+              <>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", borderBottom: "1px solid var(--border-color)", paddingBottom: "8px" }}>
+                  <span style={{ fontSize: "12px", fontWeight: 700, color: "hsl(var(--accent-hsl))" }}>
+                    {lang === "fr" ? "ÉTAPE 2 SUR 2" : lang === "en" ? "STEP 2 OF 2" : "PASO 2 DE 2"}
+                  </span>
+                  <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                    {lang === "fr" ? "Profil d'Étudiant" : lang === "en" ? "Student Profile" : "Perfil de Estudiante"}
+                  </span>
+                </div>
 
-            <div className="form-group">
-              <label className="form-label" htmlFor="login-password">{t.password}</label>
-              <input
-                className="form-control"
-                type="password"
-                id="login-password"
-                placeholder="••••••••"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </div>
+                {/* WhatsApp */}
+                <div className="form-group">
+                  <label className="form-label" htmlFor="register-telefono">
+                    📞 {lang === "fr" ? "Numéro WhatsApp" : lang === "en" ? "WhatsApp Number" : "Número de WhatsApp"}
+                  </label>
+                  <input
+                    className="form-control"
+                    type="tel"
+                    id="register-telefono"
+                    placeholder="ej: +51 987 654 321"
+                    value={registerTelefono}
+                    onChange={(e) => setRegisterTelefono(e.target.value)}
+                  />
+                </div>
 
-            <button type="submit" className="btn btn-primary" style={{ width: "100%", marginTop: "8px" }}>
-              {isRegistering ? t.registerBtn : t.loginBtn}
-            </button>
+                {/* Grid para Nivel y Zona Horaria */}
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="register-nivel">
+                      🎓 {lang === "fr" ? "Niveau" : lang === "en" ? "Level" : "Nivel"}
+                    </label>
+                    <select
+                      className="form-control"
+                      id="register-nivel"
+                      value={registerNivel}
+                      onChange={(e) => setRegisterNivel(e.target.value)}
+                      style={{ padding: "10px", appearance: "auto" }}
+                    >
+                      <option value="A1">A1 (Principiante)</option>
+                      <option value="A2">A2 (Básico)</option>
+                      <option value="B1">B1 (Intermedio)</option>
+                      <option value="B2">B2 (Avanzado)</option>
+                      <option value="C1">C1 (Experto)</option>
+                      <option value="C2">C2 (Bilingüe)</option>
+                    </select>
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="register-timezone">
+                      🌐 {lang === "fr" ? "Timezone" : lang === "en" ? "Timezone" : "Zona Horaria"}
+                    </label>
+                    <select
+                      className="form-control"
+                      id="register-timezone"
+                      value={registerZonaHoraria}
+                      onChange={(e) => setRegisterZonaHoraria(e.target.value)}
+                      style={{ padding: "10px", appearance: "auto" }}
+                    >
+                      <option value="Europe/Paris">Europe/Paris</option>
+                      <option value="America/Bogota">America/Bogota</option>
+                      <option value="America/Mexico_City">America/Mexico_City</option>
+                      <option value="America/Santiago">America/Santiago</option>
+                      <option value="America/Argentina/Buenos_Aires">America/Buenos_Aires</option>
+                      <option value="America/Caracas">America/Caracas</option>
+                      <option value="America/New_York">America/New_York</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Objetivos */}
+                <div className="form-group">
+                  <label className="form-label" htmlFor="register-objetivos">
+                    🎯 {lang === "fr" ? "Objectifs" : lang === "en" ? "Goals" : "Objetivos y Metas"}
+                  </label>
+                  <textarea
+                    className="form-control"
+                    id="register-objetivos"
+                    rows={2}
+                    placeholder={lang === "fr" ? "Quels sont vos objectifs ?" : lang === "en" ? "What are your goals?" : "¿Qué te gustaría lograr con el francés?"}
+                    value={registerObjetivos}
+                    onChange={(e) => setRegisterObjetivos(e.target.value)}
+                    style={{ resize: "none" }}
+                  ></textarea>
+                </div>
+
+                <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                  <button 
+                    type="button" 
+                    className="btn btn-outline" 
+                    onClick={() => {
+                      setStepRegister(1);
+                      setLoginError("");
+                    }}
+                    style={{ flex: 1, padding: "10px" }}
+                  >
+                    {lang === "fr" ? "Retour" : lang === "en" ? "Back" : "Atrás"}
+                  </button>
+                  <button 
+                    type="submit" 
+                    className="btn btn-primary" 
+                    style={{ flex: 2, padding: "10px" }}
+                  >
+                    {t.registerBtn}
+                  </button>
+                </div>
+              </>
+            )}
 
             {loginError && (
               <div style={{
@@ -1369,11 +1521,13 @@ export default function AlumnoPortal() {
               </div>
             )}
 
+
             <div style={{ textAlign: "center", marginTop: "16px" }}>
               <button
                 type="button"
                 onClick={() => {
                   setIsRegistering(!isRegistering);
+                  setStepRegister(1);
                   setLoginError("");
                 }}
                 style={{ background: "none", border: "none", color: "hsl(var(--accent-hsl))", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
