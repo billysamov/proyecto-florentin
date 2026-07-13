@@ -182,6 +182,7 @@ export default function Home() {
     const translatedConfig = { ...sourceConfig };
     const allTranslatableKeys = [
       "titulo_hero", "subtitulo_hero", "hero_badge",
+      "meta_titulo", "meta_descripcion", "palabras_clave",
       "teacher_name", "teacher_title", "teacher_bio",
       "teacher_skills", "teacher_certs",
       "teacher_students", "teacher_countries", "teacher_experience",
