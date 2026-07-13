@@ -31,13 +31,13 @@ export default function ConfiguracionTab({
 
     // Formato 1: [:es]Texto[:fr]Texte[:en]Text
     if (val.includes("[:")) {
-      const regex = new RegExp(`\\[:${editLang}\\](.*?)(?=\\[:|$)/?`, "i");
+      const regex = new RegExp(`\\[:${editLang}\\]([\\s\\S]*?)(?=\\[:|$)/?`, "i");
       const match = val.match(regex);
       if (match && match[1] !== undefined) return match[1];
       
       // Fallback
       if (editLang === "es") {
-        const esMatch = val.match(/\[:es\](.*?)(?=\[:|$)/i);
+        const esMatch = val.match(/\[:es\]([\s\S]*?)(?=\[:|$)/i);
         if (esMatch && esMatch[1] !== undefined) return esMatch[1];
       }
       return "";
@@ -45,12 +45,12 @@ export default function ConfiguracionTab({
 
     // Formato 2: [ES] Texto [FR] Texte
     if (val.includes("[ES]") || val.includes("[FR]")) {
-      const regex = new RegExp(`\\[${editLang.toUpperCase()}\\](.*?)(?=\\[[A-Z]{2}\\]|$)`, "i");
+      const regex = new RegExp(`\\[${editLang.toUpperCase()}\\]([\\s\\S]*?)(?=\\[[A-Z]{2}\\]|$)`, "i");
       const match = val.match(regex);
       if (match && match[1] !== undefined) return match[1];
 
       if (editLang === "es") {
-        const esMatch = val.match(/\[ES\](.*?)(?=\[[A-Z]{2}\]|$)/i);
+        const esMatch = val.match(/\[ES\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
         if (esMatch && esMatch[1] !== undefined) return esMatch[1];
       }
       return "";
@@ -67,13 +67,13 @@ export default function ConfiguracionTab({
 
     // 1. Extraer los textos actuales
     if (val.includes("[:")) {
-      const esMatch = val.match(/\[:es\](.*?)(?=\[:|$)/i);
-      const frMatch = val.match(/\[:fr\](.*?)(?=\[:|$)/i);
+      const esMatch = val.match(/\[:es\]([\s\S]*?)(?=\[:|$)/i);
+      const frMatch = val.match(/\[:fr\]([\s\S]*?)(?=\[:|$)/i);
       esText = esMatch && esMatch[1] !== undefined ? esMatch[1] : "";
       frText = frMatch && frMatch[1] !== undefined ? frMatch[1] : "";
     } else if (val.includes("[ES]") || val.includes("[FR]")) {
-      const esMatch = val.match(/\[ES\](.*?)(?=\[[A-Z]{2}\]|$)/i);
-      const frMatch = val.match(/\[FR\](.*?)(?=\[[A-Z]{2}\]|$)/i);
+      const esMatch = val.match(/\[ES\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
+      const frMatch = val.match(/\[FR\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
       esText = esMatch && esMatch[1] !== undefined ? esMatch[1] : "";
       frText = frMatch && frMatch[1] !== undefined ? frMatch[1] : "";
     } else {

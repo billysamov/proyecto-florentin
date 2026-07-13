@@ -153,22 +153,22 @@ export default function Home() {
     
     // Formato 1: [:es]Texto[:fr]Texte[:en]Text
     if (text.includes("[:")) {
-      const regex = new RegExp(`\\[:${tLang}\\](.*?)(?=\\[:|$)/?`, "i");
+      const regex = new RegExp(`\\[:${tLang}\\]([\\s\\S]*?)(?=\\[:|$)/?`, "i");
       const match = text.match(regex);
       if (match && match[1]) return match[1].trim();
       
       // Fallback a español
-      const fallbackMatch = text.match(/\[:es\](.*?)(?=\[:|$)/i);
+      const fallbackMatch = text.match(/\[:es\]([\s\S]*?)(?=\[:|$)/i);
       if (fallbackMatch && fallbackMatch[1]) return fallbackMatch[1].trim();
     }
     
     // Formato 2: [ES] Texto [FR] Texte [EN] Text
     if (text.includes("[ES]") || text.includes("[FR]") || text.includes("[EN]")) {
-      const regex = new RegExp(`\\[${tLang.toUpperCase()}\\](.*?)(?=\\[[A-Z]{2}\\]|$)`, "i");
+      const regex = new RegExp(`\\[${tLang.toUpperCase()}\\]([\\s\\S]*?)(?=\\[[A-Z]{2}\\]|$)`, "i");
       const match = text.match(regex);
       if (match && match[1]) return match[1].trim();
       
-      const fallbackMatch = text.match(/\[ES\](.*?)(?=\[[A-Z]{2}\]|$)/i);
+      const fallbackMatch = text.match(/\[ES\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
       if (fallbackMatch && fallbackMatch[1]) return fallbackMatch[1].trim();
     }
     
