@@ -445,12 +445,8 @@ export default function Home() {
           .single();
         if (configData) {
           setOriginalConfig(configData);
-          if (activeLang !== "es") {
-            const translated = await translateConfigObject(configData, activeLang);
-            setConfig(translated || configData);
-          } else {
-            setConfig(configData);
-          }
+          const translated = await translateConfigObject(configData, activeLang);
+          setConfig(translated || configData);
         }
       } catch (e) {
         console.error("Error al cargar CMS:", e);
