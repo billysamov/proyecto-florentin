@@ -543,13 +543,16 @@ export default function Home() {
       return new Intl.NumberFormat("en-US", { 
         style: "currency", 
         currency: "USD", 
-        maximumFractionDigits: precioConvertido < 10 && tieneDecimales ? 2 : 0 
+        minimumFractionDigits: tieneDecimales ? 2 : 0,
+        maximumFractionDigits: 2 
       }).format(precioConvertido);
     }
+    const tieneDecimales = precioEur % 1 !== 0;
     return new Intl.NumberFormat("es-ES", { 
       style: "currency", 
       currency: "EUR", 
-      maximumFractionDigits: precioEur < 10 && (precioEur % 1 !== 0) ? 2 : 0 
+      minimumFractionDigits: tieneDecimales ? 2 : 0,
+      maximumFractionDigits: 2 
     }).format(precioEur);
   };
 
