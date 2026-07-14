@@ -195,6 +195,7 @@ export default function AlumnosTab({
       <div style={{ display: "grid", gridTemplateColumns: selectedAlumno ? "1.2fr 1fr" : "1fr", gap: "32px", alignItems: "start" }}>
         
         {/* Listado de Alumnos */}
+        <div className="card" style={{ padding: "28px" }}>
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
             <h3 style={{ fontSize: "20px", margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
               <Users size={20} className="text-[#3b82f6] shrink-0" /> {t.tituloExpedientes}
