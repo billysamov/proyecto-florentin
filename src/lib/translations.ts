@@ -34,7 +34,7 @@ export const translations = {
     psProblem3: "Horarios rígidos",
     psProblemDesc3: "Las academias te obligan a adaptarte a sus horarios. Tú trabajas, viajas, vives.",
     psSolution3: "Flexibilidad total",
-    psSolutionDesc3: "Tú eliges el día y la hora. Clases por Google Meet desde donde estés, en tu zona horaria.",
+    psSolutionDesc3: "Tú eliges el día y la hora. Clases por Microsoft Teams desde donde estés, en tu zona horaria.",
 
     // Plans
     plansBadge: "PLANES",
@@ -43,7 +43,7 @@ export const translations = {
     planFreeName: "Clase de Prueba",
     planFreePrice: "Gratis",
     planFreeDesc: "Una sesión de 30 minutos para conocer el método y evaluar tu nivel actual.",
-    planFreeDetail1: "1 clase de 30 min por Google Meet",
+    planFreeDetail1: "1 clase de 30 min por Microsoft Teams",
     planFreeDetail2: "Evaluación de nivel personalizada",
     planFreeDetail3: "Sin compromiso de compra",
     planFreeBtn: "Agendar Gratis",
@@ -204,7 +204,7 @@ export const translations = {
     psProblem3: "Horaires rigides",
     psProblemDesc3: "Les écoles vous obligent à vous adapter à leurs horaires. Vous travaillez, voyagez, vivez.",
     psSolution3: "Flexibilité totale",
-    psSolutionDesc3: "Vous choisissez le jour et l'heure. Cours via Google Meet où que vous soyez, dans votre fuseau horaire.",
+    psSolutionDesc3: "Vous choisissez le jour et l'heure. Cours via Microsoft Teams où que vous soyez, dans votre fuseau horaire.",
 
     // Plans
     plansBadge: "TARIFS",
@@ -213,7 +213,7 @@ export const translations = {
     planFreeName: "Cours d'Essai",
     planFreePrice: "Gratuit",
     planFreeDesc: "Une session de 30 minutes pour découvrir la méthode et évaluer votre niveau actuel.",
-    planFreeDetail1: "1 cours de 30 min via Google Meet",
+    planFreeDetail1: "1 cours de 30 min via Microsoft Teams",
     planFreeDetail2: "Évaluation de niveau personnalisée",
     planFreeDetail3: "Sans engagement d'achat",
     planFreeBtn: "Réserver Gratuitement",
@@ -374,7 +374,7 @@ export const translations = {
     psProblem3: "Rigid schedules",
     psProblemDesc3: "Schools force you to adapt to their schedules. You work, travel, live.",
     psSolution3: "Total flexibility",
-    psSolutionDesc3: "You choose the day and time. Classes via Google Meet from anywhere, in your timezone.",
+    psSolutionDesc3: "You choose the day and time. Classes via Microsoft Teams from anywhere, in your timezone.",
 
     // Plans
     plansBadge: "PLANS",
@@ -383,7 +383,7 @@ export const translations = {
     planFreeName: "Trial Class",
     planFreePrice: "Free",
     planFreeDesc: "A 30-minute session to discover the method and assess your current level.",
-    planFreeDetail1: "1 class of 30 min via Google Meet",
+    planFreeDetail1: "1 class of 30 min via Microsoft Teams",
     planFreeDetail2: "Personalized level assessment",
     planFreeDetail3: "No purchase commitment",
     planFreeBtn: "Book for Free",

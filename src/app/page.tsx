@@ -425,7 +425,7 @@ export default function Home() {
       try {
         const { data: planesData } = await supabase
           .from("planes_estudio")
-          .select("id, nombre, descripcion, precio, total_clases, orden")
+          .select("id, nombre, descripcion, precio, total_clases, orden, recomendado")
           .eq("activo", true)
           .order("orden", { ascending: true })
           .order("precio", { ascending: true });
@@ -1212,8 +1212,8 @@ export default function Home() {
 
             {/* Paid Plans from Supabase */}
             {planes.map((plan, idx) => (
-              <div key={plan.id} className={`reveal-item w-full md:w-[340px] lg:w-[350px] p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-white text-slate-800 border border-slate-200/80 relative transition-transform hover:scale-[1.02] ${idx === 1 ? 'shadow-lg border-[#3b82f6]/20' : 'shadow-sm'}`}>
-                {idx === 1 && (
+              <div key={plan.id} className={`reveal-item w-full md:w-[340px] lg:w-[350px] p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-white text-slate-800 border border-slate-200/80 relative transition-transform hover:scale-[1.02] ${plan.recomendado ? 'shadow-lg border-[#3b82f6]/20' : 'shadow-sm'}`}>
+                {plan.recomendado && (
                   <div className="absolute -top-0 right-4 px-3 py-1 bg-[#ef4444] rounded-b-lg text-xs font-bold text-white tracking-wider">{t.recommended}</div>
                 )}
                 <div>

@@ -11,6 +11,7 @@ interface PlanesTabProps {
   crearPlan: (e: React.FormEvent) => Promise<void>;
   guardarEdicionPlan: (id: number, fields: any) => Promise<void>;
   toggleEstadoPlan: (id: number) => Promise<void>;
+  toggleRecomendadoPlan: (id: number, isRecomendado: boolean) => Promise<void>;
   eliminarPlan: (id: number) => Promise<void>;
   lang?: "es" | "fr";
 }
@@ -25,6 +26,7 @@ export default function PlanesTab({
   crearPlan,
   guardarEdicionPlan,
   toggleEstadoPlan,
+  toggleRecomendadoPlan,
   eliminarPlan,
   lang = "es"
 }: PlanesTabProps) {
@@ -68,6 +70,8 @@ export default function PlanesTab({
     activo: isFr ? "Actif" : "Activo",
     desactivar: isFr ? "Désactiver" : "Desactivar",
     activar: isFr ? "Activer" : "Activar",
+    marcarRecomendado: isFr ? "Marquer comme recommandé" : "Marcar como Recomendado",
+    quitarRecomendado: isFr ? "Retirer la recommandation" : "Quitar Recomendado",
     eliminarConfirm: isFr ? "Voulez-vous vraiment supprimer cette formule ?" : "¿Seguro que deseas eliminar este plan?"
   };
 
@@ -338,6 +342,13 @@ export default function PlanesTab({
                         </div>
                       ) : (
                         <div style={{ display: "inline-flex", gap: "8px", alignItems: "center" }}>
+                          <button
+                            onClick={() => toggleRecomendadoPlan(p.id, !p.recomendado)}
+                            title={p.recomendado ? t.quitarRecomendado : t.marcarRecomendado}
+                            style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", fontSize: "18px", lineHeight: 1 }}
+                          >
+                            {p.recomendado ? '⭐' : '☆'}
+                          </button>
                           <button
                             onClick={() => toggleEstadoPlan(p.id)}
                             className={`btn ${p.activo ? 'btn-secondary' : 'btn-accent'}`}

@@ -1181,6 +1181,18 @@ export default function AdminDashboard() {
   const toggleEstadoPlan = togglePlanActivo;
   const crearPlan = guardarPlan;
 
+  const toggleRecomendadoPlan = async (id: number, isRecomendado: boolean) => {
+    const { error } = await supabase
+      .from("planes_estudio")
+      .update({ recomendado: isRecomendado })
+      .eq("id", id);
+    if (error) {
+      alert("Error al actualizar recomendado: " + error.message);
+    } else {
+      cargarDatos();
+    }
+  };
+
   const enviarMensaje = async (e: React.FormEvent) => {
     e.preventDefault();
     await enviarNotificacionManual(destinatario, canalEnvio, asuntoMsg, cuerpoMsg);
@@ -1495,6 +1507,7 @@ export default function AdminDashboard() {
                 crearPlan={crearPlan}
                 guardarEdicionPlan={guardarEdicionPlan}
                 toggleEstadoPlan={toggleEstadoPlan}
+                toggleRecomendadoPlan={toggleRecomendadoPlan}
                 eliminarPlan={eliminarPlan}
                 lang={adminLang}
               />
