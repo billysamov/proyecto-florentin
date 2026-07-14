@@ -216,6 +216,13 @@ export default function AdminDashboard() {
   const cargarDatos = async () => {
     setLoading(true);
     try {
+      // Ejecutar limpieza silenciosa de alumnos inactivos de más de 2 semanas sin compras
+      fetch("/api/admin/alumnos/eliminar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ limpiarInactivos: true })
+      }).catch(err => console.error("Error limpieza inactivos:", err));
+
       // 1. Obtener Alumnos, Inscripciones y Planes
       const { data: planesCatalog } = await supabase.from("planes_estudio").select("*");
 
@@ -1115,6 +1122,44 @@ export default function AdminDashboard() {
     }
   };
 
+  const eliminarAlumno = async (id: string) => {
+    try {
+      const response = await fetch("/api/admin/alumnos/eliminar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ alumnoId: id })
+      });
+      const res = await response.json();
+      if (res.error) {
+        alert(res.error);
+      } else {
+        alert(adminLang === 'es' ? "✓ Estudiante eliminado correctamente." : "✓ Élève supprimé avec succès.");
+        cargarDatos();
+      }
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    }
+  };
+
+  const limpiarAlumnosInactivos = async () => {
+    try {
+      const response = await fetch("/api/admin/alumnos/eliminar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ limpiarInactivos: true })
+      });
+      const res = await response.json();
+      if (res.error) {
+        alert(res.error);
+      } else {
+        alert(res.message || "✓ Limpieza completada.");
+        cargarDatos();
+      }
+    } catch (err: any) {
+      alert("Error: " + err.message);
+    }
+  };
+
   const toggleEstadoPlan = togglePlanActivo;
   const crearPlan = guardarPlan;
 
@@ -1413,6 +1458,8 @@ export default function AdminDashboard() {
                 setFeedbackGrabacion={setFeedbackGrabacion}
                 guardarFeedbackClase={guardarFeedbackClase}
                 toggleAsignacionRecurso={toggleAsignacionRecurso}
+                eliminarAlumno={eliminarAlumno}
+                limpiarAlumnosInactivos={limpiarAlumnosInactivos}
                 planes={planes}
                 lang={adminLang}
               />

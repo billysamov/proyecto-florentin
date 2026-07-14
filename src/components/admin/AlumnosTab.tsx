@@ -1,5 +1,5 @@
 import React from "react";
-import { UserPlus, Users, FileText, Video, Edit, BookOpen } from "lucide-react";
+import { UserPlus, Users, FileText, Video, Edit, BookOpen, Trash2, Info } from "lucide-react";
 
 interface Alumno {
   id: string;
@@ -49,6 +49,8 @@ interface AlumnosTabProps {
   setFeedbackGrabacion: (val: string) => void;
   guardarFeedbackClase: (claseId: string) => Promise<void>;
   toggleAsignacionRecurso: (recursoId: number, usuarioId: string, estaAsignado: boolean) => Promise<void>;
+  eliminarAlumno: (id: string) => Promise<void>;
+  limpiarAlumnosInactivos: () => Promise<void>;
   planes: any[];
   lang?: "es" | "fr";
 }
@@ -73,6 +75,8 @@ export default function AlumnosTab({
   setFeedbackGrabacion,
   guardarFeedbackClase,
   toggleAsignacionRecurso,
+  eliminarAlumno,
+  limpiarAlumnosInactivos,
   planes,
   lang = "es"
 }: AlumnosTabProps) {
@@ -95,6 +99,10 @@ export default function AlumnosTab({
     thAccion: isFr ? "Action" : "Acción",
     btnFicha: isFr ? "📂 Dossier" : "📂 Ficha",
     btnCerrar: isFr ? "📂 Fermer" : "📂 Cerrar",
+    btnEliminar: isFr ? "Supprimer" : "Eliminar",
+    btnLimpiarInactivos: isFr ? "Nettoyer inactifs" : "Limpiar inactivos",
+    confirmEliminar: isFr ? "Voulez-vous vraiment supprimer cet élève ? Toutes ses données associées seront définitivement supprimées." : "¿Seguro que deseas eliminar a este estudiante? Se perderán permanentemente todas sus clases y tareas asignadas.",
+    errorEliminarCompra: isFr ? "Impossible de supprimer cet élève car il a déjà acheté un plan." : "No se puede eliminar a este estudiante porque ya ha adquirido un plan.",
     lblClases: isFr ? "cours" : "clases",
     lblMoneda: isFr ? "Devise :" : "Moneda:",
     tituloFicha: isFr ? "Dossier :" : "Ficha:",
@@ -187,10 +195,23 @@ export default function AlumnosTab({
       <div style={{ display: "grid", gridTemplateColumns: selectedAlumno ? "1.2fr 1fr" : "1fr", gap: "32px", alignItems: "start" }}>
         
         {/* Listado de Alumnos */}
-        <div className="card" style={{ padding: "28px" }}>
-          <h3 style={{ fontSize: "20px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
-            <Users size={20} className="text-[#3b82f6] shrink-0" /> {t.tituloExpedientes}
-          </h3>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "12px", marginBottom: "20px" }}>
+            <h3 style={{ fontSize: "20px", margin: 0, display: "flex", alignItems: "center", gap: "10px" }}>
+              <Users size={20} className="text-[#3b82f6] shrink-0" /> {t.tituloExpedientes}
+            </h3>
+            <button
+              onClick={() => {
+                if (window.confirm(lang === 'es' ? '¿Seguro que deseas eliminar automáticamente a todos los alumnos que se registraron hace más de 2 semanas y no han adquirido ningún plan?' : 'Voulez-vous vraiment supprimer tous les élèves inscrits il y a plus de 2 semaines sans formule active ?')) {
+                  limpiarAlumnosInactivos();
+                }
+              }}
+              className="btn btn-secondary"
+              style={{ padding: "6px 12px", fontSize: "11px", display: "flex", alignItems: "center", gap: "6px", fontWeight: 700, cursor: "pointer" }}
+            >
+              <Trash2 size={14} className="text-[#ef4444]" />
+              {t.btnLimpiarInactivos}
+            </button>
+          </div>
 
           {alumnos.length === 0 ? (
             <p style={{ color: "var(--text-muted)", fontSize: "14px", textAlign: "center", padding: "20px 0" }}>
@@ -237,22 +258,53 @@ export default function AlumnosTab({
                         </div>
                       </td>
                       <td style={{ padding: "16px", textAlign: "right" }}>
-                        <button
-                          onClick={() => setSelectedAlumno(selectedAlumno?.id === a.id ? null : a)}
-                          className="btn"
-                          style={{
-                            padding: "6px 12px",
-                            fontSize: "12px",
-                            fontWeight: 700,
-                            borderRadius: "var(--radius-sm)",
-                            backgroundColor: selectedAlumno?.id === a.id ? "hsl(var(--accent-hsl))" : "hsl(var(--primary-hsl))",
-                            color: selectedAlumno?.id === a.id ? "#000" : "#fff",
-                            border: "none",
-                            cursor: "pointer"
-                          }}
-                        >
-                          {selectedAlumno?.id === a.id ? t.btnCerrar : t.btnFicha}
-                        </button>
+                        <div style={{ display: "inline-flex", gap: "8px", alignItems: "center" }}>
+                          <button
+                            onClick={() => setSelectedAlumno(selectedAlumno?.id === a.id ? null : a)}
+                            className="btn"
+                            style={{
+                              padding: "6px 12px",
+                              fontSize: "12px",
+                              fontWeight: 700,
+                              borderRadius: "var(--radius-sm)",
+                              backgroundColor: selectedAlumno?.id === a.id ? "hsl(var(--accent-hsl))" : "hsl(var(--primary-hsl))",
+                              color: selectedAlumno?.id === a.id ? "#000" : "#fff",
+                              border: "none",
+                              cursor: "pointer"
+                            }}
+                          >
+                            {selectedAlumno?.id === a.id ? t.btnCerrar : t.btnFicha}
+                          </button>
+                          
+                          <button
+                            onClick={async () => {
+                              const tienePlanes = a.plan !== "Sin plan activo" && a.plan !== "Aucune formule active";
+                              if (tienePlanes) {
+                                alert(t.errorEliminarCompra);
+                                return;
+                              }
+                              if (window.confirm(t.confirmEliminar)) {
+                                await eliminarAlumno(a.id);
+                              }
+                            }}
+                            className="btn btn-secondary"
+                            style={{
+                              padding: "6px",
+                              borderRadius: "var(--radius-sm)",
+                              border: "1px solid var(--border-color)",
+                              backgroundColor: "transparent",
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              opacity: a.plan !== "Sin plan activo" && a.plan !== "Aucune formule active" ? 0.3 : 1,
+                              cursor: a.plan !== "Sin plan activo" && a.plan !== "Aucune formule active" ? "not-allowed" : "pointer"
+                            }}
+                            title={a.plan !== "Sin plan activo" && a.plan !== "Aucune formule active" ? t.errorEliminarCompra : t.btnEliminar}
+                          >
+                            <Trash2 size={16} className="text-[#ef4444]" />
+                          </button>
+                        </div>
                       </td>
                     </tr>
                   ))}
