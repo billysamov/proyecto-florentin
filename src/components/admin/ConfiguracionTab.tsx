@@ -561,6 +561,48 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               </div>
             </div>
           </div>
+
+          {/* Visibilidad de Secciones */}
+          <div className="card" style={{ padding: "24px", marginTop: "8px" }}>
+            <h4 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "16px", color: "var(--text-primary)" }}>
+              {isFr ? "👁️ Visibilité des Sections" : "👁️ Visibilidad de Secciones"}
+            </h4>
+            <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "20px" }}>
+              {isFr
+                ? "Activez ou désactivez des sections entières de la Landing Page sans les supprimer."
+                : "Activa o desactiva secciones completas de la Landing Page sin eliminarlas."}
+            </p>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", background: "var(--bg-subtle, #f8fafc)", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
+              <div>
+                <div style={{ fontWeight: 700, fontSize: "14px" }}>
+                  {isFr ? "⭐ Sección de Experiencias / Testimonios" : "⭐ Sección de Experiencias / Testimonios"}
+                </div>
+                <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
+                  {isFr ? "Affiche les avis et témoignages des étudiants sur la Landing Page." : "Muestra las reseñas y experiencias de alumnos en la Landing Page."}
+                </div>
+              </div>
+              <button
+                type="button"
+                onClick={() => setConfig({ ...config, mostrar_testimonios: !config.mostrar_testimonios })}
+                style={{
+                  padding: "8px 20px",
+                  borderRadius: "999px",
+                  border: "none",
+                  cursor: "pointer",
+                  fontWeight: 700,
+                  fontSize: "13px",
+                  transition: "all 0.2s",
+                  backgroundColor: config.mostrar_testimonios ? "#10b981" : "#ef4444",
+                  color: "white",
+                  minWidth: "120px"
+                }}
+              >
+                {config.mostrar_testimonios
+                  ? (isFr ? "✓ Activée" : "✓ Habilitada")
+                  : (isFr ? "✗ Désactivée" : "✗ Deshabilitada")}
+              </button>
+            </div>
+          </div>
         )}
 
         {/* Pestaña: Perfil Profesor */}

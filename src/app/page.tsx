@@ -1265,6 +1265,10 @@ export default function Home() {
       </section>
 
 
+      {/* ═══════════════════════════════════════
+          7. TESTIMONIOS — Experiencias de Alumnos
+      ═══════════════════════════════════════ */}
+      {config?.mostrar_testimonios !== false && (
       <section className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-[#f8fafc]">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
@@ -1294,6 +1298,7 @@ export default function Home() {
           </div>
         </div>
       </section>
+      )}
 
 
       {/* ═══════════════════════════════════════
