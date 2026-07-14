@@ -948,7 +948,6 @@ export default function Home() {
           <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop" alt="Paris" className="hero-bg-img w-full h-full object-cover opacity-10 mix-blend-overlay scale-105" />
         </div>
         <div className="relative z-20 text-center max-w-5xl mx-auto flex flex-col items-center">
-          <span className="hero-text inline-block px-5 py-2 rounded-full text-xs sm:text-sm font-bold tracking-wider bg-[#3b82f6]/8 border border-[#3b82f6]/15 text-[#3b82f6] mb-8">{config?.hero_badge || t.heroBadge}</span>
           <h1 className="hero-text text-[clamp(2.5rem,7.5vw,6.5rem)] font-black leading-[0.92] tracking-tighter text-[#0c1b33] mb-6 sm:mb-8 font-serif">
             {renderFormattedTitle(config?.titulo_hero || (t.heroTitle1 + " " + t.heroTitle2))}
           </h1>
@@ -979,7 +978,7 @@ export default function Home() {
 
         <div className="max-w-6xl mx-auto relative z-10">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.teacherBadge}</span>
+            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">{t.teacherBadge}</span>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
@@ -1007,7 +1006,7 @@ export default function Home() {
 
             {/* Bio */}
             <div className="reveal-item">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] mb-2 tracking-tighter font-serif">{config?.teacher_name || t.teacherName}</h2>
+              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black mb-2 tracking-tighter font-serif">{config?.teacher_name || t.teacherName}</h2>
               <p className="text-[#3b82f6] font-bold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
               <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6 font-medium">
                 {config?.teacher_bio || t.teacherBio}
@@ -1068,7 +1067,7 @@ export default function Home() {
       <section id="method" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">
+            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
               {config?.ps_badge || t.psBadge}
             </span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter">
@@ -1128,7 +1127,7 @@ export default function Home() {
       <section id="for-whom" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">
+            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
               {config?.for_whom_badge || t.forWhomBadge}
             </span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-[#0c1b33] font-serif">
@@ -1161,7 +1160,7 @@ export default function Home() {
       <section id="plans" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#f1f5f9]">
         <div className="max-w-7xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.plansBadge}</span>
+            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">{t.plansBadge}</span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter text-[#0c1b33] mb-4 font-serif">{t.plansTitle}</h2>
             <p className="reveal-item text-slate-500 text-base sm:text-lg max-w-xl mx-auto font-medium">{t.plansSubtitle}</p>
             <div className="reveal-item flex justify-center items-center mt-6">
@@ -1274,7 +1273,7 @@ export default function Home() {
       <section id="faq" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-3xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 mb-5">{t.faqBadge}</span>
+            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">{t.faqBadge}</span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter">{t.faqTitle}</h2>
           </div>
           <div className="flex flex-col gap-3">
@@ -1302,7 +1301,7 @@ export default function Home() {
       <section className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-[#f8fafc]">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-5">{t.testimBadge}</span>
+            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">{t.testimBadge}</span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-[#0c1b33] font-serif">{t.testimTitle}</h2>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-5 sm:gap-6">
@@ -1338,7 +1337,7 @@ export default function Home() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(59,130,246,0.03)_0%,transparent_70%)] pointer-events-none" />
 
         <div className="reveal-item max-w-4xl mx-auto bg-white border border-slate-200/80 rounded-2xl sm:rounded-[2.5rem] p-8 sm:p-16 text-center relative z-10 shadow-lg">
-          <span className="inline-block px-4 py-1.5 rounded-full text-xs font-bold tracking-[3px] bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/15 mb-6">
+          <span className="inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
             {config?.cta_badge || t.ctaBadge}
           </span>
           <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-[#0c1b33] mb-6 font-serif">
