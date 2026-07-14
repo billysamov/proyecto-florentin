@@ -670,7 +670,7 @@ export default function Home() {
     });
   }, { scope: containerRef });
 
-  const navLinks = [
+  const mobileNavLinks = [
     { href: "#teacher", label: t.navTeacher },
     { href: "#method", label: t.navMethod },
     { href: "#for-whom", label: lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom' },
@@ -839,10 +839,23 @@ export default function Home() {
             <div className="logo-fallback hidden w-full h-full text-slate-800 font-black text-sm items-center justify-start font-serif">FLORENTIN</div>
           </div>
         </Link>
-        <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-semibold text-slate-600 md:justify-self-center">
-          {navLinks.map((link) => (
-            <a key={link.href} href={link.href} className="hover:text-[#0c1b33] transition-colors">{link.label}</a>
-          ))}
+        <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-semibold text-slate-600 md:justify-self-center items-center">
+          {/* Dropdown El Curso */}
+          <div className="relative group py-2 flex items-center">
+            <button className="flex items-center gap-1 hover:text-[#0c1b33] transition-colors cursor-pointer select-none">
+              {lang === 'es' ? 'El Curso' : lang === 'fr' ? 'Le Cours' : 'The Course'}
+              <ChevronDown size={14} className="transition-transform duration-300 group-hover:rotate-180 text-slate-400" />
+            </button>
+            <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-48 bg-white border border-slate-200/80 rounded-2xl shadow-lg py-2.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200 mt-1">
+              <a href="#teacher" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navTeacher}</a>
+              <a href="#method" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navMethod}</a>
+              <a href="#for-whom" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom'}</a>
+              <a href="#faq" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navFaq}</a>
+            </div>
+          </div>
+
+          <a href="#plans" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{t.navPlans}</a>
+          <a href="#contact" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{t.navContact}</a>
         </div>
         <div className="hidden md:flex gap-3 items-center md:justify-self-end">
           {translating && (
@@ -915,7 +928,7 @@ export default function Home() {
       {/* Mobile Menu */}
       <div className={`fixed inset-0 z-40 bg-[#f8fafc]/98 backdrop-blur-2xl transition-all duration-500 md:hidden flex flex-col items-center justify-center gap-6 ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
         <div className="flex flex-col items-center gap-5 text-2xl font-bold text-slate-800">
-          {navLinks.map((link) => (
+          {mobileNavLinks.map((link) => (
             <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className="text-slate-600 hover:text-[#0c1b33] transition-colors">{link.label}</a>
           ))}
         </div>
