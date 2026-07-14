@@ -216,10 +216,16 @@ export default function AdminDashboard() {
   const cargarDatos = async () => {
     setLoading(true);
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       // Ejecutar limpieza silenciosa de alumnos inactivos de más de 2 semanas sin compras
       fetch("/api/admin/alumnos/eliminar", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ limpiarInactivos: true })
       }).catch(err => console.error("Error limpieza inactivos:", err));
 
@@ -1124,9 +1130,15 @@ export default function AdminDashboard() {
 
   const eliminarAlumno = async (id: string) => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch("/api/admin/alumnos/eliminar", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ alumnoId: id })
       });
       const res = await response.json();
@@ -1143,9 +1155,15 @@ export default function AdminDashboard() {
 
   const limpiarAlumnosInactivos = async () => {
     try {
+      const { data: { session } } = await supabase.auth.getSession();
+      const headers: HeadersInit = { "Content-Type": "application/json" };
+      if (session?.access_token) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
+      }
+
       const response = await fetch("/api/admin/alumnos/eliminar", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers,
         body: JSON.stringify({ limpiarInactivos: true })
       });
       const res = await response.json();
