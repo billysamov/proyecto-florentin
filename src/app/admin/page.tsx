@@ -171,7 +171,7 @@ export default function AdminDashboard() {
   const [feedbackNota, setFeedbackNota] = useState("");
   const [feedbackGrabacion, setFeedbackGrabacion] = useState("");
 
-  const [nuevoPlan, setNuevoPlan] = useState({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1" });
+  const [nuevoPlan, setNuevoPlan] = useState({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1", orden: 0 });
   const [plExito, setPlExito] = useState(false);
   const [plError, setPlError] = useState("");
   const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
@@ -366,7 +366,8 @@ export default function AdminDashboard() {
           totalClases: p.total_clases,
           tipo: p.tipo || "paquete",
           nivel: p.nivel || "Todos",
-          activo: p.activo
+          activo: p.activo,
+          orden: p.orden || 0
         })));
       }
 
@@ -605,7 +606,8 @@ export default function AdminDashboard() {
             precio: nuevoPlan.precio,
             total_clases: nuevoPlan.totalClases,
             tipo: nuevoPlan.tipo,
-            nivel: nuevoPlan.nivel
+            nivel: nuevoPlan.nivel,
+            orden: nuevoPlan.orden
           })
           .eq("id", editingPlanId);
 
@@ -615,7 +617,7 @@ export default function AdminDashboard() {
         }
 
         setEditingPlanId(null);
-        setNuevoPlan({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1" });
+        setNuevoPlan({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1", orden: 0 });
         setPlExito(true);
         cargarDatos();
         setTimeout(() => setPlExito(false), 3000);
@@ -629,7 +631,8 @@ export default function AdminDashboard() {
             total_clases: nuevoPlan.totalClases,
             tipo: nuevoPlan.tipo,
             nivel: nuevoPlan.nivel,
-            activo: true
+            activo: true,
+            orden: nuevoPlan.orden
           });
 
         if (error) {
@@ -637,7 +640,7 @@ export default function AdminDashboard() {
           return;
         }
 
-        setNuevoPlan({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1" });
+        setNuevoPlan({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1", orden: 0 });
         setPlExito(true);
         cargarDatos();
         setTimeout(() => setPlExito(false), 3000);
@@ -1086,7 +1089,8 @@ export default function AdminDashboard() {
         descripcion: fields.descripcion,
         precio: fields.precio,
         total_clases: fields.total_clases,
-        nivel: fields.nivel
+        nivel: fields.nivel,
+        orden: fields.orden
       })
       .eq("id", id);
 

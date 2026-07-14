@@ -425,9 +425,10 @@ export default function Home() {
       try {
         const { data: planesData } = await supabase
           .from("planes_estudio")
-          .select("id, nombre, descripcion, precio, total_clases")
+          .select("id, nombre, descripcion, precio, total_clases, orden")
           .eq("activo", true)
-          .order("id", { ascending: true });
+          .order("orden", { ascending: true })
+          .order("precio", { ascending: true });
         if (planesData && planesData.length > 0) {
           setOriginalPlanes(planesData);
           if (activeLang !== "es") {
@@ -1010,11 +1011,6 @@ export default function Home() {
               <p className="text-[#3b82f6] font-bold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
               <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6 font-medium" style={{ whiteSpace: "pre-wrap" }}>
                 {config?.teacher_bio || t.teacherBio}
-                <div className="mt-4 flex justify-end">
-                  <span className="font-script text-[#ef4444] text-5xl sm:text-6xl select-none tracking-wide transform -rotate-3 block pr-6">
-                    Florentin
-                  </span>
-                </div>
               </div>
 
               {/* Certificates */}
@@ -1173,95 +1169,49 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Carrusel Deslizable Lateralmente */}
-          <div className="relative w-full px-2 sm:px-4 md:px-0">
-            {/* Botones de navegación flotantes (solo si hay más de 3 planes en total y en pantallas medianas/grandes) */}
-            {(planes.length + 1 > 3) && (
-              <>
-                <button 
-                  onClick={() => {
-                    if (plansContainerRef.current) {
-                      plansContainerRef.current.scrollBy({ left: -380, behavior: 'smooth' });
-                    }
-                  }}
-                  className="absolute -left-4 lg:-left-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white text-slate-800 border border-slate-200/80 hover:bg-[#0c1b33] hover:text-white hover:border-[#0c1b33] flex items-center justify-center transition-all duration-300 shadow-xl z-30 hover:scale-105 active:scale-95 hidden md:flex"
-                  aria-label="Anterior"
-                >
-                  <ChevronLeft size={28} />
-                </button>
-                <button 
-                  onClick={() => {
-                    if (plansContainerRef.current) {
-                      plansContainerRef.current.scrollBy({ left: 380, behavior: 'smooth' });
-                    }
-                  }}
-                  className="absolute -right-4 lg:-right-8 top-1/2 -translate-y-1/2 w-14 h-14 rounded-full bg-white text-slate-800 border border-slate-200/80 hover:bg-[#0c1b33] hover:text-white hover:border-[#0c1b33] flex items-center justify-center transition-all duration-300 shadow-xl z-30 hover:scale-105 active:scale-95 hidden md:flex"
-                  aria-label="Siguiente"
-                >
-                  <ChevronRight size={28} />
-                </button>
-              </>
-            )}
-
-            <div 
-              ref={plansContainerRef}
-              className={`flex flex-row overflow-x-auto gap-6 sm:gap-8 pb-10 pt-4 px-4 sm:px-6 md:px-2 scroll-smooth snap-x snap-mandatory ${
-                (planes.length + 1) <= 3 ? "md:justify-center" : "md:justify-start"
-              }`}
-              style={{
-                scrollbarWidth: 'none', /* Firefox */
-                msOverflowStyle: 'none', /* IE/Edge */
-              }}
-            >
-              {/* Ocultar barra de scroll para Webkit */}
-              <style dangerouslySetInnerHTML={{ __html: `
-                #plans div::-webkit-scrollbar {
-                  display: none !important;
-                }
-              `}} />
-
-              {/* Free Trial Card */}
-              <div className="reveal-item shrink-0 w-[290px] sm:w-[340px] md:w-[350px] snap-start p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-gradient-to-br from-[#0c1b33] to-[#152e54] text-white relative overflow-hidden shadow-xl shadow-[#0c1b33]/10 border border-white/10">
-                <div className="absolute top-4 right-4 px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white tracking-wider">
-                  {lang === 'es' ? '⭐ GRATIS' : lang === 'fr' ? '⭐ GRATUIT' : '⭐ FREE'}
-                </div>
-                <div>
-                  <h3 className="text-2xl sm:text-3xl font-black mb-2">{t.planFreeName}</h3>
-                  <div className="text-4xl sm:text-5xl font-black tracking-tighter mb-6">{t.planFreePrice}</div>
-                  <p className="text-white/70 text-base font-medium mb-6">{t.planFreeDesc}</p>
-                  <ul className="space-y-3 mb-8">
-                    {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
-                      <li key={i} className="flex items-start gap-2 text-sm font-medium text-white/80">
-                        <CheckCircle size={18} className="text-[#3b82f6] shrink-0 mt-0.5" />{detail}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-                <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#ef4444] text-white hover:bg-[#d9383a] transition-all hover:scale-105 shadow-md">
-                  {lang === 'es' ? 'Agendar mi clase de prueba gratuita' : lang === 'fr' ? 'Réserver mon cours d\'essai gratuit' : 'Book my free trial class'}
-                </a>
+          {/* Rejilla de Planes en Orden (Cuadrícula limpia y adaptable) */}
+          <div className="flex flex-col md:flex-row flex-wrap gap-6 sm:gap-8 justify-center items-stretch max-w-7xl mx-auto px-4 mt-10">
+            {/* Free Trial Card */}
+            <div className="reveal-item w-full md:w-[340px] lg:w-[350px] p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-gradient-to-br from-[#0c1b33] to-[#152e54] text-white relative overflow-hidden shadow-xl shadow-[#0c1b33]/10 border border-white/10">
+              <div className="absolute top-4 right-4 px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white tracking-wider">
+                {lang === 'es' ? '⭐ GRATIS' : lang === 'fr' ? '⭐ GRATUIT' : '⭐ FREE'}
               </div>
-
-              {/* Paid Plans from Supabase */}
-              {planes.map((plan, idx) => (
-                <div key={plan.id} className={`reveal-item shrink-0 w-[290px] sm:w-[340px] md:w-[350px] snap-start p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-white text-slate-800 border border-slate-200/80 relative transition-transform hover:scale-[1.02] ${idx === 1 ? 'shadow-lg border-[#3b82f6]/20' : 'shadow-sm'}`}>
-                  {idx === 1 && (
-                    <div className="absolute -top-0 right-4 px-3 py-1 bg-[#ef4444] rounded-b-lg text-xs font-bold text-white tracking-wider">{t.recommended}</div>
-                  )}
-                  <div>
-                    <h3 className="text-2xl sm:text-3xl font-black text-[#0c1b33] mb-2">{plan.nombre}</h3>
-                    <div className="text-4xl sm:text-5xl font-black tracking-tighter text-[#0c1b33] mb-2">
-                      {formatPrecio(plan.precio)}
-                    </div>
-                    <p className="text-slate-400 text-sm font-medium mb-6">/ {plan.total_clases} {t.planClasses}</p>
-                    <p className="text-slate-600 text-base font-medium mb-8 leading-relaxed h-[72px] overflow-hidden line-clamp-3">{plan.descripcion}</p>
-                  </div>
-                  <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#0c1b33] text-white hover:bg-[#152e54] transition-all hover:scale-105 shadow-sm">
-                    {lang === 'es' ? 'Elegir este plan' : lang === 'fr' ? 'Choisir cette formule' : 'Choose this plan'}
-                  </Link>
-                </div>
-              ))}
+              <div>
+                <h3 className="text-2xl sm:text-3xl font-black mb-2">{t.planFreeName}</h3>
+                <div className="text-4xl sm:text-5xl font-black tracking-tighter mb-6">{t.planFreePrice}</div>
+                <p className="text-white/70 text-base font-medium mb-6">{t.planFreeDesc}</p>
+                <ul className="space-y-3 mb-8">
+                  {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
+                    <li key={i} className="flex items-start gap-2 text-sm font-medium text-white/80">
+                      <CheckCircle size={18} className="text-[#3b82f6] shrink-0 mt-0.5" />{detail}
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#ef4444] text-white hover:bg-[#d9383a] transition-all hover:scale-105 shadow-md">
+                {lang === 'es' ? 'Agendar mi clase de prueba gratuita' : lang === 'fr' ? 'Réserver mon cours d\'essai gratuit' : 'Book my free trial class'}
+              </a>
             </div>
+
+            {/* Paid Plans from Supabase */}
+            {planes.map((plan, idx) => (
+              <div key={plan.id} className={`reveal-item w-full md:w-[340px] lg:w-[350px] p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-white text-slate-800 border border-slate-200/80 relative transition-transform hover:scale-[1.02] ${idx === 1 ? 'shadow-lg border-[#3b82f6]/20' : 'shadow-sm'}`}>
+                {idx === 1 && (
+                  <div className="absolute -top-0 right-4 px-3 py-1 bg-[#ef4444] rounded-b-lg text-xs font-bold text-white tracking-wider">{t.recommended}</div>
+                )}
+                <div>
+                  <h3 className="text-2xl sm:text-3xl font-black text-[#0c1b33] mb-2">{plan.nombre}</h3>
+                  <div className="text-4xl sm:text-5xl font-black tracking-tighter text-[#0c1b33] mb-2">
+                    {formatPrecio(plan.precio)}
+                  </div>
+                  <p className="text-slate-400 text-sm font-medium mb-6">/ {plan.total_clases} {t.planClasses}</p>
+                  <p className="text-slate-600 text-base font-medium mb-8 leading-relaxed h-[72px] overflow-hidden line-clamp-3">{plan.descripcion}</p>
+                </div>
+                <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#0c1b33] text-white hover:bg-[#152e54] transition-all hover:scale-105 shadow-sm">
+                  {lang === 'es' ? 'Elegir este plan' : lang === 'fr' ? 'Choisir cette formule' : 'Choose this plan'}
+                </Link>
+              </div>
+            ))}
           </div>
         </div>
       </section>

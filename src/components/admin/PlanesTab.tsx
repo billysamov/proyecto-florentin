@@ -3,7 +3,7 @@ import { Shield, Edit, Trash2 } from "lucide-react";
 
 interface PlanesTabProps {
   planes: any[];
-  nuevoPlan: { nombre: string; descripcion: string; precio: number; totalClases: number; tipo: string; nivel: string };
+  nuevoPlan: { nombre: string; descripcion: string; precio: number; totalClases: number; tipo: string; nivel: string; orden: number };
   setNuevoPlan: (val: any) => void;
   planExito: boolean;
   editingPlanId: number | null;
@@ -38,6 +38,7 @@ export default function PlanesTab({
     precioPlan: isFr ? "Prix (€ dans la base de données)" : "Precio (€ en base de datos)",
     totalClases: isFr ? "Nombre Total de Cours" : "Total de Clases del Plan",
     tipoPlan: isFr ? "Type de Formule" : "Tipo de Plan",
+    orden: isFr ? "Ordre d'affichage" : "Orden de visualización",
     optPaquete: isFr ? "Forfait de Cours" : "Paquete de Clases",
     optSuscripcion: isFr ? "Abonnement Mensuel" : "Suscripción Mensual",
     optIndividual: isFr ? "Cours Individuel" : "Clase Individual",
@@ -55,6 +56,7 @@ export default function PlanesTab({
     thTipo: isFr ? "Type de Facturation" : "Tipo de Cobro",
     thClasesNivel: isFr ? "Cours / Niveau" : "Clases / Nivel",
     thPrecio: isFr ? "Prix" : "Precio",
+    thOrden: isFr ? "Ordre" : "Orden",
     thAcciones: isFr ? "Actions" : "Acciones",
     lblMensual: isFr ? "Mensuel" : "Mensual",
     lblIndividual: isFr ? "Individuel" : "Individual",
@@ -124,8 +126,20 @@ export default function PlanesTab({
               type="number"
               className="form-control"
               value={nuevoPlan.totalClases}
-              onChange={(e) => setNuevoPlan({ ...nuevoPlan, totalClases: parseInt(e.target.value) })}
+              onChange={(e) => setNuevoPlan({ ...nuevoPlan, totalClases: parseInt(e.target.value) || 0 })}
               placeholder="Ej: 8"
+              style={{ padding: "8px 12px" }}
+              required
+            />
+          </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label" style={{ fontSize: "12px" }}>{t.orden}</label>
+            <input
+              type="number"
+              className="form-control"
+              value={nuevoPlan.orden}
+              onChange={(e) => setNuevoPlan({ ...nuevoPlan, orden: parseInt(e.target.value) || 0 })}
+              placeholder="Ej: 0"
               style={{ padding: "8px 12px" }}
               required
             />
@@ -191,6 +205,7 @@ export default function PlanesTab({
                 <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thTipo}</th>
                 <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thClasesNivel}</th>
                 <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thPrecio}</th>
+                <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thOrden}</th>
                 <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)", textAlign: "right" }}>{t.thAcciones}</th>
               </tr>
             </thead>
@@ -282,6 +297,19 @@ export default function PlanesTab({
                         `${p.precio} EUR`
                       )}
                     </td>
+                    <td style={{ padding: "16px", fontSize: "14px" }}>
+                      {isEditing ? (
+                        <input
+                          type="number"
+                          defaultValue={p.orden || 0}
+                          id={`edit-plan-orden-${p.id}`}
+                          className="form-control"
+                          style={{ padding: "4px 8px", fontSize: "12px", width: "60px" }}
+                        />
+                      ) : (
+                        p.orden || 0
+                      )}
+                    </td>
                     <td style={{ padding: "16px", textAlign: "right" }}>
                       {isEditing ? (
                         <div style={{ display: "inline-flex", gap: "8px" }}>
@@ -292,7 +320,8 @@ export default function PlanesTab({
                               const precio = parseFloat((document.getElementById(`edit-plan-precio-${p.id}`) as HTMLInputElement).value);
                               const totalClases = parseInt((document.getElementById(`edit-plan-clases-${p.id}`) as HTMLInputElement).value);
                               const nivel = (document.getElementById(`edit-plan-nivel-${p.id}`) as HTMLSelectElement).value;
-                              guardarEdicionPlan(p.id, { nombre, descripcion, precio, total_clases: totalClases, nivel });
+                              const orden = parseInt((document.getElementById(`edit-plan-orden-${p.id}`) as HTMLInputElement).value) || 0;
+                              guardarEdicionPlan(p.id, { nombre, descripcion, precio, total_clases: totalClases, nivel, orden });
                             }}
                             className="btn btn-primary"
                             style={{ padding: "4px 10px", fontSize: "11px" }}

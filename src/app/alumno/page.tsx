@@ -261,7 +261,11 @@ export default function AlumnoPortal() {
 
       if (insError) console.error("Error inscripciones:", insError);
 
-      const { data: planesDb } = await supabase.from("planes_estudio").select("*");
+      const { data: planesDb } = await supabase
+        .from("planes_estudio")
+        .select("*")
+        .order("orden", { ascending: true })
+        .order("precio", { ascending: true });
       if (planesDb) {
         setPlanes(planesDb.filter(p => p.activo));
       }
