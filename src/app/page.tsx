@@ -1007,10 +1007,14 @@ export default function Home() {
 
             {/* Bio */}
             <div className="reveal-item">
-              <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black mb-2 tracking-tighter font-serif">{config?.teacher_name || t.teacherName}</h2>
               <p className="text-[#3b82f6] font-bold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
               <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6 font-medium" style={{ whiteSpace: "pre-wrap" }}>
                 {config?.teacher_bio || t.teacherBio}
+                <div className="mt-4 flex justify-end">
+                  <span className="font-script text-[#ef4444] text-5xl sm:text-6xl select-none tracking-wide transform -rotate-3 block pr-6">
+                    Florentin
+                  </span>
+                </div>
               </div>
 
               {/* Certificates */}
