@@ -850,11 +850,11 @@ export default function Home() {
               <a href="#teacher" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navTeacher}</a>
               <a href="#method" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navMethod}</a>
               <a href="#for-whom" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom'}</a>
-              <a href="#faq" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navFaq}</a>
             </div>
           </div>
 
           <a href="#plans" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{t.navPlans}</a>
+          <a href="#faq" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{t.navFaq}</a>
           <a href="#contact" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{t.navContact}</a>
         </div>
         <div className="hidden md:flex gap-3 items-center md:justify-self-end">
