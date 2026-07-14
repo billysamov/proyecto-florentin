@@ -981,14 +981,14 @@ export default function Home() {
             <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">{t.teacherBadge}</span>
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-center">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-start">
             {/* Photo */}
-            <div className="reveal-item relative flex justify-center">
-              <div className="relative w-[280px] h-[350px] sm:w-[340px] sm:h-[420px] rounded-3xl overflow-hidden border border-slate-200 shadow-xl animate-float-slow">
-                <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 340px" />
+            <div className="reveal-item relative flex justify-center lg:sticky lg:top-28 self-start">
+              <div className="relative w-full max-w-[380px] aspect-[4/5] h-auto rounded-3xl overflow-hidden border border-slate-200 shadow-xl animate-float-slow">
+                <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 380px" />
               </div>
               {/* Floating badges */}
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20">
+              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20 w-[95%] sm:w-auto justify-center">
                 {[
                   { icon: <Users size={16} />, text: config?.teacher_students || t.teacherStudents },
                   { icon: <Globe2 size={16} />, text: config?.teacher_countries || t.teacherCountries },
@@ -996,7 +996,7 @@ export default function Home() {
                 ].map((badge, i) => (
                   <div 
                     key={i} 
-                    className="bg-white border border-slate-200 rounded-full px-4 py-2 flex items-center gap-2 text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
+                    className="bg-white border border-slate-200 rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 text-[10px] sm:text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
                   >
                     <span className="text-[#3b82f6]">{badge.icon}</span>{badge.text}
                   </div>
@@ -1008,7 +1008,7 @@ export default function Home() {
             <div className="reveal-item">
               <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-black mb-2 tracking-tighter font-serif">{config?.teacher_name || t.teacherName}</h2>
               <p className="text-[#3b82f6] font-bold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
-              <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6 font-medium">
+              <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6 font-medium" style={{ whiteSpace: "pre-wrap" }}>
                 {config?.teacher_bio || t.teacherBio}
                 <div className="mt-4 flex justify-end">
                   <span className="font-script text-[#ef4444] text-5xl sm:text-6xl select-none tracking-wide transform -rotate-3 block pr-6">
