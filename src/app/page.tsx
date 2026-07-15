@@ -1030,17 +1030,23 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Certificates */}
-              <div className="mb-8">
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{lang === 'es' ? 'Certificaciones' : lang === 'fr' ? 'Certifications' : 'Certifications'}</h4>
-                <div className="flex flex-wrap gap-3">
+              {/* Certificaciones Oficiales */}
+              <div className="mb-10">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">{lang === 'es' ? 'Certificaciones Oficiales' : lang === 'fr' ? 'Certifications Officielles' : 'Official Certifications'}</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {certs.map((cert: string, i: number) => (
-                    <span 
+                    <div 
                       key={i} 
-                      className="flex items-center gap-2 px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-sm font-semibold text-slate-600 hover:bg-slate-100 transition-all duration-300 hover:border-[#3b82f6]/30 cursor-default"
+                      className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 transition-all duration-300 hover:shadow-md hover:border-[#3b82f6]/20 cursor-default"
                     >
-                      <Award size={16} className="text-[#3b82f6]" />{cert}
-                    </span>
+                      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#3b82f6]/10 text-[#3b82f6] shrink-0">
+                        <Award size={20} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-[#0c1b33] leading-snug">{cert}</span>
+                        <span className="text-[11px] font-semibold text-slate-400 mt-1 uppercase tracking-wider">{lang === 'es' ? 'Verificado' : lang === 'fr' ? 'Vérifié' : 'Verified'}</span>
+                      </div>
+                    </div>
                   ))}
                 </div>
               </div>
