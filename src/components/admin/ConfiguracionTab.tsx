@@ -333,6 +333,16 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               </pre>
             </div>
           )}
+
+          {configError.includes("mostrar_testimonios") && (
+            <div style={{ marginTop: "12px", borderTop: "1px dashed rgba(239,68,68,0.2)", paddingTop: "12px" }}>
+              <p style={{ fontWeight: 600, color: "#b91c1c", marginBottom: "4px" }}>💡 {t.solucionRecomendada || "Solución recomendada"}</p>
+              <p style={{ fontSize: "12px", marginBottom: "8px" }}>{t.ejecutaScript || "Ejecuta este comando SQL en el SQL Editor de tu consola de Supabase:"}</p>
+              <pre style={{ backgroundColor: "#1e293b", color: "#f8fafc", padding: "12px", borderRadius: "6px", fontSize: "11px", overflowX: "auto" }}>
+{`ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS mostrar_testimonios BOOLEAN DEFAULT TRUE;`}
+              </pre>
+            </div>
+          )}
         </div>
       )}
 
