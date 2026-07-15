@@ -996,32 +996,56 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-start">
-            {/* Photo */}
-            <div className="reveal-item relative flex justify-center lg:sticky lg:top-28 self-start">
-              <div className="relative w-full max-w-[380px] aspect-[4/5] h-auto rounded-3xl overflow-hidden border border-slate-200 shadow-xl animate-float-slow">
-                <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 380px" />
+            {/* Columna Izquierda: Foto y Certificaciones debajo */}
+            <div className="flex flex-col items-center lg:sticky lg:top-24 gap-8 self-start w-full">
+              {/* Photo */}
+              <div className="reveal-item relative flex justify-center w-full">
+                <div className="relative w-full max-w-[380px] aspect-[4/5] h-auto rounded-3xl overflow-hidden border border-slate-200 shadow-xl animate-float-slow">
+                  <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 380px" />
+                </div>
+                {/* Floating badges */}
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20 w-[95%] sm:w-auto justify-center">
+                  {[
+                    { icon: <Users size={16} />, text: config?.teacher_students || t.teacherStudents },
+                    { icon: <Globe2 size={16} />, text: config?.teacher_countries || t.teacherCountries },
+                    { icon: <Clock size={16} />, text: config?.teacher_experience || t.teacherExperience },
+                  ].map((badge, i) => (
+                    <div 
+                      key={i} 
+                      className="bg-white border border-slate-200 rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 text-[10px] sm:text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
+                    >
+                      <span className="text-[#3b82f6]">{badge.icon}</span>{badge.text}
+                    </div>
+                  ))}
+                </div>
               </div>
-              {/* Floating badges */}
-              <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20 w-[95%] sm:w-auto justify-center">
-                {[
-                  { icon: <Users size={16} />, text: config?.teacher_students || t.teacherStudents },
-                  { icon: <Globe2 size={16} />, text: config?.teacher_countries || t.teacherCountries },
-                  { icon: <Clock size={16} />, text: config?.teacher_experience || t.teacherExperience },
-                ].map((badge, i) => (
-                  <div 
-                    key={i} 
-                    className="bg-white border border-slate-200 rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 text-[10px] sm:text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
-                  >
-                    <span className="text-[#3b82f6]">{badge.icon}</span>{badge.text}
-                  </div>
-                ))}
+
+              {/* Certificaciones Oficiales debajo de la foto */}
+              <div className="reveal-item w-full max-w-[380px] mt-4">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 text-center lg:text-left">{lang === 'es' ? 'Certificaciones Oficiales' : lang === 'fr' ? 'Certifications Officielles' : 'Official Certifications'}</h4>
+                <div className="flex flex-col gap-4">
+                  {certs.map((cert: string, i: number) => (
+                    <div 
+                      key={i} 
+                      className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 transition-all duration-300 hover:shadow-md hover:border-[#3b82f6]/20 cursor-default"
+                    >
+                      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#3b82f6]/10 text-[#3b82f6] shrink-0">
+                        <Award size={20} />
+                      </div>
+                      <div className="flex flex-col">
+                        <span className="text-sm font-bold text-[#0c1b33] leading-snug">{cert}</span>
+                        <span className="text-[11px] font-semibold text-slate-400 mt-1 uppercase tracking-wider">{lang === 'es' ? 'Verificado' : lang === 'fr' ? 'Vérifié' : 'Verified'}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
 
-            {/* Bio */}
-            <div className="reveal-item">
+            {/* Columna Derecha: Bio y Habilidades */}
+            <div className="reveal-item w-full">
               <p className="text-[#3b82f6] font-bold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
-              <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-6 font-medium" style={{ whiteSpace: "pre-wrap" }}>
+              <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-10 font-medium" style={{ whiteSpace: "pre-wrap" }}>
                 {config?.teacher_bio || t.teacherBio}
                 <div className="mt-4 flex justify-end">
                   <span className="font-script text-[#ef4444] text-5xl sm:text-6xl select-none tracking-wide transform -rotate-3 block pr-6">
@@ -1030,54 +1054,28 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Contenedor de Certificaciones (Izquierda) y Habilidades (Derecha) */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
-                
-                {/* Columna Izquierda: Certificaciones Oficiales */}
-                <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">{lang === 'es' ? 'Certificaciones Oficiales' : lang === 'fr' ? 'Certifications Officielles' : 'Official Certifications'}</h4>
-                  <div className="flex flex-col gap-4">
-                    {certs.map((cert: string, i: number) => (
-                      <div 
+              {/* Skills */}
+              <div className="reveal-item w-full">
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">{lang === 'es' ? 'Habilidades' : lang === 'fr' ? 'Compétences' : 'Skills'}</h4>
+                <div className="flex flex-wrap gap-2">
+                  {skillsList.map((skill: string, i: number) => {
+                    const icons = [
+                      <Headphones size={14} key="1" />,
+                      <Globe2 size={14} key="2" />,
+                      <BookOpen size={14} key="3" />,
+                      <BadgeCheck size={14} key="4" />,
+                      <Building2 size={14} key="5" />
+                    ];
+                    return (
+                      <span 
                         key={i} 
-                        className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 transition-all duration-300 hover:shadow-md hover:border-[#3b82f6]/20 cursor-default"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded-full text-xs font-bold text-[#3b82f6] hover:bg-[#3b82f6]/20 transition-all duration-300 cursor-default"
                       >
-                        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#3b82f6]/10 text-[#3b82f6] shrink-0">
-                          <Award size={20} />
-                        </div>
-                        <div className="flex flex-col">
-                          <span className="text-sm font-bold text-[#0c1b33] leading-snug">{cert}</span>
-                          <span className="text-[11px] font-semibold text-slate-400 mt-1 uppercase tracking-wider">{lang === 'es' ? 'Verificado' : lang === 'fr' ? 'Vérifié' : 'Verified'}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
+                        {icons[i % icons.length]} {skill}
+                      </span>
+                    );
+                  })}
                 </div>
-
-                {/* Columna Derecha: Habilidades */}
-                <div>
-                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">{lang === 'es' ? 'Habilidades' : lang === 'fr' ? 'Compétences' : 'Skills'}</h4>
-                  <div className="flex flex-wrap gap-2">
-                    {skillsList.map((skill: string, i: number) => {
-                      const icons = [
-                        <Headphones size={14} key="1" />,
-                        <Globe2 size={14} key="2" />,
-                        <BookOpen size={14} key="3" />,
-                        <BadgeCheck size={14} key="4" />,
-                        <Building2 size={14} key="5" />
-                      ];
-                      return (
-                        <span 
-                          key={i} 
-                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded-full text-xs font-bold text-[#3b82f6] hover:bg-[#3b82f6]/20 transition-all duration-300 cursor-default"
-                        >
-                          {icons[i % icons.length]} {skill}
-                        </span>
-                      );
-                    })}
-                  </div>
-                </div>
-
               </div>
             </div>
           </div>
