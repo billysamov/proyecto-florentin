@@ -556,7 +556,7 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   value={config.meta_pixel_id}
                   onChange={(e) => setConfig({ ...config, meta_pixel_id: e.target.value })}
                   placeholder="1234567890"
-                  style={{ padding: "12px 16px" }}
+                  style={{ padding: "12px 16px" }} />
               </div>
             </div>
 
