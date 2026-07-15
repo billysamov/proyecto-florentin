@@ -1047,7 +1047,7 @@ export default function Home() {
 
               {/* Skills */}
               <div>
-                <h4 className="text-sm font-bold text-white/40 uppercase tracking-widest mb-4">{lang === 'es' ? 'Habilidades' : lang === 'fr' ? 'Compétences' : 'Skills'}</h4>
+                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{lang === 'es' ? 'Habilidades' : lang === 'fr' ? 'Compétences' : 'Skills'}</h4>
                 <div className="flex flex-wrap gap-2">
                   {skillsList.map((skill: string, i: number) => {
                     const icons = [
