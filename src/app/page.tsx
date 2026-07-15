@@ -201,7 +201,7 @@ export default function Home() {
     // Decodificar etiquetas multilingües primero en cualquier idioma (incluido español)
     allTranslatableKeys.forEach(key => {
       const val = sourceConfig[key];
-      if (val && (val.includes("[:") || val.includes("[ES]") || val.includes("[FR]"))) {
+      if (val && (val.includes("[:") || val.includes("[ES]") || val.includes("[FR]") || val.includes("[EN]"))) {
         translatedConfig[key] = parseMultilingualText(val, targetLang);
       }
     });

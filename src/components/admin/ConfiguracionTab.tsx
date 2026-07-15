@@ -23,7 +23,7 @@ export default function ConfiguracionTab({
   lang = "es"
 }: ConfiguracionTabProps) {
   const isFr = lang === "fr";
-  const [editLang, setEditLang] = React.useState<"es" | "fr">("es");
+  const [editLang, setEditLang] = React.useState<"es" | "fr" | "en">("es");
 
   const getFieldValue = (fieldKey: string): string => {
     const val = config?.[fieldKey] || "";
@@ -43,8 +43,8 @@ export default function ConfiguracionTab({
       return "";
     }
 
-    // Formato 2: [ES] Texto [FR] Texte
-    if (val.includes("[ES]") || val.includes("[FR]")) {
+    // Formato 2: [ES] Texto [FR] Texte [EN] Text
+    if (val.includes("[ES]") || val.includes("[FR]") || val.includes("[EN]")) {
       const regex = new RegExp(`\\[${editLang.toUpperCase()}\\]([\\s\\S]*?)(?=\\[[A-Z]{2}\\]|$)`, "i");
       const match = val.match(regex);
       if (match && match[1] !== undefined) return match[1];
@@ -64,18 +64,23 @@ export default function ConfiguracionTab({
     const val = config?.[fieldKey] || "";
     let esText = "";
     let frText = "";
+    let enText = "";
 
     // 1. Extraer los textos actuales
     if (val.includes("[:")) {
       const esMatch = val.match(/\[:es\]([\s\S]*?)(?=\[:|$)/i);
       const frMatch = val.match(/\[:fr\]([\s\S]*?)(?=\[:|$)/i);
+      const enMatch = val.match(/\[:en\]([\s\S]*?)(?=\[:|$)/i);
       esText = esMatch && esMatch[1] !== undefined ? esMatch[1] : "";
       frText = frMatch && frMatch[1] !== undefined ? frMatch[1] : "";
-    } else if (val.includes("[ES]") || val.includes("[FR]")) {
+      enText = enMatch && enMatch[1] !== undefined ? enMatch[1] : "";
+    } else if (val.includes("[ES]") || val.includes("[FR]") || val.includes("[EN]")) {
       const esMatch = val.match(/\[ES\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
       const frMatch = val.match(/\[FR\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
+      const enMatch = val.match(/\[EN\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
       esText = esMatch && esMatch[1] !== undefined ? esMatch[1] : "";
       frText = frMatch && frMatch[1] !== undefined ? frMatch[1] : "";
+      enText = enMatch && enMatch[1] !== undefined ? enMatch[1] : "";
     } else {
       esText = val;
     }
@@ -83,12 +88,14 @@ export default function ConfiguracionTab({
     // 2. Actualizar el idioma que se edita actualmente
     if (editLang === "es") {
       esText = newValue;
-    } else {
+    } else if (editLang === "fr") {
       frText = newValue;
+    } else {
+      enText = newValue;
     }
 
     // 3. Reensamblar y actualizar estado
-    const combined = `[:es]${esText}[:fr]${frText}`;
+    const combined = `[:es]${esText}[:fr]${frText}[:en]${enText}`;
     setConfig({ ...config, [fieldKey]: combined });
   };
 
@@ -396,11 +403,28 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
             >
               🇫🇷 Français
             </button>
+            <button
+              type="button"
+              onClick={() => setEditLang("en")}
+              className="btn"
+              style={{
+                padding: "6px 12px",
+                fontSize: "12px",
+                fontWeight: 700,
+                backgroundColor: editLang === "en" ? "#10b981" : "white",
+                color: editLang === "en" ? "white" : "#0c1b33",
+                border: editLang === "en" ? "1px solid #10b981" : "1px solid var(--border-color)",
+                borderRadius: "var(--radius-sm)",
+                cursor: "pointer"
+              }}
+            >
+              🇬🇧 English
+            </button>
           </div>
           <span style={{ fontSize: "11px", color: "var(--text-muted)", marginLeft: "auto" }}>
             {isFr 
-              ? "Les textes standard en Français seront traduits automatiquement si ce champ reste vide."
-              : "Los textos estándar en Francés se traducirán automáticamente si dejas el campo vacío."}
+              ? "Les textes standard en Français et en Anglais seront traduits automatiquement s'ils sont laissés vides."
+              : "Los textos estándar en Francés e Inglés se traducirán automáticamente si dejas el campo vacío."}
           </span>
         </div>
       )}
