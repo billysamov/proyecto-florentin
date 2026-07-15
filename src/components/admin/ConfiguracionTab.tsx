@@ -469,18 +469,6 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               ></textarea>
             </div>
 
-            <div className="form-group">
-              <label className="form-label">{t.tagHero}</label>
-              <input
-                className="form-control"
-                type="text"
-                value={getFieldValue("hero_badge")}
-                onChange={(e) => setFieldValue("hero_badge", e.target.value)}
-                placeholder="Profesor Nativo de París"
-                style={{ padding: "12px 16px" }}
-              />
-            </div>
-
             <h4 style={{ fontSize: "15px", marginBottom: "8px", marginTop: "16px", color: "hsl(var(--accent-hsl))", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px" }}>
               {t.seoGoogle}
             </h4>
