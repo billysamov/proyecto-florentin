@@ -1030,49 +1030,54 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Certificaciones Oficiales */}
-              <div className="mb-10">
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">{lang === 'es' ? 'Certificaciones Oficiales' : lang === 'fr' ? 'Certifications Officielles' : 'Official Certifications'}</h4>
-                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {certs.map((cert: string, i: number) => (
-                    <div 
-                      key={i} 
-                      className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 transition-all duration-300 hover:shadow-md hover:border-[#3b82f6]/20 cursor-default"
-                    >
-                      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#3b82f6]/10 text-[#3b82f6] shrink-0">
-                        <Award size={20} />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-[#0c1b33] leading-snug">{cert}</span>
-                        <span className="text-[11px] font-semibold text-slate-400 mt-1 uppercase tracking-wider">{lang === 'es' ? 'Verificado' : lang === 'fr' ? 'Vérifié' : 'Verified'}</span>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Skills */}
-              <div>
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-4">{lang === 'es' ? 'Habilidades' : lang === 'fr' ? 'Compétences' : 'Skills'}</h4>
-                <div className="flex flex-wrap gap-2">
-                  {skillsList.map((skill: string, i: number) => {
-                    const icons = [
-                      <Headphones size={14} key="1" />,
-                      <Globe2 size={14} key="2" />,
-                      <BookOpen size={14} key="3" />,
-                      <BadgeCheck size={14} key="4" />,
-                      <Building2 size={14} key="5" />
-                    ];
-                    return (
-                      <span 
+              {/* Contenedor de Certificaciones (Izquierda) y Habilidades (Derecha) */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mt-10">
+                
+                {/* Columna Izquierda: Certificaciones Oficiales */}
+                <div>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">{lang === 'es' ? 'Certificaciones Oficiales' : lang === 'fr' ? 'Certifications Officielles' : 'Official Certifications'}</h4>
+                  <div className="flex flex-col gap-4">
+                    {certs.map((cert: string, i: number) => (
+                      <div 
                         key={i} 
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded-full text-xs font-bold text-[#3b82f6] hover:bg-[#3b82f6]/20 transition-all duration-300 cursor-default"
+                        className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 transition-all duration-300 hover:shadow-md hover:border-[#3b82f6]/20 cursor-default"
                       >
-                        {icons[i % icons.length]} {skill}
-                      </span>
-                    );
-                  })}
+                        <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#3b82f6]/10 text-[#3b82f6] shrink-0">
+                          <Award size={20} />
+                        </div>
+                        <div className="flex flex-col">
+                          <span className="text-sm font-bold text-[#0c1b33] leading-snug">{cert}</span>
+                          <span className="text-[11px] font-semibold text-slate-400 mt-1 uppercase tracking-wider">{lang === 'es' ? 'Verificado' : lang === 'fr' ? 'Vérifié' : 'Verified'}</span>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
                 </div>
+
+                {/* Columna Derecha: Habilidades */}
+                <div>
+                  <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">{lang === 'es' ? 'Habilidades' : lang === 'fr' ? 'Compétences' : 'Skills'}</h4>
+                  <div className="flex flex-wrap gap-2">
+                    {skillsList.map((skill: string, i: number) => {
+                      const icons = [
+                        <Headphones size={14} key="1" />,
+                        <Globe2 size={14} key="2" />,
+                        <BookOpen size={14} key="3" />,
+                        <BadgeCheck size={14} key="4" />,
+                        <Building2 size={14} key="5" />
+                      ];
+                      return (
+                        <span 
+                          key={i} 
+                          className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded-full text-xs font-bold text-[#3b82f6] hover:bg-[#3b82f6]/20 transition-all duration-300 cursor-default"
+                        >
+                          {icons[i % icons.length]} {skill}
+                        </span>
+                      );
+                    })}
+                  </div>
+                </div>
+
               </div>
             </div>
           </div>
