@@ -9,6 +9,9 @@ interface Alumno {
   id: string;
   nombre: string;
   email: string;
+  telefono?: string;
+  nivel_frances?: string;
+  zona_horaria?: string;
   plan: string;
   clases_restantes: number;
   divisa: string;
@@ -461,17 +464,49 @@ export default function AlumnosTab({
                     )}
 
                     {/* Info de contacto y detalles */}
-                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "14px" }}>
+                    <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", gap: "14px" }}>
+                      {/* Email */}
                       <div style={{ padding: "16px", backgroundColor: "var(--bg-light)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)" }}>
                         <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
                           <Mail size={12} style={{ display: "inline", marginRight: "4px", verticalAlign: "middle" }} />
                           {t.contacto}
                         </div>
-                        <a href={`mailto:${selectedAlumno.email}`} style={{ color: "#3b82f6", textDecoration: "none", fontSize: "13px", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}>
+                        <a href={`mailto:${selectedAlumno.email}`} style={{ color: "#3b82f6", textDecoration: "none", fontSize: "13px", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px", wordBreak: "break-all" }}>
                           {selectedAlumno.email}
-                          <ExternalLink size={12} />
+                          <ExternalLink size={12} style={{ flexShrink: 0 }} />
                         </a>
                       </div>
+
+                      {/* Teléfono */}
+                      <div style={{ padding: "16px", backgroundColor: "var(--bg-light)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)" }}>
+                        <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                          📱 {isFr ? "Téléphone" : "Teléfono"}
+                        </div>
+                        {selectedAlumno.telefono ? (
+                          <a
+                            href={`https://wa.me/${selectedAlumno.telefono.replace(/[^0-9]/g, "")}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            style={{ color: "#10b981", textDecoration: "none", fontSize: "13px", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}
+                          >
+                            {selectedAlumno.telefono}
+                            <span style={{ fontSize: "10px", padding: "1px 6px", backgroundColor: "rgba(16,185,129,0.1)", borderRadius: "10px", color: "#10b981" }}>WhatsApp</span>
+                          </a>
+                        ) : (
+                          <span style={{ color: "var(--text-muted)", fontSize: "13px", fontStyle: "italic" }}>{isFr ? "Non renseigné" : "No registrado"}</span>
+                        )}
+                      </div>
+
+                      {/* Nivel de Francés */}
+                      {selectedAlumno.nivel_frances && (
+                        <div style={{ padding: "16px", backgroundColor: "var(--bg-light)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)" }}>
+                          <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                            🇫🇷 {isFr ? "Niveau" : "Nivel de Francés"}
+                          </div>
+                          <div style={{ fontSize: "18px", fontWeight: 800, color: "#6366f1" }}>{selectedAlumno.nivel_frances}</div>
+                        </div>
+                      )}
+
                       <div style={{ padding: "16px", backgroundColor: "var(--bg-light)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)" }}>
                         <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
                           <Calendar size={12} style={{ display: "inline", marginRight: "4px", verticalAlign: "middle" }} />
@@ -479,6 +514,7 @@ export default function AlumnosTab({
                         </div>
                         <div style={{ fontSize: "13px", fontWeight: 600 }}>{selectedAlumno.ultimoPago || "—"}</div>
                       </div>
+
                       <div style={{ padding: "16px", backgroundColor: "var(--bg-light)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)" }}>
                         <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
                           <Award size={12} style={{ display: "inline", marginRight: "4px", verticalAlign: "middle" }} />
@@ -488,6 +524,15 @@ export default function AlumnosTab({
                           {selectedAlumno.monto || 0} {selectedAlumno.divisa === "USD" ? "USD" : "EUR"}
                         </div>
                       </div>
+
+                      {selectedAlumno.zona_horaria && (
+                        <div style={{ padding: "16px", backgroundColor: "var(--bg-light)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)" }}>
+                          <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
+                            🕐 {isFr ? "Fuseau Horaire" : "Zona Horaria"}
+                          </div>
+                          <div style={{ fontSize: "13px", fontWeight: 600 }}>{selectedAlumno.zona_horaria}</div>
+                        </div>
+                      )}
                     </div>
 
                     {/* Última clase */}
