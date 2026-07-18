@@ -31,6 +31,7 @@ export default function ConfiguracionTab({
   const [nuevaExclusionTipo, setNuevaExclusionTipo] = React.useState<"dia_completo" | "rango_horas">("dia_completo");
   const [nuevaExclusionInicio, setNuevaExclusionInicio] = React.useState("09:00");
   const [nuevaExclusionFin, setNuevaExclusionFin] = React.useState("18:00");
+  const [relojModo, setRelojModo] = React.useState<"inicio" | "fin">("inicio");
 
   const listaHorasDisponibles = React.useMemo(() => {
     const horas = [];
@@ -40,6 +41,27 @@ export default function ConfiguracionTab({
       horas.push(`${hh}:30`);
     }
     return horas;
+  }, []);
+
+  const layoutHoras = React.useMemo(() => {
+    const items = [];
+    // Circulo exterior (1-12)
+    for (let i = 1; i <= 12; i++) {
+      const angle = (i * 30 - 90) * (Math.PI / 180);
+      const x = Math.round(85 * Math.cos(angle));
+      const y = Math.round(85 * Math.sin(angle));
+      items.push({ valor: i, label: String(i).padStart(2, '0'), x, y, r: 85 });
+    }
+    // Circulo interior (13-23 y 00)
+    for (let i = 13; i <= 24; i++) {
+      const valor = i === 24 ? 0 : i;
+      const label = valor === 0 ? "00" : String(valor);
+      const angle = (i * 30 - 90) * (Math.PI / 180);
+      const x = Math.round(52 * Math.cos(angle));
+      const y = Math.round(52 * Math.sin(angle));
+      items.push({ valor, label, x, y, r: 52 });
+    }
+    return items;
   }, []);
 
   let listaExclusiones: any[] = [];
@@ -1615,38 +1637,227 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 </div>
 
                 {nuevaExclusionTipo === "rango_horas" && (
-                  <>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
-                        {isFr ? "Heure de début" : "Hora de inicio"}
-                      </label>
-                      <select
-                        className="form-control"
-                        value={nuevaExclusionInicio}
-                        onChange={(e) => setNuevaExclusionInicio(e.target.value)}
-                        style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px", height: "42px", cursor: "pointer" }}
+                  <div style={{
+                    gridColumn: "1 / -1",
+                    display: "flex",
+                    flexDirection: "column",
+                    alignItems: "center",
+                    backgroundColor: "white",
+                    padding: "20px",
+                    borderRadius: "12px",
+                    border: "1px solid #e2e8f0",
+                    marginTop: "8px",
+                    width: "100%"
+                  }}>
+                    {/* Pestañas para elegir Inicio o Fin */}
+                    <div style={{ display: "flex", gap: "8px", marginBottom: "16px", width: "100%", justifyContent: "center" }}>
+                      <button
+                        type="button"
+                        onClick={() => setRelojModo("inicio")}
+                        style={{
+                          flex: 1,
+                          maxWidth: "180px",
+                          padding: "10px 16px",
+                          borderRadius: "8px",
+                          border: relojModo === "inicio" ? "2px solid #3b82f6" : "1px solid #cbd5e1",
+                          backgroundColor: relojModo === "inicio" ? "#eff6ff" : "white",
+                          color: relojModo === "inicio" ? "#1d4ed8" : "#475569",
+                          fontWeight: 700,
+                          fontSize: "13px",
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center"
+                        }}
                       >
-                        {listaHorasDisponibles.map(hora => (
-                          <option key={`inicio-${hora}`} value={hora}>🕒 {hora}</option>
-                        ))}
-                      </select>
-                    </div>
-                    <div className="form-group" style={{ marginBottom: 0 }}>
-                      <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
-                        {isFr ? "Heure de fin" : "Hora de fin"}
-                      </label>
-                      <select
-                        className="form-control"
-                        value={nuevaExclusionFin}
-                        onChange={(e) => setNuevaExclusionFin(e.target.value)}
-                        style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px", height: "42px", cursor: "pointer" }}
+                        <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 500, textTransform: "uppercase" }}>
+                          {isFr ? "Début" : "Inicio"}
+                        </span>
+                        <span style={{ fontSize: "15px", marginTop: "2px" }}>
+                          🕒 {nuevaExclusionInicio}
+                        </span>
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setRelojModo("fin")}
+                        style={{
+                          flex: 1,
+                          maxWidth: "180px",
+                          padding: "10px 16px",
+                          borderRadius: "8px",
+                          border: relojModo === "fin" ? "2px solid #3b82f6" : "1px solid #cbd5e1",
+                          backgroundColor: relojModo === "fin" ? "#eff6ff" : "white",
+                          color: relojModo === "fin" ? "#1d4ed8" : "#475569",
+                          fontWeight: 700,
+                          fontSize: "13px",
+                          cursor: "pointer",
+                          transition: "all 0.2s",
+                          display: "flex",
+                          flexDirection: "column",
+                          alignItems: "center"
+                        }}
                       >
-                        {listaHorasDisponibles.map(hora => (
-                          <option key={`fin-${hora}`} value={hora}>🕒 {hora}</option>
-                        ))}
-                      </select>
+                        <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 500, textTransform: "uppercase" }}>
+                          {isFr ? "Fin" : "Fin"}
+                        </span>
+                        <span style={{ fontSize: "15px", marginTop: "2px" }}>
+                          🕒 {nuevaExclusionFin}
+                        </span>
+                      </button>
                     </div>
-                  </>
+
+                    {/* Esfera del Reloj de 24 horas */}
+                    <div style={{
+                      width: "220px",
+                      height: "220px",
+                      borderRadius: "50%",
+                      backgroundColor: "#f8fafc",
+                      border: "2px solid #e2e8f0",
+                      position: "relative",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: "inset 0 2px 4px rgba(0,0,0,0.02)",
+                      margin: "8px 0"
+                    }}>
+                      {/* Centro del reloj */}
+                      <div style={{
+                        width: "8px",
+                        height: "8px",
+                        borderRadius: "50%",
+                        backgroundColor: "#3b82f6",
+                        zIndex: 10
+                      }} />
+
+                      {/* Aguja del Reloj */}
+                      {(() => {
+                        const horaSeleccionadaStr = relojModo === "inicio" ? nuevaExclusionInicio : nuevaExclusionFin;
+                        const [hStr] = (horaSeleccionadaStr || "09:00").split(":");
+                        const horaActual = parseInt(hStr, 10);
+                        const itemSeleccionado = layoutHoras.find(item => item.valor === horaActual);
+                        if (!itemSeleccionado) return null;
+
+                        return (
+                          <div style={{
+                            position: "absolute",
+                            left: "50%",
+                            top: "50%",
+                            width: `${itemSeleccionado.r}px`,
+                            height: "2px",
+                            backgroundColor: "#3b82f6",
+                            transformOrigin: "0 50%",
+                            transform: `translate(0, -50%) rotate(${(horaActual * 30 - 90)}deg)`,
+                            transition: "transform 0.25s cubic-bezier(0.4, 0, 0.2, 1), width 0.25s",
+                            pointerEvents: "none",
+                            zIndex: 5
+                          }}>
+                            {/* Círculo en el extremo */}
+                            <div style={{
+                              position: "absolute",
+                              right: "-12px",
+                              top: "-11px",
+                              width: "24px",
+                              height: "24px",
+                              borderRadius: "50%",
+                              backgroundColor: "#3b82f6",
+                              border: "2px solid white",
+                              boxShadow: "0 2px 6px rgba(59, 130, 246, 0.4)"
+                            }} />
+                          </div>
+                        );
+                      })()}
+
+                      {/* Números de las Horas (00 a 23) */}
+                      {layoutHoras.map(item => {
+                        const horaSeleccionadaStr = relojModo === "inicio" ? nuevaExclusionInicio : nuevaExclusionFin;
+                        const [hStr] = (horaSeleccionadaStr || "09:00").split(":");
+                        const horaActual = parseInt(hStr, 10);
+                        const isHoraSeleccionada = item.valor === horaActual;
+
+                        return (
+                          <button
+                            type="button"
+                            key={`hora-reloj-${item.valor}`}
+                            onClick={() => {
+                              const [, mStr] = (horaSeleccionadaStr || "09:00").split(":");
+                              const nuevoValor = `${String(item.valor).padStart(2, '0')}:${mStr}`;
+                              if (relojModo === "inicio") {
+                                setNuevaExclusionInicio(nuevoValor);
+                              } else {
+                                setNuevaExclusionFin(nuevoValor);
+                              }
+                            }}
+                            style={{
+                              position: "absolute",
+                              left: `calc(50% + ${item.x}px)`,
+                              top: `calc(50% + ${item.y}px)`,
+                              transform: "translate(-50%, -50%)",
+                              width: "22px",
+                              height: "22px",
+                              borderRadius: "50%",
+                              backgroundColor: "transparent",
+                              color: isHoraSeleccionada ? "white" : "#475569",
+                              border: "none",
+                              fontSize: item.r === 52 ? "9px" : "11px",
+                              fontWeight: isHoraSeleccionada ? 800 : 600,
+                              cursor: "pointer",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              zIndex: 6,
+                              transition: "color 0.2s"
+                            }}
+                          >
+                            {item.label}
+                          </button>
+                        );
+                      })}
+                    </div>
+
+                    {/* Selector de Minutos */}
+                    <div style={{ marginTop: "16px", display: "flex", flexDirection: "column", alignItems: "center", gap: "6px" }}>
+                      <span style={{ fontSize: "11px", color: "#64748b", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                        {isFr ? "Minutes" : "Minutos"}
+                      </span>
+                      <div style={{ display: "flex", gap: "6px" }}>
+                        {["00", "15", "30", "45"].map(min => {
+                          const horaSeleccionadaStr = relojModo === "inicio" ? nuevaExclusionInicio : nuevaExclusionFin;
+                          const [, mStr] = (horaSeleccionadaStr || "09:00").split(":");
+                          const isMinutoSeleccionado = min === mStr;
+
+                          return (
+                            <button
+                              type="button"
+                              key={`minuto-reloj-${min}`}
+                              onClick={() => {
+                                const [hStr] = (horaSeleccionadaStr || "09:00").split(":");
+                                const nuevoValor = `${hStr.padStart(2, '0')}:${min}`;
+                                if (relojModo === "inicio") {
+                                  setNuevaExclusionInicio(nuevoValor);
+                                } else {
+                                  setNuevaExclusionFin(nuevoValor);
+                                }
+                              }}
+                              style={{
+                                padding: "6px 12px",
+                                borderRadius: "20px",
+                                border: isMinutoSeleccionado ? "1.5px solid #3b82f6" : "1px solid #cbd5e1",
+                                backgroundColor: isMinutoSeleccionado ? "#eff6ff" : "white",
+                                color: isMinutoSeleccionado ? "#1d4ed8" : "#475569",
+                                fontSize: "12px",
+                                fontWeight: 700,
+                                cursor: "pointer",
+                                transition: "all 0.15s"
+                              }}
+                            >
+                              :{min}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
                 )}
 
                 <button
