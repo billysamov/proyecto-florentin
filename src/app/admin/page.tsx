@@ -277,26 +277,38 @@ export default function AdminDashboard() {
 
           if (ins && ins.estado_pago === "pagado") {
             clasesRest = ins.clases_restantes;
-            const planInfo = planesCatalog?.find(p => p.id === ins.plan_id);
+            divisaPlan = ins.divisa ? ins.divisa.toUpperCase() : "EUR";
+            precioPlan = ins.monto_pagado || 0;
+
+            const planInfo = planesCatalog?.find((p: any) => p.id === ins.plan_id);
             if (planInfo) {
+              // Plan aún existe en el catálogo
               clasesTot = planInfo.total_clases || 0;
               precioPlan = ins.monto_pagado || planInfo.precio || 0;
-              divisaPlan = ins.divisa ? ins.divisa.toUpperCase() : "EUR";
               planNombre = planInfo.nombre || "Plan no encontrado";
+            } else {
+              // Plan fue eliminado del catálogo (plan personalizado ya consumido)
+              // Calculamos total_clases sumando restantes + ya tomadas (de clases completadas)
+              clasesTot = ins.clases_restantes; // Mínimo igual a restantes
+              planNombre = ins.monto_pagado
+                ? `Plan personalizado (${ins.monto_pagado}${divisaPlan === "USD" ? "$" : "€"})`
+                : "Plan personalizado";
             }
+
             if (ins.creado_en) {
               const dtInscr = new Date(ins.creado_en);
               if (!isNaN(dtInscr.getTime())) {
                 fechaInscr = dtInscr.toISOString().split("T")[0];
               }
             }
-            
+
             if (divisaPlan === "USD") {
               totalIngresosUsd += precioPlan;
             } else {
               totalIngresosEur += precioPlan;
             }
           }
+
 
           return {
             id: u.id,
