@@ -32,6 +32,16 @@ export default function ConfiguracionTab({
   const [nuevaExclusionInicio, setNuevaExclusionInicio] = React.useState("09:00");
   const [nuevaExclusionFin, setNuevaExclusionFin] = React.useState("18:00");
 
+  const listaHorasDisponibles = React.useMemo(() => {
+    const horas = [];
+    for (let h = 0; h < 24; h++) {
+      const hh = String(h).padStart(2, '0');
+      horas.push(`${hh}:00`);
+      horas.push(`${hh}:30`);
+    }
+    return horas;
+  }, []);
+
   let listaExclusiones: any[] = [];
   try {
     listaExclusiones = JSON.parse(config.exclusiones_horario || "[]");
@@ -1610,25 +1620,31 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                       <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
                         {isFr ? "Heure de début" : "Hora de inicio"}
                       </label>
-                      <input
+                      <select
                         className="form-control"
-                        type="time"
                         value={nuevaExclusionInicio}
                         onChange={(e) => setNuevaExclusionInicio(e.target.value)}
-                        style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px" }}
-                      />
+                        style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px", height: "42px", cursor: "pointer" }}
+                      >
+                        {listaHorasDisponibles.map(hora => (
+                          <option key={`inicio-${hora}`} value={hora}>🕒 {hora}</option>
+                        ))}
+                      </select>
                     </div>
                     <div className="form-group" style={{ marginBottom: 0 }}>
                       <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
                         {isFr ? "Heure de fin" : "Hora de fin"}
                       </label>
-                      <input
+                      <select
                         className="form-control"
-                        type="time"
                         value={nuevaExclusionFin}
                         onChange={(e) => setNuevaExclusionFin(e.target.value)}
-                        style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px" }}
-                      />
+                        style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px", height: "42px", cursor: "pointer" }}
+                      >
+                        {listaHorasDisponibles.map(hora => (
+                          <option key={`fin-${hora}`} value={hora}>🕒 {hora}</option>
+                        ))}
+                      </select>
                     </div>
                   </>
                 )}
