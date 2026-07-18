@@ -1,5 +1,5 @@
 import React from "react";
-import { Settings } from "lucide-react";
+import { Settings, Calendar, Trash2 } from "lucide-react";
 
 interface ConfiguracionTabProps {
   config: any;
@@ -24,6 +24,53 @@ export default function ConfiguracionTab({
 }: ConfiguracionTabProps) {
   const isFr = lang === "fr";
   const [editLang, setEditLang] = React.useState<"es" | "fr" | "en">("es");
+
+  const [nuevaExclusionFecha, setNuevaExclusionFecha] = React.useState("");
+  const [nuevaExclusionTipo, setNuevaExclusionTipo] = React.useState<"dia_completo" | "rango_horas">("dia_completo");
+  const [nuevaExclusionInicio, setNuevaExclusionInicio] = React.useState("09:00");
+  const [nuevaExclusionFin, setNuevaExclusionFin] = React.useState("18:00");
+
+  let listaExclusiones: any[] = [];
+  try {
+    listaExclusiones = JSON.parse(config.exclusiones_horario || "[]");
+  } catch (e) {
+    listaExclusiones = [];
+  }
+
+  const handleAgregarExclusion = () => {
+    if (!nuevaExclusionFecha) {
+      alert(isFr ? "Veuillez sélectionner une date." : "Por favor, selecciona una fecha.");
+      return;
+    }
+
+    const nueva = {
+      id: Math.random().toString(36).substring(2, 9),
+      fecha: nuevaExclusionFecha,
+      tipo: nuevaExclusionTipo,
+      inicio: nuevaExclusionTipo === "rango_horas" ? nuevaExclusionInicio : null,
+      fin: nuevaExclusionTipo === "rango_horas" ? nuevaExclusionFin : null
+    };
+
+    const nuevasExclusiones = [...listaExclusiones, nueva];
+    // Ordenar por fecha de forma ascendente
+    nuevasExclusiones.sort((a, b) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+
+    setConfig({
+      ...config,
+      exclusiones_horario: JSON.stringify(nuevasExclusiones)
+    });
+    
+    // Limpiar campos
+    setNuevaExclusionFecha("");
+  };
+
+  const handleEliminarExclusion = (id: string) => {
+    const filtradas = listaExclusiones.filter(ex => ex.id !== id);
+    setConfig({
+      ...config,
+      exclusiones_horario: JSON.stringify(filtradas)
+    });
+  };
 
   const getFieldValue = (fieldKey: string): string => {
     const val = config?.[fieldKey] || "";
@@ -1177,6 +1224,208 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   style={{ padding: "12px 16px", borderRadius: "8px", border: "1px solid #cbd5e1", cursor: "pointer" }}
                   required
                 />
+              </div>
+            </div>
+
+            {/* Exclusiones de Disponibilidad del Profesor */}
+            <hr style={{ margin: "28px 0", border: "0", borderTop: "1px dashed #cbd5e1" }} />
+            
+            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+              <h4 style={{ fontSize: "16px", color: "hsl(var(--accent-hsl))", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <Calendar size={18} className="text-[#3b82f6]" />
+                {isFr ? "CALENDRIER D'EXCLUSIONS (CONGÉS & INDISPONIBILITÉS)" : "CALENDARIO DE EXCLUSIONES (VACACIONES & INASISTENCIAS)"}
+              </h4>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "-8px" }}>
+                {isFr 
+                  ? "Sélectionnez les jours ou les tranches horaires spécifiques où vous ne serez pas disponible. Les étudiants ne pourront pas réserver de cours pendant ces périodes."
+                  : "Selecciona días completos o rangos de horas específicos en los que no estarás disponible. Los alumnos no podrán reservar clases en estos periodos."}
+              </p>
+
+              {/* Formulario rápido para añadir exclusión */}
+              <div style={{ 
+                display: "grid", 
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", 
+                gap: "16px", 
+                backgroundColor: "#f8fafc", 
+                padding: "20px", 
+                borderRadius: "12px",
+                border: "1px solid #e2e8f0",
+                alignItems: "end"
+              }}>
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
+                    {isFr ? "Date d'indisponibilité" : "Fecha de inasistencia"}
+                  </label>
+                  <input
+                    className="form-control"
+                    type="date"
+                    value={nuevaExclusionFecha}
+                    onChange={(e) => setNuevaExclusionFecha(e.target.value)}
+                    style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px" }}
+                  />
+                </div>
+
+                <div className="form-group" style={{ marginBottom: 0 }}>
+                  <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
+                    {isFr ? "Type de blocage" : "Tipo de bloqueo"}
+                  </label>
+                  <select
+                    className="form-control"
+                    value={nuevaExclusionTipo}
+                    onChange={(e) => setNuevaExclusionTipo(e.target.value as any)}
+                    style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px", cursor: "pointer", height: "42px" }}
+                  >
+                    <option value="dia_completo">{isFr ? "Journée complète" : "Todo el día"}</option>
+                    <option value="rango_horas">{isFr ? "Tranche horaire" : "Rango de horas"}</option>
+                  </select>
+                </div>
+
+                {nuevaExclusionTipo === "rango_horas" && (
+                  <>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
+                        {isFr ? "Heure de début" : "Hora de inicio"}
+                      </label>
+                      <input
+                        className="form-control"
+                        type="time"
+                        value={nuevaExclusionInicio}
+                        onChange={(e) => setNuevaExclusionInicio(e.target.value)}
+                        style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px" }}
+                      />
+                    </div>
+                    <div className="form-group" style={{ marginBottom: 0 }}>
+                      <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
+                        {isFr ? "Heure de fin" : "Hora de fin"}
+                      </label>
+                      <input
+                        className="form-control"
+                        type="time"
+                        value={nuevaExclusionFin}
+                        onChange={(e) => setNuevaExclusionFin(e.target.value)}
+                        style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px" }}
+                      />
+                    </div>
+                  </>
+                )}
+
+                <button
+                  type="button"
+                  onClick={handleAgregarExclusion}
+                  className="btn"
+                  style={{
+                    backgroundColor: "#ef4444",
+                    color: "white",
+                    fontWeight: 700,
+                    fontSize: "13px",
+                    padding: "12px 16px",
+                    border: "none",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    height: "42px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    gap: "6px",
+                    transition: "background 0.2s"
+                  }}
+                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#dc2626"}
+                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#ef4444"}
+                >
+                  ➕ {isFr ? "Bloquer" : "Bloquear"}
+                </button>
+              </div>
+
+              {/* Listado de exclusiones actuales */}
+              <div style={{ marginTop: "12px" }}>
+                <label className="form-label" style={{ fontWeight: 700, fontSize: "13px", color: "#1e293b", marginBottom: "8px", display: "block" }}>
+                  {isFr ? "Blocages actifs" : "Bloqueos activos"} ({listaExclusiones.length})
+                </label>
+                
+                {listaExclusiones.length === 0 ? (
+                  <div style={{ 
+                    padding: "24px", 
+                    textAlign: "center", 
+                    backgroundColor: "rgba(0,0,0,0.01)", 
+                    border: "1px dashed var(--border-color)", 
+                    borderRadius: "12px",
+                    color: "var(--text-muted)",
+                    fontSize: "13px"
+                  }}>
+                    {isFr ? "Aucun blocage actif configuré." : "No hay bloqueos activos configurados."}
+                  </div>
+                ) : (
+                  <div style={{ 
+                    maxHeight: "220px", 
+                    overflowY: "auto", 
+                    border: "1px solid var(--border-color)", 
+                    borderRadius: "12px",
+                    backgroundColor: "white"
+                  }}>
+                    <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "13px" }}>
+                      <thead>
+                        <tr style={{ backgroundColor: "#f8fafc", borderBottom: "1px solid #cbd5e1", textAlign: "left" }}>
+                          <th style={{ padding: "10px 16px", fontWeight: 700 }}>{isFr ? "Date" : "Fecha"}</th>
+                          <th style={{ padding: "10px 16px", fontWeight: 700 }}>{isFr ? "Type" : "Tipo"}</th>
+                          <th style={{ padding: "10px 16px", fontWeight: 700 }}>{isFr ? "Détails" : "Detalles"}</th>
+                          <th style={{ padding: "10px 16px", textAlign: "right" }}></th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {listaExclusiones.map((ex) => {
+                          const dateObj = new Date(ex.fecha + "T00:00:00");
+                          const formattedDate = dateObj.toLocaleDateString(isFr ? 'fr-FR' : 'es-ES', {
+                            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                          });
+
+                          return (
+                            <tr key={ex.id} style={{ borderBottom: "1px solid #f1f5f9" }}>
+                              <td style={{ padding: "10px 16px", fontWeight: 600, color: "#0f172a" }}>
+                                {formattedDate}
+                              </td>
+                              <td style={{ padding: "10px 16px" }}>
+                                <span style={{
+                                  padding: "4px 8px",
+                                  borderRadius: "6px",
+                                  fontSize: "11px",
+                                  fontWeight: 700,
+                                  backgroundColor: ex.tipo === "dia_completo" ? "#fee2e2" : "#fef3c7",
+                                  color: ex.tipo === "dia_completo" ? "#b91c1c" : "#d97706"
+                                }}>
+                                  {ex.tipo === "dia_completo" 
+                                    ? (isFr ? "Journée" : "Día Completo") 
+                                    : (isFr ? "Horaire" : "Rango de Horas")}
+                                </span>
+                              </td>
+                              <td style={{ padding: "10px 16px", color: "#475569" }}>
+                                {ex.tipo === "dia_completo" 
+                                  ? (isFr ? "Toute la journée" : "Todo el día") 
+                                  : `${ex.inicio} - ${ex.fin}`}
+                              </td>
+                              <td style={{ padding: "10px 16px", textAlign: "right" }}>
+                                <button
+                                  type="button"
+                                  onClick={() => handleEliminarExclusion(ex.id)}
+                                  style={{
+                                    border: "none",
+                                    backgroundColor: "transparent",
+                                    cursor: "pointer",
+                                    color: "#ef4444",
+                                    padding: "4px",
+                                    borderRadius: "4px"
+                                  }}
+                                  title={isFr ? "Supprimer le blocage" : "Eliminar bloqueo"}
+                                >
+                                  <Trash2 size={16} />
+                                </button>
+                              </td>
+                            </tr>
+                          );
+                        })}
+                      </tbody>
+                    </table>
+                  </div>
+                )}
               </div>
             </div>
           </div>

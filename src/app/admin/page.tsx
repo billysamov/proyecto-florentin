@@ -105,6 +105,7 @@ export default function AdminDashboard() {
     teacher_countries: "+15 países",
     teacher_skills: "Pronunciación nativa, Cultura francesa, Gramática aplicada, Preparación DELF/DALF, Francés para negocios",
     teacher_certs: "Licenciatura en Lenguas Extranjeras, Certificación DALF C2, Formación en Pedagogía de Idiomas",
+    exclusiones_horario: "[]",
     // Sección Problema/Solución
     ps_badge: "¿POR QUÉ FLORENTIN?",
     ps_title: "El problema de aprender francés… y la solución",
@@ -462,7 +463,8 @@ export default function AdminDashboard() {
           enlace_meet_default: configDb.enlace_meet_default || "",
           email_notificaciones: configDb.email_notificaciones || "",
           whatsapp_number: configDb.whatsapp_number || "",
-          mostrar_testimonios: configDb.mostrar_testimonios !== false
+          mostrar_testimonios: configDb.mostrar_testimonios !== false,
+          exclusiones_horario: configDb.exclusiones_horario || "[]"
         });
       }
 
@@ -876,7 +878,8 @@ export default function AdminDashboard() {
         enlace_meet_default: config.enlace_meet_default,
         email_notificaciones: config.email_notificaciones,
         whatsapp_number: config.whatsapp_number,
-        mostrar_testimonios: config.mostrar_testimonios !== false
+        mostrar_testimonios: config.mostrar_testimonios !== false,
+        exclusiones_horario: config.exclusiones_horario
       });
       
     if (error) {

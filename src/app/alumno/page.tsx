@@ -198,6 +198,7 @@ export default function AlumnoPortal() {
 
   const [diasLaborables, setDiasLaborables] = useState<number[]>([1,2,3,4,5]);
   const [horaInicio, setHoraInicio] = useState("09:00");
+  const [exclusionesHorario, setExclusionesHorario] = useState<any[]>([]);
   const [horaFin, setHoraFin] = useState("18:00");
   const [almuerzoInicio, setAlmuerzoInicio] = useState("13:00");
   const [almuerzoFin, setAlmuerzoFin] = useState("14:00");
@@ -370,7 +371,7 @@ export default function AlumnoPortal() {
       // 5. Obtener configuración de horario
       const { data: configDb } = await supabase
         .from("configuracion_sitio")
-        .select("dias_laborables, hora_inicio, hora_fin, almuerzo_inicio, almuerzo_fin, zona_horaria")
+        .select("dias_laborables, hora_inicio, hora_fin, almuerzo_inicio, almuerzo_fin, zona_horaria, exclusiones_horario")
         .eq("id", 1)
         .single();
       
@@ -379,6 +380,12 @@ export default function AlumnoPortal() {
           const dias = JSON.parse(configDb.dias_laborables || "[1,2,3,4,5]");
           setDiasLaborables(dias);
         } catch {}
+        try {
+          const exclusiones = JSON.parse(configDb.exclusiones_horario || "[]");
+          setExclusionesHorario(exclusiones);
+        } catch {
+          setExclusionesHorario([]);
+        }
         setHoraInicio(configDb.hora_inicio || "09:00");
         setHoraFin(configDb.hora_fin || "18:00");
         setAlmuerzoInicio(configDb.almuerzo_inicio || "13:00");
@@ -629,6 +636,18 @@ export default function AlumnoPortal() {
     if (!diasLaborables.includes(dayOfWeek)) {
       return "cerrado";
     }
+
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(diaNum).padStart(2, '0');
+    const dateString = `${y}-${m}-${d}`;
+
+    const tieneBloqueoDiaCompleto = exclusionesHorario.some(
+      (ex: any) => ex.fecha === dateString && ex.tipo === "dia_completo"
+    );
+    if (tieneBloqueoDiaCompleto) {
+      return "cerrado";
+    }
     
     // Si el día es en el pasado (ayer o antes), no se puede reservar
     const hoy = new Date();
@@ -734,11 +753,23 @@ export default function AlumnoPortal() {
           const teacherDayNum = teacherDateInParis.getDay();
 
           if (diasLaborables.includes(teacherDayNum)) {
-            const isoString = realSlotDateUTC.toISOString();
-            // Comprobar si ya existe una clase reservada en esa hora
-            const isOccupied = horasOcupadas.some(occ => occ.startsWith(isoString.substring(0, 14)));
-            
-            if (!isOccupied) {
+            const esHoraExcluida = exclusionesHorario.some((ex: any) => {
+              if (ex.fecha !== nuevaFecha) return false;
+              if (ex.tipo === "dia_completo") return true;
+              if (ex.tipo === "rango_horas" && ex.inicio && ex.fin) {
+                const startHour = parseInt(ex.inicio.split(":")[0], 10);
+                const endHour = parseInt(ex.fin.split(":")[0], 10);
+                return h >= startHour && h < endHour;
+              }
+              return false;
+            });
+
+            if (!esHoraExcluida) {
+              const isoString = realSlotDateUTC.toISOString();
+              // Comprobar si ya existe una clase reservada en esa hora
+              const isOccupied = horasOcupadas.some(occ => occ.startsWith(isoString.substring(0, 14)));
+              
+              if (!isOccupied) {
                // Formatear a la zona horaria del alumno
                const formatterAlumno = new Intl.DateTimeFormat('es-ES', {
                  timeZone: userTimeZone,
