@@ -833,8 +833,16 @@ export default function AlumnoPortal() {
         telefono: registerTelefono,
         nivel_frances: registerNivel,
         zona_horaria: registerZonaHoraria,
-        objetivos: registerObjetivos
+        objetivos: registerObjetivos,
+        idioma: lang
       });
+
+      // Disparar correo de bienvenida automático de Lead Nurturing de forma asíncrona
+      fetch("/api/auth/welcome", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, nombre, idioma: lang })
+      }).catch(err => console.error("Error disparando correo de bienvenida:", err));
 
       // Si se registró con un plan específico, redireccionar de inmediato a Stripe Checkout
       if (selectedPlanId) {
