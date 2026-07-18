@@ -276,7 +276,12 @@ export default function AdminDashboard() {
               divisaPlan = ins.divisa ? ins.divisa.toUpperCase() : "EUR";
               planNombre = planInfo.nombre || "Plan no encontrado";
             }
-            fechaInscr = new Date(ins.creado_en).toISOString().split("T")[0];
+            if (ins.creado_en) {
+              const dtInscr = new Date(ins.creado_en);
+              if (!isNaN(dtInscr.getTime())) {
+                fechaInscr = dtInscr.toISOString().split("T")[0];
+              }
+            }
             
             if (divisaPlan === "USD") {
               totalIngresosUsd += precioPlan;
@@ -324,12 +329,20 @@ export default function AdminDashboard() {
 
       if (clasesDb) {
         const clasesMap: ClaseAdmin[] = clasesDb.map((c: any) => {
-          const dt = new Date(c.fecha_hora);
+          let fechaStr = "-";
+          let horaStr = "-";
+          if (c.fecha_hora) {
+            const dt = new Date(c.fecha_hora);
+            if (!isNaN(dt.getTime())) {
+              fechaStr = dt.toISOString().split("T")[0];
+              horaStr = dt.toTimeString().split(" ")[0].substring(0, 5);
+            }
+          }
           return {
             id: c.id.toString(),
             alumno: c.usuarios?.nombre || c.usuarios?.email || "Estudiante",
-            fecha: dt.toISOString().split("T")[0],
-            hora: dt.toTimeString().split(" ")[0].substring(0, 5),
+            fecha: fechaStr,
+            hora: horaStr,
             estado: c.estado,
             link: c.enlace_meet || "pendiente",
             notes: c.notas_profesor || "",
