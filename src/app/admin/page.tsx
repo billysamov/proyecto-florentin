@@ -1579,6 +1579,7 @@ export default function AdminDashboard() {
                 subTabCMS={subTabCMS}
                 setSubTabCMS={setSubTabCMS}
                 lang={adminLang}
+                clases={clases}
               />
             )}
 

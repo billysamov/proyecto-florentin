@@ -10,6 +10,7 @@ interface ConfiguracionTabProps {
   subTabCMS: "general" | "profesor" | "metodo" | "destino" | "negocio";
   setSubTabCMS: (tab: "general" | "profesor" | "metodo" | "destino" | "negocio") => void;
   lang?: "es" | "fr";
+  clases?: any[];
 }
 
 export default function ConfiguracionTab({
@@ -20,7 +21,8 @@ export default function ConfiguracionTab({
   guardarConfiguracion,
   subTabCMS,
   setSubTabCMS,
-  lang = "es"
+  lang = "es",
+  clases = []
 }: ConfiguracionTabProps) {
   const isFr = lang === "fr";
   const [editLang, setEditLang] = React.useState<"es" | "fr" | "en">("es");
@@ -37,10 +39,76 @@ export default function ConfiguracionTab({
     listaExclusiones = [];
   }
 
+  const esFechaSeleccionadaLaborable = React.useMemo(() => {
+    if (!nuevaExclusionFecha) return true;
+    try {
+      const dateObj = new Date(nuevaExclusionFecha + "T00:00:00");
+      const dayOfWeek = dateObj.getDay();
+      let diasLaborables: number[] = [1,2,3,4,5];
+      try {
+        diasLaborables = JSON.parse(config.dias_laborables || "[1,2,3,4,5]");
+      } catch {}
+      return diasLaborables.includes(dayOfWeek);
+    } catch {
+      return true;
+    }
+  }, [nuevaExclusionFecha, config.dias_laborables]);
+
   const handleAgregarExclusion = () => {
     if (!nuevaExclusionFecha) {
       alert(isFr ? "Veuillez sélectionner une date." : "Por favor, selecciona una fecha.");
       return;
+    }
+
+    const dateObj = new Date(nuevaExclusionFecha + "T00:00:00");
+    const dayOfWeek = dateObj.getDay();
+
+    let diasLaborables: number[] = [1,2,3,4,5];
+    try {
+      diasLaborables = JSON.parse(config.dias_laborables || "[1,2,3,4,5]");
+    } catch {}
+
+    if (!diasLaborables.includes(dayOfWeek)) {
+      alert(isFr 
+        ? "Ce jour fait déjà partie de vos jours non ouvrables par défaut." 
+        : "Este día ya forma parte de tus días no laborables por defecto en tu rutina semanal.");
+      return;
+    }
+
+    // Validar clases agendadas existentes
+    const clasesEnEseDia = clases.filter(
+      (c: any) => c.fecha === nuevaExclusionFecha && c.estado !== "cancelado" && c.estado !== "cancelada"
+    );
+
+    if (nuevaExclusionTipo === "dia_completo") {
+      if (clasesEnEseDia.length > 0) {
+        const infoClases = clasesEnEseDia.map((c: any) => `• ${c.alumno} a las ${c.hora}`).join("\n");
+        alert(isFr 
+          ? `Impossible de bloquer ce jour complet. Vous avez des cours planifiés :\n${infoClases}`
+          : `No puedes bloquear este día completo. Tienes clases programadas con:\n${infoClases}`);
+        return;
+      }
+    } else {
+      // Rango de horas
+      if (nuevaExclusionInicio >= nuevaExclusionFin) {
+        alert(isFr 
+          ? "L'heure de début doit être antérieure à l'heure de fin." 
+          : "La hora de inicio debe ser anterior a la hora de fin.");
+        return;
+      }
+
+      const clasesInterferidas = clasesEnEseDia.filter((c: any) => {
+        const classHour = c.hora; // "HH:MM"
+        return classHour >= nuevaExclusionInicio && classHour < nuevaExclusionFin;
+      });
+
+      if (clasesInterferidas.length > 0) {
+        const infoClases = clasesInterferidas.map((c: any) => `• ${c.alumno} a las ${c.hora}`).join("\n");
+        alert(isFr 
+          ? `Impossible de bloquer ce créneau. Vous avez des cours planifiés pendant cette période :\n${infoClases}`
+          : `No puedes bloquear este rango. Tienes clases programadas en este horario con:\n${infoClases}`);
+        return;
+      }
     }
 
     const nueva = {
@@ -1261,8 +1329,15 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                     type="date"
                     value={nuevaExclusionFecha}
                     onChange={(e) => setNuevaExclusionFecha(e.target.value)}
-                    style={{ padding: "10px 12px", borderRadius: "8px", border: "1px solid #cbd5e1", fontSize: "13px" }}
+                    style={{ padding: "10px 12px", borderRadius: "8px", border: !esFechaSeleccionadaLaborable ? "1.5px solid #ef4444" : "1px solid #cbd5e1", fontSize: "13px" }}
                   />
+                  {!esFechaSeleccionadaLaborable && (
+                    <span style={{ color: "#ef4444", fontSize: "11px", display: "block", marginTop: "4px", fontWeight: 600 }}>
+                      ⚠️ {isFr 
+                        ? "Ce jour fait déjà partie de vos jours non ouvrables par défaut." 
+                        : "Este día ya es no laborable por defecto."}
+                    </span>
+                  )}
                 </div>
 
                 <div className="form-group" style={{ marginBottom: 0 }}>
@@ -1312,25 +1387,35 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 <button
                   type="button"
                   onClick={handleAgregarExclusion}
+                  disabled={!esFechaSeleccionadaLaborable}
                   className="btn"
                   style={{
-                    backgroundColor: "#ef4444",
+                    backgroundColor: !esFechaSeleccionadaLaborable ? "#94a3b8" : "#ef4444",
                     color: "white",
                     fontWeight: 700,
                     fontSize: "13px",
                     padding: "12px 16px",
                     border: "none",
                     borderRadius: "8px",
-                    cursor: "pointer",
+                    cursor: !esFechaSeleccionadaLaborable ? "not-allowed" : "pointer",
                     height: "42px",
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "center",
                     gap: "6px",
-                    transition: "background 0.2s"
+                    transition: "background 0.2s",
+                    opacity: !esFechaSeleccionadaLaborable ? 0.7 : 1
                   }}
-                  onMouseOver={(e) => e.currentTarget.style.backgroundColor = "#dc2626"}
-                  onMouseOut={(e) => e.currentTarget.style.backgroundColor = "#ef4444"}
+                  onMouseOver={(e) => {
+                    if (esFechaSeleccionadaLaborable) {
+                      e.currentTarget.style.backgroundColor = "#dc2626";
+                    }
+                  }}
+                  onMouseOut={(e) => {
+                    if (esFechaSeleccionadaLaborable) {
+                      e.currentTarget.style.backgroundColor = "#ef4444";
+                    }
+                  }}
                 >
                   ➕ {isFr ? "Bloquer" : "Bloquear"}
                 </button>
