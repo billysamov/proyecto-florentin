@@ -121,8 +121,12 @@ export async function POST(request: Request) {
         .eq("id", usuarioId);
 
       // C. Enviar correo de confirmación de pago automatizado al alumno
-      if (emailAlumno) {
-        await enviarCorreoConfirmacionPago(emailAlumno, nombreAlumno, planNombre, totalClases);
+      try {
+        if (emailAlumno) {
+          await enviarCorreoConfirmacionPago(emailAlumno, nombreAlumno, planNombre, totalClases);
+        }
+      } catch (errAlumno) {
+        console.error("Error al enviar correo de bienvenida al alumno:", errAlumno);
       }
 
       // D. Notificar al profesor (Florentin) por correo
