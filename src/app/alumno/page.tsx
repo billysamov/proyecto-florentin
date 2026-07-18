@@ -672,11 +672,6 @@ export default function AlumnoPortal() {
 
     let slotsTotales = 0;
     let slotsOcupados = 0;
-
-    const y = dateObj.getFullYear();
-    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
-    const d = String(diaNum).padStart(2, '0');
-
     // Revisar cada slot horario
     for (let i = startHourTeacher; i < endHourTeacher; i++) {
       const isLunch = i >= startLunch && i < endLunch;
@@ -782,6 +777,7 @@ export default function AlumnoPortal() {
             }
           }
         }
+      }
       } catch (err) {
         console.error("Error calculando zona horaria", err);
       }
