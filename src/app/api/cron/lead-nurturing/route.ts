@@ -14,6 +14,22 @@ export async function GET(request: Request) {
     }
 
     const supabaseAdmin = getSupabaseAdmin();
+
+    // 0. Consultar estado en la base de datos
+    const { data: config } = await supabaseAdmin
+      .from("configuracion_sitio")
+      .select("email_recordatorio_activo")
+      .eq("id", 1)
+      .maybeSingle();
+
+    // Si la columna no existe o está en true (por defecto), procedemos
+    const estaActivo = config ? config.email_recordatorio_activo !== false : true;
+
+    if (!estaActivo) {
+      console.log(`[Lead Recordatorio] El cron de recordatorios de inactividad de 3 días está desactivado desde el panel de control.`);
+      return NextResponse.json({ success: true, message: "Campaña de recordatorio de 3 días desactivada por configuración de usuario" });
+    }
+
     const ahora = new Date();
     
     // Rango de tiempo: Hace 3 días (entre hace 72 y 96 horas)

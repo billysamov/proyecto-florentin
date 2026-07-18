@@ -11,6 +11,7 @@ import RecursosTab from "@/components/admin/RecursosTab";
 import NotificacionesTab from "@/components/admin/NotificacionesTab";
 import ConfiguracionTab from "@/components/admin/ConfiguracionTab";
 import ManualTab from "@/components/admin/ManualTab";
+import MarketingAutomatizaciones from "@/components/admin/MarketingAutomatizaciones";
 
 interface Alumno {
   id: string;
@@ -78,6 +79,7 @@ export default function AdminDashboard() {
   const [planes, setPlanes] = useState<any[]>([]);
 
   const [subTabCMS, setSubTabCMS] = useState<"general" | "profesor" | "metodo" | "destino" | "negocio">("general");
+  const [subTabMarketing, setSubTabMarketing] = useState<"mensajes" | "automatizaciones">("mensajes");
 
   const [config, setConfig] = useState({
     id: 1,
@@ -139,7 +141,9 @@ export default function AdminDashboard() {
     cta_btn_text: "Agendar por WhatsApp",
     enlace_meet_default: "",
     email_notificaciones: "",
-    whatsapp_number: ""
+    whatsapp_number: "",
+    email_bienvenida_activo: true,
+    email_recordatorio_activo: true
   });
   const [configExito, setConfigExito] = useState(false);
   const [configError, setConfigError] = useState("");
@@ -464,7 +468,9 @@ export default function AdminDashboard() {
           email_notificaciones: configDb.email_notificaciones || "",
           whatsapp_number: configDb.whatsapp_number || "",
           mostrar_testimonios: configDb.mostrar_testimonios !== false,
-          exclusiones_horario: configDb.exclusiones_horario || "[]"
+          exclusiones_horario: configDb.exclusiones_horario || "[]",
+          email_bienvenida_activo: configDb.email_bienvenida_activo !== false,
+          email_recordatorio_activo: configDb.email_recordatorio_activo !== false
         });
       }
 
@@ -879,7 +885,9 @@ export default function AdminDashboard() {
         email_notificaciones: config.email_notificaciones,
         whatsapp_number: config.whatsapp_number,
         mostrar_testimonios: config.mostrar_testimonios !== false,
-        exclusiones_horario: config.exclusiones_horario
+        exclusiones_horario: config.exclusiones_horario,
+        email_bienvenida_activo: config.email_bienvenida_activo,
+        email_recordatorio_activo: config.email_recordatorio_activo
       });
       
     if (error) {
@@ -1550,22 +1558,67 @@ export default function AdminDashboard() {
               />
             )}
 
-            {/* TAB 5: NOTIFICACIONES */}
+            {/* TAB 5: MARKETING Y MENSAJES */}
             {activeTab === "notificaciones" && (
-              <NotificacionesTab
-                alumnos={alumnos as any}
-                canalEnvio={canalEnvio}
-                setCanalEnvio={setCanalEnvio}
-                destinatario={destinatario}
-                setDestinatario={setDestinatario}
-                asuntoMsg={asuntoMsg}
-                setAsuntoMsg={setAsuntoMsg}
-                cuerpoMsg={cuerpoMsg}
-                setCuerpoMsg={setCuerpoMsg}
-                envioExito={envioExito}
-                enviarMensaje={enviarMensaje}
-                lang={adminLang}
-              />
+              <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                {/* Selector de Subpestaña */}
+                <div style={{ display: "flex", gap: "10px", borderBottom: "1px solid var(--border-color)", paddingBottom: "10px" }}>
+                  <button
+                    onClick={() => setSubTabMarketing("mensajes")}
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      backgroundColor: subTabMarketing === "mensajes" ? "#3b82f6" : "transparent",
+                      color: subTabMarketing === "mensajes" ? "#ffffff" : "var(--text-muted)",
+                      border: "none",
+                      borderRadius: "20px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {adminLang === "fr" ? "Envoi de Messages" : "Envío de Mensajes"}
+                  </button>
+                  <button
+                    onClick={() => setSubTabMarketing("automatizaciones")}
+                    style={{
+                      padding: "8px 16px",
+                      fontSize: "13px",
+                      fontWeight: 600,
+                      backgroundColor: subTabMarketing === "automatizaciones" ? "#3b82f6" : "transparent",
+                      color: subTabMarketing === "automatizaciones" ? "#ffffff" : "var(--text-muted)",
+                      border: "none",
+                      borderRadius: "20px",
+                      cursor: "pointer"
+                    }}
+                  >
+                    {adminLang === "fr" ? "Automatisations d'E-mails" : "Automatizaciones de Correo"}
+                  </button>
+                </div>
+
+                {subTabMarketing === "mensajes" ? (
+                  <NotificacionesTab
+                    alumnos={alumnos as any}
+                    canalEnvio={canalEnvio}
+                    setCanalEnvio={setCanalEnvio}
+                    destinatario={destinatario}
+                    setDestinatario={setDestinatario}
+                    asuntoMsg={asuntoMsg}
+                    setAsuntoMsg={setAsuntoMsg}
+                    cuerpoMsg={cuerpoMsg}
+                    setCuerpoMsg={setCuerpoMsg}
+                    envioExito={envioExito}
+                    enviarMensaje={enviarMensaje}
+                    lang={adminLang}
+                  />
+                ) : (
+                  <MarketingAutomatizaciones
+                    config={config}
+                    setConfig={setConfig}
+                    alumnosCount={alumnos.length}
+                    lang={adminLang}
+                  />
+                )}
+              </div>
             )}
 
             {/* TAB 6: CONFIGURACION CMS */}
