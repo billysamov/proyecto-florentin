@@ -54,6 +54,43 @@ export default function ConfiguracionTab({
     }
   }, [nuevaExclusionFecha, config.dias_laborables]);
 
+  const [mesVisibleCMS, setMesVisibleCMS] = React.useState<Date>(() => {
+    return new Date();
+  });
+
+  const getEstadoDiaCMS = (diaNum: number) => {
+    const dateObj = new Date(mesVisibleCMS.getFullYear(), mesVisibleCMS.getMonth(), diaNum);
+    const dayOfWeek = dateObj.getDay();
+
+    let diasLaborables: number[] = [1,2,3,4,5];
+    try {
+      diasLaborables = JSON.parse(config.dias_laborables || "[1,2,3,4,5]");
+    } catch {}
+
+    if (!diasLaborables.includes(dayOfWeek)) {
+      return "no_laborable";
+    }
+
+    const y = dateObj.getFullYear();
+    const m = String(dateObj.getMonth() + 1).padStart(2, '0');
+    const d = String(diaNum).padStart(2, '0');
+    const dateString = `${y}-${m}-${d}`;
+
+    const exclusion = listaExclusiones.find(ex => ex.fecha === dateString);
+    if (exclusion) {
+      return exclusion.tipo === "dia_completo" ? "excluido_completo" : "excluido_parcial";
+    }
+
+    const tieneClase = clases.some(
+      (c: any) => c.fecha === dateString && c.estado !== "cancelado" && c.estado !== "cancelada"
+    );
+    if (tieneClase) {
+      return "con_clase";
+    }
+
+    return "disponible";
+  };
+
   const handleAgregarExclusion = () => {
     if (!nuevaExclusionFecha) {
       alert(isFr ? "Veuillez sélectionner une date." : "Por favor, selecciona una fecha.");
@@ -1295,50 +1332,262 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               </div>
             </div>
 
-            {/* Exclusiones de Disponibilidad del Profesor */}
-            <hr style={{ margin: "28px 0", border: "0", borderTop: "1px dashed #cbd5e1" }} />
-            
-            <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-              <h4 style={{ fontSize: "16px", color: "hsl(var(--accent-hsl))", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "8px" }}>
-                <Calendar size={18} className="text-[#3b82f6]" />
-                {isFr ? "CALENDRIER D'EXCLUSIONS (CONGÉS & INDISPONIBILITÉS)" : "CALENDARIO DE EXCLUSIONES (VACACIONES & INASISTENCIAS)"}
-              </h4>
-              <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "-8px" }}>
-                {isFr 
-                  ? "Sélectionnez les jours ou les tranches horaires spécifiques où vous ne serez pas disponible. Les étudiants ne pourront pas réserver de cours pendant ces périodes."
-                  : "Selecciona días completos o rangos de horas específicos en los que no estarás disponible. Los alumnos no podrán reservar clases en estos periodos."}
-              </p>
-
-              {/* Formulario rápido para añadir exclusión */}
-              <div style={{ 
-                display: "grid", 
-                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", 
-                gap: "16px", 
-                backgroundColor: "#f8fafc", 
-                padding: "20px", 
-                borderRadius: "12px",
-                border: "1px solid #e2e8f0",
-                alignItems: "end"
-              }}>
-                <div className="form-group" style={{ marginBottom: 0 }}>
-                  <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
-                    {isFr ? "Date d'indisponibilité" : "Fecha de inasistencia"}
-                  </label>
-                  <input
-                    className="form-control"
-                    type="date"
-                    value={nuevaExclusionFecha}
-                    onChange={(e) => setNuevaExclusionFecha(e.target.value)}
-                    style={{ padding: "10px 12px", borderRadius: "8px", border: !esFechaSeleccionadaLaborable ? "1.5px solid #ef4444" : "1px solid #cbd5e1", fontSize: "13px" }}
-                  />
-                  {!esFechaSeleccionadaLaborable && (
-                    <span style={{ color: "#ef4444", fontSize: "11px", display: "block", marginTop: "4px", fontWeight: 600 }}>
-                      ⚠️ {isFr 
-                        ? "Ce jour fait déjà partie de vos jours non ouvrables par défaut." 
-                        : "Este día ya es no laborable por defecto."}
-                    </span>
-                  )}
-                </div>
+             {/* Exclusiones de Disponibilidad del Profesor */}
+             <hr style={{ margin: "28px 0", border: "0", borderTop: "1px dashed #cbd5e1" }} />
+             
+             <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
+               <h4 style={{ fontSize: "16px", color: "hsl(var(--accent-hsl))", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "8px" }}>
+                 <Calendar size={18} className="text-[#3b82f6]" />
+                 {isFr ? "CALENDRIER D'EXCLUSIONS (CONGÉS & INDISPONIBILITÉS)" : "CALENDARIO DE EXCLUSIONES (VACACIONES & INASISTENCIAS)"}
+               </h4>
+               <p style={{ fontSize: "13px", color: "var(--text-muted)", marginTop: "-8px" }}>
+                 {isFr 
+                   ? "Sélectionnez les jours ou les tranches horaires spécifiques où vous ne serez pas disponible. Les étudiants ne pourront pas réserver de cours pendant ces périodes."
+                   : "Selecciona días completos o rangos de horas específicos en los que no estarás disponible. Los alumnos no podrán reservar clases en estos periodos."}
+               </p>
+ 
+               {/* Calendario Premium Interactivo para el Profesor */}
+               <div style={{
+                 backgroundColor: "white",
+                 padding: "24px",
+                 borderRadius: "16px",
+                 border: "1px solid var(--border-color)",
+                 boxShadow: "0 4px 12px rgba(0, 0, 0, 0.03)",
+                 maxWidth: "480px",
+                 margin: "0 auto 16px auto",
+                 width: "100%"
+               }}>
+                 {/* Cabecera del Calendario */}
+                 <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px" }}>
+                   <button 
+                     type="button" 
+                     className="btn" 
+                     style={{ padding: "8px 12px", minWidth: "auto", cursor: "pointer", fontSize: "14px", fontWeight: "bold", border: "1px solid #cbd5e1", borderRadius: "6px", backgroundColor: "white" }}
+                     onClick={() => {
+                       setMesVisibleCMS(new Date(mesVisibleCMS.getFullYear(), mesVisibleCMS.getMonth() - 1, 1));
+                     }}
+                   >
+                     &lt;
+                   </button>
+                   <span style={{ fontWeight: 800, fontSize: "16px", textTransform: "capitalize", color: "#0f172a" }}>
+                     {mesVisibleCMS.toLocaleString(isFr ? "fr-FR" : "es-ES", { month: "long", year: "numeric" })}
+                   </span>
+                   <button 
+                     type="button" 
+                     className="btn" 
+                     style={{ padding: "8px 12px", minWidth: "auto", cursor: "pointer", fontSize: "14px", fontWeight: "bold", border: "1px solid #cbd5e1", borderRadius: "6px", backgroundColor: "white" }}
+                     onClick={() => {
+                       setMesVisibleCMS(new Date(mesVisibleCMS.getFullYear(), mesVisibleCMS.getMonth() + 1, 1));
+                     }}
+                   >
+                     &gt;
+                   </button>
+                 </div>
+ 
+                 {/* Días de la semana */}
+                 <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "6px", textAlign: "center", fontWeight: 700, fontSize: "12px", color: "var(--text-muted)", marginBottom: "12px" }}>
+                   <div>L</div>
+                   <div>M</div>
+                   <div>M</div>
+                   <div>J</div>
+                   <div>V</div>
+                   <div>S</div>
+                   <div>D</div>
+                 </div>
+ 
+                 {/* Cuadrícula de días */}
+                 <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: "6px" }}>
+                   {/* Relleno días mes anterior */}
+                   {(() => {
+                     const yr = mesVisibleCMS.getFullYear();
+                     const mth = mesVisibleCMS.getMonth();
+                     const tempStart = new Date(yr, mth, 1).getDay();
+                     const startDayIdx = tempStart === 0 ? 6 : tempStart - 1;
+                     const prevTotal = new Date(yr, mth, 0).getDate();
+ 
+                     return Array.from({ length: startDayIdx }).map((_, idx) => {
+                       const dNum = prevTotal - startDayIdx + idx + 1;
+                       return (
+                         <div 
+                           key={`prev-${idx}`} 
+                           style={{ 
+                             display: "flex", 
+                             alignItems: "center", 
+                             justifyContent: "center", 
+                             height: "38px", 
+                             color: "#cbd5e1", 
+                             fontSize: "12px" 
+                           }}
+                         >
+                           {dNum}
+                         </div>
+                       );
+                     });
+                   })()}
+ 
+                   {/* Días mes actual */}
+                   {(() => {
+                     const yr = mesVisibleCMS.getFullYear();
+                     const mth = mesVisibleCMS.getMonth();
+                     const totalDays = new Date(yr, mth + 1, 0).getDate();
+ 
+                     return Array.from({ length: totalDays }).map((_, idx) => {
+                       const dayNum = idx + 1;
+                       const estado = getEstadoDiaCMS(dayNum);
+                       const diaIsoStr = `${yr}-${String(mth + 1).padStart(2, '0')}-${String(dayNum).padStart(2, '0')}`;
+                       const isSelected = nuevaExclusionFecha === diaIsoStr;
+ 
+                       let bgColor = "#ffffff";
+                       let textColor = "var(--text-main)";
+                       let borderColor = "#cbd5e1";
+                       let dotColor = "transparent";
+                       let isClickable = true;
+ 
+                       if (estado === "no_laborable") {
+                         bgColor = "#f8fafc";
+                         textColor = "#cbd5e1";
+                         borderColor = "#e2e8f0";
+                         isClickable = false;
+                       } else if (estado === "excluido_completo") {
+                         bgColor = "#fee2e2";
+                         textColor = "#b91c1c";
+                         borderColor = "#fecaca";
+                       } else if (estado === "excluido_parcial") {
+                         bgColor = "#fef3c7";
+                         textColor = "#d97706";
+                         borderColor = "#fde68a";
+                       } else if (estado === "con_clase") {
+                         bgColor = "#eff6ff";
+                         textColor = "#1d4ed8";
+                         borderColor = "#bfdbfe";
+                         dotColor = "#3b82f6";
+                       } else { // disponible
+                         bgColor = "#f0fdf4";
+                         textColor = "#15803d";
+                         borderColor = "#bbf7d0";
+                       }
+ 
+                       return (
+                         <button
+                           type="button"
+                           key={`day-${dayNum}`}
+                           onClick={() => {
+                             if (isClickable) {
+                               setNuevaExclusionFecha(diaIsoStr);
+                             }
+                           }}
+                           disabled={!isClickable}
+                           style={{
+                             display: "flex",
+                             flexDirection: "column",
+                             alignItems: "center",
+                             justifyContent: "center",
+                             height: "38px",
+                             borderRadius: "8px",
+                             border: isSelected ? "2px solid #3b82f6" : `1px solid ${borderColor}`,
+                             backgroundColor: isSelected ? "white" : bgColor,
+                             color: isSelected ? "#3b82f6" : textColor,
+                             fontSize: "13px",
+                             fontWeight: isSelected ? 800 : 600,
+                             cursor: isClickable ? "pointer" : "not-allowed",
+                             position: "relative",
+                             transition: "all 0.2s"
+                           }}
+                         >
+                           <span>{dayNum}</span>
+                           {dotColor !== "transparent" && (
+                             <span style={{
+                               width: "4.5px",
+                               height: "4.5px",
+                               borderRadius: "50%",
+                               backgroundColor: dotColor,
+                               position: "absolute",
+                               bottom: "4px"
+                             }} />
+                           )}
+                         </button>
+                       );
+                     });
+                   })()}
+                 </div>
+ 
+                 {/* Leyenda de Colores */}
+                 <div style={{
+                   display: "grid",
+                   gridTemplateColumns: "1fr 1fr",
+                   gap: "8px",
+                   marginTop: "20px",
+                   borderTop: "1px solid #e2e8f0",
+                   paddingTop: "12px",
+                   fontSize: "11px"
+                 }}>
+                   <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#15803d", fontWeight: 600 }}>
+                     <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#22c55e" }} />
+                     {isFr ? "Disponible (Ouvrable)" : "Disponible (Laborable)"}
+                   </div>
+                   <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#b91c1c", fontWeight: 600 }}>
+                     <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#ef4444" }} />
+                     {isFr ? "Journée Bloquée" : "Bloqueado"}
+                   </div>
+                   <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#d97706", fontWeight: 600 }}>
+                     <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#f59e0b" }} />
+                     {isFr ? "Bloqué Partiel" : "Bloqueo Parcial"}
+                   </div>
+                   <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#1d4ed8", fontWeight: 600 }}>
+                     <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#3b82f6" }} />
+                     {isFr ? "Cours Programmé" : "Clases Agendadas"}
+                   </div>
+                   <div style={{ display: "flex", alignItems: "center", gap: "6px", color: "#94a3b8", gridColumn: "span 2", fontWeight: 600 }}>
+                     <span style={{ width: "8px", height: "8px", borderRadius: "50%", backgroundColor: "#cbd5e1" }} />
+                     {isFr ? "Fermé par défaut (Routine)" : "Día no laborable por rutina"}
+                   </div>
+                 </div>
+               </div>
+ 
+               {/* Formulario rápido para añadir exclusión */}
+               <div style={{ 
+                 display: "grid", 
+                 gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))", 
+                 gap: "16px", 
+                 backgroundColor: "#f8fafc", 
+                 padding: "20px", 
+                 borderRadius: "12px",
+                 border: "1px solid #e2e8f0",
+                 alignItems: "end"
+               }}>
+                 <div className="form-group" style={{ marginBottom: 0 }}>
+                   <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
+                     {isFr ? "Date sélectionnée" : "Fecha seleccionada"}
+                   </label>
+                   <input
+                     className="form-control"
+                     type="text"
+                     value={nuevaExclusionFecha ? (() => {
+                       const dateObj = new Date(nuevaExclusionFecha + "T00:00:00");
+                       return dateObj.toLocaleDateString(isFr ? 'fr-FR' : 'es-ES', {
+                         weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+                       });
+                     })() : (isFr ? "Sélectionnez un jour..." : "Selecciona un día en el calendario...")}
+                     readOnly
+                     style={{ 
+                       padding: "10px 12px", 
+                       borderRadius: "8px", 
+                       border: "1px solid #cbd5e1", 
+                       fontSize: "13px", 
+                       backgroundColor: "#f1f5f9", 
+                       color: "#475569",
+                       fontWeight: 600,
+                       cursor: "default"
+                     }}
+                   />
+                   {!esFechaSeleccionadaLaborable && (
+                     <span style={{ color: "#ef4444", fontSize: "11px", display: "block", marginTop: "4px", fontWeight: 600 }}>
+                       ⚠️ {isFr 
+                         ? "Ce jour fait déjà partie de vos jours non ouvrables par défaut." 
+                         : "Este día ya es no laborable por defecto."}
+                     </span>
+                   )}
+                 </div>
 
                 <div className="form-group" style={{ marginBottom: 0 }}>
                   <label className="form-label" style={{ fontWeight: 600, fontSize: "12px", color: "#475569" }}>
