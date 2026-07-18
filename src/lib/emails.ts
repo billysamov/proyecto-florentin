@@ -6,6 +6,9 @@ const smtpUser = process.env.SMTP_USER || '';
 const smtpPass = process.env.SMTP_PASS || process.env.SMTP_PASSWORD || '';
 const smtpFrom = process.env.SMTP_FROM || 'Florentin Francés <soporte@florentin.com>';
 
+// Limpiar comillas innecesarias que Vercel o dotenv puedan arrastrar
+const cleanSmtpFrom = smtpFrom.replace(/^['"]|['"]$/g, '');
+
 // Configurar transportador SMTP si las credenciales existen
 const transporter = smtpHost && smtpUser && smtpPass
   ? nodemailer.createTransport({
@@ -18,7 +21,10 @@ const transporter = smtpHost && smtpUser && smtpPass
       },
       tls: {
         rejectUnauthorized: false // Permite conexiones locales o autofirmadas de desarrollo
-      }
+      },
+      connectionTimeout: 10000, // Prevenir congelamiento de hilos en Vercel
+      greetingTimeout: 10000,
+      socketTimeout: 10000
     })
   : null;
 
@@ -37,7 +43,7 @@ Contenido: ${html.substring(0, 150)}... [Simulado]`);
 
   try {
     const info = await transporter.sendMail({
-      from: smtpFrom,
+      from: cleanSmtpFrom,
       to,
       subject,
       html,
