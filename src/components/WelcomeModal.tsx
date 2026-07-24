@@ -27,10 +27,9 @@ export default function WelcomeModal({
     if (typeof window !== "undefined") {
       const hasVisited = localStorage.getItem("florentin_welcome_seen");
       if (!hasVisited) {
-        // Retardo sutil para la animación de entrada
         const timer = setTimeout(() => {
           setIsOpen(true);
-        }, 400);
+        }, 300);
         return () => clearTimeout(timer);
       }
     }
@@ -49,10 +48,9 @@ export default function WelcomeModal({
       onConfirm(selectedLang, selectedDivisa);
       setIsOpen(false);
       setIsClosing(false);
-    }, 450);
+    }, 400);
   };
 
-  // Textos adaptativos según el idioma seleccionado en tiempo real en la pantalla
   const getModalContent = () => {
     switch (selectedLang) {
       case "fr":
@@ -97,26 +95,25 @@ export default function WelcomeModal({
         alignItems: "center",
         justifyContent: "center",
         padding: "20px",
-        backgroundColor: "rgba(6, 11, 23, 0.88)",
-        backdropFilter: "blur(16px)",
-        WebkitBackdropFilter: "blur(16px)",
+        backgroundColor: "rgba(15, 23, 42, 0.45)",
+        backdropFilter: "blur(10px)",
+        WebkitBackdropFilter: "blur(10px)",
         opacity: isClosing ? 0 : 1,
         transform: isClosing ? "scale(0.96)" : "scale(1)",
-        transition: "opacity 0.45s cubic-bezier(0.16, 1, 0.3, 1), transform 0.45s cubic-bezier(0.16, 1, 0.3, 1)",
-        animation: "welcomeFadeIn 0.5s ease-out forwards"
+        transition: "opacity 0.4s cubic-bezier(0.16, 1, 0.3, 1), transform 0.4s cubic-bezier(0.16, 1, 0.3, 1)",
+        animation: "welcomeFadeIn 0.4s ease-out forwards"
       }}
     >
-      {/* Resplandor decorativo de fondo */}
+      {/* Resplandor decorativo claro */}
       <div
         style={{
           position: "absolute",
-          width: "500px",
-          height: "500px",
+          width: "450px",
+          height: "450px",
           borderRadius: "50%",
-          background: "radial-gradient(circle, rgba(201, 154, 60, 0.18) 0%, rgba(59, 130, 246, 0.1) 50%, transparent 70%)",
+          background: "radial-gradient(circle, rgba(201, 154, 60, 0.12) 0%, rgba(59, 130, 246, 0.08) 50%, transparent 70%)",
           filter: "blur(40px)",
-          pointerEvents: "none",
-          animation: "pulseAura 6s ease-in-out infinite alternate"
+          pointerEvents: "none"
         }}
       />
 
@@ -124,70 +121,61 @@ export default function WelcomeModal({
         style={{
           position: "relative",
           width: "100%",
-          maxWidth: "480px",
-          backgroundColor: "rgba(12, 27, 51, 0.95)",
-          border: "1px solid rgba(201, 154, 60, 0.3)",
+          maxWidth: "460px",
+          backgroundColor: "#ffffff",
+          border: "1px solid rgba(226, 232, 240, 0.8)",
           borderRadius: "24px",
           padding: "36px 28px",
-          boxShadow: "0 25px 60px -15px rgba(0, 0, 0, 0.7), 0 0 30px rgba(201, 154, 60, 0.15)",
-          color: "#ffffff",
+          boxShadow: "0 20px 50px -10px rgba(12, 27, 51, 0.18), 0 0 30px rgba(201, 154, 60, 0.08)",
+          color: "#0c1b33",
           textAlign: "center",
           overflow: "hidden"
         }}
       >
-        {/* Adorno superior francés */}
+        {/* Adorno superior bandera francesa */}
         <div style={{ display: "flex", justifyContent: "center", gap: "6px", marginBottom: "20px" }}>
-          <span style={{ width: "24px", height: "4px", backgroundColor: "#0055A5", borderRadius: "2px" }} />
-          <span style={{ width: "24px", height: "4px", backgroundColor: "#FFFFFF", borderRadius: "2px" }} />
-          <span style={{ width: "24px", height: "4px", backgroundColor: "#C8102E", borderRadius: "2px" }} />
+          <span style={{ width: "26px", height: "4px", backgroundColor: "#0055A5", borderRadius: "2px" }} />
+          <span style={{ width: "26px", height: "4px", backgroundColor: "#E2E8F0", borderRadius: "2px" }} />
+          <span style={{ width: "26px", height: "4px", backgroundColor: "#C8102E", borderRadius: "2px" }} />
         </div>
 
-        {/* Logo animado */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px" }}>
-          <div
+        {/* Logo LIBRE (sin encapsular en círculo blanco) */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px", padding: "0 10px" }}>
+          <Image
+            src="/logo.png"
+            alt="Florentin French"
+            width={180}
+            height={65}
             style={{
-              position: "relative",
-              width: "72px",
-              height: "72px",
-              borderRadius: "50%",
-              backgroundColor: "#ffffff",
-              padding: "4px",
-              boxShadow: "0 8px 24px rgba(0,0,0,0.3), 0 0 15px rgba(201, 154, 60, 0.4)",
-              animation: "floatLogo 4s ease-in-out infinite"
+              objectFit: "contain",
+              maxHeight: "65px",
+              width: "auto",
+              filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.06))"
             }}
-          >
-            <Image
-              src="/logo.png"
-              alt="Florentin French"
-              width={64}
-              height={64}
-              style={{ objectFit: "contain", borderRadius: "50%" }}
-              priority
-              onError={(e) => {
-                // Fallback por si la imagen tiene otro nombre
-                const target = e.target as HTMLImageElement;
-                target.src = "/inicio.png";
-              }}
-            />
-          </div>
+            priority
+            onError={(e) => {
+              const target = e.target as HTMLImageElement;
+              target.src = "/inicio.png";
+            }}
+          />
         </div>
 
-        {/* Badge */}
+        {/* Badge elegante */}
         <div
           style={{
             display: "inline-flex",
             alignItems: "center",
             gap: "6px",
-            padding: "4px 12px",
+            padding: "5px 14px",
             borderRadius: "20px",
-            backgroundColor: "rgba(201, 154, 60, 0.15)",
-            border: "1px solid rgba(201, 154, 60, 0.3)",
-            color: "#f59e0b",
+            backgroundColor: "rgba(201, 154, 60, 0.1)",
+            border: "1px solid rgba(201, 154, 60, 0.25)",
+            color: "#b48128",
             fontSize: "11px",
             fontWeight: 700,
             letterSpacing: "0.5px",
             textTransform: "uppercase",
-            marginBottom: "12px"
+            marginBottom: "14px"
           }}
         >
           <Sparkles size={12} />
@@ -197,12 +185,11 @@ export default function WelcomeModal({
         {/* Título de bienvenida */}
         <h2
           style={{
-            fontSize: "28px",
+            fontSize: "26px",
             fontWeight: 800,
-            color: "#ffffff",
+            color: "#0c1b33",
             margin: "0 0 8px 0",
-            letterSpacing: "-0.5px",
-            fontFamily: "var(--font-heading, inherit)"
+            letterSpacing: "-0.5px"
           }}
         >
           {content.welcome}
@@ -212,8 +199,8 @@ export default function WelcomeModal({
         <p
           style={{
             fontSize: "14px",
-            color: "#94a3b8",
-            margin: "0 0 28px 0",
+            color: "#64748b",
+            margin: "0 0 26px 0",
             lineHeight: 1.5
           }}
         >
@@ -221,7 +208,7 @@ export default function WelcomeModal({
         </p>
 
         {/* Selección de Idioma */}
-        <div style={{ marginBottom: "22px", textAlign: "left" }}>
+        <div style={{ marginBottom: "20px", textAlign: "left" }}>
           <label
             style={{
               display: "flex",
@@ -229,7 +216,7 @@ export default function WelcomeModal({
               gap: "6px",
               fontSize: "12px",
               fontWeight: 700,
-              color: "#cbd5e1",
+              color: "#475569",
               textTransform: "uppercase",
               letterSpacing: "0.5px",
               marginBottom: "10px"
@@ -261,11 +248,11 @@ export default function WelcomeModal({
                     borderRadius: "14px",
                     border: isSelected
                       ? "2px solid #c99a3c"
-                      : "1.5px solid rgba(255, 255, 255, 0.1)",
+                      : "1.5px solid #e2e8f0",
                     backgroundColor: isSelected
-                      ? "rgba(201, 154, 60, 0.15)"
-                      : "rgba(255, 255, 255, 0.03)",
-                    color: isSelected ? "#ffffff" : "#cbd5e1",
+                      ? "rgba(201, 154, 60, 0.08)"
+                      : "#f8fafc",
+                    color: isSelected ? "#0c1b33" : "#475569",
                     cursor: "pointer",
                     transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                     outline: "none"
@@ -284,7 +271,7 @@ export default function WelcomeModal({
                         display: "flex",
                         alignItems: "center",
                         justifyContent: "center",
-                        color: "#0c1b33"
+                        color: "#ffffff"
                       }}
                     >
                       <Check size={10} strokeWidth={3} />
@@ -301,7 +288,7 @@ export default function WelcomeModal({
         </div>
 
         {/* Selección de Moneda */}
-        <div style={{ marginBottom: "28px", textAlign: "left" }}>
+        <div style={{ marginBottom: "26px", textAlign: "left" }}>
           <label
             style={{
               display: "flex",
@@ -309,7 +296,7 @@ export default function WelcomeModal({
               gap: "6px",
               fontSize: "12px",
               fontWeight: 700,
-              color: "#cbd5e1",
+              color: "#475569",
               textTransform: "uppercase",
               letterSpacing: "0.5px",
               marginBottom: "10px"
@@ -340,11 +327,11 @@ export default function WelcomeModal({
                     borderRadius: "14px",
                     border: isSelected
                       ? "2px solid #3b82f6"
-                      : "1.5px solid rgba(255, 255, 255, 0.1)",
+                      : "1.5px solid #e2e8f0",
                     backgroundColor: isSelected
-                      ? "rgba(59, 130, 246, 0.18)"
-                      : "rgba(255, 255, 255, 0.03)",
-                    color: isSelected ? "#ffffff" : "#cbd5e1",
+                      ? "rgba(59, 130, 246, 0.08)"
+                      : "#f8fafc",
+                    color: isSelected ? "#0c1b33" : "#475569",
                     cursor: "pointer",
                     transition: "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)",
                     outline: "none"
@@ -355,8 +342,8 @@ export default function WelcomeModal({
                     fontWeight: 800,
                     padding: "2px 8px",
                     borderRadius: "6px",
-                    backgroundColor: isSelected ? "#3b82f6" : "rgba(255,255,255,0.1)",
-                    color: "#ffffff"
+                    backgroundColor: isSelected ? "#3b82f6" : "#e2e8f0",
+                    color: isSelected ? "#ffffff" : "#475569"
                   }}>
                     {item.symbol}
                   </span>
@@ -378,8 +365,8 @@ export default function WelcomeModal({
             padding: "16px",
             borderRadius: "16px",
             border: "none",
-            background: "linear-gradient(135deg, #c99a3c 0%, #f59e0b 100%)",
-            color: "#0c1b33",
+            background: "linear-gradient(135deg, #0c1b33 0%, #1e293b 100%)",
+            color: "#ffffff",
             fontSize: "15px",
             fontWeight: 800,
             cursor: "pointer",
@@ -387,16 +374,16 @@ export default function WelcomeModal({
             alignItems: "center",
             justifyContent: "center",
             gap: "8px",
-            boxShadow: "0 10px 25px -5px rgba(201, 154, 60, 0.4)",
+            boxShadow: "0 10px 25px -5px rgba(12, 27, 51, 0.3)",
             transition: "all 0.2s ease"
           }}
           onMouseEnter={(e) => {
             e.currentTarget.style.transform = "translateY(-2px)";
-            e.currentTarget.style.boxShadow = "0 14px 30px -5px rgba(201, 154, 60, 0.6)";
+            e.currentTarget.style.boxShadow = "0 14px 30px -5px rgba(12, 27, 51, 0.4)";
           }}
           onMouseLeave={(e) => {
             e.currentTarget.style.transform = "translateY(0)";
-            e.currentTarget.style.boxShadow = "0 10px 25px -5px rgba(201, 154, 60, 0.4)";
+            e.currentTarget.style.boxShadow = "0 10px 25px -5px rgba(12, 27, 51, 0.3)";
           }}
         >
           {content.btnText}
@@ -412,25 +399,7 @@ export default function WelcomeModal({
           }
           to {
             opacity: 1;
-            backdrop-filter: blur(16px);
-          }
-        }
-        @keyframes pulseAura {
-          0% {
-            transform: scale(0.9) rotate(0deg);
-            opacity: 0.6;
-          }
-          100% {
-            transform: scale(1.1) rotate(10deg);
-            opacity: 0.9;
-          }
-        }
-        @keyframes floatLogo {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-6px);
+            backdrop-filter: blur(10px);
           }
         }
       `}</style>
