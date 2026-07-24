@@ -150,14 +150,18 @@ export async function POST(request: Request) {
       );
     }
 
-    // ====== PASO 5: Descontar clase de la inscripción ======
-    const { error: updateError } = await supabaseAdmin
+    // ====== PASO 5: Descontar clase de la inscripción de forma ATÓMICA ======
+    // .gt('clases_restantes', 0) garantiza que solo se actualiza si aún hay saldo.
+    // Si otra petición concurrente consumió el último saldo, esta consulta afectará 0 filas.
+    const { data: inscripcionActualizada, error: updateError } = await supabaseAdmin
       .from('inscripciones')
       .update({ clases_restantes: Math.max(0, inscripcion.clases_restantes - 1) })
-      .eq('id', inscripcion.id);
+      .eq('id', inscripcion.id)
+      .gt('clases_restantes', 0)
+      .select('id, clases_restantes');
 
-    if (updateError) {
-      console.error('Error al descontar clase (iniciando rollback):', updateError);
+    if (updateError || !inscripcionActualizada || inscripcionActualizada.length === 0) {
+      console.error('Conflicto de concurrencia al descontar clase (iniciando rollback):', updateError);
       
       // Rollback: Borrar la clase recién creada para mantener la consistencia
       const { error: rollbackError } = await supabaseAdmin
@@ -170,10 +174,12 @@ export async function POST(request: Request) {
       }
 
       return NextResponse.json(
-        { error: 'Error interno al procesar el saldo de clases. Su reserva no fue efectuada.' },
-        { status: 500 }
+        { error: 'No tienes clases restantes en tu plan. Adquiere un nuevo plan para agendar.' },
+        { status: 403 }
       );
     }
+
+    const saldoFinal = inscripcionActualizada[0].clases_restantes;
 
     // ====== ÉXITO ======
     return NextResponse.json({
@@ -183,7 +189,7 @@ export async function POST(request: Request) {
         fecha_hora: claseCreada.fecha_hora,
         enlace_meet: claseCreada.enlace_meet
       },
-      clases_restantes: Math.max(0, inscripcion.clases_restantes - 1),
+      clases_restantes: saldoFinal,
       message: '¡Clase reservada exitosamente!'
     }, { status: 201 });
 

@@ -195,6 +195,7 @@ export default function AlumnoPortal() {
   const [nuevaHora, setNuevaHora] = useState("");
   const [reservaExito, setReservaExito] = useState(false);
   const [reservaError, setReservaError] = useState("");
+  const [reservaCargando, setReservaCargando] = useState(false);
 
   const [diasLaborables, setDiasLaborables] = useState<number[]>([1,2,3,4,5]);
   const [horaInicio, setHoraInicio] = useState("09:00");
@@ -994,6 +995,7 @@ export default function AlumnoPortal() {
     // Llamar al backend para reserva ATÓMICA con validación anti-colisión
     try {
       setReservaError("");
+      setReservaCargando(true);
       const res = await fetch("/api/reservar", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1055,6 +1057,8 @@ export default function AlumnoPortal() {
         lang === "en" ? "Server connection error." :
         "Error de conexión con el servidor."
       );
+    } finally {
+      setReservaCargando(false);
     }
   };
 
@@ -2370,10 +2374,12 @@ export default function AlumnoPortal() {
                   <button 
                     type="submit" 
                     className="btn btn-primary" 
-                    style={{ width: "100%", padding: "14px", fontSize: "14px", fontWeight: 700, cursor: "pointer" }}
-                    disabled={!nuevaFecha || !nuevaHora}
+                    style={{ width: "100%", padding: "14px", fontSize: "14px", fontWeight: 700, cursor: reservaCargando ? "wait" : "pointer" }}
+                    disabled={!nuevaFecha || !nuevaHora || reservaCargando}
                   >
-                    {t.confirmReservation}
+                    {reservaCargando 
+                      ? (lang === "fr" ? "Réservation en cours..." : lang === "en" ? "Booking..." : "Reservando...") 
+                      : t.confirmReservation}
                   </button>
 
                   {reservaExito && (
