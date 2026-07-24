@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Image from "next/image";
-import { Globe, Coins, Check, Sparkles, ArrowRight } from "lucide-react";
+import { Globe, Coins, Check, ArrowRight } from "lucide-react";
 import { Language } from "@/lib/translations";
 
 interface WelcomeModalProps {
@@ -51,40 +51,6 @@ export default function WelcomeModal({
     }, 400);
   };
 
-  const getModalContent = () => {
-    switch (selectedLang) {
-      case "fr":
-        return {
-          welcome: "Bienvenue !",
-          subtitle: "Personnalisez votre expérience pour apprendre le français avec Florentin.",
-          langLabel: "Choisissez votre langue",
-          currencyLabel: "Devise d'affichage",
-          btnText: "Commencer l'expérience",
-          badge: "Professeur Natif de Paris"
-        };
-      case "en":
-        return {
-          welcome: "Welcome!",
-          subtitle: "Customize your experience to learn French with Florentin.",
-          langLabel: "Choose your language",
-          currencyLabel: "Display Currency",
-          btnText: "Start Experience",
-          badge: "Native Teacher from Paris"
-        };
-      default:
-        return {
-          welcome: "¡Bienvenido/a!",
-          subtitle: "Personaliza tu experiencia para aprender francés con Florentin.",
-          langLabel: "Elige tu idioma preferido",
-          currencyLabel: "Moneda de visualización",
-          btnText: "Comenzar Experiencia",
-          badge: "Profesor Nativo de París"
-        };
-    }
-  };
-
-  const content = getModalContent();
-
   return (
     <div
       style={{
@@ -104,7 +70,7 @@ export default function WelcomeModal({
         animation: "welcomeFadeIn 0.4s ease-out forwards"
       }}
     >
-      {/* Resplandor decorativo claro */}
+      {/* Resplandor decorativo suave */}
       <div
         style={{
           position: "absolute",
@@ -121,9 +87,9 @@ export default function WelcomeModal({
         style={{
           position: "relative",
           width: "100%",
-          maxWidth: "460px",
+          maxWidth: "480px",
           backgroundColor: "#ffffff",
-          border: "1px solid rgba(226, 232, 240, 0.8)",
+          border: "1px solid rgba(226, 232, 240, 0.9)",
           borderRadius: "24px",
           padding: "36px 28px",
           boxShadow: "0 20px 50px -10px rgba(12, 27, 51, 0.18), 0 0 30px rgba(201, 154, 60, 0.08)",
@@ -132,25 +98,25 @@ export default function WelcomeModal({
           overflow: "hidden"
         }}
       >
-        {/* Adorno superior bandera francesa */}
+        {/* Adorno superior francés */}
         <div style={{ display: "flex", justifyContent: "center", gap: "6px", marginBottom: "20px" }}>
           <span style={{ width: "26px", height: "4px", backgroundColor: "#0055A5", borderRadius: "2px" }} />
           <span style={{ width: "26px", height: "4px", backgroundColor: "#E2E8F0", borderRadius: "2px" }} />
           <span style={{ width: "26px", height: "4px", backgroundColor: "#C8102E", borderRadius: "2px" }} />
         </div>
 
-        {/* Logo LIBRE (sin encapsular en círculo blanco) */}
-        <div style={{ display: "flex", justifyContent: "center", marginBottom: "16px", padding: "0 10px" }}>
+        {/* Logo LIBRE (sin contenedor circular) */}
+        <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
           <Image
             src="/logo.png"
             alt="Florentin French"
-            width={180}
-            height={65}
+            width={190}
+            height={68}
             style={{
               objectFit: "contain",
-              maxHeight: "65px",
+              maxHeight: "68px",
               width: "auto",
-              filter: "drop-shadow(0 4px 10px rgba(0,0,0,0.06))"
+              filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.06))"
             }}
             priority
             onError={(e) => {
@@ -160,52 +126,40 @@ export default function WelcomeModal({
           />
         </div>
 
-        {/* Badge elegante */}
-        <div
-          style={{
-            display: "inline-flex",
-            alignItems: "center",
-            gap: "6px",
-            padding: "5px 14px",
-            borderRadius: "20px",
-            backgroundColor: "rgba(201, 154, 60, 0.1)",
-            border: "1px solid rgba(201, 154, 60, 0.25)",
-            color: "#b48128",
-            fontSize: "11px",
-            fontWeight: 700,
-            letterSpacing: "0.5px",
-            textTransform: "uppercase",
-            marginBottom: "14px"
-          }}
-        >
-          <Sparkles size={12} />
-          {content.badge}
+        {/* Saludo MULTILINGÜE simultáneo (los 3 idiomas al mismo tiempo) */}
+        <div style={{ marginBottom: "22px" }}>
+          <h2
+            style={{
+              fontSize: "24px",
+              fontWeight: 800,
+              color: "#0c1b33",
+              margin: "0 0 10px 0",
+              lineHeight: 1.3,
+              letterSpacing: "-0.5px"
+            }}
+          >
+            <span style={{ color: "#0055A5" }}>Bienvenue !</span>
+            <span style={{ margin: "0 6px", color: "#cbd5e1", fontWeight: 300 }}>•</span>
+            <span>¡Bienvenido/a!</span>
+            <span style={{ margin: "0 6px", color: "#cbd5e1", fontWeight: 300 }}>•</span>
+            <span style={{ color: "#c99a3c" }}>Welcome!</span>
+          </h2>
+
+          <p
+            style={{
+              fontSize: "13px",
+              color: "#64748b",
+              margin: 0,
+              lineHeight: 1.5
+            }}
+          >
+            Selecciona tu idioma y moneda preferidos para comenzar.
+            <br />
+            <span style={{ fontSize: "12px", opacity: 0.85 }}>
+              Choisissez votre langue et votre devise pour continuer.
+            </span>
+          </p>
         </div>
-
-        {/* Título de bienvenida */}
-        <h2
-          style={{
-            fontSize: "26px",
-            fontWeight: 800,
-            color: "#0c1b33",
-            margin: "0 0 8px 0",
-            letterSpacing: "-0.5px"
-          }}
-        >
-          {content.welcome}
-        </h2>
-
-        {/* Subtítulo */}
-        <p
-          style={{
-            fontSize: "14px",
-            color: "#64748b",
-            margin: "0 0 26px 0",
-            lineHeight: 1.5
-          }}
-        >
-          {content.subtitle}
-        </p>
 
         {/* Selección de Idioma */}
         <div style={{ marginBottom: "20px", textAlign: "left" }}>
@@ -214,7 +168,7 @@ export default function WelcomeModal({
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              fontSize: "12px",
+              fontSize: "11px",
               fontWeight: 700,
               color: "#475569",
               textTransform: "uppercase",
@@ -222,8 +176,8 @@ export default function WelcomeModal({
               marginBottom: "10px"
             }}
           >
-            <Globe size={14} style={{ color: "#3b82f6" }} />
-            {content.langLabel}
+            <Globe size={14} style={{ color: "#0055A5" }} />
+            Idioma / Langue / Language
           </label>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "8px" }}>
@@ -294,7 +248,7 @@ export default function WelcomeModal({
               display: "flex",
               alignItems: "center",
               gap: "6px",
-              fontSize: "12px",
+              fontSize: "11px",
               fontWeight: 700,
               color: "#475569",
               textTransform: "uppercase",
@@ -302,8 +256,8 @@ export default function WelcomeModal({
               marginBottom: "10px"
             }}
           >
-            <Coins size={14} style={{ color: "#f59e0b" }} />
-            {content.currencyLabel}
+            <Coins size={14} style={{ color: "#c99a3c" }} />
+            Moneda / Devise / Currency
           </label>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "10px" }}>
@@ -386,7 +340,7 @@ export default function WelcomeModal({
             e.currentTarget.style.boxShadow = "0 10px 25px -5px rgba(12, 27, 51, 0.3)";
           }}
         >
-          {content.btnText}
+          {selectedLang === "fr" ? "Commencer" : selectedLang === "en" ? "Start" : "Comenzar"}
           <ArrowRight size={18} />
         </button>
       </div>
