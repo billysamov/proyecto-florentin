@@ -108,20 +108,20 @@ export default function WelcomeModal({
         {/* Logo LIBRE (sin contenedor circular) */}
         <div style={{ display: "flex", justifyContent: "center", marginBottom: "20px" }}>
           <Image
-            src="/logo.png"
+            src="/logo_inicio.png"
             alt="Florentin French"
-            width={190}
-            height={68}
+            width={220}
+            height={80}
             style={{
               objectFit: "contain",
-              maxHeight: "68px",
+              maxHeight: "80px",
               width: "auto",
               filter: "drop-shadow(0 4px 12px rgba(0,0,0,0.06))"
             }}
             priority
             onError={(e) => {
               const target = e.target as HTMLImageElement;
-              target.src = "/inicio.png";
+              target.src = "/logo.png";
             }}
           />
         </div>
