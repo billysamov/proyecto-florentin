@@ -12,6 +12,7 @@ import NotificacionesTab from "@/components/admin/NotificacionesTab";
 import ConfiguracionTab from "@/components/admin/ConfiguracionTab";
 import ManualTab from "@/components/admin/ManualTab";
 import MarketingAutomatizaciones from "@/components/admin/MarketingAutomatizaciones";
+import LogsTab from "@/components/admin/LogsTab";
 
 interface Alumno {
   id: string;
@@ -73,7 +74,8 @@ export default function AdminDashboard() {
   const at = adminTranslations[adminLang];
 
   // Pestaña activa del dashboard
-  const [activeTab, setActiveTab] = useState<"resumen" | "recursos" | "alumnos" | "notificaciones" | "planes" | "configuracion" | "manual">("resumen");
+  const [activeTab, setActiveTab] = useState<"resumen" | "recursos" | "alumnos" | "notificaciones" | "planes" | "configuracion" | "manual" | "logs">("resumen");
+  const [inscripcionesLogs, setInscripcionesLogs] = useState<any[]>([]);
 
   // --- Planes de Estudio ---
   const [planes, setPlanes] = useState<any[]>([]);
@@ -418,6 +420,26 @@ export default function AdminDashboard() {
           activo: p.activo,
           orden: p.orden || 0
         })));
+      }
+
+      // 4b. Obtener historial completo de Inscripciones para Logs
+      const { data: allInscripciones } = await supabase
+        .from("inscripciones")
+        .select(`
+          id,
+          usuario_id,
+          plan_id,
+          clases_restantes,
+          estado_pago,
+          monto_pagado,
+          divisa,
+          creado_en,
+          planes_estudio ( nombre )
+        `)
+        .order("id", { ascending: false });
+
+      if (allInscripciones) {
+        setInscripcionesLogs(allInscripciones);
       }
 
       // 5. Obtener Configuración
@@ -980,6 +1002,15 @@ export default function AdminDashboard() {
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
         </svg>
       )
+    },
+    {
+      id: "logs",
+      label: adminLang === "fr" ? "Logs & Historique" : "Historial & Logs",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
+        </svg>
+      )
     }
   ];
 
@@ -1468,14 +1499,37 @@ export default function AdminDashboard() {
                 margin: 0
               }}>
                 {adminLang === "fr" ? (
-                  activeTab === "resumen" ? "Résumé des Cours" : activeTab === "alumnos" ? "Dossiers des Élèves" : activeTab === "planes" ? "Catalogue de Formules" : activeTab === "recursos" ? "Médiathèque" : activeTab === "notificaciones" ? "Centre de Communication" : activeTab === "manual" ? "Manuel Opérationnel" : "Configuration du Site"
+                  activeTab === "resumen" ? "Résumé des Cours" : activeTab === "alumnos" ? "Dossiers des Élèves" : activeTab === "planes" ? "Catalogue de Formules" : activeTab === "recursos" ? "Médiathèque" : activeTab === "notificaciones" ? "Centre de Communication" : activeTab === "manual" ? "Manuel Opérationnel" : activeTab === "logs" ? "Journal d'Audite & Logs" : "Configuration du Site"
                 ) : (
-                  activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : activeTab === "manual" ? "Manual de Operaciones" : "Configuración CMS"
+                  activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : activeTab === "manual" ? "Manual de Operaciones" : activeTab === "logs" ? "Logs de Auditoría & Cambios" : "Configuración CMS"
                 )}
               </h1>
             </div>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "12px" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
+              <button
+                type="button"
+                onClick={() => setActiveTab("logs")}
+                style={{
+                  fontSize: "12px",
+                  color: activeTab === "logs" ? "#ffffff" : "#0c1b33",
+                  fontWeight: 700,
+                  backgroundColor: activeTab === "logs" ? "#0c1b33" : "#ffffff",
+                  border: "1px solid #cbd5e1",
+                  padding: "6px 14px",
+                  borderRadius: "100px",
+                  cursor: "pointer",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "6px",
+                  boxShadow: "0 2px 5px rgba(0,0,0,0.05)",
+                  transition: "all 0.2s ease"
+                }}
+                className="hover:bg-slate-100"
+              >
+                📋 {adminLang === "fr" ? "Logs Système" : "Historial & Logs"}
+              </button>
+
               <span style={{
                 fontSize: "12px",
                 color: "var(--text-muted)",
@@ -1657,6 +1711,17 @@ export default function AdminDashboard() {
             {/* TAB 7: MANUAL DE OPERACIONES */}
             {activeTab === "manual" && (
               <ManualTab lang={adminLang} />
+            )}
+
+            {/* TAB 8: LOGS E HISTORIAL DE CAMBIOS */}
+            {activeTab === "logs" && (
+              <LogsTab
+                inscripciones={inscripcionesLogs}
+                clases={clases as any}
+                usuarios={alumnos as any}
+                recursos={recursos as any}
+                lang={adminLang}
+              />
             )}
 
           </div>
