@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
+import WelcomeModal from "@/components/WelcomeModal";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
@@ -537,6 +538,11 @@ export default function Home() {
     }
   };
   const changeDivisa = (newDivisa: "eur" | "usd") => { setDivisa(newDivisa); localStorage.setItem("florentin_divisa", newDivisa); };
+
+  const handleWelcomeConfirm = async (selectedLang: Language, selectedDivisa: "eur" | "usd") => {
+    await changeLang(selectedLang);
+    changeDivisa(selectedDivisa);
+  };
 
   const formatPrecio = (precioEur: number) => {
     if (divisa === "usd") {
@@ -1553,6 +1559,9 @@ export default function Home() {
           🔗
         </button>
       </div>
+
+      {/* Modal de Bienvenida para primera visita */}
+      <WelcomeModal onConfirm={handleWelcomeConfirm} currentLang={lang} currentDivisa={divisa} />
 
     </main>
   );
