@@ -694,9 +694,9 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 8. "Master Any Language, Anywhere" Banner (Fondo Unificado Completo HD single_map_banner_bg.png) */}
+      {/* 8. "Master Any Language, Anywhere" Banner (Fondo Unificado con Banderas de Latinoamérica y Francia) */}
       <section style={{
-        backgroundImage: "url(/single_map_banner_bg.png)",
+        backgroundImage: "url(/latin_america_map_banner_bg.png)",
         backgroundSize: "cover",
         backgroundPosition: "center right",
         backgroundColor: "#dff4f3",
