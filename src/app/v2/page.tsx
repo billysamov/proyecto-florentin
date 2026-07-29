@@ -694,35 +694,94 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 8. "Master Any Language, Anywhere" Banner (Fondo HD Completo Mapa + Esferas 3D Réplica Exacta 1:1) */}
+      {/* 8. "Master Any Language, Anywhere" Banner (Mapa Vectorial + 4 Esferas 3D Cristalinas Réplica 1:1) */}
       <section style={{
-        backgroundImage: "url(/map_banner_full_bg.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center right",
-        backgroundColor: "#dff4f3",
-        padding: "80px 56px",
+        background: "linear-gradient(135deg, #dff4f3 0%, #eefbf7 100%)",
+        padding: "84px 56px",
         borderRadius: "36px",
         maxWidth: "1280px",
         margin: "0 auto 80px",
         position: "relative",
         overflow: "hidden",
-        boxShadow: "0 20px 45px rgba(0, 85, 165, 0.08)",
-        minHeight: "460px",
+        boxShadow: "0 20px 45px rgba(0, 85, 165, 0.06)",
+        minHeight: "480px",
         display: "flex",
         alignItems: "center"
       }}>
         
-        <div style={{ position: "relative", zIndex: 5, maxWidth: "620px" }}>
+        {/* Capa de Fondo: Mapa Mundi Vectorial Limpio */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: "25%",
+          opacity: 0.8,
+          pointerEvents: "none",
+          zIndex: 1
+        }}>
+          <Image
+            src="/world_map_vector.png"
+            alt="World Map Vector"
+            fill
+            style={{ objectFit: "contain", objectPosition: "right center" }}
+            priority
+          />
+        </div>
+
+        {/* Esfera 3D 1: Reino Unido 🇬🇧 (Esquina superior derecha sobresaliendo) */}
+        <div style={{ position: "absolute", top: "-10px", right: "2%", zIndex: 4 }} className="hidden md:block">
+          <Image
+            src="/orb_uk.png"
+            alt="UK Flag Orb 3D"
+            width={115}
+            height={115}
+            style={{ filter: "drop-shadow(0 15px 30px rgba(0,0,0,0.14))" }}
+          />
+        </div>
+
+        {/* Esfera 3D 2: Alemania 🇩🇪 (Centro superior derecho) */}
+        <div style={{ position: "absolute", top: "10%", right: "18%", zIndex: 4 }} className="hidden md:block">
+          <Image
+            src="/orb_germany.png"
+            alt="Germany Flag Orb 3D"
+            width={95}
+            height={95}
+            style={{ filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.12))" }}
+          />
+        </div>
+
+        {/* Esfera 3D 3: Francia 🇫🇷 (Centro del mapa) */}
+        <div style={{ position: "absolute", top: "30%", right: "26%", zIndex: 4 }} className="hidden md:block">
+          <Image
+            src="/flag_orb_france.png"
+            alt="France Flag Orb 3D"
+            width={85}
+            height={85}
+            style={{ filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15))" }}
+          />
+        </div>
+
+        {/* Esfera 3D 4: España 🇪🇸 (Esquina inferior derecha) */}
+        <div style={{ position: "absolute", bottom: "8%", right: "6%", zIndex: 4 }} className="hidden md:block">
+          <Image
+            src="/flag_orb_spain.png"
+            alt="Spain Flag Orb 3D"
+            width={95}
+            height={95}
+            style={{ filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.14))" }}
+          />
+        </div>
+
+        {/* Contenido HTML de la Sección (Izquierda) */}
+        <div style={{ position: "relative", zIndex: 5, maxWidth: "600px" }}>
           
-          {/* Badge de Alumnos con Stack de Fotos Reales */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "14px", marginBottom: "28px" }}>
-            <div style={{ position: "relative", width: "100px", height: "38px" }}>
-              <Image
-                src="/student_stack.png"
-                alt="Alumnos de Francés"
-                fill
-                style={{ objectFit: "contain", objectPosition: "left center" }}
-              />
+          {/* Badge de Alumnos con Avatares Limpios */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
+            <div style={{ display: "flex", alignItems: "center" }}>
+              <div style={{ width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#3b82f6", border: "2px solid #ffffff", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "12px", fontWeight: 800 }}>M</div>
+              <div style={{ width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#10b981", border: "2px solid #ffffff", marginLeft: "-10px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "12px", fontWeight: 800 }}>C</div>
+              <div style={{ width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#8b5cf6", border: "2px solid #ffffff", marginLeft: "-10px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "12px", fontWeight: 800 }}>S</div>
             </div>
             <div>
               <span style={{ fontSize: "24px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>200+</span>
@@ -748,7 +807,7 @@ export default function LandingV2Replica() {
             color: "#475569",
             lineHeight: 1.6,
             marginBottom: "36px",
-            maxWidth: "480px"
+            maxWidth: "460px"
           }}>
             Ofrecemos clases individuales de francés adaptadas a tus objetivos personales, ritmo de aprendizaje y zona horaria.
           </p>
