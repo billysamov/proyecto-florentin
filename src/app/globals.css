@@ -65,6 +65,27 @@ html, body {
   font-family: 'Plus Jakarta Sans', system-ui, -apple-system, sans-serif !important;
 }
 
+/* Animación Marquee Infinitamente Suave para V2 */
+@keyframes marqueeScrollHorizontal {
+  0% {
+    transform: translate3d(0, 0, 0);
+  }
+  100% {
+    transform: translate3d(-33.3333%, 0, 0);
+  }
+}
+
+.marquee-smooth-track {
+  display: flex !important;
+  width: max-content !important;
+  will-change: transform;
+  animation: marqueeScrollHorizontal 25s linear infinite !important;
+}
+
+.marquee-smooth-track:hover {
+  animation-play-state: paused;
+}
+
 /* Efecto de Fondo Animado "Mesh Gradient" sutil */
 body::before {
   content: "";

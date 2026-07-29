@@ -364,9 +364,9 @@ export default function LandingV2Replica() {
 
         </div>
 
-        {/* Carrusel Marquee de Banderas / Especialidades (CORREGIDO: Bucle 100% Infinito y Suave sin cortes) */}
+        {/* Carrusel Marquee de Banderas / Especialidades (Bucle 100% Infinito e Ininterrumpido) */}
         <div style={{ marginTop: "60px", overflow: "hidden", position: "relative", width: "100%" }}>
-          <div className="marquee-track" style={{ display: "flex", gap: "16px", width: "max-content", animation: "scrollMarquee 35s linear infinite" }}>
+          <div className="marquee-smooth-track" style={{ gap: "16px" }}>
             {marqueeItemsPoblados.map((item, i) => (
               <div key={i} style={{
                 display: "inline-flex",
@@ -877,9 +877,9 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 10. Scrolling Text Marquee Ticker (CORREGIDO: Bucle continuo suave) */}
+      {/* 10. Scrolling Text Marquee Ticker (Bucle 100% Continuo e Ininterrumpido) */}
       <div style={{ backgroundColor: "#f8fafc", padding: "24px 0", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0", overflow: "hidden", position: "relative", width: "100%" }}>
-        <div className="marquee-track" style={{ fontSize: "28px", fontWeight: 800, color: "#cbd5e1", letterSpacing: "0.02em", display: "flex", gap: "24px", width: "max-content", animation: "scrollMarquee 30s linear infinite", whiteSpace: "nowrap" }}>
+        <div className="marquee-smooth-track" style={{ fontSize: "28px", fontWeight: 800, color: "#cbd5e1", letterSpacing: "0.02em", gap: "24px", whiteSpace: "nowrap" }}>
           <span>FRANÇAIS + ESPAÑOL + ENGLISH + DEUTSCH + ITALIANO + FRANÇAIS + ESPAÑOL + ENGLISH + DEUTSCH + ITALIANO + FRANÇAIS + ESPAÑOL</span>
         </div>
       </div>
