@@ -21,11 +21,11 @@ export default function LandingV2() {
   };
 
   return (
-    <div style={{
+    <div className="v2-container" style={{
       backgroundColor: "#ffffff",
       color: "#0f172a",
       minHeight: "100vh",
-      fontFamily: "var(--font-sans), var(--font-outfit), system-ui, sans-serif",
+      fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
       WebkitFontSmoothing: "antialiased",
       overflowX: "hidden"
     }}>
