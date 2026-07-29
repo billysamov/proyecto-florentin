@@ -391,36 +391,36 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 3. Cinta Azul Royal (4 Items Horizontal Checkmarks) */}
-      <section style={{ backgroundColor: "#0055a5", color: "#ffffff", padding: "22px 24px" }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", textAlign: "center" }}>
+      {/* 3. Cinta Azul Royal (4 Items Horizontal Checkmarks Réplica Exacta) */}
+      <section style={{ backgroundColor: "#0066ff", color: "#ffffff", padding: "26px 24px" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px", alignItems: "center" }}>
           
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Check size={14} strokeWidth={3} />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+              <Check size={18} strokeWidth={3} />
             </div>
-            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>100% Profesor Nativo Parisino</span>
+            <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>100% Profesor Nativo Parisino</span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Check size={14} strokeWidth={3} />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+              <Check size={18} strokeWidth={3} />
             </div>
-            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Reserva Flexible 24/7</span>
+            <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>Reserva Flexible 24/7</span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Check size={14} strokeWidth={3} />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+              <Check size={18} strokeWidth={3} />
             </div>
-            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Enfoque Conversacional Real</span>
+            <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>Enfoque Conversacional Real</span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <Check size={14} strokeWidth={3} />
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+              <Check size={18} strokeWidth={3} />
             </div>
-            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Preparación DELF / DALF</span>
+            <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>Preparación DELF / DALF</span>
           </div>
 
         </div>
