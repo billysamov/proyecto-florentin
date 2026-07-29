@@ -730,47 +730,75 @@ export default function LandingV2Replica() {
         </div>
 
         {/* Esfera 3D 1: Reino Unido 🇬🇧 (Esquina superior derecha sobresaliendo) */}
-        <div style={{ position: "absolute", top: "-10px", right: "2%", zIndex: 4 }} className="hidden md:block">
-          <Image
-            src="/orb_uk.png"
-            alt="UK Flag Orb 3D"
-            width={115}
-            height={115}
-            style={{ filter: "drop-shadow(0 15px 30px rgba(0,0,0,0.14))" }}
-          />
+        <div style={{
+          position: "absolute",
+          top: "-5px",
+          right: "2%",
+          width: "100px",
+          height: "100px",
+          borderRadius: "50%",
+          boxShadow: "inset -4px -8px 16px rgba(0,0,0,0.3), inset 4px 8px 16px rgba(255,255,255,0.8), 0 15px 30px rgba(0,0,0,0.15)",
+          zIndex: 4,
+          overflow: "hidden"
+        }} className="hidden md:block">
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
+            <Image src="/orb_uk.png" alt="UK 3D" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
+          </div>
+          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
         </div>
 
         {/* Esfera 3D 2: Alemania 🇩🇪 (Centro superior derecho) */}
-        <div style={{ position: "absolute", top: "10%", right: "18%", zIndex: 4 }} className="hidden md:block">
-          <Image
-            src="/orb_germany.png"
-            alt="Germany Flag Orb 3D"
-            width={95}
-            height={95}
-            style={{ filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.12))" }}
-          />
+        <div style={{
+          position: "absolute",
+          top: "12%",
+          right: "18%",
+          width: "88px",
+          height: "88px",
+          borderRadius: "50%",
+          boxShadow: "inset -4px -8px 16px rgba(0,0,0,0.3), inset 4px 8px 16px rgba(255,255,255,0.8), 0 15px 25px rgba(0,0,0,0.15)",
+          zIndex: 4,
+          overflow: "hidden"
+        }} className="hidden md:block">
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
+            <Image src="/orb_germany.png" alt="Germany 3D" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
+          </div>
+          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
         </div>
 
         {/* Esfera 3D 3: Francia 🇫🇷 (Centro del mapa) */}
-        <div style={{ position: "absolute", top: "30%", right: "26%", zIndex: 4 }} className="hidden md:block">
-          <Image
-            src="/flag_orb_france.png"
-            alt="France Flag Orb 3D"
-            width={85}
-            height={85}
-            style={{ filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15))" }}
-          />
+        <div style={{
+          position: "absolute",
+          top: "32%",
+          right: "26%",
+          width: "82px",
+          height: "82px",
+          borderRadius: "50%",
+          boxShadow: "inset -4px -8px 16px rgba(0,0,0,0.3), inset 4px 8px 16px rgba(255,255,255,0.8), 0 15px 25px rgba(0,0,0,0.15)",
+          zIndex: 4,
+          overflow: "hidden"
+        }} className="hidden md:block">
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
+            <Image src="/flag_orb_france.png" alt="France 3D" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
+          </div>
+          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
         </div>
 
         {/* Esfera 3D 4: España 🇪🇸 (Esquina inferior derecha) */}
-        <div style={{ position: "absolute", bottom: "8%", right: "6%", zIndex: 4 }} className="hidden md:block">
-          <Image
-            src="/flag_orb_spain.png"
-            alt="Spain Flag Orb 3D"
-            width={95}
-            height={95}
-            style={{ filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.14))" }}
-          />
+        <div style={{
+          position: "absolute",
+          bottom: "8%",
+          right: "6%",
+          width: "88px",
+          height: "88px",
+          borderRadius: "50%",
+          boxShadow: "inset -4px -8px 16px rgba(0,0,0,0.3), inset 4px 8px 16px rgba(255,255,255,0.8), 0 15px 25px rgba(0,0,0,0.15)",
+          zIndex: 4,
+          overflow: "hidden"
+        }} className="hidden md:block">
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
+            <Image src="/flag_orb_spain.png" alt="Spain 3D" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
+          </div>
+          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
         </div>
 
         {/* Contenido HTML de la Sección (Izquierda) */}
