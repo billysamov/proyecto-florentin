@@ -694,12 +694,9 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 8. "Master Any Language, Anywhere" Banner (Fondo Unificado con Banderas de Latinoamérica y Francia) */}
+      {/* 8. "Master Any Language, Anywhere" Banner (Ubicación Geográfica Precisa: Francia en Europa, Colombia/Perú/Argentina en Sudamérica) */}
       <section style={{
-        backgroundImage: "url(/latin_america_map_banner_bg.png)",
-        backgroundSize: "cover",
-        backgroundPosition: "center right",
-        backgroundColor: "#dff4f3",
+        background: "linear-gradient(135deg, #dff4f3 0%, #eefbf7 100%)",
         padding: "84px 56px",
         borderRadius: "36px",
         maxWidth: "1280px",
@@ -707,12 +704,104 @@ export default function LandingV2Replica() {
         position: "relative",
         overflow: "hidden",
         boxShadow: "0 20px 45px rgba(0, 85, 165, 0.08)",
-        minHeight: "480px",
+        minHeight: "520px",
         display: "flex",
         alignItems: "center"
       }}>
         
-        {/* Contenido HTML Overlay sobre la Imagen de Fondo Unificada */}
+        {/* Mapa Vectorial del Mundo Nítido */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: "20%",
+          opacity: 0.85,
+          pointerEvents: "none",
+          zIndex: 1
+        }}>
+          <Image
+            src="/world_map_vector.png"
+            alt="World Map"
+            fill
+            style={{ objectFit: "contain", objectPosition: "right center" }}
+            priority
+          />
+        </div>
+
+        {/* 🇫🇷 Francia - Ubicada exactamente en Europa Occidental (Francia) */}
+        <div style={{
+          position: "absolute",
+          top: "16%",
+          right: "24%",
+          width: "72px",
+          height: "72px",
+          borderRadius: "50%",
+          boxShadow: "inset -3px -6px 12px rgba(0,0,0,0.25), inset 3px 6px 12px rgba(255,255,255,0.8), 0 14px 28px rgba(0,0,0,0.16)",
+          zIndex: 4,
+          overflow: "hidden"
+        }} className="hidden md:block">
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
+            <Image src="/orb_france_3d.png" alt="Francia (Europa)" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
+          </div>
+          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
+        </div>
+
+        {/* 🇨🇴 Colombia - Ubicada exactamente en el Norte de Sudamérica (Colombia) */}
+        <div style={{
+          position: "absolute",
+          top: "48%",
+          right: "34%",
+          width: "68px",
+          height: "68px",
+          borderRadius: "50%",
+          boxShadow: "inset -3px -6px 12px rgba(0,0,0,0.25), inset 3px 6px 12px rgba(255,255,255,0.8), 0 14px 28px rgba(0,0,0,0.16)",
+          zIndex: 4,
+          overflow: "hidden"
+        }} className="hidden md:block">
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
+            <Image src="/orb_colombia_3d.png" alt="Colombia (Sudamérica)" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
+          </div>
+          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
+        </div>
+
+        {/* 🇵🇪 Perú - Ubicado exactamente en la Costa Oeste de Sudamérica (Perú) */}
+        <div style={{
+          position: "absolute",
+          top: "60%",
+          right: "37%",
+          width: "66px",
+          height: "66px",
+          borderRadius: "50%",
+          boxShadow: "inset -3px -6px 12px rgba(0,0,0,0.25), inset 3px 6px 12px rgba(255,255,255,0.8), 0 14px 28px rgba(0,0,0,0.16)",
+          zIndex: 4,
+          overflow: "hidden"
+        }} className="hidden md:block">
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
+            <Image src="/orb_peru_3d.png" alt="Perú (Sudamérica)" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
+          </div>
+          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
+        </div>
+
+        {/* 🇦🇷 Argentina - Ubicada exactamente en el Sur de Sudamérica (Argentina) */}
+        <div style={{
+          position: "absolute",
+          top: "75%",
+          right: "32%",
+          width: "70px",
+          height: "70px",
+          borderRadius: "50%",
+          boxShadow: "inset -3px -6px 12px rgba(0,0,0,0.25), inset 3px 6px 12px rgba(255,255,255,0.8), 0 14px 28px rgba(0,0,0,0.16)",
+          zIndex: 4,
+          overflow: "hidden"
+        }} className="hidden md:block">
+          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
+            <Image src="/orb_argentina_3d.png" alt="Argentina (Sudamérica)" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
+          </div>
+          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
+        </div>
+
+        {/* Contenido HTML Overlay sobre el Mapa */}
         <div style={{ position: "relative", zIndex: 5, maxWidth: "600px" }}>
           
           {/* Badge de Alumnos con Avatares */}
