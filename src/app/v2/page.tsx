@@ -938,26 +938,35 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 10. Scrolling Text Marquee Ticker (Réplica 1:1 de la 3era Imagen Mockup) */}
+      {/* 10. Scrolling Text Marquee Ticker (Espaciado Amplio 1:1 de la 3era Imagen Mockup) */}
       <div style={{
         backgroundColor: "#ffffff",
-        padding: "48px 0",
+        padding: "54px 0",
         overflow: "hidden",
         position: "relative",
         width: "100%",
-        WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
-        maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)"
+        WebkitMaskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)",
+        maskImage: "linear-gradient(to right, transparent, black 10%, black 90%, transparent)"
       }}>
         <div className="marquee-smooth-track" style={{
-          fontSize: "clamp(36px, 5vw, 54px)",
+          fontSize: "clamp(38px, 5.2vw, 58px)",
           fontWeight: 800,
           color: "#93c5fd",
-          letterSpacing: "-0.025em",
-          gap: "28px",
+          letterSpacing: "-0.01em",
+          gap: "48px",
           whiteSpace: "nowrap",
-          textTransform: "lowercase"
+          textTransform: "lowercase",
+          alignItems: "center"
         }}>
-          <span>english + german + spanish + italian + french + english + german + spanish + italian + french + english + german + spanish + italian + french</span>
+          {["english", "+", "german", "+", "spanish", "+", "italian", "+", "french", "+", "english", "+", "german", "+", "spanish", "+", "italian", "+", "french", "+", "english", "+", "german", "+", "spanish", "+", "italian", "+", "french"].map((word, idx) => (
+            <span key={idx} style={{
+              display: "inline-block",
+              color: word === "+" ? "#bfdbfe" : "#93c5fd",
+              padding: "0 6px"
+            }}>
+              {word}
+            </span>
+          ))}
         </div>
       </div>
 
