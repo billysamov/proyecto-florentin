@@ -694,79 +694,48 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 8. "Master Any Language, Anywhere" Banner (Mapa Vectorial & Esferas 3D de Banderas Réplica 1:1) */}
+      {/* 8. "Master Any Language, Anywhere" Banner (Fondo HD Completo Mapa + Esferas 3D Réplica Exacta 1:1) */}
       <section style={{
-        background: "linear-gradient(135deg, #dff4f3 0%, #eefbf7 100%)",
-        padding: "90px 48px",
+        backgroundImage: "url(/map_banner_full_bg.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center right",
+        backgroundColor: "#dff4f3",
+        padding: "80px 56px",
         borderRadius: "36px",
         maxWidth: "1280px",
         margin: "0 auto 80px",
         position: "relative",
         overflow: "hidden",
-        boxShadow: "0 20px 40px rgba(0, 85, 165, 0.06)"
+        boxShadow: "0 20px 45px rgba(0, 85, 165, 0.08)",
+        minHeight: "460px",
+        display: "flex",
+        alignItems: "center"
       }}>
         
-        {/* Fondo del Mapa Mundi Vectorial */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: "30%",
-          opacity: 0.45,
-          pointerEvents: "none",
-          zIndex: 1
-        }}>
-          <Image
-            src="/world_map_vector.png"
-            alt="World Map Background"
-            fill
-            style={{ objectFit: "contain", objectPosition: "right center" }}
-          />
-        </div>
-
-        {/* Esferas 3D Brillantes de Banderas Flotantes */}
-        <div style={{ position: "absolute", top: "12%", right: "8%", zIndex: 3 }} className="animate-bounce hidden md:block">
-          <Image
-            src="/flag_orb_france.png"
-            alt="Bandera de Francia 3D"
-            width={85}
-            height={85}
-            style={{ filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15))", borderRadius: "50%" }}
-          />
-        </div>
-
-        <div style={{ position: "absolute", bottom: "15%", right: "12%", zIndex: 3 }} className="hidden md:block">
-          <Image
-            src="/flag_orb_spain.png"
-            alt="Bandera de España 3D"
-            width={75}
-            height={75}
-            style={{ filter: "drop-shadow(0 12px 20px rgba(0,0,0,0.12))", borderRadius: "50%" }}
-          />
-        </div>
-
-        <div style={{ position: "relative", zIndex: 5, maxWidth: "600px" }}>
+        <div style={{ position: "relative", zIndex: 5, maxWidth: "620px" }}>
           
-          {/* Badge de Alumnos con Avatares */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "8px 18px", borderRadius: "30px", backgroundColor: "#ffffff", boxShadow: "0 4px 14px rgba(0,0,0,0.06)", marginBottom: "28px" }}>
-            <div style={{ display: "flex", alignItems: "center", marginRight: "4px" }}>
-              <div style={{ width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#3b82f6", border: "2px solid #ffffff", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "11px", fontWeight: 800 }}>M</div>
-              <div style={{ width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#10b981", border: "2px solid #ffffff", marginLeft: "-8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "11px", fontWeight: 800 }}>C</div>
-              <div style={{ width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#8b5cf6", border: "2px solid #ffffff", marginLeft: "-8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "11px", fontWeight: 800 }}>S</div>
+          {/* Badge de Alumnos con Stack de Fotos Reales */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "14px", marginBottom: "28px" }}>
+            <div style={{ position: "relative", width: "100px", height: "38px" }}>
+              <Image
+                src="/student_stack.png"
+                alt="Alumnos de Francés"
+                fill
+                style={{ objectFit: "contain", objectPosition: "left center" }}
+              />
             </div>
             <div>
-              <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a" }}>200+</span>
-              <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 700, marginLeft: "6px" }}>Alumnos Felices</span>
+              <span style={{ fontSize: "24px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>200+</span>
+              <span style={{ fontSize: "13px", color: "#475569", fontWeight: 700, marginLeft: "8px" }}>Alumnos Felices</span>
             </div>
           </div>
 
           <h2 style={{
-            fontSize: "clamp(36px, 4.5vw, 54px)",
+            fontSize: "clamp(42px, 5.5vw, 64px)",
             fontWeight: 800,
             letterSpacing: "-0.035em",
             color: "#0f172a",
-            lineHeight: 1.1,
+            lineHeight: 1.05,
             marginBottom: "20px"
           }}>
             Domina el Francés, <br />
@@ -779,7 +748,7 @@ export default function LandingV2Replica() {
             color: "#475569",
             lineHeight: 1.6,
             marginBottom: "36px",
-            maxWidth: "460px"
+            maxWidth: "480px"
           }}>
             Ofrecemos clases individuales de francés adaptadas a tus objetivos personales, ritmo de aprendizaje y zona horaria.
           </p>
@@ -791,19 +760,19 @@ export default function LandingV2Replica() {
             style={{
               display: "inline-flex",
               alignItems: "center",
-              gap: "12px",
+              gap: "14px",
               padding: "12px 28px 12px 14px",
               borderRadius: "40px",
               backgroundColor: "#0066ff",
               color: "#ffffff",
-              fontSize: "14px",
+              fontSize: "15px",
               fontWeight: 800,
               textDecoration: "none",
-              boxShadow: "0 10px 25px rgba(0, 102, 255, 0.3)"
+              boxShadow: "0 10px 25px rgba(0, 102, 255, 0.35)"
             }}
           >
-            <div style={{ width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <ArrowRight size={18} strokeWidth={3} />
+            <div style={{ width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <ArrowRight size={20} strokeWidth={3} />
             </div>
             <span>Agendar Clase de Prueba</span>
           </a>
