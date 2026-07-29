@@ -694,117 +694,28 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 8. "Master Any Language, Anywhere" Banner (Mapa Vectorial + 4 Esferas 3D Cristalinas Réplica 1:1) */}
+      {/* 8. "Master Any Language, Anywhere" Banner (Fondo Unificado Completo HD single_map_banner_bg.png) */}
       <section style={{
-        background: "linear-gradient(135deg, #dff4f3 0%, #eefbf7 100%)",
+        backgroundImage: "url(/single_map_banner_bg.png)",
+        backgroundSize: "cover",
+        backgroundPosition: "center right",
+        backgroundColor: "#dff4f3",
         padding: "84px 56px",
         borderRadius: "36px",
         maxWidth: "1280px",
         margin: "0 auto 80px",
         position: "relative",
         overflow: "hidden",
-        boxShadow: "0 20px 45px rgba(0, 85, 165, 0.06)",
+        boxShadow: "0 20px 45px rgba(0, 85, 165, 0.08)",
         minHeight: "480px",
         display: "flex",
         alignItems: "center"
       }}>
         
-        {/* Capa de Fondo: Mapa Mundi Vectorial Limpio */}
-        <div style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: "25%",
-          opacity: 0.8,
-          pointerEvents: "none",
-          zIndex: 1
-        }}>
-          <Image
-            src="/world_map_vector.png"
-            alt="World Map Vector"
-            fill
-            style={{ objectFit: "contain", objectPosition: "right center" }}
-            priority
-          />
-        </div>
-
-        {/* Esfera 3D 1: Reino Unido 🇬🇧 (Esquina superior derecha sobresaliendo) */}
-        <div style={{
-          position: "absolute",
-          top: "-5px",
-          right: "2%",
-          width: "100px",
-          height: "100px",
-          borderRadius: "50%",
-          boxShadow: "inset -4px -8px 16px rgba(0,0,0,0.3), inset 4px 8px 16px rgba(255,255,255,0.8), 0 15px 30px rgba(0,0,0,0.15)",
-          zIndex: 4,
-          overflow: "hidden"
-        }} className="hidden md:block">
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
-            <Image src="/orb_uk.png" alt="UK 3D" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
-          </div>
-          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
-        </div>
-
-        {/* Esfera 3D 2: Alemania 🇩🇪 (Centro superior derecho) */}
-        <div style={{
-          position: "absolute",
-          top: "12%",
-          right: "18%",
-          width: "88px",
-          height: "88px",
-          borderRadius: "50%",
-          boxShadow: "inset -4px -8px 16px rgba(0,0,0,0.3), inset 4px 8px 16px rgba(255,255,255,0.8), 0 15px 25px rgba(0,0,0,0.15)",
-          zIndex: 4,
-          overflow: "hidden"
-        }} className="hidden md:block">
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
-            <Image src="/orb_germany.png" alt="Germany 3D" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
-          </div>
-          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
-        </div>
-
-        {/* Esfera 3D 3: Francia 🇫🇷 (Centro del mapa) */}
-        <div style={{
-          position: "absolute",
-          top: "32%",
-          right: "26%",
-          width: "82px",
-          height: "82px",
-          borderRadius: "50%",
-          boxShadow: "inset -4px -8px 16px rgba(0,0,0,0.3), inset 4px 8px 16px rgba(255,255,255,0.8), 0 15px 25px rgba(0,0,0,0.15)",
-          zIndex: 4,
-          overflow: "hidden"
-        }} className="hidden md:block">
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
-            <Image src="/flag_orb_france.png" alt="France 3D" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
-          </div>
-          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
-        </div>
-
-        {/* Esfera 3D 4: España 🇪🇸 (Esquina inferior derecha) */}
-        <div style={{
-          position: "absolute",
-          bottom: "8%",
-          right: "6%",
-          width: "88px",
-          height: "88px",
-          borderRadius: "50%",
-          boxShadow: "inset -4px -8px 16px rgba(0,0,0,0.3), inset 4px 8px 16px rgba(255,255,255,0.8), 0 15px 25px rgba(0,0,0,0.15)",
-          zIndex: 4,
-          overflow: "hidden"
-        }} className="hidden md:block">
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
-            <Image src="/flag_orb_spain.png" alt="Spain 3D" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
-          </div>
-          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
-        </div>
-
-        {/* Contenido HTML de la Sección (Izquierda) */}
+        {/* Contenido HTML Overlay sobre la Imagen de Fondo Unificada */}
         <div style={{ position: "relative", zIndex: 5, maxWidth: "600px" }}>
           
-          {/* Badge de Alumnos con Avatares Limpios */}
+          {/* Badge de Alumnos con Avatares */}
           <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
             <div style={{ display: "flex", alignItems: "center" }}>
               <div style={{ width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#3b82f6", border: "2px solid #ffffff", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "12px", fontWeight: 800 }}>M</div>
