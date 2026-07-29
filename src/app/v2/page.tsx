@@ -694,61 +694,122 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 8. "Master Any Language, Anywhere" Banner (Map & Floating Flags) */}
+      {/* 8. "Master Any Language, Anywhere" Banner (Mapa Vectorial & Esferas 3D de Banderas Réplica 1:1) */}
       <section style={{
-        backgroundColor: "#e0f2fe",
-        padding: "80px 24px",
-        borderRadius: "32px",
+        background: "linear-gradient(135deg, #dff4f3 0%, #eefbf7 100%)",
+        padding: "90px 48px",
+        borderRadius: "36px",
         maxWidth: "1280px",
         margin: "0 auto 80px",
         position: "relative",
-        overflow: "hidden"
+        overflow: "hidden",
+        boxShadow: "0 20px 40px rgba(0, 85, 165, 0.06)"
       }}>
-        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "40px", alignItems: "center" }}>
+        
+        {/* Fondo del Mapa Mundi Vectorial */}
+        <div style={{
+          position: "absolute",
+          top: 0,
+          right: 0,
+          bottom: 0,
+          left: "30%",
+          opacity: 0.45,
+          pointerEvents: "none",
+          zIndex: 1
+        }}>
+          <Image
+            src="/world_map_vector.png"
+            alt="World Map Background"
+            fill
+            style={{ objectFit: "contain", objectPosition: "right center" }}
+          />
+        </div>
+
+        {/* Esferas 3D Brillantes de Banderas Flotantes */}
+        <div style={{ position: "absolute", top: "12%", right: "8%", zIndex: 3 }} className="animate-bounce hidden md:block">
+          <Image
+            src="/flag_orb_france.png"
+            alt="Bandera de Francia 3D"
+            width={85}
+            height={85}
+            style={{ filter: "drop-shadow(0 15px 25px rgba(0,0,0,0.15))", borderRadius: "50%" }}
+          />
+        </div>
+
+        <div style={{ position: "absolute", bottom: "15%", right: "12%", zIndex: 3 }} className="hidden md:block">
+          <Image
+            src="/flag_orb_spain.png"
+            alt="Bandera de España 3D"
+            width={75}
+            height={75}
+            style={{ filter: "drop-shadow(0 12px 20px rgba(0,0,0,0.12))", borderRadius: "50%" }}
+          />
+        </div>
+
+        <div style={{ position: "relative", zIndex: 5, maxWidth: "600px" }}>
           
-          <div>
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "6px 16px", borderRadius: "30px", backgroundColor: "#ffffff", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", fontSize: "13px", fontWeight: 800, color: "#0055a5", marginBottom: "20px" }}>
-              <span>🥐</span> +200 Alumnos Felices
+          {/* Badge de Alumnos con Avatares */}
+          <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "8px 18px", borderRadius: "30px", backgroundColor: "#ffffff", boxShadow: "0 4px 14px rgba(0,0,0,0.06)", marginBottom: "28px" }}>
+            <div style={{ display: "flex", alignItems: "center", marginRight: "4px" }}>
+              <div style={{ width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#3b82f6", border: "2px solid #ffffff", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "11px", fontWeight: 800 }}>M</div>
+              <div style={{ width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#10b981", border: "2px solid #ffffff", marginLeft: "-8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "11px", fontWeight: 800 }}>C</div>
+              <div style={{ width: "28px", height: "28px", borderRadius: "50%", backgroundColor: "#8b5cf6", border: "2px solid #ffffff", marginLeft: "-8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "11px", fontWeight: 800 }}>S</div>
             </div>
-
-            <h2 style={{ fontSize: "42px", fontWeight: 800, letterSpacing: "-0.03em", color: "#0f172a", lineHeight: 1.1, marginBottom: "16px" }}>
-              Domina el Francés, <br /> en Cualquier Lugar
-            </h2>
-
-            <p style={{ fontSize: "16px", fontWeight: 500, color: "#334155", marginBottom: "32px", maxWidth: "460px" }}>
-              Clases virtuales individuales con conversión automática a tu zona horaria local.
-            </p>
-
-            <a
-              href="https://wa.me/33744321356"
-              target="_blank"
-              rel="noopener noreferrer"
-              style={{
-                width: "48px",
-                height: "48px",
-                borderRadius: "50%",
-                backgroundColor: "#0055a5",
-                color: "#ffffff",
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                textDecoration: "none",
-                boxShadow: "0 10px 25px rgba(0, 85, 165, 0.35)"
-              }}
-            >
-              <ArrowUpRight size={20} />
-            </a>
+            <div>
+              <span style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a" }}>200+</span>
+              <span style={{ fontSize: "12px", color: "#64748b", fontWeight: 700, marginLeft: "6px" }}>Alumnos Felices</span>
+            </div>
           </div>
 
-          <div style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
-            {["🇫🇷 Francia", "🇪🇸 España", "🇲🇽 México", "🇨🇱 Chile", "🇨🇴 Colombia"].map((pais, idx) => (
-              <div key={idx} style={{ padding: "14px 24px", borderRadius: "20px", backgroundColor: "#ffffff", boxShadow: "0 10px 25px rgba(0,0,0,0.06)", fontSize: "16px", fontWeight: 800, color: "#0f172a" }}>
-                {pais}
-              </div>
-            ))}
-          </div>
+          <h2 style={{
+            fontSize: "clamp(36px, 4.5vw, 54px)",
+            fontWeight: 800,
+            letterSpacing: "-0.035em",
+            color: "#0f172a",
+            lineHeight: 1.1,
+            marginBottom: "20px"
+          }}>
+            Domina el Francés, <br />
+            en Cualquier Lugar
+          </h2>
+
+          <p style={{
+            fontSize: "16px",
+            fontWeight: 500,
+            color: "#475569",
+            lineHeight: 1.6,
+            marginBottom: "36px",
+            maxWidth: "460px"
+          }}>
+            Ofrecemos clases individuales de francés adaptadas a tus objetivos personales, ritmo de aprendizaje y zona horaria.
+          </p>
+
+          <a
+            href="https://wa.me/33744321356"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "12px",
+              padding: "12px 28px 12px 14px",
+              borderRadius: "40px",
+              backgroundColor: "#0066ff",
+              color: "#ffffff",
+              fontSize: "14px",
+              fontWeight: 800,
+              textDecoration: "none",
+              boxShadow: "0 10px 25px rgba(0, 102, 255, 0.3)"
+            }}
+          >
+            <div style={{ width: "36px", height: "36px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <ArrowRight size={18} strokeWidth={3} />
+            </div>
+            <span>Agendar Clase de Prueba</span>
+          </a>
 
         </div>
+
       </section>
 
       {/* 9. "Learn Fast, Speak Fluently. Explore Our Courses" Carrusel Interactivo de Cursos y Planes */}
@@ -877,10 +938,26 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 10. Scrolling Text Marquee Ticker (Bucle 100% Continuo e Ininterrumpido) */}
-      <div style={{ backgroundColor: "#f8fafc", padding: "24px 0", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0", overflow: "hidden", position: "relative", width: "100%" }}>
-        <div className="marquee-smooth-track" style={{ fontSize: "28px", fontWeight: 800, color: "#cbd5e1", letterSpacing: "0.02em", gap: "24px", whiteSpace: "nowrap" }}>
-          <span>FRANÇAIS + ESPAÑOL + ENGLISH + DEUTSCH + ITALIANO + FRANÇAIS + ESPAÑOL + ENGLISH + DEUTSCH + ITALIANO + FRANÇAIS + ESPAÑOL</span>
+      {/* 10. Scrolling Text Marquee Ticker (Réplica 1:1 de la 3era Imagen Mockup) */}
+      <div style={{
+        backgroundColor: "#ffffff",
+        padding: "48px 0",
+        overflow: "hidden",
+        position: "relative",
+        width: "100%",
+        WebkitMaskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)",
+        maskImage: "linear-gradient(to right, transparent, black 12%, black 88%, transparent)"
+      }}>
+        <div className="marquee-smooth-track" style={{
+          fontSize: "clamp(36px, 5vw, 54px)",
+          fontWeight: 800,
+          color: "#93c5fd",
+          letterSpacing: "-0.025em",
+          gap: "28px",
+          whiteSpace: "nowrap",
+          textTransform: "lowercase"
+        }}>
+          <span>english + german + spanish + italian + french + english + german + spanish + italian + french + english + german + spanish + italian + french</span>
         </div>
       </div>
 
