@@ -21,9 +21,16 @@ export default function LandingV2() {
   };
 
   return (
-    <div style={{ backgroundColor: "#ffffff", color: "#0f172a", minHeight: "100vh", fontFamily: "var(--font-outfit, system-ui, sans-serif)", overflowX: "hidden" }}>
+    <div style={{
+      backgroundColor: "#ffffff",
+      color: "#0f172a",
+      minHeight: "100vh",
+      fontFamily: "var(--font-sans), var(--font-outfit), system-ui, sans-serif",
+      WebkitFontSmoothing: "antialiased",
+      overflowX: "hidden"
+    }}>
       
-      {/* 1. Header V2 - Identidad Exclusiva Francés */}
+      {/* 1. Header V2 - Tipografía limpia del Mockup Ling+ */}
       <header style={{
         position: "sticky",
         top: 0,
@@ -51,8 +58,8 @@ export default function LandingV2() {
             />
           </Link>
 
-          {/* Menú de Navegación Especializado */}
-          <nav style={{ display: "flex", alignItems: "center", gap: "28px", fontSize: "14px", fontWeight: 600, color: "#334155" }} className="hidden md:flex">
+          {/* Menú de Navegación (Tipografía Plus Jakarta Sans exactas al mockup) */}
+          <nav style={{ display: "flex", alignItems: "center", gap: "28px", fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#334155" }} className="hidden md:flex">
             <a href="#profesor" style={{ color: "inherit", textDecoration: "none" }} className="hover:text-blue-600">Conoce a Florentin</a>
             <a href="#metodo" style={{ color: "inherit", textDecoration: "none" }} className="hover:text-blue-600">Método Conversacional</a>
             <a href="#beneficios" style={{ color: "inherit", textDecoration: "none" }} className="hover:text-blue-600">Beneficios</a>
@@ -73,7 +80,7 @@ export default function LandingV2() {
                 borderRadius: "10px",
                 padding: "6px 10px",
                 fontSize: "12px",
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: "pointer"
               }}
             >
@@ -93,7 +100,7 @@ export default function LandingV2() {
                 borderRadius: "10px",
                 padding: "6px 10px",
                 fontSize: "12px",
-                fontWeight: 600,
+                fontWeight: 700,
                 cursor: "pointer"
               }}
             >
@@ -113,7 +120,8 @@ export default function LandingV2() {
                 color: "#ffffff",
                 textDecoration: "none",
                 fontSize: "13px",
-                fontWeight: 700,
+                fontWeight: 800,
+                letterSpacing: "-0.01em",
                 boxShadow: "0 4px 14px rgba(0, 85, 165, 0.3)",
                 display: "inline-flex",
                 alignItems: "center",
@@ -129,7 +137,7 @@ export default function LandingV2() {
         </div>
       </header>
 
-      {/* 2. Hero Section V2 - 100% Contexto Francés Nativo */}
+      {/* 2. Hero Section - Tipografía exactísima al Mockup Ling+ */}
       <section style={{
         background: "linear-gradient(180deg, #edf4ff 0%, #f4f8ff 50%, #ffffff 100%)",
         padding: "70px 24px 60px",
@@ -138,7 +146,7 @@ export default function LandingV2() {
       }}>
         <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "40px", alignItems: "center" }}>
           
-          {/* Columna Izquierda: Mensaje de Valor del Francés */}
+          {/* Columna Izquierda: Mensaje en Tipografía de Impacto */}
           <div>
             
             {/* Badge Nativo Parisino */}
@@ -153,28 +161,33 @@ export default function LandingV2() {
               color: "#0055a5",
               fontSize: "12px",
               fontWeight: 800,
-              letterSpacing: "0.5px",
+              letterSpacing: "0.06em",
+              textTransform: "uppercase",
               marginBottom: "20px"
             }}>
               <span>🇫🇷</span> PROFESOR NATIVO DE PARÍS, FRANCIA
             </div>
 
+            {/* Titular Principal: Speak Fluently, Connect Globally (adaptado en Tipografía Plus Jakarta Sans) */}
             <h1 style={{
-              fontSize: "clamp(38px, 5.2vw, 62px)",
-              fontWeight: 900,
-              lineHeight: 1.12,
+              fontSize: "clamp(42px, 5.8vw, 68px)",
+              fontWeight: 800,
+              lineHeight: 1.08,
               color: "#0f172a",
-              letterSpacing: "-1.5px",
+              letterSpacing: "-0.035em",
               marginBottom: "20px"
             }}>
               Habla Francés con la <br />
               <span style={{ color: "#0055a5" }}>Fluidez y Elegancia</span> de un Nativo
             </h1>
 
+            {/* Subtítulo */}
             <p style={{
               fontSize: "17px",
+              fontWeight: 500,
               color: "#475569",
               lineHeight: 1.6,
+              letterSpacing: "-0.01em",
               marginBottom: "32px",
               maxWidth: "540px"
             }}>
@@ -187,12 +200,13 @@ export default function LandingV2() {
                 target="_blank"
                 rel="noopener noreferrer"
                 style={{
-                  padding: "15px 30px",
+                  padding: "16px 32px",
                   borderRadius: "14px",
                   backgroundColor: "#0055a5",
                   color: "#ffffff",
                   fontSize: "15px",
                   fontWeight: 800,
+                  letterSpacing: "-0.01em",
                   textDecoration: "none",
                   display: "inline-flex",
                   alignItems: "center",
@@ -207,13 +221,14 @@ export default function LandingV2() {
               <a
                 href="#planes"
                 style={{
-                  padding: "15px 24px",
+                  padding: "16px 26px",
                   borderRadius: "14px",
                   backgroundColor: "#ffffff",
                   border: "1px solid #cbd5e1",
                   color: "#0f172a",
                   fontSize: "15px",
                   fontWeight: 700,
+                  letterSpacing: "-0.01em",
                   textDecoration: "none",
                   boxShadow: "0 2px 8px rgba(0,0,0,0.04)"
                 }}
@@ -261,8 +276,8 @@ export default function LandingV2() {
                   <Award size={22} />
                 </div>
                 <div>
-                  <div style={{ fontSize: "13px", fontWeight: 800, color: "#0f172a" }}>Florentin • Profesor Nativo de París</div>
-                  <div style={{ fontSize: "11px", color: "#64748b" }}>+5 años enseñando • Método Conversacional 100% Práctico</div>
+                  <div style={{ fontSize: "13px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a" }}>Florentin • Profesor Nativo de París</div>
+                  <div style={{ fontSize: "11px", fontWeight: 600, color: "#64748b" }}>+5 años enseñando • Método Conversacional 100% Práctico</div>
                 </div>
               </div>
             </div>
@@ -297,7 +312,8 @@ export default function LandingV2() {
                 border: "1px solid #e2e8f0",
                 boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
                 fontSize: "13px",
-                fontWeight: 700,
+                fontWeight: 800,
+                letterSpacing: "-0.01em",
                 color: "#334155"
               }}>
                 <span>{item.icon}</span>
@@ -314,22 +330,22 @@ export default function LandingV2() {
           
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
             <Award size={22} />
-            <span style={{ fontSize: "14px", fontWeight: 800 }}>Pronunciación Nativa de París</span>
+            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Pronunciación Nativa de París</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
             <CalendarCheck size={22} />
-            <span style={{ fontSize: "14px", fontWeight: 800 }}>Reserva Flexible de Horarios</span>
+            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Reserva Flexible de Horarios</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center" }}>
             <MessageSquare size={22} />
-            <span style={{ fontSize: "14px", fontWeight: 800 }}>Sin Tablas Aburridas de Memoria</span>
+            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Sin Tablas Aburridas de Memoria</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center" }}>
             <ShieldCheck size={22} />
-            <span style={{ fontSize: "14px", fontWeight: 800 }}>Certificaciones DELF / DALF</span>
+            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Certificaciones DELF / DALF</span>
           </div>
 
         </div>
@@ -340,27 +356,27 @@ export default function LandingV2() {
         <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "50px", alignItems: "center" }}>
           
           <div>
-            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "1px", textTransform: "uppercase" }}>
+            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase" }}>
               TU PROFESOR PERSONAL
             </span>
-            <h2 style={{ fontSize: "38px", fontWeight: 900, color: "#0f172a", marginTop: "8px", marginBottom: "20px" }}>
+            <h2 style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginTop: "8px", marginBottom: "20px" }}>
               Bonjour ! Soy Florentin 🥐
             </h2>
-            <p style={{ fontSize: "16px", color: "#475569", lineHeight: 1.7, marginBottom: "20px" }}>
+            <p style={{ fontSize: "16px", fontWeight: 500, color: "#475569", lineHeight: 1.7, marginBottom: "20px" }}>
               Nací y crecí en París, Francia. Llevo más de 5 años enseñando francés a estudiantes de todo el mundo, especialmente de habla hispana.
             </p>
-            <p style={{ fontSize: "16px", color: "#475569", lineHeight: 1.7, marginBottom: "30px" }}>
+            <p style={{ fontSize: "16px", fontWeight: 500, color: "#475569", lineHeight: 1.7, marginBottom: "30px" }}>
               Mi filosofía pedagógica es simple: <strong>aprender un idioma debe ser emocionante y práctico</strong>, no una acumulación de reglas gramaticales teóricas. En mis clases nos enfocamos en que te expreses con seguridad y naturalidad desde el primer día.
             </p>
 
             <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
               <div style={{ padding: "16px", borderRadius: "16px", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                <div style={{ fontSize: "24px", fontWeight: 900, color: "#0055a5" }}>+5 Años</div>
-                <div style={{ fontSize: "13px", color: "#64748b", fontWeight: 600 }}>Experiencia Docente</div>
+                <div style={{ fontSize: "26px", fontWeight: 800, letterSpacing: "-0.02em", color: "#0055a5" }}>+5 Años</div>
+                <div style={{ fontSize: "13px", color: "#64748b", fontWeight: 700 }}>Experiencia Docente</div>
               </div>
               <div style={{ padding: "16px", borderRadius: "16px", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                <div style={{ fontSize: "24px", fontWeight: 900, color: "#0055a5" }}>+200</div>
-                <div style={{ fontSize: "13px", color: "#64748b", fontWeight: 600 }}>Alumnos Formados</div>
+                <div style={{ fontSize: "26px", fontWeight: 800, letterSpacing: "-0.02em", color: "#0055a5" }}>+200</div>
+                <div style={{ fontSize: "13px", color: "#64748b", fontWeight: 700 }}>Alumnos Formados</div>
               </div>
             </div>
           </div>
@@ -390,13 +406,13 @@ export default function LandingV2() {
         <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
           
           <div style={{ textAlign: "center", marginBottom: "50px" }}>
-            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "1px", textTransform: "uppercase" }}>
+            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase" }}>
               ¿POR QUÉ APRENDER CON FLORENTIN?
             </span>
-            <h2 style={{ fontSize: "36px", fontWeight: 900, color: "#0f172a", marginTop: "8px" }}>
+            <h2 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginTop: "8px" }}>
               El Método Más Efectivo para Hablar Francés
             </h2>
-            <p style={{ fontSize: "15px", color: "#64748b", maxWidth: "600px", margin: "10px auto 0" }}>
+            <p style={{ fontSize: "15px", fontWeight: 500, color: "#64748b", maxWidth: "600px", margin: "10px auto 0" }}>
               Diseñado para estudiantes que quieren resultados reales en conversación y fluidez.
             </p>
           </div>
@@ -417,8 +433,8 @@ export default function LandingV2() {
                 <div style={{ width: "48px", height: "48px", borderRadius: "14px", backgroundColor: "#0055a5", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
                   <MessageSquare size={22} />
                 </div>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "10px" }}>Conversación Real</h3>
-                <p style={{ fontSize: "14px", color: "#475569", lineHeight: 1.6 }}>
+                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Conversación Real</h3>
+                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6 }}>
                   Hablamos francés desde la primera sesión con situaciones auténticas de la vida diaria en Francia.
                 </p>
               </div>
@@ -438,8 +454,8 @@ export default function LandingV2() {
                 <div style={{ width: "48px", height: "48px", borderRadius: "14px", backgroundColor: "#7c3aed", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
                   <Clock size={22} />
                 </div>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "10px" }}>Horarios Flexibles</h3>
-                <p style={{ fontSize: "14px", color: "#475569", lineHeight: 1.6 }}>
+                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Horarios Flexibles</h3>
+                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6 }}>
                   Agenda tus clases según tu disponibilidad en tu zona horaria. Sin compromisos rígidos de academia.
                 </p>
               </div>
@@ -459,8 +475,8 @@ export default function LandingV2() {
                 <div style={{ width: "48px", height: "48px", borderRadius: "14px", backgroundColor: "#0891b2", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
                   <BookOpen size={22} />
                 </div>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "10px" }}>Material Exclusivo</h3>
-                <p style={{ fontSize: "14px", color: "#475569", lineHeight: 1.6 }}>
+                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Material Exclusivo</h3>
+                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6 }}>
                   Acceso sin costo a guías pedagógicas, ejercicios de pronunciación y notas personalizadas tras cada clase.
                 </p>
               </div>
@@ -480,8 +496,8 @@ export default function LandingV2() {
                 <div style={{ width: "48px", height: "48px", borderRadius: "14px", backgroundColor: "#059669", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
                   <Sparkle size={22} />
                 </div>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "10px" }}>Acento Perfecto</h3>
-                <p style={{ fontSize: "14px", color: "#475569", lineHeight: 1.6 }}>
+                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Acento Perfecto</h3>
+                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6 }}>
                   Corrección de acento y fonética en tiempo real con trucos nativos para sonar limpio y natural.
                 </p>
               </div>
@@ -513,10 +529,10 @@ export default function LandingV2() {
           </div>
 
           <div>
-            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "1px", textTransform: "uppercase" }}>
+            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase" }}>
               EXPERIENCIA ONLINE PREMIUM
             </span>
-            <h2 style={{ fontSize: "36px", fontWeight: 900, color: "#0f172a", marginTop: "8px", marginBottom: "20px" }}>
+            <h2 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginTop: "8px", marginBottom: "20px" }}>
               Clases Virtuales 1 a 1 por Google Meet
             </h2>
 
@@ -526,8 +542,8 @@ export default function LandingV2() {
                   <Check size={14} strokeWidth={3} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: "16px", fontWeight: 800, color: "#0f172a" }}>Sesiones Individuales 100% Privadas</h4>
-                  <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>Sin distracciones. Toda la atención enfocada en tu aprendizaje.</p>
+                  <h4 style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a" }}>Sesiones Individuales 100% Privadas</h4>
+                  <p style={{ fontSize: "14px", fontWeight: 500, color: "#64748b", margin: 0 }}>Sin distracciones. Toda la atención enfocada en tu aprendizaje.</p>
                 </div>
               </div>
 
@@ -536,8 +552,8 @@ export default function LandingV2() {
                   <Check size={14} strokeWidth={3} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: "16px", fontWeight: 800, color: "#0f172a" }}>Para Todos los Niveles (A1 hasta C2)</h4>
-                  <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>Diseño cada clase según si empiezas desde cero o perfeccionas nivel avanzado.</p>
+                  <h4 style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a" }}>Para Todos los Niveles (A1 hasta C2)</h4>
+                  <p style={{ fontSize: "14px", fontWeight: 500, color: "#64748b", margin: 0 }}>Diseño cada clase según si empiezas desde cero o perfeccionas nivel avanzado.</p>
                 </div>
               </div>
 
@@ -546,8 +562,8 @@ export default function LandingV2() {
                   <Check size={14} strokeWidth={3} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: "16px", fontWeight: 800, color: "#0f172a" }}>Portal de Alumno Personalizado</h4>
-                  <p style={{ fontSize: "14px", color: "#64748b", margin: 0 }}>Accede a tus materiales, notas y reserva tus horarios con un solo clic.</p>
+                  <h4 style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a" }}>Portal de Alumno Personalizado</h4>
+                  <p style={{ fontSize: "14px", fontWeight: 500, color: "#64748b", margin: 0 }}>Accede a tus materiales, notas y reserva tus horarios con un solo clic.</p>
                 </div>
               </div>
             </div>
@@ -556,47 +572,50 @@ export default function LandingV2() {
         </div>
       </section>
 
-      {/* 7. Contador de Impacto (Contorno 3D Azul Francés) */}
+      {/* 7. Contador de Impacto (Contorno 3D Azul Francés con Tipografía Jakarta Sans) */}
       <section style={{ padding: "80px 24px", backgroundColor: "#f8fafc", borderTop: "1px solid #e2e8f0" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "30px", textAlign: "center" }}>
           
           <div>
             <div style={{
-              fontSize: "64px",
-              fontWeight: 900,
+              fontSize: "68px",
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
               color: "transparent",
-              WebkitTextStroke: "2px #0055a5",
+              WebkitTextStroke: "2.5px #0055a5",
               lineHeight: 1
             }}>
               +150
             </div>
-            <div style={{ fontSize: "14px", fontWeight: 700, color: "#475569", marginTop: "8px" }}>Materiales y Guías PDF</div>
+            <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#475569", marginTop: "8px" }}>Materiales y Guías PDF</div>
           </div>
 
           <div>
             <div style={{
-              fontSize: "64px",
-              fontWeight: 900,
+              fontSize: "68px",
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
               color: "transparent",
-              WebkitTextStroke: "2px #0055a5",
+              WebkitTextStroke: "2.5px #0055a5",
               lineHeight: 1
             }}>
               98%
             </div>
-            <div style={{ fontSize: "14px", fontWeight: 700, color: "#475569", marginTop: "8px" }}>Satisfacción en Alumnos</div>
+            <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#475569", marginTop: "8px" }}>Satisfacción en Alumnos</div>
           </div>
 
           <div>
             <div style={{
-              fontSize: "64px",
-              fontWeight: 900,
+              fontSize: "68px",
+              fontWeight: 800,
+              letterSpacing: "-0.04em",
               color: "transparent",
-              WebkitTextStroke: "2px #0055a5",
+              WebkitTextStroke: "2.5px #0055a5",
               lineHeight: 1
             }}>
               +1.000
             </div>
-            <div style={{ fontSize: "14px", fontWeight: 700, color: "#475569", marginTop: "8px" }}>Horas de Francés Impartidas</div>
+            <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#475569", marginTop: "8px" }}>Horas de Francés Impartidas</div>
           </div>
 
         </div>
@@ -607,13 +626,13 @@ export default function LandingV2() {
         <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
           
           <div style={{ textAlign: "center", marginBottom: "50px" }}>
-            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "1px", textTransform: "uppercase" }}>
+            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase" }}>
               PLANES Y MATRÍCULA
             </span>
-            <h2 style={{ fontSize: "36px", fontWeight: 900, color: "#0f172a", marginTop: "8px" }}>
+            <h2 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginTop: "8px" }}>
               Elige tu Plan de Francés
             </h2>
-            <p style={{ fontSize: "15px", color: "#64748b", maxWidth: "500px", margin: "10px auto 0" }}>
+            <p style={{ fontSize: "15px", fontWeight: 500, color: "#64748b", maxWidth: "500px", margin: "10px auto 0" }}>
               Sin cláusulas de permanencia. Elige la cantidad de clases que mejor se adapte a tu meta.
             </p>
           </div>
@@ -649,6 +668,7 @@ export default function LandingV2() {
                     color: "#ffffff",
                     fontSize: "11px",
                     fontWeight: 800,
+                    letterSpacing: "0.05em",
                     padding: "4px 12px",
                     borderRadius: "20px",
                     textTransform: "uppercase"
@@ -658,10 +678,10 @@ export default function LandingV2() {
                 )}
 
                 <div>
-                  <h3 style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", marginBottom: "8px" }}>{plan.nombre}</h3>
-                  <p style={{ fontSize: "13px", color: "#64748b", lineHeight: 1.5, marginBottom: "20px" }}>{plan.desc}</p>
+                  <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "8px" }}>{plan.nombre}</h3>
+                  <p style={{ fontSize: "13px", fontWeight: 500, color: "#64748b", lineHeight: 1.5, marginBottom: "20px" }}>{plan.desc}</p>
                   
-                  <div style={{ fontSize: "36px", fontWeight: 900, color: "#0f172a", marginBottom: "20px" }}>
+                  <div style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.03em", color: "#0f172a", marginBottom: "20px" }}>
                     {formatPrecio(plan.precio)}
                     <span style={{ fontSize: "14px", fontWeight: 500, color: "#64748b" }}> / paquete</span>
                   </div>
@@ -679,6 +699,7 @@ export default function LandingV2() {
                     color: "#ffffff",
                     fontSize: "14px",
                     fontWeight: 800,
+                    letterSpacing: "-0.01em",
                     textDecoration: "none",
                     textAlign: "center",
                     display: "block",
@@ -705,9 +726,9 @@ export default function LandingV2() {
             background: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)",
             color: "#0c4a6e"
           }}>
-            <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px" }}>PARTICULAR</span>
-            <h3 style={{ fontSize: "32px", fontWeight: 900, margin: "10px 0 16px" }}>Clases Individuales 1 a 1</h3>
-            <p style={{ fontSize: "15px", lineHeight: 1.6, marginBottom: "24px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>PARTICULAR</span>
+            <h3 style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-0.02em", margin: "10px 0 16px" }}>Clases Individuales 1 a 1</h3>
+            <p style={{ fontSize: "15px", fontWeight: 500, lineHeight: 1.6, marginBottom: "24px" }}>
               Clases enfocadas en tus metas personales: viajes, migración a Francia o superación personal.
             </p>
             <a href="https://wa.me/33744321356" target="_blank" rel="noopener noreferrer" style={{ padding: "12px 24px", borderRadius: "12px", backgroundColor: "#0284c7", color: "#ffffff", textDecoration: "none", fontWeight: 800, fontSize: "14px", display: "inline-block" }}>
@@ -721,9 +742,9 @@ export default function LandingV2() {
             background: "linear-gradient(135deg, #dcfce7 0%, #86efac 100%)",
             color: "#14532d"
           }}>
-            <span style={{ fontSize: "11px", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px" }}>EMPRESAS Y PROFESIONALES</span>
-            <h3 style={{ fontSize: "32px", fontWeight: 900, margin: "10px 0 16px" }}>Francés para Negocios</h3>
-            <p style={{ fontSize: "15px", lineHeight: 1.6, marginBottom: "24px" }}>
+            <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>EMPRESAS Y PROFESIONALES</span>
+            <h3 style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-0.02em", margin: "10px 0 16px" }}>Francés para Negocios</h3>
+            <p style={{ fontSize: "15px", fontWeight: 500, lineHeight: 1.6, marginBottom: "24px" }}>
               Capacitación de francés comercial y corporativo para profesionales y empresas.
             </p>
             <a href="https://wa.me/33744321356" target="_blank" rel="noopener noreferrer" style={{ padding: "12px 24px", borderRadius: "12px", backgroundColor: "#16a34a", color: "#ffffff", textDecoration: "none", fontWeight: 800, fontSize: "14px", display: "inline-block" }}>
@@ -741,17 +762,17 @@ export default function LandingV2() {
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "40px", marginBottom: "60px" }}>
             
             <div>
-              <h3 style={{ fontSize: "28px", fontWeight: 900, color: "#ffffff", marginBottom: "16px" }}>
+              <h3 style={{ fontSize: "28px", fontWeight: 800, letterSpacing: "-0.02em", color: "#ffffff", marginBottom: "16px" }}>
                 Florentin<span style={{ color: "#0055a5" }}> French</span>
               </h3>
-              <p style={{ fontSize: "14px", color: "#94a3b8", lineHeight: 1.6 }}>
+              <p style={{ fontSize: "14px", fontWeight: 500, color: "#94a3b8", lineHeight: 1.6 }}>
                 Clases particulares de francés con un profesor nativo de París. Método práctico conversacional y preparación personalizada.
               </p>
             </div>
 
             <div>
-              <h4 style={{ fontSize: "15px", fontWeight: 800, marginBottom: "16px", color: "#ffffff" }}>Cursos & Niveles</h4>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", color: "#94a3b8", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <h4 style={{ fontSize: "15px", fontWeight: 800, letterSpacing: "-0.01em", marginBottom: "16px", color: "#ffffff" }}>Cursos & Niveles</h4>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", fontWeight: 500, color: "#94a3b8", display: "flex", flexDirection: "column", gap: "10px" }}>
                 <li>Francés Principiantes (A1-A2)</li>
                 <li>Francés Intermedio (B1-B2)</li>
                 <li>Francés Avanzado (C1-C2)</li>
@@ -760,8 +781,8 @@ export default function LandingV2() {
             </div>
 
             <div>
-              <h4 style={{ fontSize: "15px", fontWeight: 800, marginBottom: "16px", color: "#ffffff" }}>Contacto Directo</h4>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", color: "#94a3b8", display: "flex", flexDirection: "column", gap: "10px" }}>
+              <h4 style={{ fontSize: "15px", fontWeight: 800, letterSpacing: "-0.01em", marginBottom: "16px", color: "#ffffff" }}>Contacto Directo</h4>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", fontWeight: 500, color: "#94a3b8", display: "flex", flexDirection: "column", gap: "10px" }}>
                 <li>📍 París, Francia</li>
                 <li>💬 WhatsApp: +33 7 44 32 13 56</li>
                 <li>🌐 Clases Online por Google Meet</li>
@@ -770,7 +791,7 @@ export default function LandingV2() {
 
           </div>
 
-          <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "30px", textAlign: "center", fontSize: "13px", color: "#64748b" }}>
+          <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "30px", textAlign: "center", fontSize: "13px", fontWeight: 500, color: "#64748b" }}>
             © {new Date().getFullYear()} Florentin French • Todos los derechos reservados.
           </div>
 
