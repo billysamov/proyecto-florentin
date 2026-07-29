@@ -4,21 +4,13 @@ import React, { useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import {
-  Sparkles, ArrowRight, BookOpen, Globe2, Award, Users, CheckCircle2,
-  Star, ShieldCheck, Clock, MessageSquare, CalendarCheck, Check, Sparkle,
-  GraduationCap, MapPin, Compass, HeartHandshake, PlayCircle
+  Sparkles, ArrowRight, ArrowUpRight, Search, ShoppingBag, Check,
+  Clock, BookOpen, MessageSquare, Compass, ShieldCheck, CheckCircle2,
+  Users, Award, ChevronRight, Star, Globe2, Phone, Mail, MapPin, Heart
 } from "lucide-react";
 
-export default function LandingV2() {
-  const [lang, setLang] = useState<"es" | "fr" | "en">("es");
-  const [divisa, setDivisa] = useState<"eur" | "usd">("eur");
-
-  const formatPrecio = (precioEur: number) => {
-    if (divisa === "usd") {
-      return `$${Math.round(precioEur * 1.1)} USD`;
-    }
-    return `${precioEur} €`;
-  };
+export default function LandingV2Replica() {
+  const [activeCourseIndex, setActiveCourseIndex] = useState(0);
 
   return (
     <div className="v2-container" style={{
@@ -30,106 +22,81 @@ export default function LandingV2() {
       overflowX: "hidden"
     }}>
       
-      {/* 1. Header V2 - Tipografía limpia del Mockup Ling+ */}
+      {/* 1. Header Navbar (Réplica Exacta del Mockup Ling+) */}
       <header style={{
         position: "sticky",
         top: 0,
         zIndex: 50,
-        backdropFilter: "blur(14px)",
-        backgroundColor: "rgba(255, 255, 255, 0.94)",
+        backgroundColor: "rgba(255, 255, 255, 0.95)",
+        backdropFilter: "blur(12px)",
         borderBottom: "1px solid #e2e8f0",
-        padding: "14px 24px"
+        padding: "16px 24px"
       }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           
-          {/* Logo Florentin */}
-          <Link href="/v2" style={{ display: "flex", alignItems: "center", gap: "10px", textDecoration: "none" }}>
-            <Image
-              src="/logo_inicio.png"
-              alt="Florentin French"
-              width={175}
-              height={54}
-              style={{ objectFit: "contain", maxHeight: "46px", width: "auto" }}
-              priority
-              onError={(e) => {
-                const target = e.target as HTMLImageElement;
-                target.src = "/logo.png";
-              }}
-            />
+          {/* Logo Ling+ / Florentin */}
+          <Link href="/v2" style={{ display: "flex", alignItems: "center", gap: "6px", textDecoration: "none" }}>
+            <span style={{ fontSize: "28px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.03em" }}>
+              Ling<span style={{ color: "#0066ff" }}>+</span>
+            </span>
+            <span style={{ fontSize: "11px", fontWeight: 800, backgroundColor: "#e0f2fe", color: "#0284c7", padding: "2px 8px", borderRadius: "20px", marginLeft: "6px" }}>
+              Florentin Edition
+            </span>
           </Link>
 
-          {/* Menú de Navegación (Tipografía Plus Jakarta Sans exactas al mockup) */}
-          <nav style={{ display: "flex", alignItems: "center", gap: "28px", fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#334155" }} className="hidden md:flex">
-            <a href="#profesor" style={{ color: "inherit", textDecoration: "none" }} className="hover:text-blue-600">Conoce a Florentin</a>
-            <a href="#metodo" style={{ color: "inherit", textDecoration: "none" }} className="hover:text-blue-600">Método Conversacional</a>
-            <a href="#beneficios" style={{ color: "inherit", textDecoration: "none" }} className="hover:text-blue-600">Beneficios</a>
-            <a href="#planes" style={{ color: "inherit", textDecoration: "none" }} className="hover:text-blue-600">Planes de Estudio</a>
+          {/* Menú de Navegación del Mockup */}
+          <nav style={{ display: "flex", alignItems: "center", gap: "28px", fontSize: "14px", fontWeight: 700, color: "#334155" }} className="hidden lg:flex">
+            <a href="#courses" style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
+              Courses <span style={{ fontSize: "10px" }}>▼</span>
+            </a>
+            <a href="#pages" style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
+              Pages <span style={{ fontSize: "10px" }}>▼</span>
+            </a>
+            <a href="#about" style={{ color: "inherit", textDecoration: "none" }}>About Us</a>
+            <a href="#blog" style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
+              Blog <span style={{ fontSize: "10px" }}>▼</span>
+            </a>
+            <a href="#events" style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
+              Events <span style={{ fontSize: "10px" }}>▼</span>
+            </a>
+            <a href="#contact" style={{ color: "inherit", textDecoration: "none" }}>Contact Us</a>
           </nav>
 
-          {/* Acciones y Selectores */}
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          {/* Acciones del Mockup (Search, Cart, Enroll Button) */}
+          <div style={{ display: "flex", alignItems: "center", gap: "18px" }}>
             
-            {/* Selector de Idioma */}
-            <select
-              value={lang}
-              onChange={(e) => setLang(e.target.value as any)}
-              style={{
-                backgroundColor: "#f8fafc",
-                color: "#0f172a",
-                border: "1px solid #cbd5e1",
-                borderRadius: "10px",
-                padding: "6px 10px",
-                fontSize: "12px",
-                fontWeight: 700,
-                cursor: "pointer"
-              }}
-            >
-              <option value="es">🇪🇸 ES</option>
-              <option value="fr">🇫🇷 FR</option>
-              <option value="en">🇬🇧 EN</option>
-            </select>
+            <button style={{ background: "none", border: "none", cursor: "pointer", color: "#475569", display: "flex", alignItems: "center" }} aria-label="Search">
+              <Search size={18} />
+            </button>
 
-            {/* Selector de Moneda */}
-            <select
-              value={divisa}
-              onChange={(e) => setDivisa(e.target.value as any)}
-              style={{
-                backgroundColor: "#f8fafc",
-                color: "#0f172a",
-                border: "1px solid #cbd5e1",
-                borderRadius: "10px",
-                padding: "6px 10px",
-                fontSize: "12px",
-                fontWeight: 700,
-                cursor: "pointer"
-              }}
-            >
-              <option value="eur">EUR (€)</option>
-              <option value="usd">USD ($)</option>
-            </select>
+            <div style={{ position: "relative", cursor: "pointer", color: "#475569" }}>
+              <ShoppingBag size={18} />
+              <span style={{ position: "absolute", top: "-6px", right: "-6px", backgroundColor: "#0066ff", color: "#ffffff", fontSize: "10px", fontWeight: 800, width: "16px", height: "16px", borderRadius: "50%", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                0
+              </span>
+            </div>
 
-            {/* Botón CTA Principal */}
             <a
               href="https://wa.me/33744321356"
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                padding: "10px 20px",
-                borderRadius: "12px",
-                backgroundColor: "#0055a5",
+                padding: "10px 22px",
+                borderRadius: "30px",
+                backgroundColor: "#0066ff",
                 color: "#ffffff",
-                textDecoration: "none",
                 fontSize: "13px",
                 fontWeight: 800,
                 letterSpacing: "-0.01em",
-                boxShadow: "0 4px 14px rgba(0, 85, 165, 0.3)",
+                textDecoration: "none",
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "6px"
+                gap: "8px",
+                boxShadow: "0 4px 14px rgba(0, 102, 255, 0.3)"
               }}
             >
-              Agenda por WhatsApp
-              <ArrowRight size={14} />
+              Enroll Now
+              <ArrowUpRight size={14} />
             </a>
 
           </div>
@@ -137,186 +104,117 @@ export default function LandingV2() {
         </div>
       </header>
 
-      {/* 2. Hero Section - Tipografía exactísima al Mockup Ling+ */}
+      {/* 2. Hero Section (Fondo Menta/Cyan Degradado Réplica) */}
       <section style={{
-        background: "linear-gradient(180deg, #edf4ff 0%, #f4f8ff 50%, #ffffff 100%)",
-        padding: "70px 24px 60px",
+        background: "linear-gradient(180deg, #dff4f3 0%, #edf9f8 60%, #ffffff 100%)",
+        padding: "80px 24px 60px",
         position: "relative",
         overflow: "hidden"
       }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "40px", alignItems: "center" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "40px", alignItems: "center" }}>
           
-          {/* Columna Izquierda: Mensaje en Tipografía de Impacto */}
+          {/* Left Column: Heading & Copy */}
           <div>
-            
-            {/* Badge Nativo Parisino */}
-            <div style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "8px",
-              padding: "6px 16px",
-              borderRadius: "30px",
-              backgroundColor: "rgba(0, 85, 165, 0.1)",
-              border: "1px solid rgba(0, 85, 165, 0.2)",
-              color: "#0055a5",
-              fontSize: "12px",
-              fontWeight: 800,
-              letterSpacing: "0.06em",
-              textTransform: "uppercase",
-              marginBottom: "20px"
-            }}>
-              <span>🇫🇷</span> PROFESOR NATIVO DE PARÍS, FRANCIA
-            </div>
-
-            {/* Titular Principal: Speak Fluently, Connect Globally (adaptado en Tipografía Plus Jakarta Sans) */}
             <h1 style={{
-              fontSize: "clamp(42px, 5.8vw, 68px)",
+              fontSize: "clamp(44px, 5.8vw, 68px)",
               fontWeight: 800,
               lineHeight: 1.08,
               color: "#0f172a",
               letterSpacing: "-0.035em",
               marginBottom: "20px"
             }}>
-              Habla Francés con la <br />
-              <span style={{ color: "#0055a5" }}>Fluidez y Elegancia</span> de un Nativo
+              Speak Fluently, <br />
+              <span style={{ color: "#0f172a" }}>Connect Globally</span>
             </h1>
 
-            {/* Subtítulo */}
             <p style={{
-              fontSize: "17px",
+              fontSize: "16px",
               fontWeight: 500,
               color: "#475569",
               lineHeight: 1.6,
               letterSpacing: "-0.01em",
               marginBottom: "32px",
-              maxWidth: "540px"
+              maxWidth: "520px"
             }}>
-              Aprende francés real con <strong>Florentin</strong>, nacido y criado en París. Clases particulares 1 a 1 en vivo, corregimos tu acento desde la primera sesión y avanzas a tu propio ritmo.
+              Master a new language at your own pace with our expert-led courses. Designed for all levels, from beginners to advanced speakers.
             </p>
 
-            <div style={{ display: "flex", alignItems: "center", gap: "16px", flexWrap: "wrap" }}>
+            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
               <a
-                href="https://wa.me/33744321356"
-                target="_blank"
-                rel="noopener noreferrer"
+                href="#courses"
                 style={{
-                  padding: "16px 32px",
-                  borderRadius: "14px",
-                  backgroundColor: "#0055a5",
+                  width: "48px",
+                  height: "48px",
+                  borderRadius: "50%",
+                  backgroundColor: "#0066ff",
                   color: "#ffffff",
-                  fontSize: "15px",
-                  fontWeight: 800,
-                  letterSpacing: "-0.01em",
-                  textDecoration: "none",
-                  display: "inline-flex",
+                  display: "flex",
                   alignItems: "center",
-                  gap: "8px",
-                  boxShadow: "0 10px 25px -5px rgba(0, 85, 165, 0.4)"
-                }}
-              >
-                <ArrowRight size={16} />
-                Agendar Primera Clase
-              </a>
-
-              <a
-                href="#planes"
-                style={{
-                  padding: "16px 26px",
-                  borderRadius: "14px",
-                  backgroundColor: "#ffffff",
-                  border: "1px solid #cbd5e1",
-                  color: "#0f172a",
-                  fontSize: "15px",
-                  fontWeight: 700,
-                  letterSpacing: "-0.01em",
+                  justifyContent: "center",
                   textDecoration: "none",
-                  boxShadow: "0 2px 8px rgba(0,0,0,0.04)"
+                  boxShadow: "0 10px 25px rgba(0, 102, 255, 0.35)",
+                  transition: "transform 0.2s ease"
                 }}
               >
-                Ver Planes ({formatPrecio(49)}/mes)
+                <ArrowUpRight size={20} />
               </a>
+              <span style={{ fontSize: "14px", fontWeight: 700, color: "#0f172a" }}>Explore Courses</span>
             </div>
           </div>
 
-          {/* Columna Derecha: Imagen Estudiante con Marca de Agua Parisina */}
+          {/* Right Column: Student Portrait with Soft Mint Oval */}
           <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
             <div style={{
               position: "relative",
               width: "100%",
               maxWidth: "460px",
-              borderRadius: "32px",
-              overflow: "hidden",
-              boxShadow: "0 25px 50px -12px rgba(0, 85, 165, 0.22)"
+              borderRadius: "40px",
+              overflow: "hidden"
             }}>
               <Image
                 src="/hero_student.png"
-                alt="Aprender Francés con Florentin"
+                alt="Student with books"
                 width={500}
                 height={550}
-                style={{ width: "100%", height: "auto", objectFit: "cover" }}
+                style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }}
                 priority
               />
-
-              {/* Badge flotante de acreditación */}
-              <div style={{
-                position: "absolute",
-                bottom: "20px",
-                left: "20px",
-                right: "20px",
-                backgroundColor: "rgba(255, 255, 255, 0.95)",
-                backdropFilter: "blur(12px)",
-                padding: "14px 18px",
-                borderRadius: "20px",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
-                display: "flex",
-                alignItems: "center",
-                gap: "12px"
-              }}>
-                <div style={{ width: "42px", height: "42px", borderRadius: "12px", backgroundColor: "#0055a5", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
-                  <Award size={22} />
-                </div>
-                <div>
-                  <div style={{ fontSize: "13px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a" }}>Florentin • Profesor Nativo de París</div>
-                  <div style={{ fontSize: "11px", fontWeight: 600, color: "#64748b" }}>+5 años enseñando • Método Conversacional 100% Práctico</div>
-                </div>
-              </div>
             </div>
           </div>
 
         </div>
 
-        {/* Carrusel Marquee de Objetivos y Niveles de Francés */}
-        <div style={{ marginTop: "60px", overflow: "hidden", whiteSpace: "nowrap" }}>
-          <div style={{ display: "inline-flex", gap: "14px", animation: "marqueeFlags 25s linear infinite" }}>
+        {/* Flag Marquee Pill Bar (Superpuesto en la parte inferior) */}
+        <div style={{ marginTop: "50px", overflow: "hidden", whiteSpace: "nowrap" }}>
+          <div style={{ display: "inline-flex", gap: "16px", animation: "marqueeFlags 25s linear infinite" }}>
             {[
-              { icon: "🥐", label: "Francés de París" },
-              { icon: "💼", label: "Francés para Negocios" },
-              { icon: "✈️", label: "Francés para Viajes" },
-              { icon: "🎓", label: "Preparación DELF (A1-B2)" },
-              { icon: "📜", label: "Preparación DALF (C1-C2)" },
-              { icon: "🍷", label: "Cultura & Conversación" },
-              { icon: "🥐", label: "Francés de París" },
-              { icon: "💼", label: "Francés para Negocios" },
-              { icon: "✈️", label: "Francés para Viajes" },
-              { icon: "🎓", label: "Preparación DELF (A1-B2)" },
-              { icon: "📜", label: "Preparación DALF (C1-C2)" },
-              { icon: "🍷", label: "Cultura & Conversación" }
+              { flag: "🇪🇸", label: "Spanish" },
+              { flag: "🇫🇷", label: "French" },
+              { flag: "🇩🇪", label: "German" },
+              { flag: "🇮🇹", label: "Italian" },
+              { flag: "🇨🇳", label: "Chinese" },
+              { flag: "🇬🇧", label: "English" },
+              { flag: "🇪🇸", label: "Spanish" },
+              { flag: "🇫🇷", label: "French" },
+              { flag: "🇩🇪", label: "German" },
+              { flag: "🇮🇹", label: "Italian" },
+              { flag: "🇨🇳", label: "Chinese" },
+              { flag: "🇬🇧", label: "English" }
             ].map((item, i) => (
               <div key={i} style={{
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "8px",
-                padding: "8px 18px",
-                borderRadius: "30px",
+                gap: "10px",
+                padding: "10px 22px",
+                borderRadius: "40px",
                 backgroundColor: "#ffffff",
                 border: "1px solid #e2e8f0",
-                boxShadow: "0 4px 12px rgba(0,0,0,0.03)",
-                fontSize: "13px",
+                boxShadow: "0 6px 16px rgba(0,0,0,0.04)",
+                fontSize: "14px",
                 fontWeight: 800,
-                letterSpacing: "-0.01em",
-                color: "#334155"
+                color: "#0f172a"
               }}>
-                <span>{item.icon}</span>
+                <span style={{ fontSize: "18px" }}>{item.flag}</span>
                 <span>{item.label}</span>
               </div>
             ))}
@@ -324,182 +222,169 @@ export default function LandingV2() {
         </div>
       </section>
 
-      {/* 3. Barra Azul de Métricas y Compromiso de Calidad */}
-      <section style={{ backgroundColor: "#0055a5", color: "#ffffff", padding: "24px" }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", textAlign: "center" }}>
+      {/* 3. Cinta Azul Royal (4 Items Horizontal Checkmarks) */}
+      <section style={{ backgroundColor: "#0066ff", color: "#ffffff", padding: "22px 24px" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "20px", textAlign: "center" }}>
           
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            <Award size={22} />
-            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Pronunciación Nativa de París</span>
+            <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Check size={14} strokeWidth={3} />
+            </div>
+            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>100+ Language Courses</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
-            <CalendarCheck size={22} />
-            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Reserva Flexible de Horarios</span>
+            <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Check size={14} strokeWidth={3} />
+            </div>
+            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Expert Native Tutors</span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center" }}>
-            <MessageSquare size={22} />
-            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Sin Tablas Aburridas de Memoria</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+            <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Check size={14} strokeWidth={3} />
+            </div>
+            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Flexible Schedules</span>
           </div>
 
-          <div style={{ display: "flex", alignItems: "center", gap: "10px", justifyContent: "center" }}>
-            <ShieldCheck size={22} />
-            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Certificaciones DELF / DALF</span>
+          <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "10px" }}>
+            <div style={{ width: "22px", height: "22px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+              <Check size={14} strokeWidth={3} />
+            </div>
+            <span style={{ fontSize: "14px", fontWeight: 800, letterSpacing: "-0.01em" }}>Practical Lessons</span>
           </div>
 
         </div>
       </section>
 
-      {/* 4. Perfil Destacado del Profesor Florentin */}
-      <section id="profesor" style={{ padding: "90px 24px", backgroundColor: "#ffffff" }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "50px", alignItems: "center" }}>
+      {/* 4. "Unlock the World with Language Learning" (4 Bento Cards Pastel) */}
+      <section style={{ padding: "90px 24px", backgroundColor: "#ffffff" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           
-          <div>
-            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              TU PROFESOR PERSONAL
-            </span>
-            <h2 style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginTop: "8px", marginBottom: "20px" }}>
-              Bonjour ! Soy Florentin 🥐
-            </h2>
-            <p style={{ fontSize: "16px", fontWeight: 500, color: "#475569", lineHeight: 1.7, marginBottom: "20px" }}>
-              Nací y crecí en París, Francia. Llevo más de 5 años enseñando francés a estudiantes de todo el mundo, especialmente de habla hispana.
-            </p>
-            <p style={{ fontSize: "16px", fontWeight: 500, color: "#475569", lineHeight: 1.7, marginBottom: "30px" }}>
-              Mi filosofía pedagógica es simple: <strong>aprender un idioma debe ser emocionante y práctico</strong>, no una acumulación de reglas gramaticales teóricas. En mis clases nos enfocamos en que te expreses con seguridad y naturalidad desde el primer día.
-            </p>
-
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: "16px" }}>
-              <div style={{ padding: "16px", borderRadius: "16px", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                <div style={{ fontSize: "26px", fontWeight: 800, letterSpacing: "-0.02em", color: "#0055a5" }}>+5 Años</div>
-                <div style={{ fontSize: "13px", color: "#64748b", fontWeight: 700 }}>Experiencia Docente</div>
-              </div>
-              <div style={{ padding: "16px", borderRadius: "16px", backgroundColor: "#f8fafc", border: "1px solid #e2e8f0" }}>
-                <div style={{ fontSize: "26px", fontWeight: 800, letterSpacing: "-0.02em", color: "#0055a5" }}>+200</div>
-                <div style={{ fontSize: "13px", color: "#64748b", fontWeight: 700 }}>Alumnos Formados</div>
-              </div>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "flex-end", marginBottom: "50px" }} className="grid-cols-1 md:grid-cols-2">
+            <div>
+              <span style={{ fontSize: "12px", fontWeight: 800, color: "#0066ff", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>
+                • WHY CHOOSE US
+              </span>
+              <h2 style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", margin: 0 }}>
+                Unlock the World with Language Learning
+              </h2>
+            </div>
+            <div>
+              <p style={{ fontSize: "15px", fontWeight: 500, color: "#64748b", lineHeight: 1.6, margin: 0 }}>
+                Learn from experienced native tutors with interactive, engaging courses tailored to your personal and professional goals.
+              </p>
             </div>
           </div>
 
-          <div style={{ position: "relative" }}>
-            <div style={{
-              borderRadius: "28px",
-              overflow: "hidden",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.08)",
-              border: "1px solid #e2e8f0"
-            }}>
-              <Image
-                src="/hero_student.png"
-                alt="Florentin Profesor de Francés"
-                width={550}
-                height={480}
-                style={{ width: "100%", height: "auto", objectFit: "cover" }}
-              />
-            </div>
-          </div>
-
-        </div>
-      </section>
-
-      {/* 5. Bento Grid Pastel: 4 Pilares del Método Florentin */}
-      <section id="beneficios" style={{ padding: "80px 24px", backgroundColor: "#f8fafc", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0" }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
-          
-          <div style={{ textAlign: "center", marginBottom: "50px" }}>
-            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              ¿POR QUÉ APRENDER CON FLORENTIN?
-            </span>
-            <h2 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginTop: "8px" }}>
-              El Método Más Efectivo para Hablar Francés
-            </h2>
-            <p style={{ fontSize: "15px", fontWeight: 500, color: "#64748b", maxWidth: "600px", margin: "10px auto 0" }}>
-              Diseñado para estudiantes que quieren resultados reales en conversación y fluidez.
-            </p>
-          </div>
-
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(250px, 1fr))", gap: "24px" }}>
+          {/* 4 Bento Grid Cards con botón cuadrado azul en esquina */}
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "24px" }}>
             
-            {/* Card 1: Azul Pastel */}
+            {/* Card 1 (Soft Blue) */}
             <div style={{
-              padding: "32px 24px",
+              padding: "36px 28px 28px",
               borderRadius: "24px",
               backgroundColor: "#edf5ff",
-              border: "1px solid rgba(0, 85, 165, 0.15)",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
+              minHeight: "260px"
             }}>
               <div>
-                <div style={{ width: "48px", height: "48px", borderRadius: "14px", backgroundColor: "#0055a5", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
-                  <MessageSquare size={22} />
+                <div style={{ width: "48px", height: "48px", borderRadius: "12px", backgroundColor: "rgba(0, 102, 255, 0.15)", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px" }}>
+                  <MessageSquare size={24} />
                 </div>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Conversación Real</h3>
-                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6 }}>
-                  Hablamos francés desde la primera sesión con situaciones auténticas de la vida diaria en Francia.
+                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Interactive Lessons</h3>
+                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6, margin: 0 }}>
+                  Engage in real-time interactive lessons designed to boost your speaking and listening skills.
                 </p>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-start", marginTop: "24px" }}>
+                <a href="#courses" style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#0066ff", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
+                  <ArrowUpRight size={18} />
+                </a>
               </div>
             </div>
 
-            {/* Card 2: Lavanda Pastel */}
+            {/* Card 2 (Soft Cyan) */}
             <div style={{
-              padding: "32px 24px",
-              borderRadius: "24px",
-              backgroundColor: "#f5f3ff",
-              border: "1px solid rgba(139, 92, 246, 0.15)",
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between"
-            }}>
-              <div>
-                <div style={{ width: "48px", height: "48px", borderRadius: "14px", backgroundColor: "#7c3aed", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
-                  <Clock size={22} />
-                </div>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Horarios Flexibles</h3>
-                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6 }}>
-                  Agenda tus clases según tu disponibilidad en tu zona horaria. Sin compromisos rígidos de academia.
-                </p>
-              </div>
-            </div>
-
-            {/* Card 3: Cyan Pastel */}
-            <div style={{
-              padding: "32px 24px",
+              padding: "36px 28px 28px",
               borderRadius: "24px",
               backgroundColor: "#e0f7fa",
-              border: "1px solid rgba(6, 182, 212, 0.15)",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
+              minHeight: "260px"
             }}>
               <div>
-                <div style={{ width: "48px", height: "48px", borderRadius: "14px", backgroundColor: "#0891b2", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
-                  <BookOpen size={22} />
+                <div style={{ width: "48px", height: "48px", borderRadius: "12px", backgroundColor: "rgba(8, 145, 178, 0.15)", color: "#0891b2", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px" }}>
+                  <Clock size={24} />
                 </div>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Material Exclusivo</h3>
-                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6 }}>
-                  Acceso sin costo a guías pedagógicas, ejercicios de pronunciación y notas personalizadas tras cada clase.
+                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Learn at Your Pace</h3>
+                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6, margin: 0 }}>
+                  Flexible scheduling options that fit seamlessly into your busy daily routine.
                 </p>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-start", marginTop: "24px" }}>
+                <a href="#courses" style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#0066ff", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
+                  <ArrowUpRight size={18} />
+                </a>
               </div>
             </div>
 
-            {/* Card 4: Menta Pastel */}
+            {/* Card 3 (Soft Purple) */}
             <div style={{
-              padding: "32px 24px",
+              padding: "36px 28px 28px",
               borderRadius: "24px",
-              backgroundColor: "#e6f4ea",
-              border: "1px solid rgba(16, 185, 129, 0.15)",
+              backgroundColor: "#f3e8ff",
               display: "flex",
               flexDirection: "column",
-              justifyContent: "space-between"
+              justifyContent: "space-between",
+              minHeight: "260px"
             }}>
               <div>
-                <div style={{ width: "48px", height: "48px", borderRadius: "14px", backgroundColor: "#059669", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "20px" }}>
-                  <Sparkle size={22} />
+                <div style={{ width: "48px", height: "48px", borderRadius: "12px", backgroundColor: "rgba(124, 58, 237, 0.15)", color: "#7c3aed", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px" }}>
+                  <BookOpen size={24} />
                 </div>
-                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Acento Perfecto</h3>
-                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6 }}>
-                  Corrección de acento y fonética en tiempo real con trucos nativos para sonar limpio y natural.
+                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Self-Paced Resources</h3>
+                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6, margin: 0 }}>
+                  Access comprehensive learning materials, quizzes, and recorded sessions anytime.
                 </p>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-start", marginTop: "24px" }}>
+                <a href="#courses" style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#0066ff", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
+                  <ArrowUpRight size={18} />
+                </a>
+              </div>
+            </div>
+
+            {/* Card 4 (Soft Mint) */}
+            <div style={{
+              padding: "36px 28px 28px",
+              borderRadius: "24px",
+              backgroundColor: "#e6f4ea",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+              minHeight: "260px"
+            }}>
+              <div>
+                <div style={{ width: "48px", height: "48px", borderRadius: "12px", backgroundColor: "rgba(5, 150, 105, 0.15)", color: "#059669", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "24px" }}>
+                  <Award size={24} />
+                </div>
+                <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "10px" }}>Active Learning</h3>
+                <p style={{ fontSize: "14px", fontWeight: 500, color: "#475569", lineHeight: 1.6, margin: 0 }}>
+                  Practical exercises and real-world scenarios to ensure maximum retention and confidence.
+                </p>
+              </div>
+
+              <div style={{ display: "flex", justifyContent: "flex-start", marginTop: "24px" }}>
+                <a href="#courses" style={{ width: "36px", height: "36px", borderRadius: "10px", backgroundColor: "#0066ff", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
+                  <ArrowUpRight size={18} />
+                </a>
               </div>
             </div>
 
@@ -508,62 +393,82 @@ export default function LandingV2() {
         </div>
       </section>
 
-      {/* 6. Sección Dividida: Clases Virtuales por Google Meet */}
-      <section id="metodo" style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "50px", alignItems: "center" }}>
+      {/* 5. Client / Partner Logos Bar */}
+      <section style={{ padding: "40px 24px", backgroundColor: "#ffffff", borderTop: "1px solid #f1f5f9" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", textAlign: "center" }}>
+          <span style={{ fontSize: "12px", fontWeight: 800, color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "24px" }}>
+            TRUSTED BY 1,000+ SCHOOLS & UNIVERSITIES
+          </span>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "48px", flexWrap: "wrap", opacity: 0.6, grayscale: 1 }}>
+            <span style={{ fontSize: "18px", fontWeight: 800, color: "#64748b" }}>Coursera</span>
+            <span style={{ fontSize: "18px", fontWeight: 800, color: "#64748b" }}>Duolingo</span>
+            <span style={{ fontSize: "18px", fontWeight: 800, color: "#64748b" }}>Pearson</span>
+            <span style={{ fontSize: "18px", fontWeight: 800, color: "#64748b" }}>McGraw Hill</span>
+            <span style={{ fontSize: "18px", fontWeight: 800, color: "#64748b" }}>Oxford</span>
+            <span style={{ fontSize: "18px", fontWeight: 800, color: "#64748b" }}>Babbel</span>
+          </div>
+        </div>
+      </section>
+
+      {/* 6. "Languages from the Comfort of Home" Section */}
+      <section style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "50px", alignItems: "center" }}>
           
           <div style={{ position: "relative" }}>
             <div style={{
-              borderRadius: "28px",
+              borderRadius: "32px",
               overflow: "hidden",
-              boxShadow: "0 20px 40px rgba(0,0,0,0.08)"
+              boxShadow: "0 20px 40px rgba(0,0,0,0.06)"
             }}>
               <Image
                 src="/video_student.png"
-                alt="Clase de Francés 1 a 1 por Google Meet"
+                alt="Student in online video class"
                 width={550}
-                height={400}
+                height={420}
                 style={{ width: "100%", height: "auto", objectFit: "cover" }}
               />
             </div>
           </div>
 
           <div>
-            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              EXPERIENCIA ONLINE PREMIUM
+            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0066ff", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>
+              • FLEXIBLE ONLINE CLASSES
             </span>
-            <h2 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginTop: "8px", marginBottom: "20px" }}>
-              Clases Virtuales 1 a 1 por Google Meet
+            <h2 style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginBottom: "16px" }}>
+              Languages from the Comfort of Home
             </h2>
+            <p style={{ fontSize: "15px", fontWeight: 500, color: "#64748b", lineHeight: 1.6, marginBottom: "28px" }}>
+              Experience interactive, live video sessions with dedicated native tutors designed to fit your routine.
+            </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ display: "flex", gap: "14px" }}>
-                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0, marginTop: "2px" }}>
                   <Check size={14} strokeWidth={3} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a" }}>Sesiones Individuales 100% Privadas</h4>
-                  <p style={{ fontSize: "14px", fontWeight: 500, color: "#64748b", margin: 0 }}>Sin distracciones. Toda la atención enfocada en tu aprendizaje.</p>
+                  <h4 style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a", margin: 0 }}>Step-by-step Guidance</h4>
+                  <p style={{ fontSize: "14px", fontWeight: 500, color: "#64748b", margin: 0 }}>Structured roadmap from absolute beginner to confident speaker.</p>
                 </div>
               </div>
 
               <div style={{ display: "flex", gap: "14px" }}>
-                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0, marginTop: "2px" }}>
                   <Check size={14} strokeWidth={3} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a" }}>Para Todos los Niveles (A1 hasta C2)</h4>
-                  <p style={{ fontSize: "14px", fontWeight: 500, color: "#64748b", margin: 0 }}>Diseño cada clase según si empiezas desde cero o perfeccionas nivel avanzado.</p>
+                  <h4 style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a", margin: 0 }}>Personalized Approach</h4>
+                  <p style={{ fontSize: "14px", fontWeight: 500, color: "#64748b", margin: 0 }}>Lessons customized to your learning style, speed, and goals.</p>
                 </div>
               </div>
 
               <div style={{ display: "flex", gap: "14px" }}>
-                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0, marginTop: "2px" }}>
                   <Check size={14} strokeWidth={3} />
                 </div>
                 <div>
-                  <h4 style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a" }}>Portal de Alumno Personalizado</h4>
-                  <p style={{ fontSize: "14px", fontWeight: 500, color: "#64748b", margin: 0 }}>Accede a tus materiales, notas y reserva tus horarios con un solo clic.</p>
+                  <h4 style={{ fontSize: "16px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a", margin: 0 }}>Flexible and Accessible</h4>
+                  <p style={{ fontSize: "14px", fontWeight: 500, color: "#64748b", margin: 0 }}>Access lessons on desktop or mobile, anytime, anywhere.</p>
                 </div>
               </div>
             </div>
@@ -572,142 +477,173 @@ export default function LandingV2() {
         </div>
       </section>
 
-      {/* 7. Contador de Impacto (Contorno 3D Azul Francés con Tipografía Jakarta Sans) */}
-      <section style={{ padding: "80px 24px", backgroundColor: "#f8fafc", borderTop: "1px solid #e2e8f0" }}>
+      {/* 7. Big Impact Outline Stat Counter */}
+      <section style={{ padding: "70px 24px", backgroundColor: "#ffffff" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "30px", textAlign: "center" }}>
           
           <div>
             <div style={{
-              fontSize: "68px",
+              fontSize: "72px",
               fontWeight: 800,
               letterSpacing: "-0.04em",
               color: "transparent",
-              WebkitTextStroke: "2.5px #0055a5",
+              WebkitTextStroke: "2.5px #0066ff",
               lineHeight: 1
             }}>
-              +150
+              150+
             </div>
-            <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#475569", marginTop: "8px" }}>Materiales y Guías PDF</div>
+            <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#475569", marginTop: "12px" }}>Language Courses</div>
           </div>
 
           <div>
             <div style={{
-              fontSize: "68px",
+              fontSize: "72px",
               fontWeight: 800,
               letterSpacing: "-0.04em",
               color: "transparent",
-              WebkitTextStroke: "2.5px #0055a5",
+              WebkitTextStroke: "2.5px #0066ff",
               lineHeight: 1
             }}>
-              98%
+              95%
             </div>
-            <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#475569", marginTop: "8px" }}>Satisfacción en Alumnos</div>
+            <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#475569", marginTop: "12px" }}>Satisfaction Rate</div>
           </div>
 
           <div>
             <div style={{
-              fontSize: "68px",
+              fontSize: "72px",
               fontWeight: 800,
               letterSpacing: "-0.04em",
               color: "transparent",
-              WebkitTextStroke: "2.5px #0055a5",
+              WebkitTextStroke: "2.5px #0066ff",
               lineHeight: 1
             }}>
-              +1.000
+              1 mil+
             </div>
-            <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#475569", marginTop: "8px" }}>Horas de Francés Impartidas</div>
+            <div style={{ fontSize: "14px", fontWeight: 700, letterSpacing: "-0.01em", color: "#475569", marginTop: "12px" }}>Lessons Completed</div>
           </div>
 
         </div>
       </section>
 
-      {/* 8. Tarjetas de Planes de Estudio */}
-      <section id="planes" style={{ padding: "90px 24px", backgroundColor: "#ffffff" }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
+      {/* 8. "Master Any Language, Anywhere" Banner (Map & Floating Flags) */}
+      <section style={{
+        backgroundColor: "#e0f2fe",
+        padding: "80px 24px",
+        borderRadius: "32px",
+        maxWidth: "1280px",
+        margin: "0 auto 80px",
+        position: "relative",
+        overflow: "hidden"
+      }}>
+        <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))", gap: "40px", alignItems: "center" }}>
           
-          <div style={{ textAlign: "center", marginBottom: "50px" }}>
-            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase" }}>
-              PLANES Y MATRÍCULA
-            </span>
-            <h2 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginTop: "8px" }}>
-              Elige tu Plan de Francés
+          <div>
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "6px 16px", borderRadius: "30px", backgroundColor: "#ffffff", boxShadow: "0 4px 12px rgba(0,0,0,0.06)", fontSize: "13px", fontWeight: 800, color: "#0066ff", marginBottom: "20px" }}>
+              <span>👥</span> 200+ Happy Students
+            </div>
+
+            <h2 style={{ fontSize: "42px", fontWeight: 800, letterSpacing: "-0.03em", color: "#0f172a", lineHeight: 1.1, marginBottom: "16px" }}>
+              Master Any Language, <br /> Anywhere
             </h2>
-            <p style={{ fontSize: "15px", fontWeight: 500, color: "#64748b", maxWidth: "500px", margin: "10px auto 0" }}>
-              Sin cláusulas de permanencia. Elige la cantidad de clases que mejor se adapte a tu meta.
+
+            <p style={{ fontSize: "16px", fontWeight: 500, color: "#334155", marginBottom: "32px", maxWidth: "460px" }}>
+              Personalized language learning plans designed to meet your exact needs.
             </p>
+
+            <a
+              href="https://wa.me/33744321356"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                width: "48px",
+                height: "48px",
+                borderRadius: "50%",
+                backgroundColor: "#0066ff",
+                color: "#ffffff",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textDecoration: "none",
+                boxShadow: "0 10px 25px rgba(0, 102, 255, 0.35)"
+              }}
+            >
+              <ArrowUpRight size={20} />
+            </a>
+          </div>
+
+          <div style={{ display: "flex", justifyContent: "center", gap: "20px", flexWrap: "wrap" }}>
+            {["🇬🇧 UK", "🇫🇷 France", "🇩🇪 Germany", "🇪🇸 Spain"].map((flag, idx) => (
+              <div key={idx} style={{ padding: "14px 24px", borderRadius: "20px", backgroundColor: "#ffffff", boxShadow: "0 10px 25px rgba(0,0,0,0.06)", fontSize: "16px", fontWeight: 800, color: "#0f172a" }}>
+                {flag}
+              </div>
+            ))}
+          </div>
+
+        </div>
+      </section>
+
+      {/* 9. "Learn Fast, Speak Fluently. Explore Our Courses" Carousel */}
+      <section id="courses" style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
+          
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "40px" }}>
+            <div>
+              <span style={{ fontSize: "12px", fontWeight: 800, color: "#0066ff", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>
+                • OUR COURSES
+              </span>
+              <h2 style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", margin: 0 }}>
+                Learn Fast, Speak Fluently. <br /> Explore Our Courses
+              </h2>
+            </div>
+
+            <a href="#all" style={{ width: "42px", height: "42px", borderRadius: "50%", backgroundColor: "#0066ff", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", textDecoration: "none" }}>
+              <ArrowUpRight size={18} />
+            </a>
           </div>
 
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))", gap: "24px" }}>
             
             {[
-              { nombre: "Clase Individual", desc: "1 clase particular de 1 hora. Ideal para preparar una entrevista o dudas puntuales.", precio: 15, clases: 1, popular: false },
-              { nombre: "Plan Semanal (4 Clases)", desc: "1 clase a la semana. Perfecto para avanzar de forma constante sin prisa.", precio: 49, clases: 4, popular: true },
-              { nombre: "Plan Intensivo (8 Clases)", desc: "2 clases a la semana. Recomendado para lograr fluidez en pocos meses.", precio: 89, clases: 8, popular: false },
-              { nombre: "Plan Máster (12 Clases)", desc: "3 clases a la semana. Inmersión total y preparación acelerada DELF/DALF.", precio: 129, clases: 12, popular: false }
-            ].map((plan, idx) => (
-              <div
-                key={idx}
-                style={{
-                  position: "relative",
-                  padding: "32px 24px",
-                  borderRadius: "24px",
-                  backgroundColor: plan.popular ? "#ffffff" : "#f8fafc",
-                  border: plan.popular ? "2px solid #0055a5" : "1px solid #e2e8f0",
-                  boxShadow: plan.popular ? "0 15px 35px rgba(0, 85, 165, 0.15)" : "0 4px 12px rgba(0,0,0,0.02)",
-                  display: "flex",
-                  flexDirection: "column",
-                  justifyContent: "space-between"
-                }}
-              >
-                {plan.popular && (
-                  <span style={{
-                    position: "absolute",
-                    top: "-12px",
-                    right: "24px",
-                    backgroundColor: "#0055a5",
-                    color: "#ffffff",
-                    fontSize: "11px",
-                    fontWeight: 800,
-                    letterSpacing: "0.05em",
-                    padding: "4px 12px",
-                    borderRadius: "20px",
-                    textTransform: "uppercase"
-                  }}>
-                    MÁS POPULAR
-                  </span>
-                )}
-
+              { title: "Master English for Global Success", level: "Beginner to Advanced", duration: "12 Weeks", price: "$120", img: "/course_french.png", flag: "🇬🇧" },
+              { title: "Spanish for Business and Everyday Life", level: "Intermediate", duration: "8 Weeks", price: "$110", img: "/video_student.png", flag: "🇪🇸" },
+              { title: "Unlock the Power of French Communication", level: "All Levels", duration: "10 Weeks", price: "$130", img: "/hero_student.png", flag: "🇫🇷" },
+              { title: "German Courses for Work and Travel", level: "Beginner", duration: "6 Weeks", price: "$95", img: "/corporate_lessons.png", flag: "🇩🇪" }
+            ].map((course, idx) => (
+              <div key={idx} style={{
+                borderRadius: "24px",
+                border: "1px solid #e2e8f0",
+                overflow: "hidden",
+                backgroundColor: "#ffffff",
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "space-between",
+                boxShadow: "0 4px 12px rgba(0,0,0,0.03)"
+              }}>
                 <div>
-                  <h3 style={{ fontSize: "20px", fontWeight: 800, letterSpacing: "-0.015em", color: "#0f172a", marginBottom: "8px" }}>{plan.nombre}</h3>
-                  <p style={{ fontSize: "13px", fontWeight: 500, color: "#64748b", lineHeight: 1.5, marginBottom: "20px" }}>{plan.desc}</p>
-                  
-                  <div style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.03em", color: "#0f172a", marginBottom: "20px" }}>
-                    {formatPrecio(plan.precio)}
-                    <span style={{ fontSize: "14px", fontWeight: 500, color: "#64748b" }}> / paquete</span>
+                  <div style={{ position: "relative", height: "180px" }}>
+                    <Image src={course.img} alt={course.title} fill style={{ objectFit: "cover" }} />
+                    <span style={{ position: "absolute", top: "12px", left: "12px", backgroundColor: "#ffffff", padding: "4px 10px", borderRadius: "20px", fontSize: "12px", fontWeight: 800 }}>
+                      {course.flag} Ling+
+                    </span>
+                  </div>
+
+                  <div style={{ padding: "20px" }}>
+                    <h3 style={{ fontSize: "17px", fontWeight: 800, letterSpacing: "-0.01em", color: "#0f172a", marginBottom: "8px", lineHeight: 1.3 }}>
+                      {course.title}
+                    </h3>
+                    <p style={{ fontSize: "12px", fontWeight: 600, color: "#64748b", margin: 0 }}>
+                      {course.level} • {course.duration}
+                    </p>
                   </div>
                 </div>
 
-                <a
-                  href="https://wa.me/33744321356"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{
-                    width: "100%",
-                    padding: "14px",
-                    borderRadius: "14px",
-                    backgroundColor: plan.popular ? "#0055a5" : "#0f172a",
-                    color: "#ffffff",
-                    fontSize: "14px",
-                    fontWeight: 800,
-                    letterSpacing: "-0.01em",
-                    textDecoration: "none",
-                    textAlign: "center",
-                    display: "block",
-                    boxShadow: plan.popular ? "0 8px 20px rgba(0, 85, 165, 0.3)" : "none"
-                  }}
-                >
-                  Agendar por WhatsApp
-                </a>
+                <div style={{ padding: "16px 20px", borderTop: "1px solid #f1f5f9", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                  <span style={{ fontSize: "18px", fontWeight: 800, color: "#0066ff" }}>{course.price}</span>
+                  <a href="https://wa.me/33744321356" target="_blank" rel="noopener noreferrer" style={{ fontSize: "12px", fontWeight: 800, color: "#0f172a", textDecoration: "none" }}>
+                    Enroll Now →
+                  </a>
+                </div>
               </div>
             ))}
 
@@ -716,83 +652,133 @@ export default function LandingV2() {
         </div>
       </section>
 
-      {/* 9. Clases Individuales vs Empresas */}
-      <section style={{ padding: "80px 24px", backgroundColor: "#f8fafc", borderTop: "1px solid #e2e8f0" }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "24px" }}>
+      {/* 10. Scrolling Text Marquee Ticker */}
+      <div style={{ backgroundColor: "#f8fafc", padding: "24px 0", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0", overflow: "hidden", whiteSpace: "nowrap" }}>
+        <div style={{ fontSize: "28px", fontWeight: 800, color: "#cbd5e1", letterSpacing: "0.02em", display: "inline-flex", gap: "24px", animation: "marqueeFlags 30s linear infinite" }}>
+          <span>english + german + spanish + italian + french + english + german + spanish + italian + french</span>
+        </div>
+      </div>
+
+      {/* 11. Two Feature Cards (Individual vs Corporate Lessons) */}
+      <section style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "24px" }}>
           
+          {/* Card 1: Individual Lessons */}
           <div style={{
-            padding: "40px 32px",
-            borderRadius: "28px",
-            background: "linear-gradient(135deg, #e0f2fe 0%, #bae6fd 100%)",
-            color: "#0c4a6e"
+            padding: "48px 36px",
+            borderRadius: "32px",
+            backgroundColor: "#edf5ff",
+            position: "relative",
+            overflow: "hidden"
           }}>
-            <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>PARTICULAR</span>
-            <h3 style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-0.02em", margin: "10px 0 16px" }}>Clases Individuales 1 a 1</h3>
-            <p style={{ fontSize: "15px", fontWeight: 500, lineHeight: 1.6, marginBottom: "24px" }}>
-              Clases enfocadas en tus metas personales: viajes, migración a Francia o superación personal.
-            </p>
-            <a href="https://wa.me/33744321356" target="_blank" rel="noopener noreferrer" style={{ padding: "12px 24px", borderRadius: "12px", backgroundColor: "#0284c7", color: "#ffffff", textDecoration: "none", fontWeight: 800, fontSize: "14px", display: "inline-block" }}>
-              Hablar con Florentin
+            <span style={{ fontSize: "12px", fontWeight: 800, color: "#0066ff", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "12px" }}>
+              • PERSONALIZED TUTORING
+            </span>
+            <h3 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginBottom: "28px" }}>
+              Individual Lessons
+            </h3>
+            <a
+              href="https://wa.me/33744321356"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "50%",
+                backgroundColor: "#0066ff",
+                color: "#ffffff",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textDecoration: "none"
+              }}
+            >
+              <ArrowUpRight size={20} />
             </a>
           </div>
 
+          {/* Card 2: Corporate Lessons */}
           <div style={{
-            padding: "40px 32px",
-            borderRadius: "28px",
-            background: "linear-gradient(135deg, #dcfce7 0%, #86efac 100%)",
-            color: "#14532d"
+            padding: "48px 36px",
+            borderRadius: "32px",
+            backgroundColor: "#e6f4ea",
+            position: "relative",
+            overflow: "hidden"
           }}>
-            <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>EMPRESAS Y PROFESIONALES</span>
-            <h3 style={{ fontSize: "32px", fontWeight: 800, letterSpacing: "-0.02em", margin: "10px 0 16px" }}>Francés para Negocios</h3>
-            <p style={{ fontSize: "15px", fontWeight: 500, lineHeight: 1.6, marginBottom: "24px" }}>
-              Capacitación de francés comercial y corporativo para profesionales y empresas.
-            </p>
-            <a href="https://wa.me/33744321356" target="_blank" rel="noopener noreferrer" style={{ padding: "12px 24px", borderRadius: "12px", backgroundColor: "#16a34a", color: "#ffffff", textDecoration: "none", fontWeight: 800, fontSize: "14px", display: "inline-block" }}>
-              Consultar Plan Corporativo
+            <span style={{ fontSize: "12px", fontWeight: 800, color: "#059669", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "12px" }}>
+              • FOR TEAMS & COMPANIES
+            </span>
+            <h3 style={{ fontSize: "36px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginBottom: "28px" }}>
+              Corporate Lessons
+            </h3>
+            <a
+              href="https://wa.me/33744321356"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                width: "44px",
+                height: "44px",
+                borderRadius: "50%",
+                backgroundColor: "#059669",
+                color: "#ffffff",
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                textDecoration: "none"
+              }}
+            >
+              <ArrowUpRight size={20} />
             </a>
           </div>
 
         </div>
       </section>
 
-      {/* 10. Footer Oscuro Azul Francés (`#051329`) */}
-      <footer style={{ backgroundColor: "#051329", color: "#ffffff", padding: "70px 24px 40px" }}>
-        <div style={{ maxWidth: "1240px", margin: "0 auto" }}>
+      {/* 12. Huge Dark Navy Footer (`#051329`) */}
+      <footer style={{ backgroundColor: "#051329", color: "#ffffff", padding: "80px 24px 40px" }}>
+        <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           
-          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "40px", marginBottom: "60px" }}>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "40px", marginBottom: "80px" }}>
             
             <div>
-              <h3 style={{ fontSize: "28px", fontWeight: 800, letterSpacing: "-0.02em", color: "#ffffff", marginBottom: "16px" }}>
-                Florentin<span style={{ color: "#0055a5" }}> French</span>
-              </h3>
-              <p style={{ fontSize: "14px", fontWeight: 500, color: "#94a3b8", lineHeight: 1.6 }}>
-                Clases particulares de francés con un profesor nativo de París. Método práctico conversacional y preparación personalizada.
-              </p>
-            </div>
-
-            <div>
-              <h4 style={{ fontSize: "15px", fontWeight: 800, letterSpacing: "-0.01em", marginBottom: "16px", color: "#ffffff" }}>Cursos & Niveles</h4>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", fontWeight: 500, color: "#94a3b8", display: "flex", flexDirection: "column", gap: "10px" }}>
-                <li>Francés Principiantes (A1-A2)</li>
-                <li>Francés Intermedio (B1-B2)</li>
-                <li>Francés Avanzado (C1-C2)</li>
-                <li>Preparación DELF / DALF</li>
+              <h4 style={{ fontSize: "16px", fontWeight: 800, color: "#ffffff", marginBottom: "20px" }}>Courses</h4>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", fontWeight: 500, color: "#94a3b8", display: "flex", flexDirection: "column", gap: "12px" }}>
+                <li>French for Beginners</li>
+                <li>Spanish for Business</li>
+                <li>German Conversation</li>
+                <li>Italian Culture</li>
               </ul>
             </div>
 
             <div>
-              <h4 style={{ fontSize: "15px", fontWeight: 800, letterSpacing: "-0.01em", marginBottom: "16px", color: "#ffffff" }}>Contacto Directo</h4>
-              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", fontWeight: 500, color: "#94a3b8", display: "flex", flexDirection: "column", gap: "10px" }}>
-                <li>📍 París, Francia</li>
+              <h4 style={{ fontSize: "16px", fontWeight: 800, color: "#ffffff", marginBottom: "20px" }}>Contacts</h4>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", fontWeight: 500, color: "#94a3b8", display: "flex", flexDirection: "column", gap: "12px" }}>
+                <li>📍 Paris, France</li>
                 <li>💬 WhatsApp: +33 7 44 32 13 56</li>
-                <li>🌐 Clases Online por Google Meet</li>
+                <li>🌐 Online Google Meet</li>
+              </ul>
+            </div>
+
+            <div>
+              <h4 style={{ fontSize: "16px", fontWeight: 800, color: "#ffffff", marginBottom: "20px" }}>Resources</h4>
+              <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", fontWeight: 500, color: "#94a3b8", display: "flex", flexDirection: "column", gap: "12px" }}>
+                <li>Learning Portal</li>
+                <li>Student Community</li>
+                <li>Privacy Policy</li>
+                <li>Terms of Service</li>
               </ul>
             </div>
 
           </div>
 
+          <div style={{ textAlign: "center", marginBottom: "40px" }}>
+            <span style={{ fontSize: "clamp(64px, 10vw, 120px)", fontWeight: 800, color: "#ffffff", letterSpacing: "-0.04em" }}>
+              Ling<span style={{ color: "#0066ff" }}>+</span>
+            </span>
+          </div>
+
           <div style={{ borderTop: "1px solid rgba(255,255,255,0.1)", paddingTop: "30px", textAlign: "center", fontSize: "13px", fontWeight: 500, color: "#64748b" }}>
-            © {new Date().getFullYear()} Florentin French • Todos los derechos reservados.
+            © {new Date().getFullYear()} Ling+ • All rights reserved.
           </div>
 
         </div>
