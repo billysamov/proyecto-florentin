@@ -221,7 +221,7 @@ export default function AdminDashboard() {
     checkSession();
   }, []);
 
-  const cargarDatos = async () => {
+  async function cargarDatos() {
     setLoading(true);
     try {
       const { data: { session } } = await supabase.auth.getSession();
