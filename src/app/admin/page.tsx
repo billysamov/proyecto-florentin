@@ -145,7 +145,8 @@ export default function AdminDashboard() {
     email_notificaciones: "",
     whatsapp_number: "",
     email_bienvenida_activo: true,
-    email_recordatorio_activo: true
+    email_recordatorio_activo: true,
+    mostrar_testimonios: true
   });
   const [configExito, setConfigExito] = useState(false);
   const [configError, setConfigError] = useState("");
@@ -733,7 +734,8 @@ export default function AdminDashboard() {
       precio: Number(plan.precio),
       totalClases: Number(plan.totalClases),
       tipo: plan.tipo || "paquete",
-      nivel: plan.nivel || "A1"
+      nivel: plan.nivel || "A1",
+      orden: plan.orden || 0
     });
   };
 

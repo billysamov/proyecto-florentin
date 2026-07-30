@@ -309,7 +309,7 @@ export default function RecursosTab({
                 className="btn btn-outline"
                 style={{ padding: "4px 8px", fontSize: "11px" }}
               >
-                {t.desamarcarTodos || t.desmarcarTodos}
+                {t.desmarcarTodos}
               </button>
             </div>
 

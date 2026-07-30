@@ -396,28 +396,28 @@ export default function LandingV2Replica() {
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px", alignItems: "center" }}>
           
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
-            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <Check size={18} strokeWidth={3} />
             </div>
             <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>100% Profesor Nativo Parisino</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
-            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <Check size={18} strokeWidth={3} />
             </div>
             <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>Reserva Flexible 24/7</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
-            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <Check size={18} strokeWidth={3} />
             </div>
             <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>Enfoque Conversacional Real</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
-            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0 }}>
+            <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <Check size={18} strokeWidth={3} />
             </div>
             <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>Preparación DELF / DALF</span>
@@ -611,7 +611,7 @@ export default function LandingV2Replica() {
 
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               <div style={{ display: "flex", gap: "14px" }}>
-                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0, marginTop: "2px" }}>
+                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: "2px" }}>
                   <Check size={14} strokeWidth={3} />
                 </div>
                 <div>
@@ -621,7 +621,7 @@ export default function LandingV2Replica() {
               </div>
 
               <div style={{ display: "flex", gap: "14px" }}>
-                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0, marginTop: "2px" }}>
+                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: "2px" }}>
                   <Check size={14} strokeWidth={3} />
                 </div>
                 <div>
@@ -631,7 +631,7 @@ export default function LandingV2Replica() {
               </div>
 
               <div style={{ display: "flex", gap: "14px" }}>
-                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", shrink: 0, marginTop: "2px" }}>
+                <div style={{ width: "24px", height: "24px", borderRadius: "50%", backgroundColor: "#dbeafe", color: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0, marginTop: "2px" }}>
                   <Check size={14} strokeWidth={3} />
                 </div>
                 <div>
