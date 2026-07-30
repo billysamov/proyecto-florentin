@@ -114,7 +114,7 @@ export default function LandingV2Replica() {
     }}>
       
       {/* 1. Header Navbar (Réplica Pixel a Pixel del Mockup Ling+ adaptado a Florentin) */}
-      <header style={{
+      <header id="sec-1-header" style={{
         position: "sticky",
         top: 0,
         zIndex: 50,
@@ -243,7 +243,7 @@ export default function LandingV2Replica() {
       </header>
 
       {/* 2. Hero Section (Fondo Menta/Cyan Degradado Réplica) */}
-      <section style={{
+      <section id="sec-2-hero" style={{
         background: "linear-gradient(180deg, #dff4f3 0%, #edf9f8 60%, #ffffff 100%)",
         padding: "80px 24px 60px",
         position: "relative",
@@ -392,7 +392,7 @@ export default function LandingV2Replica() {
       </section>
 
       {/* 3. Cinta Azul Royal (4 Items Horizontal Checkmarks Réplica Exacta) */}
-      <section style={{ backgroundColor: "#0066ff", color: "#ffffff", padding: "26px 24px" }}>
+      <section id="sec-3-guarantees" style={{ backgroundColor: "#0066ff", color: "#ffffff", padding: "26px 24px" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "24px", alignItems: "center" }}>
           
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
@@ -427,7 +427,7 @@ export default function LandingV2Replica() {
       </section>
 
       {/* 4. "Unlock the World with Language Learning" (4 Bento Cards Pastel) */}
-      <section id="beneficios" style={{ padding: "90px 24px", backgroundColor: "#ffffff" }}>
+      <section id="sec-4-bento" style={{ padding: "90px 24px", backgroundColor: "#ffffff" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "flex-end", marginBottom: "50px" }} className="grid-cols-1 md:grid-cols-2">
@@ -563,7 +563,7 @@ export default function LandingV2Replica() {
       </section>
 
       {/* 5. Client / Partner Logos Bar */}
-      <section style={{ padding: "40px 24px", backgroundColor: "#ffffff", borderTop: "1px solid #f1f5f9" }}>
+      <section id="sec-5-partners" style={{ padding: "40px 24px", backgroundColor: "#ffffff", borderTop: "1px solid #f1f5f9" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", textAlign: "center" }}>
           <span style={{ fontSize: "12px", fontWeight: 800, color: "#94a3b8", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "24px" }}>
             CONFIADO POR MÁS DE 200 ALUMNOS Y PROFESIONALES EN TODO EL MUNDO
@@ -579,7 +579,7 @@ export default function LandingV2Replica() {
       </section>
 
       {/* 6. "Languages from the Comfort of Home" Section */}
-      <section id="metodo" style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
+      <section id="sec-6-home" style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "50px", alignItems: "center" }}>
           
           <div style={{ position: "relative" }}>
@@ -646,7 +646,7 @@ export default function LandingV2Replica() {
       </section>
 
       {/* 7. Big Impact Outline Stat Counter */}
-      <section style={{ padding: "70px 24px", backgroundColor: "#ffffff" }}>
+      <section id="sec-7-stats" style={{ padding: "70px 24px", backgroundColor: "#ffffff" }}>
         <div style={{ maxWidth: "1100px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))", gap: "30px", textAlign: "center" }}>
           
           <div>
@@ -695,7 +695,7 @@ export default function LandingV2Replica() {
       </section>
 
       {/* 8. "Domina el Francés, en Cualquier Lugar" (Sección Ilustrada 3D de Aprendizaje Global Re-inventada) */}
-      <section style={{
+      <section id="sec-8-global" style={{
         background: "linear-gradient(135deg, #dff4f3 0%, #eefbf7 100%)",
         padding: "72px 56px",
         borderRadius: "36px",
@@ -814,7 +814,7 @@ export default function LandingV2Replica() {
       </section>
 
       {/* 9. "Learn Fast, Speak Fluently. Explore Our Courses" Carrusel Interactivo de Cursos y Planes */}
-      <section id="planes" style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
+      <section id="sec-9-planes" style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "30px" }} className="flex-col md:flex-row gap-4">
@@ -940,7 +940,7 @@ export default function LandingV2Replica() {
       </section>
 
       {/* 10. Scrolling Text Marquee Ticker (Espaciado Amplio 1:1 de la 3era Imagen Mockup) */}
-      <div style={{
+      <div id="sec-10-ticker" style={{
         backgroundColor: "#ffffff",
         padding: "54px 0",
         overflow: "hidden",
@@ -972,7 +972,7 @@ export default function LandingV2Replica() {
       </div>
 
       {/* 11. Two Feature Cards (Individual vs Corporate Lessons) */}
-      <section style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
+      <section id="sec-11-corporate" style={{ padding: "80px 24px", backgroundColor: "#ffffff" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "24px" }}>
           
           {/* Card 1: Individual Lessons */}
@@ -1053,7 +1053,7 @@ export default function LandingV2Replica() {
       </section>
 
       {/* 12. Huge Dark Navy Footer (`#051329`) */}
-      <footer style={{ backgroundColor: "#051329", color: "#ffffff", padding: "80px 24px 40px" }}>
+      <footer id="sec-12-footer" style={{ backgroundColor: "#051329", color: "#ffffff", padding: "80px 24px 40px" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: "40px", marginBottom: "80px" }}>

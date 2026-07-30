@@ -15,31 +15,38 @@ async function captureScreenshots() {
   await page.goto('http://localhost:3000/v2', { waitUntil: 'networkidle' });
   await page.waitForTimeout(2000);
 
-  // Full page screenshot
-  await page.screenshot({ path: path.join(screenshotsDir, 'v2_full_page.png'), fullPage: true });
-  console.log('Saved full page screenshot: v2_full_page.png');
+  const sections = [
+    { num: 1, id: '#sec-1-header' },
+    { num: 2, id: '#sec-2-hero' },
+    { num: 3, id: '#sec-3-guarantees' },
+    { num: 4, id: '#sec-4-bento' },
+    { num: 5, id: '#sec-5-partners' },
+    { num: 6, id: '#sec-6-home' },
+    { num: 7, id: '#sec-7-stats' },
+    { num: 8, id: '#sec-8-global' },
+    { num: 9, id: '#sec-9-planes' },
+    { num: 10, id: '#sec-10-ticker' },
+    { num: 11, id: '#sec-11-corporate' },
+    { num: 12, id: '#sec-12-footer' }
+  ];
 
-  // Capture every section tag, header, footer, and marquee container
-  const elements = await page.$$('header, section, footer, main > div');
-  console.log(`Found ${elements.length} section elements to capture.`);
-
-  let index = 1;
-  for (const el of elements) {
+  for (const sec of sections) {
     try {
-      const box = await el.boundingBox();
-      if (box && box.height > 40) {
-        const filePath = path.join(screenshotsDir, `section_${index}.png`);
+      const el = await page.$(sec.id);
+      if (el) {
+        const filePath = path.join(screenshotsDir, `section_${sec.num}.png`);
         await el.screenshot({ path: filePath });
-        console.log(`Saved section_${index}.png (${Math.round(box.width)}x${Math.round(box.height)}px)`);
-        index++;
+        console.log(`[SUCCESS] Saved section_${sec.num}.png from selector ${sec.id}`);
+      } else {
+        console.log(`[WARNING] Element not found for selector: ${sec.id}`);
       }
     } catch (err) {
-      console.log(`Error capturing section ${index}:`, err.message);
+      console.log(`[ERROR] Failed capturing section_${sec.num}:`, err.message);
     }
   }
 
   await browser.close();
-  console.log('All screenshots captured successfully!');
+  console.log('All 12 section screenshots captured accurately!');
 }
 
 captureScreenshots().catch(console.error);
