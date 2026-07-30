@@ -694,175 +694,120 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
-      {/* 8. "Master Any Language, Anywhere" Banner (Ubicación Geográfica Precisa: Francia en Europa, Colombia/Perú/Argentina en Sudamérica) */}
+      {/* 8. "Domina el Francés, en Cualquier Lugar" (Sección Ilustrada 3D de Aprendizaje Global Re-inventada) */}
       <section style={{
         background: "linear-gradient(135deg, #dff4f3 0%, #eefbf7 100%)",
-        padding: "84px 56px",
+        padding: "72px 56px",
         borderRadius: "36px",
         maxWidth: "1280px",
         margin: "0 auto 80px",
         position: "relative",
         overflow: "hidden",
-        boxShadow: "0 20px 45px rgba(0, 85, 165, 0.08)",
-        minHeight: "520px",
-        display: "flex",
-        alignItems: "center"
+        boxShadow: "0 20px 45px rgba(0, 85, 165, 0.08)"
       }}>
         
-        {/* Mapa Vectorial del Mundo Nítido */}
         <div style={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          bottom: 0,
-          left: "20%",
-          opacity: 0.85,
-          pointerEvents: "none",
-          zIndex: 1
-        }}>
-          <Image
-            src="/world_map_vector.png"
-            alt="World Map"
-            fill
-            style={{ objectFit: "contain", objectPosition: "right center" }}
-            priority
-          />
-        </div>
-
-        {/* 🇫🇷 Francia - Ubicada exactamente en Europa Occidental (Francia) */}
-        <div style={{
-          position: "absolute",
-          top: "16%",
-          right: "24%",
-          width: "72px",
-          height: "72px",
-          borderRadius: "50%",
-          boxShadow: "inset -3px -6px 12px rgba(0,0,0,0.25), inset 3px 6px 12px rgba(255,255,255,0.8), 0 14px 28px rgba(0,0,0,0.16)",
-          zIndex: 4,
-          overflow: "hidden"
-        }} className="hidden md:block">
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
-            <Image src="/orb_france_3d.png" alt="Francia (Europa)" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
-          </div>
-          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
-        </div>
-
-        {/* 🇨🇴 Colombia - Ubicada exactamente en el Norte de Sudamérica (Colombia) */}
-        <div style={{
-          position: "absolute",
-          top: "48%",
-          right: "34%",
-          width: "68px",
-          height: "68px",
-          borderRadius: "50%",
-          boxShadow: "inset -3px -6px 12px rgba(0,0,0,0.25), inset 3px 6px 12px rgba(255,255,255,0.8), 0 14px 28px rgba(0,0,0,0.16)",
-          zIndex: 4,
-          overflow: "hidden"
-        }} className="hidden md:block">
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
-            <Image src="/orb_colombia_3d.png" alt="Colombia (Sudamérica)" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
-          </div>
-          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
-        </div>
-
-        {/* 🇵🇪 Perú - Ubicado exactamente en la Costa Oeste de Sudamérica (Perú) */}
-        <div style={{
-          position: "absolute",
-          top: "60%",
-          right: "37%",
-          width: "66px",
-          height: "66px",
-          borderRadius: "50%",
-          boxShadow: "inset -3px -6px 12px rgba(0,0,0,0.25), inset 3px 6px 12px rgba(255,255,255,0.8), 0 14px 28px rgba(0,0,0,0.16)",
-          zIndex: 4,
-          overflow: "hidden"
-        }} className="hidden md:block">
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
-            <Image src="/orb_peru_3d.png" alt="Perú (Sudamérica)" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
-          </div>
-          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
-        </div>
-
-        {/* 🇦🇷 Argentina - Ubicada exactamente en el Sur de Sudamérica (Argentina) */}
-        <div style={{
-          position: "absolute",
-          top: "75%",
-          right: "32%",
-          width: "70px",
-          height: "70px",
-          borderRadius: "50%",
-          boxShadow: "inset -3px -6px 12px rgba(0,0,0,0.25), inset 3px 6px 12px rgba(255,255,255,0.8), 0 14px 28px rgba(0,0,0,0.16)",
-          zIndex: 4,
-          overflow: "hidden"
-        }} className="hidden md:block">
-          <div style={{ width: "100%", height: "100%", borderRadius: "50%", mixBlendMode: "multiply", position: "relative" }}>
-            <Image src="/orb_argentina_3d.png" alt="Argentina (Sudamérica)" fill style={{ objectFit: "cover", transform: "scale(1.15)" }} />
-          </div>
-          <div style={{ position: "absolute", top: "10%", left: "18%", width: "40%", height: "25%", borderRadius: "50%", background: "radial-gradient(ellipse at center, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0) 80%)", pointerEvents: "none" }} />
-        </div>
-
-        {/* Contenido HTML Overlay sobre el Mapa */}
-        <div style={{ position: "relative", zIndex: 5, maxWidth: "600px" }}>
+          display: "grid",
+          gridTemplateColumns: "1fr 1fr",
+          gap: "48px",
+          alignItems: "center"
+        }} className="grid-cols-1 lg:grid-cols-2">
           
-          {/* Badge de Alumnos con Avatares */}
-          <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", marginBottom: "28px" }}>
-            <div style={{ display: "flex", alignItems: "center" }}>
-              <div style={{ width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#3b82f6", border: "2px solid #ffffff", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "12px", fontWeight: 800 }}>M</div>
-              <div style={{ width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#10b981", border: "2px solid #ffffff", marginLeft: "-10px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "12px", fontWeight: 800 }}>C</div>
-              <div style={{ width: "34px", height: "34px", borderRadius: "50%", backgroundColor: "#8b5cf6", border: "2px solid #ffffff", marginLeft: "-10px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "12px", fontWeight: 800 }}>S</div>
+          {/* Columna Izquierda: Información & Beneficios */}
+          <div style={{ zIndex: 5 }}>
+            
+            {/* Badge de Alumnos con Avatares */}
+            <div style={{ display: "inline-flex", alignItems: "center", gap: "12px", padding: "8px 18px", borderRadius: "30px", backgroundColor: "#ffffff", boxShadow: "0 6px 16px rgba(0,85,165,0.06)", marginBottom: "28px" }}>
+              <div style={{ display: "flex", alignItems: "center" }}>
+                <div style={{ width: "30px", height: "30px", borderRadius: "50%", backgroundColor: "#3b82f6", border: "2px solid #ffffff", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "11px", fontWeight: 800 }}>M</div>
+                <div style={{ width: "30px", height: "30px", borderRadius: "50%", backgroundColor: "#10b981", border: "2px solid #ffffff", marginLeft: "-8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "11px", fontWeight: 800 }}>C</div>
+                <div style={{ width: "30px", height: "30px", borderRadius: "50%", backgroundColor: "#8b5cf6", border: "2px solid #ffffff", marginLeft: "-8px", display: "flex", alignItems: "center", justifyContent: "center", color: "#ffffff", fontSize: "11px", fontWeight: 800 }}>S</div>
+              </div>
+              <div>
+                <span style={{ fontSize: "20px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>200+</span>
+                <span style={{ fontSize: "13px", color: "#475569", fontWeight: 700, marginLeft: "6px" }}>Alumnos Felices</span>
+              </div>
             </div>
-            <div>
-              <span style={{ fontSize: "24px", fontWeight: 800, color: "#0f172a", letterSpacing: "-0.02em" }}>200+</span>
-              <span style={{ fontSize: "13px", color: "#475569", fontWeight: 700, marginLeft: "8px" }}>Alumnos Felices</span>
+
+            <h2 style={{
+              fontSize: "clamp(36px, 4.5vw, 54px)",
+              fontWeight: 800,
+              letterSpacing: "-0.035em",
+              color: "#0f172a",
+              lineHeight: 1.08,
+              marginBottom: "20px"
+            }}>
+              Domina el Francés, <br />
+              Desde Cualquier Rincón
+            </h2>
+
+            <p style={{
+              fontSize: "16px",
+              fontWeight: 500,
+              color: "#475569",
+              lineHeight: 1.6,
+              marginBottom: "32px",
+              maxWidth: "500px"
+            }}>
+              Conectamos alumnos en <strong>Perú 🇵🇪, Colombia 🇨🇴, Argentina 🇦🇷</strong> y todo el mundo con profesores nativos en <strong>Francia 🇫🇷</strong> a través de clases individuales 100% en vivo.
+            </p>
+
+            {/* Chips de Beneficios Ilustrados */}
+            <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", marginBottom: "36px" }}>
+              <div style={{ backgroundColor: "rgba(255,255,255,0.9)", backdropFilter: "blur(8px)", border: "1px solid rgba(0,102,255,0.12)", padding: "8px 16px", borderRadius: "20px", fontSize: "13px", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span>🇫🇷</span> Profesor Nativo de Francia
+              </div>
+              <div style={{ backgroundColor: "rgba(255,255,255,0.9)", backdropFilter: "blur(8px)", border: "1px solid rgba(0,102,255,0.12)", padding: "8px 16px", borderRadius: "20px", fontSize: "13px", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span>⏰</span> Zona Horaria Adaptable
+              </div>
+              <div style={{ backgroundColor: "rgba(255,255,255,0.9)", backdropFilter: "blur(8px)", border: "1px solid rgba(0,102,255,0.12)", padding: "8px 16px", borderRadius: "20px", fontSize: "13px", fontWeight: 700, color: "#0f172a", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span>🎯</span> Preparación Oficial DELF
+              </div>
             </div>
+
+            <a
+              href="https://wa.me/33744321356"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                gap: "14px",
+                padding: "14px 30px 14px 16px",
+                borderRadius: "40px",
+                backgroundColor: "#0066ff",
+                color: "#ffffff",
+                fontSize: "15px",
+                fontWeight: 800,
+                textDecoration: "none",
+                boxShadow: "0 10px 25px rgba(0, 102, 255, 0.35)"
+              }}
+            >
+              <div style={{ width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <ArrowRight size={20} strokeWidth={3} />
+              </div>
+              <span>Agendar Clase de Prueba</span>
+            </a>
+
           </div>
 
-          <h2 style={{
-            fontSize: "clamp(42px, 5.5vw, 64px)",
-            fontWeight: 800,
-            letterSpacing: "-0.035em",
-            color: "#0f172a",
-            lineHeight: 1.05,
-            marginBottom: "20px"
-          }}>
-            Domina el Francés, <br />
-            en Cualquier Lugar
-          </h2>
-
-          <p style={{
-            fontSize: "16px",
-            fontWeight: 500,
-            color: "#475569",
-            lineHeight: 1.6,
-            marginBottom: "36px",
-            maxWidth: "460px"
-          }}>
-            Ofrecemos clases individuales de francés adaptadas a tus objetivos personales, ritmo de aprendizaje y zona horaria.
-          </p>
-
-          <a
-            href="https://wa.me/33744321356"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{
-              display: "inline-flex",
-              alignItems: "center",
-              gap: "14px",
-              padding: "12px 28px 12px 14px",
-              borderRadius: "40px",
-              backgroundColor: "#0066ff",
-              color: "#ffffff",
-              fontSize: "15px",
-              fontWeight: 800,
-              textDecoration: "none",
-              boxShadow: "0 10px 25px rgba(0, 102, 255, 0.35)"
-            }}
-          >
-            <div style={{ width: "38px", height: "38px", borderRadius: "50%", backgroundColor: "#ffffff", color: "#0066ff", display: "flex", alignItems: "center", justifyContent: "center" }}>
-              <ArrowRight size={20} strokeWidth={3} />
+          {/* Columna Derecha: Ilustración 3D de Conexión Global */}
+          <div style={{ position: "relative", width: "100%", height: "420px", borderRadius: "28px", overflow: "hidden", boxShadow: "0 15px 35px rgba(0,85,165,0.1)" }}>
+            <Image
+              src="/global_learning_illustration.png"
+              alt="Ilustración 3D de Aprendizaje Global de Francés"
+              fill
+              style={{ objectFit: "cover" }}
+              priority
+            />
+            {/* Badges Flotantes de Glassmorphism en la Ilustración */}
+            <div style={{ position: "absolute", top: "16px", left: "16px", backgroundColor: "rgba(255,255,255,0.85)", backdropFilter: "blur(10px)", padding: "8px 14px", borderRadius: "16px", boxShadow: "0 8px 20px rgba(0,0,0,0.08)", fontSize: "12px", fontWeight: 800, color: "#0f172a" }}>
+              🇫🇷 París (Francia)
             </div>
-            <span>Agendar Clase de Prueba</span>
-          </a>
+            <div style={{ position: "absolute", bottom: "16px", right: "16px", backgroundColor: "rgba(255,255,255,0.85)", backdropFilter: "blur(10px)", padding: "8px 14px", borderRadius: "16px", boxShadow: "0 8px 20px rgba(0,0,0,0.08)", fontSize: "12px", fontWeight: 800, color: "#0f172a" }}>
+              🌎 Latam (🇵🇪 🇨🇴 🇦🇷)
+            </div>
+          </div>
 
         </div>
 
