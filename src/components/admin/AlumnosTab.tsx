@@ -301,21 +301,21 @@ export default function AlumnosTab({
                       <td style={{ padding: "14px 16px", fontSize: "13px" }}>
                         {tienePlan ? (
                           <div>
-                            <div style={{ fontWeight: 700, color: a.clases_restantes > 0 ? "#3b82f6" : "var(--text-muted)" }}>
-                              {a.clases_restantes} {t.lblClases}
+                            <div style={{ fontWeight: 700, color: stats.clasesRestantesReales > 0 ? "#3b82f6" : "var(--text-muted)" }}>
+                              {stats.clasesRestantesReales} {t.lblClases}
                             </div>
-                            {(a.totalClases || 0) > 0 && (
+                            {stats.totalClasesAdquiridas > 0 && (
                               <div style={{ marginTop: "4px", height: "4px", backgroundColor: "var(--border-color)", borderRadius: "2px", width: "80px" }}>
                                 <div style={{
                                   height: "100%", borderRadius: "2px",
-                                  width: `${Math.round(((a.totalClases! - a.clases_restantes) / a.totalClases!) * 100)}%`,
-                                  background: "linear-gradient(to right, #3b82f6, #6366f1)"
+                                  width: `${Math.min(100, Math.round((stats.completadas / stats.totalClasesAdquiridas) * 100))}%`,
+                                  backgroundColor: "#3b82f6"
                                 }} />
                               </div>
                             )}
                           </div>
                         ) : (
-                          <span style={{ color: "var(--text-muted)", fontSize: "12px" }}>—</span>
+                          <span style={{ color: "var(--text-muted)", fontStyle: "italic" }}>0 {t.lblClases}</span>
                         )}
                       </td>
                       <td style={{ padding: "14px 16px", textAlign: "right" }}>
