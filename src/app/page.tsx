@@ -1014,10 +1014,10 @@ export default function Home() {
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
-          {config?.mostrar_teacher_badge !== false && (config?.teacher_badge || t.teacherBadge) && (
+          {config?.mostrar_teacher_badge !== false && (parseMultilingualText(config?.teacher_badge, lang) || t.teacherBadge) && (
             <div className="text-center mb-14 sm:mb-20">
               <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-                {config?.teacher_badge || t.teacherBadge}
+                {parseMultilingualText(config?.teacher_badge, lang) || t.teacherBadge}
               </span>
             </div>
           )}
@@ -1116,16 +1116,16 @@ export default function Home() {
       {config?.mostrar_seccion_video !== false && (
         <section id="video-demo" className="reveal-section py-20 sm:py-28 px-4 sm:px-6 bg-slate-50 border-y border-slate-200/80">
           <div className="max-w-5xl mx-auto text-center">
-            {config?.mostrar_video_badge !== false && (config?.video_badge || "VIDEO DE PRESENTACIÓN") && (
+            {config?.mostrar_video_badge !== false && (parseMultilingualText(config?.video_badge, lang) || "VIDEO DE PRESENTACIÓN") && (
               <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-                {config?.video_badge || "VIDEO DE PRESENTACIÓN"}
+                {parseMultilingualText(config?.video_badge, lang) || "VIDEO DE PRESENTACIÓN"}
               </span>
             )}
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] tracking-tight mb-4">
-              {config?.video_titulo || "Conoce a tu Profesor y su Método de Enseñanza"}
+              {parseMultilingualText(config?.video_titulo, lang) || "Conoce a tu Profesor y su Método de Enseñanza"}
             </h2>
             <p className="reveal-item text-slate-600 font-medium text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
-              {config?.video_subtitulo || "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural."}
+              {parseMultilingualText(config?.video_subtitulo, lang) || "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural."}
             </p>
 
             {/* Video Container */}
@@ -1159,9 +1159,9 @@ export default function Home() {
       <section id="method" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            {config?.mostrar_ps_badge !== false && (config?.ps_badge || t.psBadge) && (
+            {config?.mostrar_ps_badge !== false && (parseMultilingualText(config?.ps_badge, lang) || t.psBadge) && (
               <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-                {config?.ps_badge || t.psBadge}
+                {parseMultilingualText(config?.ps_badge, lang) || t.psBadge}
               </span>
             )}
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter">

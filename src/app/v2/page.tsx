@@ -46,6 +46,29 @@ export default function LandingV2Replica() {
       return `https://player.vimeo.com/video/${id}`;
     }
     return url;
+  const parseMultilingualText = (text: string, targetLang: string = "es"): string => {
+    if (!text) return "";
+    const tLang = targetLang.toLowerCase();
+    
+    if (text.includes("[:")) {
+      const regex = new RegExp(`\\[:${tLang}\\]([\\s\\S]*?)(?=\\[:|$)/?`, "i");
+      const match = text.match(regex);
+      if (match && match[1]) return match[1].trim();
+      
+      const fallbackMatch = text.match(/\[:es\]([\s\S]*?)(?=\[:|$)/i);
+      if (fallbackMatch && fallbackMatch[1]) return fallbackMatch[1].trim();
+    }
+    
+    if (text.includes("[ES]") || text.includes("[FR]") || text.includes("[EN]")) {
+      const regex = new RegExp(`\\[${tLang.toUpperCase()}\\]([\\s\\S]*?)(?=\\[[A-Z]{2}\\]|$)`, "i");
+      const match = text.match(regex);
+      if (match && match[1]) return match[1].trim();
+      
+      const fallbackMatch = text.match(/\[ES\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
+      if (fallbackMatch && fallbackMatch[1]) return fallbackMatch[1].trim();
+    }
+    
+    return text;
   };
 
   const t = translations[lang];
@@ -287,10 +310,10 @@ export default function LandingV2Replica() {
             
             {/* Rating Stars & Teacher Tag Badge */}
             <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
-              {config?.mostrar_teacher_badge !== false && (config?.teacher_badge || "TU PROFESOR") && (
+              {config?.mostrar_teacher_badge !== false && (parseMultilingualText(config?.teacher_badge, lang) || "TU PROFESOR") && (
                 <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", borderRadius: "30px", backgroundColor: "#0055a5", color: "#ffffff", boxShadow: "0 4px 12px rgba(0,85,165,0.2)" }}>
                   <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                    {config?.teacher_badge || "TU PROFESOR"}
+                    {parseMultilingualText(config?.teacher_badge, lang) || "TU PROFESOR"}
                   </span>
                 </div>
               )}
@@ -470,16 +493,16 @@ export default function LandingV2Replica() {
       {config?.mostrar_seccion_video !== false && (
         <section id="sec-3-5-video" style={{ padding: "80px 24px", backgroundColor: "#f8fafc", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0" }}>
           <div style={{ maxWidth: "1100px", margin: "0 auto", textAlign: "center" }}>
-            {config?.mostrar_video_badge !== false && (config?.video_badge || "VIDEO DE PRESENTACIÓN") && (
+            {config?.mostrar_video_badge !== false && (parseMultilingualText(config?.video_badge, lang) || "VIDEO DE PRESENTACIÓN") && (
               <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase", display: "inline-block", marginBottom: "14px", backgroundColor: "rgba(0, 85, 165, 0.08)", padding: "6px 18px", borderRadius: "20px" }}>
-                {config?.video_badge || "VIDEO DE PRESENTACIÓN"}
+                {parseMultilingualText(config?.video_badge, lang) || "VIDEO DE PRESENTACIÓN"}
               </span>
             )}
             <h2 style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginBottom: "14px" }}>
-              {config?.video_titulo || "Conoce a tu Profesor y su Método de Enseñanza"}
+              {parseMultilingualText(config?.video_titulo, lang) || "Conoce a tu Profesor y su Método de Enseñanza"}
             </h2>
             <p style={{ fontSize: "16px", fontWeight: 500, color: "#64748b", maxWidth: "680px", margin: "0 auto 36px", lineHeight: 1.6 }}>
-              {config?.video_subtitulo || "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural."}
+              {parseMultilingualText(config?.video_subtitulo, lang) || "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural."}
             </p>
 
             {/* Reproductor de Video Embebido / Responsive Card */}
@@ -522,9 +545,9 @@ export default function LandingV2Replica() {
           
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "flex-end", marginBottom: "50px" }} className="grid-cols-1 md:grid-cols-2">
             <div>
-              {config?.mostrar_ps_badge !== false && (config?.ps_badge || "¿POR QUÉ FLORENTIN?") && (
+              {config?.mostrar_ps_badge !== false && (parseMultilingualText(config?.ps_badge, lang) || "¿POR QUÉ FLORENTIN?") && (
                 <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>
-                  • {config?.ps_badge || "¿POR QUÉ FLORENTIN?"}
+                  • {parseMultilingualText(config?.ps_badge, lang) || "¿POR QUÉ FLORENTIN?"}
                 </span>
               )}
               <h2 style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", margin: 0 }}>
