@@ -165,32 +165,36 @@ export default function Home() {
     }
   };
 
-  const parseMultilingualText = (text: string, targetLang: string): string => {
+  const parseMultilingualText = (text: string | null | undefined, targetLang: string = "es"): string => {
     if (!text) return "";
     const tLang = targetLang.toLowerCase();
-    
-    // Formato 1: [:es]Texto[:fr]Texte[:en]Text
+    let extracted = "";
+
     if (text.includes("[:")) {
       const regex = new RegExp(`\\[:${tLang}\\]([\\s\\S]*?)(?=\\[:|$)/?`, "i");
       const match = text.match(regex);
-      if (match && match[1]) return match[1].trim();
-      
-      // Fallback a español
-      const fallbackMatch = text.match(/\[:es\]([\s\S]*?)(?=\[:|$)/i);
-      if (fallbackMatch && fallbackMatch[1]) return fallbackMatch[1].trim();
-    }
-    
-    // Formato 2: [ES] Texto [FR] Texte [EN] Text
-    if (text.includes("[ES]") || text.includes("[FR]") || text.includes("[EN]")) {
+      if (match && match[1] !== undefined) {
+        extracted = match[1].trim();
+      } else {
+        const esMatch = text.match(/\[:es\]([\s\S]*?)(?=\[:|$)/i);
+        extracted = esMatch && esMatch[1] !== undefined ? esMatch[1].trim() : "";
+      }
+    } else if (text.includes("[ES]") || text.includes("[FR]") || text.includes("[EN]")) {
       const regex = new RegExp(`\\[${tLang.toUpperCase()}\\]([\\s\\S]*?)(?=\\[[A-Z]{2}\\]|$)`, "i");
       const match = text.match(regex);
-      if (match && match[1]) return match[1].trim();
-      
-      const fallbackMatch = text.match(/\[ES\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
-      if (fallbackMatch && fallbackMatch[1]) return fallbackMatch[1].trim();
+      if (match && match[1] !== undefined) {
+        extracted = match[1].trim();
+      } else {
+        const esMatch = text.match(/\[ES\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
+        extracted = esMatch && esMatch[1] !== undefined ? esMatch[1].trim() : "";
+      }
+    } else {
+      extracted = text.trim();
     }
-    
-    return text;
+
+    // Limpiar residuos de etiquetas cortas
+    extracted = extracted.replace(/\[:?[a-z]{2}\]?/gi, "").trim();
+    return extracted;
   };
 
   const translateConfigObject = async (sourceConfig: any, targetLang: string) => {
@@ -1014,13 +1018,17 @@ export default function Home() {
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
-          {config?.mostrar_teacher_badge !== false && (parseMultilingualText(config?.teacher_badge, lang) || t.teacherBadge) && (
-            <div className="text-center mb-14 sm:mb-20">
-              <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-                {parseMultilingualText(config?.teacher_badge, lang) || t.teacherBadge}
-              </span>
-            </div>
-          )}
+          {(() => {
+            const badgeText = config ? parseMultilingualText(config.teacher_badge, lang) : t.teacherBadge;
+            if (config?.mostrar_teacher_badge === false || !badgeText) return null;
+            return (
+              <div className="text-center mb-14 sm:mb-20">
+                <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
+                  {badgeText}
+                </span>
+              </div>
+            );
+          })()}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-start">
             {/* Columna Izquierda: Foto y Certificaciones debajo */}
@@ -1116,11 +1124,15 @@ export default function Home() {
       {config?.mostrar_seccion_video !== false && (
         <section id="video-demo" className="reveal-section py-20 sm:py-28 px-4 sm:px-6 bg-slate-50 border-y border-slate-200/80">
           <div className="max-w-5xl mx-auto text-center">
-            {config?.mostrar_video_badge !== false && (parseMultilingualText(config?.video_badge, lang) || "VIDEO DE PRESENTACIÓN") && (
-              <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-                {parseMultilingualText(config?.video_badge, lang) || "VIDEO DE PRESENTACIÓN"}
-              </span>
-            )}
+            {(() => {
+              const badgeText = config ? parseMultilingualText(config.video_badge, lang) : "VIDEO DE PRESENTACIÓN";
+              if (config?.mostrar_video_badge === false || !badgeText) return null;
+              return (
+                <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
+                  {badgeText}
+                </span>
+              );
+            })()}
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] tracking-tight mb-4">
               {parseMultilingualText(config?.video_titulo, lang) || "Conoce a tu Profesor y su Método de Enseñanza"}
             </h2>
@@ -1159,11 +1171,15 @@ export default function Home() {
       <section id="method" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            {config?.mostrar_ps_badge !== false && (parseMultilingualText(config?.ps_badge, lang) || t.psBadge) && (
-              <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-                {parseMultilingualText(config?.ps_badge, lang) || t.psBadge}
-              </span>
-            )}
+            {(() => {
+              const badgeText = config ? parseMultilingualText(config.ps_badge, lang) : t.psBadge;
+              if (config?.mostrar_ps_badge === false || !badgeText) return null;
+              return (
+                <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
+                  {badgeText}
+                </span>
+              );
+            })()}
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter">
               {config?.ps_title || t.psTitle}
             </h2>
