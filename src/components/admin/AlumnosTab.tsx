@@ -167,12 +167,20 @@ export default function AlumnosTab({
     const completadas = clasesAlumno.filter(c => c.estado === "completada").length;
     const canceladas = clasesAlumno.filter(c => c.estado === "cancelada").length;
     const programadas = clasesAlumno.filter(c => c.estado === "programada").length;
-    const totalClases = alumno.totalClases || 0;
-    const clasesRestantes = alumno.clases_restantes || 0;
-    const clasesTomadas = completadas > 0 ? completadas : Math.max(0, totalClases - clasesRestantes);
-    const progresoPct = totalClases > 0 ? Math.round((clasesTomadas / totalClases) * 100) : 0;
+
+    const compras = getHistorialComprasAlumno(alumno);
+    const totalClasesAdquiridas = compras.reduce((acc: number, item: any) => {
+      const planObj = planes?.find((p: any) => p.id === item.plan_id);
+      const numClases = planObj ? planObj.total_clases : (item.clases_restantes || 0);
+      return acc + numClases;
+    }, 0) || alumno.totalClases || 0;
+
+    const clasesTomadas = completadas;
+    const clasesRestantesReales = Math.max(0, totalClasesAdquiridas - completadas);
+    const progresoPct = totalClasesAdquiridas > 0 ? Math.min(100, Math.round((clasesTomadas / totalClasesAdquiridas) * 100)) : 0;
     const recursosAsig = recursosAsignaciones.filter(a => a.usuario_id === alumno.id).length;
-    return { completadas, canceladas, programadas, clasesTomadas, progresoPct, recursosAsig, clasesAlumno };
+    
+    return { completadas, canceladas, programadas, clasesTomadas, totalClasesAdquiridas, clasesRestantesReales, progresoPct, recursosAsig, clasesAlumno };
   };
 
   return (
@@ -416,7 +424,7 @@ export default function AlumnosTab({
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "0", borderBottom: "1px solid var(--border-color)" }}>
                 {[
                   { icon: <CheckCircle size={16} />, label: isFr ? "Clases tomadas" : "Clases tomadas", value: stats.clasesTomadas, color: "#10b981" },
-                  { icon: <Clock size={16} />, label: isFr ? "Restantes" : "Restantes", value: selectedAlumno.clases_restantes, color: "#3b82f6" },
+                  { icon: <Clock size={16} />, label: isFr ? "Restantes" : "Restantes", value: stats.clasesRestantesReales, color: "#3b82f6" },
                   { icon: <XCircle size={16} />, label: isFr ? "Canceladas" : "Canceladas", value: stats.canceladas, color: "#ef4444" },
                   { icon: <BookMarked size={16} />, label: isFr ? "Recursos" : "Recursos", value: recursosAsig, color: "#8b5cf6" },
                   { icon: <Award size={16} />, label: isFr ? "Inversión" : "Inversión", value: `${selectedAlumno.monto || 0}${selectedAlumno.divisa === "USD" ? "$" : "€"}`, color: "#f59e0b" },
@@ -604,7 +612,7 @@ export default function AlumnosTab({
                             🎟️ {isFr ? "Total Cours Acquis" : "Clases Compradas"}
                           </div>
                           <div style={{ fontSize: "18px", fontWeight: 800, color: "#6366f1", marginTop: "4px" }}>
-                            {totalClasesAdquiridas} {isFr ? "cours" : "clases"}
+                            {stats.totalClasesAdquiridas} {isFr ? "cours" : "clases"}
                           </div>
                         </div>
 
@@ -622,7 +630,7 @@ export default function AlumnosTab({
                             ⏳ {isFr ? "Cours Disponibles" : "Clases Disponibles"}
                           </div>
                           <div style={{ fontSize: "18px", fontWeight: 800, color: "#f59e0b", marginTop: "4px" }}>
-                            {selectedAlumno.clases_restantes} {isFr ? "restantes" : "restantes"}
+                            {stats.clasesRestantesReales} {isFr ? "restantes" : "restantes"}
                           </div>
                         </div>
                       </div>
