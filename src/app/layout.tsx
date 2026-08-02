@@ -27,6 +27,19 @@ const greatVibes = Great_Vibes({
   weight: ["400"],
 });
 
+function parseMultilingualText(text: string | null | undefined, fallback: string): string {
+  if (!text) return fallback;
+  if (text.includes("[:")) {
+    const match = text.match(/\[:es\]([\s\S]*?)(?=\[:|$)/i);
+    if (match && match[1] && match[1].trim()) return match[1].trim();
+  }
+  if (text.includes("[ES]")) {
+    const match = text.match(/\[ES\]([\s\S]*?)(?=\[[A-Z]{2}\]|$)/i);
+    if (match && match[1] && match[1].trim()) return match[1].trim();
+  }
+  return text.trim() || fallback;
+}
+
 export async function generateMetadata(): Promise<Metadata> {
   const supabaseAdmin = getSupabaseAdmin();
   const { data: config } = await supabaseAdmin
@@ -35,10 +48,11 @@ export async function generateMetadata(): Promise<Metadata> {
     .eq("id", 1)
     .single();
 
-  const title = config?.meta_titulo || "Florentin | Aprende Francés con un Experto Nativo";
-  const description = config?.meta_descripcion || "Plataforma educativa para aprender francés. Reserva tus clases en tiempo real, accede a material didáctico exclusivo y sigue tu progreso personalizado.";
-  const keywords = config?.palabras_clave 
-    ? config.palabras_clave.split(",").map((k: string) => k.trim()) 
+  const title = parseMultilingualText(config?.meta_titulo, "Florentin | Aprende Francés con un Experto Nativo");
+  const description = parseMultilingualText(config?.meta_descripcion, "Plataforma educativa para aprender francés. Reserva tus clases en tiempo real, accede a material didáctico exclusivo y sigue tu progreso personalizado.");
+  const keywordsRaw = parseMultilingualText(config?.palabras_clave, "aprender frances, clases de frances, profesor de frances, frances online, reserva clases de frances");
+  const keywords = keywordsRaw
+    ? keywordsRaw.split(",").map((k: string) => k.trim()) 
     : ["aprender frances", "clases de frances", "profesor de frances", "frances online", "reserva clases de frances"];
 
   return {

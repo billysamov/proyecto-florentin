@@ -48,6 +48,9 @@ interface RecursoAdmin {
 }
 
 export default function AdminDashboard() {
+  useEffect(() => {
+    document.title = "Panel de Administración | Le Français avec Florentin";
+  }, []);
   // Autenticación de Admin
   const [isAdminLoggedIn, setIsAdminLoggedIn] = useState(false);
   const [adminEmail, setAdminEmail] = useState("");

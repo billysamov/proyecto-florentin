@@ -46,6 +46,8 @@ export default function LandingV2Replica() {
       return `https://player.vimeo.com/video/${id}`;
     }
     return url;
+  };
+
   const parseMultilingualText = (text: string, targetLang: string = "es"): string => {
     if (!text) return "";
     const tLang = targetLang.toLowerCase();

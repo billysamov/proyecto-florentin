@@ -480,12 +480,12 @@ export default function Home() {
     if (!config) return;
 
     // 1. Actualizar Título
-    const seoTitle = config.meta_titulo || "Florentin | Aprende Francés con un Experto Nativo";
+    const seoTitle = parseMultilingualText(config.meta_titulo, lang) || "Florentin | Aprende Francés con un Experto Nativo";
     document.title = seoTitle;
 
     // 2. Actualizar Descripción Meta
     let metaDesc = document.querySelector('meta[name="description"]');
-    const seoDesc = config.meta_descripcion || "Clases particulares de francés con un profesor parisino nativo. Clases personalizadas, flexibles y adaptadas a tu nivel.";
+    const seoDesc = parseMultilingualText(config.meta_descripcion, lang) || "Clases particulares de francés con un profesor parisino nativo. Clases personalizadas, flexibles y adaptadas a tu nivel.";
     if (!metaDesc) {
       metaDesc = document.createElement('meta');
       metaDesc.setAttribute('name', 'description');
@@ -495,7 +495,7 @@ export default function Home() {
 
     // 3. Actualizar Palabras Clave
     let metaKeywords = document.querySelector('meta[name="keywords"]');
-    const seoKeywords = config.palabras_clave || "francés, clases de francés, profesor nativo francés, aprender francés, parisino";
+    const seoKeywords = parseMultilingualText(config.palabras_clave, lang) || "francés, clases de francés, profesor nativo francés, aprender francés, parisino";
     if (!metaKeywords) {
       metaKeywords = document.createElement('meta');
       metaKeywords.setAttribute('name', 'keywords');

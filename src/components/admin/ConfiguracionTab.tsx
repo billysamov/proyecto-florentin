@@ -1020,9 +1020,38 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
             
             {/* 🎬 Configuración de la Sección de Video Presentación (Entre Tu Profesor y Por Qué) */}
             <div style={{ padding: "20px", backgroundColor: "#f8fafc", borderRadius: "16px", border: "1px solid #cbd5e1" }}>
-              <h4 style={{ fontSize: "15px", fontWeight: 800, color: "#0055a5", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
-                🎬 {isFr ? "Section Vidéo de Présentation (Entre Professeur et Pourquoi)" : "Sección de Video Presentación (Ubicada entre 'Tu Profesor' y 'Por Qué?')"}
-              </h4>
+              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "16px", flexWrap: "wrap", gap: "12px" }}>
+                <div>
+                  <h4 style={{ fontSize: "15px", fontWeight: 800, color: "#0055a5", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
+                    🎬 {isFr ? "Section Vidéo de Présentation (Entre Professeur et Pourquoi)" : "Sección de Video Presentación (Ubicada entre 'Tu Profesor' y 'Por Qué?')"}
+                  </h4>
+                  <p style={{ fontSize: "12px", color: "var(--text-muted)", margin: "4px 0 0" }}>
+                    {isFr ? "Activez ou désactivez la visibilité de cette section sur le site." : "Activa o desactiva la visibilidad de esta sección en la web."}
+                  </p>
+                </div>
+
+                <button
+                  type="button"
+                  onClick={() => setConfig({ ...config, mostrar_seccion_video: config.mostrar_seccion_video === false })}
+                  style={{
+                    padding: "8px 20px",
+                    borderRadius: "999px",
+                    border: "none",
+                    cursor: "pointer",
+                    fontWeight: 700,
+                    fontSize: "13px",
+                    transition: "all 0.2s",
+                    backgroundColor: config.mostrar_seccion_video !== false ? "#10b981" : "#ef4444",
+                    color: "white",
+                    minWidth: "140px",
+                    boxShadow: "0 2px 8px rgba(0,0,0,0.1)"
+                  }}
+                >
+                  {config.mostrar_seccion_video !== false
+                    ? (isFr ? "✓ Activée (ON)" : "✓ Habilitada (ON)")
+                    : (isFr ? "✗ Désactivée (OFF)" : "✗ Deshabilitada (OFF)")}
+                </button>
+              </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "16px", marginBottom: "12px" }}>
                 <div className="form-group">
