@@ -776,35 +776,134 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   ? "Activez ou désactivez des sections entières de la Landing Page sans les supprimer."
                   : "Activa o desactiva secciones completas de la Landing Page sin eliminarlas."}
               </p>
-              <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", background: "var(--bg-subtle, #f8fafc)", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
-                <div>
-                  <div style={{ fontWeight: 700, fontSize: "14px" }}>
-                    {isFr ? "⭐ Sección de Experiencias / Testimonios" : "⭐ Sección de Experiencias / Testimonios"}
+              <div style={{ display: "flex", flexDirection: "column", gap: "12px" }}>
+                {/* Switch Testimonios */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", background: "var(--bg-subtle, #f8fafc)", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "14px" }}>
+                      {isFr ? "⭐ Section Témoignages & Expériences" : "⭐ Sección de Experiencias / Testimonios"}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      {isFr ? "Affiche les avis et témoignages des étudiants sur la Landing Page." : "Muestra las reseñas y experiencias de alumnos en la Landing Page."}
+                    </div>
                   </div>
-                  <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
-                    {isFr ? "Affiche les avis et témoignages des étudiants sur la Landing Page." : "Muestra las reseñas y experiencias de alumnos en la Landing Page."}
-                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setConfig({ ...config, mostrar_testimonios: !config.mostrar_testimonios })}
+                    style={{
+                      padding: "8px 20px",
+                      borderRadius: "999px",
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                      fontSize: "13px",
+                      transition: "all 0.2s",
+                      backgroundColor: config.mostrar_testimonios ? "#10b981" : "#ef4444",
+                      color: "white",
+                      minWidth: "120px"
+                    }}
+                  >
+                    {config.mostrar_testimonios
+                      ? (isFr ? "✓ Activée" : "✓ Habilitada")
+                      : (isFr ? "✗ Désactivée" : "✗ Deshabilitada")}
+                  </button>
                 </div>
-                <button
-                  type="button"
-                  onClick={() => setConfig({ ...config, mostrar_testimonios: !config.mostrar_testimonios })}
-                  style={{
-                    padding: "8px 20px",
-                    borderRadius: "999px",
-                    border: "none",
-                    cursor: "pointer",
-                    fontWeight: 700,
-                    fontSize: "13px",
-                    transition: "all 0.2s",
-                    backgroundColor: config.mostrar_testimonios ? "#10b981" : "#ef4444",
-                    color: "white",
-                    minWidth: "120px"
-                  }}
-                >
-                  {config.mostrar_testimonios
-                    ? (isFr ? "✓ Activée" : "✓ Habilitada")
-                    : (isFr ? "✗ Désactivée" : "✗ Deshabilitada")}
-                </button>
+
+                {/* Switch Sección Video */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", background: "var(--bg-subtle, #f8fafc)", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "14px" }}>
+                      {isFr ? "🎬 Section Vidéo de Présentation (Entre Professeur et Pourquoi)" : "🎬 Sección de Video Presentación (Entre Tu Profesor y Por Qué)"}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      {isFr ? "Affiche la section vidéo interactive entre la section Professeur et Pourquoi." : "Muestra la sección interactiva de video ubicada entre Tu Profesor y Por Qué."}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setConfig({ ...config, mostrar_seccion_video: config.mostrar_seccion_video === false })}
+                    style={{
+                      padding: "8px 20px",
+                      borderRadius: "999px",
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                      fontSize: "13px",
+                      transition: "all 0.2s",
+                      backgroundColor: config.mostrar_seccion_video !== false ? "#10b981" : "#ef4444",
+                      color: "white",
+                      minWidth: "120px"
+                    }}
+                  >
+                    {config.mostrar_seccion_video !== false
+                      ? (isFr ? "✓ Activée" : "✓ Habilitada")
+                      : (isFr ? "✗ Désactivée" : "✗ Deshabilitada")}
+                  </button>
+                </div>
+
+                {/* Switch Badge Profesor */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", background: "var(--bg-subtle, #f8fafc)", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "14px" }}>
+                      {isFr ? "🏷️ Tag / Badge 'TU PROFESOR'" : "🏷️ Etiqueta / Badge 'TU PROFESOR'"}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      {isFr ? "Affiche ou masque la petite étiquette au-dessus de la section Professeur." : "Muestra u oculta únicamente la pequeña etiqueta de la sección Tu Profesor."}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setConfig({ ...config, mostrar_teacher_badge: config.mostrar_teacher_badge === false })}
+                    style={{
+                      padding: "8px 20px",
+                      borderRadius: "999px",
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                      fontSize: "13px",
+                      transition: "all 0.2s",
+                      backgroundColor: config.mostrar_teacher_badge !== false ? "#10b981" : "#ef4444",
+                      color: "white",
+                      minWidth: "120px"
+                    }}
+                  >
+                    {config.mostrar_teacher_badge !== false
+                      ? (isFr ? "✓ Activée" : "✓ Habilitada")
+                      : (isFr ? "✗ Désactivée" : "✗ Deshabilitada")}
+                  </button>
+                </div>
+
+                {/* Switch Badge Por Qué */}
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", padding: "16px", background: "var(--bg-subtle, #f8fafc)", borderRadius: "12px", border: "1px solid var(--border-color)" }}>
+                  <div>
+                    <div style={{ fontWeight: 700, fontSize: "14px" }}>
+                      {isFr ? "🏷️ Tag / Badge 'PORQUE ?'" : "🏷️ Etiqueta / Badge 'PORQUE ?' / '¿POR QUÉ FLORENTIN?'"}
+                    </div>
+                    <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "4px" }}>
+                      {isFr ? "Affiche ou masque l'étiquette de la section Pourquoi." : "Muestra u oculta únicamente la pequeña etiqueta de la sección Por Qué."}
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => setConfig({ ...config, mostrar_ps_badge: config.mostrar_ps_badge === false })}
+                    style={{
+                      padding: "8px 20px",
+                      borderRadius: "999px",
+                      border: "none",
+                      cursor: "pointer",
+                      fontWeight: 700,
+                      fontSize: "13px",
+                      transition: "all 0.2s",
+                      backgroundColor: config.mostrar_ps_badge !== false ? "#10b981" : "#ef4444",
+                      color: "white",
+                      minWidth: "120px"
+                    }}
+                  >
+                    {config.mostrar_ps_badge !== false
+                      ? (isFr ? "✓ Activée" : "✓ Habilitada")
+                      : (isFr ? "✗ Désactivée" : "✗ Deshabilitada")}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
@@ -813,7 +912,7 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
         {/* Pestaña: Perfil Profesor */}
         {subTabCMS === "profesor" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "16px" }}>
-            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "16px" }}>
               <div className="form-group">
                 <label className="form-label">{t.nombreProfesor}</label>
                 <input
@@ -831,6 +930,17 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                   type="text"
                   value={getFieldValue("teacher_title")}
                   onChange={(e) => setFieldValue("teacher_title", e.target.value)}
+                  style={{ padding: "12px 16px" }}
+                />
+              </div>
+              <div className="form-group">
+                <label className="form-label">{isFr ? "Badge / Tag de la section (ex: TU PROFESOR)" : "Etiqueta / Badge de la Sección (ej: TU PROFESOR)"}</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  value={getFieldValue("teacher_badge")}
+                  onChange={(e) => setFieldValue("teacher_badge", e.target.value)}
+                  placeholder="TU PROFESOR"
                   style={{ padding: "12px 16px" }}
                 />
               </div>
@@ -907,7 +1017,64 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
         {/* Pestaña: Método de Aprendizaje */}
         {subTabCMS === "metodo" && (
           <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-            <h4 style={{ fontSize: "16px", color: "hsl(var(--accent-hsl))", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px" }}>
+            
+            {/* 🎬 Configuración de la Sección de Video Presentación (Entre Tu Profesor y Por Qué) */}
+            <div style={{ padding: "20px", backgroundColor: "#f8fafc", borderRadius: "16px", border: "1px solid #cbd5e1" }}>
+              <h4 style={{ fontSize: "15px", fontWeight: 800, color: "#0055a5", marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+                🎬 {isFr ? "Section Vidéo de Présentation (Entre Professeur et Pourquoi)" : "Sección de Video Presentación (Ubicada entre 'Tu Profesor' y 'Por Qué?')"}
+              </h4>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 2fr", gap: "16px", marginBottom: "12px" }}>
+                <div className="form-group">
+                  <label className="form-label">{isFr ? "Badge de la vidéo" : "Badge / Etiqueta del Video"}</label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    value={getFieldValue("video_badge")}
+                    onChange={(e) => setFieldValue("video_badge", e.target.value)}
+                    placeholder="ej. VIDEO DE PRESENTACIÓN"
+                    style={{ padding: "10px 14px" }}
+                  />
+                </div>
+                <div className="form-group">
+                  <label className="form-label">{isFr ? "URL de la vidéo (YouTube Embed / Vimeo / MP4)" : "URL del Video (YouTube Embed / Vimeo / MP4)"}</label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    value={config.video_url || ""}
+                    onChange={(e) => setConfig({ ...config, video_url: e.target.value })}
+                    placeholder="https://www.youtube.com/embed/... o https://youtu.be/..."
+                    style={{ padding: "10px 14px" }}
+                  />
+                </div>
+              </div>
+
+              <div className="form-group" style={{ marginBottom: "12px" }}>
+                <label className="form-label">{isFr ? "Titre de la section vidéo" : "Título de la Sección de Video"}</label>
+                <input
+                  className="form-control"
+                  type="text"
+                  value={getFieldValue("video_titulo")}
+                  onChange={(e) => setFieldValue("video_titulo", e.target.value)}
+                  placeholder="ej. Conoce a tu Profesor y su Método de Enseñanza"
+                  style={{ padding: "10px 14px" }}
+                />
+              </div>
+
+              <div className="form-group">
+                <label className="form-label">{isFr ? "Sous-titre descriptif de la vidéo" : "Subtítulo Explicativo del Video"}</label>
+                <textarea
+                  className="form-control"
+                  rows={2}
+                  value={getFieldValue("video_subtitulo")}
+                  onChange={(e) => setFieldValue("video_subtitulo", e.target.value)}
+                  placeholder="ej. Mira este breve video interactivo..."
+                  style={{ padding: "12px 14px", resize: "none" }}
+                />
+              </div>
+            </div>
+
+            <h4 style={{ fontSize: "16px", color: "hsl(var(--accent-hsl))", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px", marginTop: "10px" }}>
               {t.seccionMetodo}
             </h4>
 

@@ -14,7 +14,7 @@ import {
   Plane, Briefcase, Heart, Rocket,
   XCircle, CheckCircle, Clock, MessageCircle, CalendarCheck,
   Award, Globe2, Users, Star, BadgeCheck, BookOpen, Headphones, Building2,
-  Smartphone, Coins
+  Smartphone, Coins, PlayCircle, Play
 } from "lucide-react";
 
 if (typeof window !== "undefined") {
@@ -102,6 +102,23 @@ const defaultKeysMap: Record<string, string> = {
   cta_title: "ctaTitle",
   cta_subtitle: "ctaSubtitle",
   cta_btn_text: "ctaBtn"
+};
+
+const getEmbedUrl = (url: string) => {
+  if (!url) return "";
+  if (url.includes("youtube.com/watch?v=")) {
+    const id = url.split("v=")[1]?.split("&")[0];
+    return `https://www.youtube.com/embed/${id}?autoplay=0`;
+  }
+  if (url.includes("youtu.be/")) {
+    const id = url.split("youtu.be/")[1]?.split("?")[0];
+    return `https://www.youtube.com/embed/${id}?autoplay=0`;
+  }
+  if (url.includes("vimeo.com/")) {
+    const id = url.split("vimeo.com/")[1]?.split("?")[0];
+    return `https://player.vimeo.com/video/${id}`;
+  }
+  return url;
 };
 
 export default function Home() {
@@ -997,9 +1014,13 @@ export default function Home() {
         </div>
 
         <div className="max-w-6xl mx-auto relative z-10">
-          <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">{t.teacherBadge}</span>
-          </div>
+          {config?.mostrar_teacher_badge !== false && (config?.teacher_badge || t.teacherBadge) && (
+            <div className="text-center mb-14 sm:mb-20">
+              <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
+                {config?.teacher_badge || t.teacherBadge}
+              </span>
+            </div>
+          )}
 
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-start">
             {/* Columna Izquierda: Foto y Certificaciones debajo */}
@@ -1090,14 +1111,59 @@ export default function Home() {
 
 
       {/* ═══════════════════════════════════════
+          2.5. SECCIÓN DE VIDEO PRESENTACIÓN INTERACTIVO
+      ═══════════════════════════════════════ */}
+      {config?.mostrar_seccion_video !== false && (
+        <section id="video-demo" className="reveal-section py-20 sm:py-28 px-4 sm:px-6 bg-slate-50 border-y border-slate-200/80">
+          <div className="max-w-5xl mx-auto text-center">
+            {config?.mostrar_video_badge !== false && (config?.video_badge || "VIDEO DE PRESENTACIÓN") && (
+              <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
+                {config?.video_badge || "VIDEO DE PRESENTACIÓN"}
+              </span>
+            )}
+            <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] tracking-tight mb-4">
+              {config?.video_titulo || "Conoce a tu Profesor y su Método de Enseñanza"}
+            </h2>
+            <p className="reveal-item text-slate-600 font-medium text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
+              {config?.video_subtitulo || "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural."}
+            </p>
+
+            {/* Video Container */}
+            <div className="reveal-item relative w-full max-w-4xl mx-auto aspect-video rounded-3xl overflow-hidden shadow-2xl bg-slate-900 border border-slate-200">
+              {config?.video_url ? (
+                <iframe
+                  src={getEmbedUrl(config.video_url)}
+                  title="Video de Presentación"
+                  className="w-full h-full border-0"
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8">
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#3b82f6] flex items-center justify-center mb-4 shadow-lg shadow-blue-500/40">
+                    <PlayCircle size={40} className="text-white ml-1" />
+                  </div>
+                  <span className="text-lg sm:text-xl font-bold">Video Demo del Profesor</span>
+                  <span className="text-xs sm:text-sm text-slate-400 mt-2">Agrega la URL de tu video desde el panel de administración</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
+
+      {/* ═══════════════════════════════════════
           3. PROBLEMA → SOLUCIÓN (Método)
       ═══════════════════════════════════════ */}
       <section id="method" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-              {config?.ps_badge || t.psBadge}
-            </span>
+            {config?.mostrar_ps_badge !== false && (config?.ps_badge || t.psBadge) && (
+              <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
+                {config?.ps_badge || t.psBadge}
+              </span>
+            )}
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter">
               {config?.ps_title || t.psTitle}
             </h2>

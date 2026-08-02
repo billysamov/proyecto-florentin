@@ -1,14 +1,15 @@
 "use client";
 
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
 import {
   Sparkles, ArrowRight, ArrowUpRight, Search, ShoppingBag, Check,
   Clock, BookOpen, MessageSquare, Compass, ShieldCheck, CheckCircle2,
   Users, Award, ChevronRight, ChevronLeft, Star, Globe2, Phone, Mail, MapPin, Heart,
-  PlayCircle, Sparkle, Laptop, GraduationCap
+  PlayCircle, Sparkle, Laptop, GraduationCap, Play
 } from "lucide-react";
 
 export default function LandingV2Replica() {
@@ -16,6 +17,36 @@ export default function LandingV2Replica() {
   const [divisa, setDivisa] = useState<"eur" | "usd">("eur");
   const [activeCategory, setActiveCategory] = useState<string>("todos");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [config, setConfig] = useState<any>(null);
+
+  useEffect(() => {
+    const loadConfig = async () => {
+      try {
+        const { data } = await supabase.from("configuracion_sitio").select("*").eq("id", 1).single();
+        if (data) setConfig(data);
+      } catch (e) {
+        console.error(e);
+      }
+    };
+    loadConfig();
+  }, []);
+
+  const getEmbedUrl = (url: string) => {
+    if (!url) return "";
+    if (url.includes("youtube.com/watch?v=")) {
+      const id = url.split("v=")[1]?.split("&")[0];
+      return `https://www.youtube.com/embed/${id}?autoplay=0`;
+    }
+    if (url.includes("youtu.be/")) {
+      const id = url.split("youtu.be/")[1]?.split("?")[0];
+      return `https://www.youtube.com/embed/${id}?autoplay=0`;
+    }
+    if (url.includes("vimeo.com/")) {
+      const id = url.split("vimeo.com/")[1]?.split("?")[0];
+      return `https://player.vimeo.com/video/${id}`;
+    }
+    return url;
+  };
 
   const t = translations[lang];
 
@@ -254,16 +285,25 @@ export default function LandingV2Replica() {
           {/* Left Column: Heading, Rating & CTA Button */}
           <div>
             
-            {/* Rating Stars Badge con Avatares */}
-            <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "6px 14px", borderRadius: "30px", backgroundColor: "#ffffff", boxShadow: "0 4px 12px rgba(0,0,0,0.05)", marginBottom: "20px" }}>
-              <div style={{ display: "flex", alignItems: "center", color: "#f59e0b", gap: "2px" }}>
-                <Star size={14} fill="#f59e0b" />
-                <Star size={14} fill="#f59e0b" />
-                <Star size={14} fill="#f59e0b" />
-                <Star size={14} fill="#f59e0b" />
-                <Star size={14} fill="#f59e0b" />
+            {/* Rating Stars & Teacher Tag Badge */}
+            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
+              {config?.mostrar_teacher_badge !== false && (config?.teacher_badge || "TU PROFESOR") && (
+                <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", borderRadius: "30px", backgroundColor: "#0055a5", color: "#ffffff", boxShadow: "0 4px 12px rgba(0,85,165,0.2)" }}>
+                  <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>
+                    {config?.teacher_badge || "TU PROFESOR"}
+                  </span>
+                </div>
+              )}
+              <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "6px 14px", borderRadius: "30px", backgroundColor: "#ffffff", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
+                <div style={{ display: "flex", alignItems: "center", color: "#f59e0b", gap: "2px" }}>
+                  <Star size={14} fill="#f59e0b" />
+                  <Star size={14} fill="#f59e0b" />
+                  <Star size={14} fill="#f59e0b" />
+                  <Star size={14} fill="#f59e0b" />
+                  <Star size={14} fill="#f59e0b" />
+                </div>
+                <span style={{ fontSize: "12px", fontWeight: 800, color: "#0f172a" }}>4.9/5 • +200 Alumnos Formados</span>
               </div>
-              <span style={{ fontSize: "12px", fontWeight: 800, color: "#0f172a" }}>4.9/5 • +200 Alumnos Formados</span>
             </div>
 
             <h1 style={{
@@ -426,15 +466,67 @@ export default function LandingV2Replica() {
         </div>
       </section>
 
+      {/* 3.5. Nueva Sección de Video Presentación Interactivo (Ubicada entre Tu Profesor y Por Qué) */}
+      {config?.mostrar_seccion_video !== false && (
+        <section id="sec-3-5-video" style={{ padding: "80px 24px", backgroundColor: "#f8fafc", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0" }}>
+          <div style={{ maxWidth: "1100px", margin: "0 auto", textAlign: "center" }}>
+            {config?.mostrar_video_badge !== false && (config?.video_badge || "VIDEO DE PRESENTACIÓN") && (
+              <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase", display: "inline-block", marginBottom: "14px", backgroundColor: "rgba(0, 85, 165, 0.08)", padding: "6px 18px", borderRadius: "20px" }}>
+                {config?.video_badge || "VIDEO DE PRESENTACIÓN"}
+              </span>
+            )}
+            <h2 style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginBottom: "14px" }}>
+              {config?.video_titulo || "Conoce a tu Profesor y su Método de Enseñanza"}
+            </h2>
+            <p style={{ fontSize: "16px", fontWeight: 500, color: "#64748b", maxWidth: "680px", margin: "0 auto 36px", lineHeight: 1.6 }}>
+              {config?.video_subtitulo || "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural."}
+            </p>
+
+            {/* Reproductor de Video Embebido / Responsive Card */}
+            <div style={{
+              position: "relative",
+              width: "100%",
+              maxWidth: "900px",
+              margin: "0 auto",
+              borderRadius: "28px",
+              overflow: "hidden",
+              boxShadow: "0 20px 50px rgba(0, 85, 165, 0.15)",
+              backgroundColor: "#0f172a",
+              aspectRatio: "16 / 9"
+            }}>
+              {config?.video_url ? (
+                <iframe
+                  src={getEmbedUrl(config.video_url)}
+                  title="Video de Presentación"
+                  style={{ width: "100%", height: "100%", border: "none" }}
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  allowFullScreen
+                />
+              ) : (
+                <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #091021 0%, #1e293b 100%)", color: "#ffffff", padding: "40px" }}>
+                  <div style={{ width: "72px", height: "72px", borderRadius: "50%", backgroundColor: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px", boxShadow: "0 0 30px rgba(59, 130, 246, 0.5)" }}>
+                    <Play size={36} fill="#ffffff" color="#ffffff" style={{ marginLeft: "4px" }} />
+                  </div>
+                  <span style={{ fontSize: "18px", fontWeight: 800 }}>Video Demo del Profesor</span>
+                  <span style={{ fontSize: "13px", color: "#94a3b8", marginTop: "6px" }}>Agrega la URL de tu video desde el panel de administración</span>
+                </div>
+              )}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* 4. "Unlock the World with Language Learning" (4 Bento Cards Pastel) */}
       <section id="sec-4-bento" style={{ padding: "90px 24px", backgroundColor: "#ffffff" }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto" }}>
           
           <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "40px", alignItems: "flex-end", marginBottom: "50px" }} className="grid-cols-1 md:grid-cols-2">
             <div>
-              <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>
-                • ¿POR QUÉ ELEGIR A FLORENTIN?
-              </span>
+              {config?.mostrar_ps_badge !== false && (config?.ps_badge || "¿POR QUÉ FLORENTIN?") && (
+                <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>
+                  • {config?.ps_badge || "¿POR QUÉ FLORENTIN?"}
+                </span>
+              )}
               <h2 style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", margin: 0 }}>
                 Desbloquea el Francés con un Método Inmersivo
               </h2>
