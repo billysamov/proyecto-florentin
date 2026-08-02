@@ -158,7 +158,7 @@ export default function AlumnosTab({
     const programadas = clasesAlumno.filter(c => c.estado === "programada").length;
     const totalClases = alumno.totalClases || 0;
     const clasesRestantes = alumno.clases_restantes || 0;
-    const clasesTomadas = totalClases > 0 ? totalClases - clasesRestantes : completadas;
+    const clasesTomadas = completadas > 0 ? completadas : Math.max(0, totalClases - clasesRestantes);
     const progresoPct = totalClases > 0 ? Math.round((clasesTomadas / totalClases) * 100) : 0;
     const recursosAsig = recursosAsignaciones.filter(a => a.usuario_id === alumno.id).length;
     return { completadas, canceladas, programadas, clasesTomadas, progresoPct, recursosAsig, clasesAlumno };
