@@ -62,6 +62,7 @@ interface AlumnosTabProps {
   eliminarAlumno: (id: string) => Promise<void>;
   limpiarAlumnosInactivos: () => Promise<void>;
   planes: any[];
+  inscripciones?: any[];
   lang?: "es" | "fr";
 }
 
@@ -88,10 +89,20 @@ export default function AlumnosTab({
   eliminarAlumno,
   limpiarAlumnosInactivos,
   planes,
+  inscripciones = [],
   lang = "es"
 }: AlumnosTabProps) {
   const isFr = lang === "fr";
-  const [fichaTab, setFichaTab] = useState<"resumen" | "clases" | "recursos">("resumen");
+  const [fichaTab, setFichaTab] = useState<"resumen" | "compras" | "clases" | "recursos">("resumen");
+
+  const getHistorialComprasAlumno = (alumno: Alumno) => {
+    if (!inscripciones || inscripciones.length === 0) return [];
+    return inscripciones.filter((ins: any) => 
+      ins.usuario_id === alumno.id || 
+      ins.email === alumno.email ||
+      (ins.usuarios && ins.usuarios.email === alumno.email)
+    ).sort((a: any, b: any) => new Date(b.creado_en || 0).getTime() - new Date(a.creado_en || 0).getTime());
+  };
 
   const t = {
     tituloRegistrar: isFr ? "Enregistrer un Élève Manuellement" : "Registrar Alumno Manualmente",
@@ -419,17 +430,26 @@ export default function AlumnosTab({
               </div>
 
               {/* Tabs de contenido */}
-              <div style={{ display: "flex", borderBottom: "1px solid var(--border-color)", padding: "0 28px" }}>
-                {(["resumen", "clases", "recursos"] as const).map(tab => (
-                  <button key={tab} onClick={() => setFichaTab(tab)} style={{
-                    padding: "14px 20px", fontSize: "13px", fontWeight: 700, background: "none", border: "none",
-                    cursor: "pointer", color: fichaTab === tab ? "#3b82f6" : "var(--text-muted)",
-                    borderBottom: fichaTab === tab ? "2px solid #3b82f6" : "2px solid transparent",
-                    transition: "all 0.15s", textTransform: "capitalize"
-                  }}>
-                    {tab === "resumen" ? t.tabResumen : tab === "clases" ? `${t.tabClases} (${stats.clasesAlumno.length})` : `${t.tabRecursos} (${recursosAsig}/${recursos.length})`}
-                  </button>
-                ))}
+              <div style={{ display: "flex", borderBottom: "1px solid var(--border-color)", padding: "0 28px", gap: "4px", flexWrap: "wrap" }}>
+                {(["resumen", "compras", "clases", "recursos"] as const).map(tab => {
+                  const comprasAlumno = getHistorialComprasAlumno(selectedAlumno);
+                  return (
+                    <button key={tab} onClick={() => setFichaTab(tab)} style={{
+                      padding: "14px 18px", fontSize: "13px", fontWeight: 700, background: "none", border: "none",
+                      cursor: "pointer", color: fichaTab === tab ? "#3b82f6" : "var(--text-muted)",
+                      borderBottom: fichaTab === tab ? "2px solid #3b82f6" : "2px solid transparent",
+                      transition: "all 0.15s"
+                    }}>
+                      {tab === "resumen" 
+                        ? t.tabResumen 
+                        : tab === "compras" 
+                        ? (isFr ? `Historique Achats (${comprasAlumno.length})` : `Historial de Compras (${comprasAlumno.length})`)
+                        : tab === "clases" 
+                        ? `${t.tabClases} (${stats.clasesAlumno.length})` 
+                        : `${t.tabRecursos} (${recursosAsig}/${recursos.length})`}
+                    </button>
+                  );
+                })}
               </div>
 
               {/* Contenido de Tabs */}
@@ -482,19 +502,9 @@ export default function AlumnosTab({
                         <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase", letterSpacing: "0.5px", marginBottom: "8px" }}>
                           📱 {isFr ? "Téléphone" : "Teléfono"}
                         </div>
-                        {selectedAlumno.telefono ? (
-                          <a
-                            href={`https://wa.me/${selectedAlumno.telefono.replace(/[^0-9]/g, "")}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            style={{ color: "#10b981", textDecoration: "none", fontSize: "13px", fontWeight: 600, display: "flex", alignItems: "center", gap: "6px" }}
-                          >
-                            {selectedAlumno.telefono}
-                            <span style={{ fontSize: "10px", padding: "1px 6px", backgroundColor: "rgba(16,185,129,0.1)", borderRadius: "10px", color: "#10b981" }}>WhatsApp</span>
-                          </a>
-                        ) : (
-                          <span style={{ color: "var(--text-muted)", fontSize: "13px", fontStyle: "italic" }}>{isFr ? "Non renseigné" : "No registrado"}</span>
-                        )}
+                        <div style={{ fontSize: "13px", fontWeight: 600 }}>
+                          {selectedAlumno.telefono || (isFr ? "Non renseigné" : "No registrado")}
+                        </div>
                       </div>
 
                       {/* Nivel de Francés */}
@@ -566,6 +576,148 @@ export default function AlumnosTab({
                     })()}
                   </div>
                 )}
+
+                {/* TAB: COMPRAS / HISTORIAL DE PLANES */}
+                {fichaTab === "compras" && (() => {
+                  const compras = getHistorialComprasAlumno(selectedAlumno);
+                  const totalClasesAdquiridas = compras.reduce((acc: number, item: any) => {
+                    const planObj = planes?.find((p: any) => p.id === item.plan_id);
+                    const numClases = planObj ? planObj.total_clases : (item.clases_restantes || 0);
+                    return acc + numClases;
+                  }, 0) || selectedAlumno.totalClases || 0;
+
+                  return (
+                    <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+                      {/* 📊 Resumen Estadístico de Paquetes Acumulados */}
+                      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "12px" }}>
+                        <div style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+                          <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase" }}>
+                            📦 {isFr ? "Forfaits Achetés" : "Paquetes Comprados"}
+                          </div>
+                          <div style={{ fontSize: "18px", fontWeight: 800, color: "#3b82f6", marginTop: "4px" }}>
+                            {compras.length || 1} {isFr ? "paquet(s)" : "paquete(s)"}
+                          </div>
+                        </div>
+
+                        <div style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+                          <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase" }}>
+                            🎟️ {isFr ? "Total Cours Acquis" : "Clases Compradas"}
+                          </div>
+                          <div style={{ fontSize: "18px", fontWeight: 800, color: "#6366f1", marginTop: "4px" }}>
+                            {totalClasesAdquiridas} {isFr ? "cours" : "clases"}
+                          </div>
+                        </div>
+
+                        <div style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+                          <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase" }}>
+                            ✅ {isFr ? "Cours Effectués" : "Clases Cumplidas"}
+                          </div>
+                          <div style={{ fontSize: "18px", fontWeight: 800, color: "#10b981", marginTop: "4px" }}>
+                            {stats.completadas} {isFr ? "cours" : "cumplidas"}
+                          </div>
+                        </div>
+
+                        <div style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+                          <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase" }}>
+                            ⏳ {isFr ? "Cours Disponibles" : "Clases Disponibles"}
+                          </div>
+                          <div style={{ fontSize: "18px", fontWeight: 800, color: "#f59e0b", marginTop: "4px" }}>
+                            {selectedAlumno.clases_restantes} {isFr ? "restantes" : "restantes"}
+                          </div>
+                        </div>
+                      </div>
+
+                      {/* 📜 Desglose de Paquetes */}
+                      <h4 style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 700, margin: "8px 0 0 0", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                        🛒 {isFr ? "Historique Chronologique des Forfaits" : "Historial de Paquetes y Planes Adquiridos"}
+                      </h4>
+
+                      {compras.length === 0 ? (
+                        <div style={{ padding: "20px", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px dashed #cbd5e1" }}>
+                          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "10px" }}>
+                            <div>
+                              <div style={{ fontSize: "15px", fontWeight: 800, color: "#0f172a" }}>
+                                📦 {selectedAlumno.plan !== "Sin plan activo" ? selectedAlumno.plan : (isFr ? "Inscription initiale" : "Inscripción inicial")}
+                              </div>
+                              <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>
+                                📅 {isFr ? "Date de paiement :" : "Fecha de registro:"} {selectedAlumno.ultimoPago || "—"}
+                              </div>
+                            </div>
+                            <div style={{ textAlign: "right" }}>
+                              <div style={{ fontSize: "14px", fontWeight: 800, color: "#3b82f6" }}>
+                                {selectedAlumno.monto || 0} {selectedAlumno.divisa || "EUR"}
+                              </div>
+                              <div style={{ fontSize: "12px", color: "#10b981", fontWeight: 700, marginTop: "2px" }}>
+                                ✓ {selectedAlumno.clases_restantes} {isFr ? "cours disponibles" : "clases disponibles"}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ) : (
+                        <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
+                          {compras.map((item: any, idx: number) => {
+                            const planInfo = planes?.find((p: any) => p.id === item.plan_id);
+                            const nombrePlan = planInfo ? planInfo.nombre : (item.plan_id === 1 ? "Curso Principiante A1" : item.plan_id === 2 ? "Conversación Intermedia B2" : selectedAlumno.plan);
+                            const clasesPlan = planInfo ? planInfo.total_clases : (item.clases_restantes || "—");
+                            const fechaFormateada = item.creado_en ? new Date(item.creado_en).toLocaleDateString(isFr ? "fr-FR" : "es-ES", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
+
+                            return (
+                              <div key={item.id || idx} style={{
+                                padding: "16px 20px",
+                                backgroundColor: "#ffffff",
+                                borderRadius: "14px",
+                                border: "1px solid #e2e8f0",
+                                display: "flex",
+                                justifyContent: "space-between",
+                                alignItems: "center",
+                                flexWrap: "wrap",
+                                gap: "12px",
+                                boxShadow: "0 2px 4px rgba(0,0,0,0.02)"
+                              }}>
+                                <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+                                  <div style={{ width: "42px", height: "42px", borderRadius: "10px", backgroundColor: "rgba(59, 130, 246, 0.1)", color: "#3b82f6", display: "flex", alignItems: "center", justifyContent: "center", fontWeight: 800, fontSize: "18px" }}>
+                                    📦
+                                  </div>
+                                  <div>
+                                    <div style={{ fontSize: "15px", fontWeight: 800, color: "#0f172a" }}>
+                                      {nombrePlan}
+                                    </div>
+                                    <div style={{ fontSize: "12px", color: "#64748b", marginTop: "2px" }}>
+                                      📅 {fechaFormateada}
+                                    </div>
+                                  </div>
+                                </div>
+
+                                <div style={{ display: "flex", alignItems: "center", gap: "20px" }}>
+                                  <div style={{ textAlign: "right" }}>
+                                    <div style={{ fontSize: "13px", fontWeight: 700, color: "#3b82f6" }}>
+                                      🎟️ {clasesPlan} {isFr ? "cours inclus" : "clases en paquete"}
+                                    </div>
+                                    <div style={{ fontSize: "14px", fontWeight: 800, color: "#0f172a", marginTop: "2px" }}>
+                                      {item.monto || 0} {item.divisa || "EUR"}
+                                    </div>
+                                  </div>
+
+                                  <span style={{
+                                    padding: "4px 12px",
+                                    borderRadius: "20px",
+                                    fontSize: "11px",
+                                    fontWeight: 700,
+                                    textTransform: "uppercase",
+                                    backgroundColor: item.estado_pago === "pagado" || item.estado_pago === "completado" ? "rgba(16,185,129,0.1)" : "rgba(249,115,22,0.1)",
+                                    color: item.estado_pago === "pagado" || item.estado_pago === "completado" ? "#10b981" : "#f97316"
+                                  }}>
+                                    ✓ {item.estado_pago || "pagado"}
+                                  </span>
+                                </div>
+                              </div>
+                            );
+                          })}
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
 
                 {/* TAB: CLASES */}
                 {fichaTab === "clases" && (

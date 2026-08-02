@@ -1622,6 +1622,7 @@ export default function AdminDashboard() {
                 eliminarAlumno={eliminarAlumno}
                 limpiarAlumnosInactivos={limpiarAlumnosInactivos}
                 planes={planes}
+                inscripciones={inscripcionesLogs}
                 lang={adminLang}
               />
             )}
