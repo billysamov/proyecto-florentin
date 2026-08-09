@@ -95,7 +95,7 @@ export default function PrivacidadPage() {
               Como titular de los datos personales, tienes derecho a acceder, rectificar, cancelar o limitar el tratamiento de tu información almacenada en el portal. Para ejercer estos derechos, puedes solicitar la eliminación o modificación de tu perfil de alumno:
             </p>
             <ul className="list-disc pl-5 space-y-1">
-              <li>Escribiendo al correo de soporte oficial: <strong>info@florentinfrench.com</strong></li>
+              <li>Escribiendo al correo de soporte oficial: <strong>lefrancaisavecflorentin@outlook.com</strong></li>
               <li>O comunicándote directamente a través del canal oficial de WhatsApp integrado en la Plataforma.</li>
             </ul>
           </div>

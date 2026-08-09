@@ -1425,7 +1425,7 @@ export default function Home() {
               <Smartphone size={24} /> {config?.cta_btn_text || t.ctaBtn}
             </a>
           </div>
-          <a href="mailto:info@florentinfrench.com" className="inline-block text-sm text-slate-400 hover:text-[#3b82f6] transition-colors mt-6 font-semibold">
+          <a href={`mailto:${config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}`} className="inline-block text-sm text-slate-400 hover:text-[#3b82f6] transition-colors mt-6 font-semibold">
             {t.ctaBtnAlt}
           </a>
         </div>
@@ -1522,7 +1522,9 @@ export default function Home() {
             <div className="flex flex-col gap-2 text-sm text-slate-400 font-semibold">
               <Link href="/privacidad" className="hover:text-[#0c1b33] transition-colors">{t.footerPrivacy}</Link>
               <Link href="/terminos" className="hover:text-[#0c1b33] transition-colors">{t.footerTerms}</Link>
-              <a href="mailto:info@florentinfrench.com" className="hover:text-[#0c1b33] transition-colors">info@florentinfrench.com</a>
+              <a href={`mailto:${config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}`} className="hover:text-[#0c1b33] transition-colors">
+                {config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}
+              </a>
             </div>
           </div>
         </div>
