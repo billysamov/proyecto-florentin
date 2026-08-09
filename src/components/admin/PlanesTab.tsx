@@ -1,5 +1,17 @@
-import React from "react";
-import { Shield, Edit, Trash2 } from "lucide-react";
+import React, { useState } from "react";
+import { Shield, Edit, Trash2, Upload, Image as ImageIcon, Check, X, FolderPlus, Loader2 } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+
+const BANCO_IMAGENES_DEFAULT = [
+  { url: "/french_hero.png", titulo: "🇫🇷 Método / Conversación", tag: "Francés" },
+  { url: "/perfect_hero_image.png", titulo: "🎓 Estudiante 1 a 1", tag: "Particular" },
+  { url: "/level_progress.png", titulo: "📈 Progreso y Niveles", tag: "Grupal" },
+  { url: "/target_3d.png", titulo: "🎯 Certificación DELF/DALF", tag: "Exámenes" },
+  { url: "/teacher_hero.png", titulo: "👨‍🏫 Profesor Florentin", tag: "Guía" },
+  { url: "/level_progress_v4.png", titulo: "🚀 Progreso V4", tag: "Avanzado" },
+  { url: "/level_progress_clay.png", titulo: "✨ Clay Progress", tag: "3D" },
+  { url: "/hero_composite.png", titulo: "🖼️ Composite Hero", tag: "General" }
+];
 
 interface PlanesTabProps {
   planes: any[];
@@ -43,6 +55,67 @@ export default function PlanesTab({
   lang = "es"
 }: PlanesTabProps) {
   const isFr = lang === "fr";
+
+  const [bancoImagenes, setBancoImagenes] = useState(BANCO_IMAGENES_DEFAULT);
+  const [modalGaleriaAbierto, setModalGaleriaAbierto] = useState(false);
+  const [galeriaTargetPlanId, setGaleriaTargetPlanId] = useState<number | null>(null);
+  const [subiendoImagen, setSubiendoImagen] = useState(false);
+
+  const handleSubirImagen = async (e: React.ChangeEvent<HTMLInputElement>, targetPlanId: number | null = null) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    try {
+      setSubiendoImagen(true);
+      const ext = file.name.split('.').pop();
+      const fileName = `plan_img_${Date.now()}.${ext}`;
+
+      const { error: uploadError } = await supabase.storage
+        .from("recursos")
+        .upload(fileName, file, { upsert: true });
+
+      if (uploadError) {
+        alert("Error al subir imagen: " + uploadError.message);
+        setSubiendoImagen(false);
+        return;
+      }
+
+      const { data: { publicUrl } } = supabase.storage
+        .from("recursos")
+        .getPublicUrl(fileName);
+
+      // Agregar a la galería del banco
+      const nuevaImg = { url: publicUrl, titulo: file.name, tag: "Subida" };
+      setBancoImagenes(prev => [nuevaImg, ...prev]);
+
+      if (targetPlanId !== null) {
+        const inputImg = document.getElementById(`edit-plan-img-${targetPlanId}`) as HTMLInputElement;
+        const previewImg = document.getElementById(`edit-plan-img-preview-${targetPlanId}`) as HTMLImageElement;
+        if (inputImg) inputImg.value = publicUrl;
+        if (previewImg) previewImg.src = publicUrl;
+      } else {
+        setNuevoPlan({ ...nuevoPlan, imagen_url: publicUrl });
+      }
+
+      setSubiendoImagen(false);
+      alert("✓ Imagen subida con éxito.");
+    } catch (err: any) {
+      alert("Error inesperado: " + err.message);
+      setSubiendoImagen(false);
+    }
+  };
+
+  const seleccionarDeBanco = (url: string) => {
+    if (galeriaTargetPlanId !== null) {
+      const inputImg = document.getElementById(`edit-plan-img-${galeriaTargetPlanId}`) as HTMLInputElement;
+      const previewImg = document.getElementById(`edit-plan-img-preview-${galeriaTargetPlanId}`) as HTMLImageElement;
+      if (inputImg) inputImg.value = url;
+      if (previewImg) previewImg.src = url;
+    } else {
+      setNuevoPlan({ ...nuevoPlan, imagen_url: url });
+    }
+    setModalGaleriaAbierto(false);
+  };
 
   const t = {
     tituloRegistrar: isFr ? "Enregistrer une Nouvelle Formule / Abonnement" : "Registrar Nuevo Plan / Suscripción",
@@ -212,28 +285,43 @@ export default function PlanesTab({
             />
           </div>
           <div className="form-group" style={{ margin: 0, gridColumn: "span 2" }}>
-            <label className="form-label" style={{ fontSize: "12px" }}>🖼️ Imagen del Plan (URL o Selección)</label>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <select
-                className="form-control"
-                value={nuevoPlan.imagen_url || "/french_hero.png"}
-                onChange={(e) => setNuevoPlan({ ...nuevoPlan, imagen_url: e.target.value })}
-                style={{ padding: "8px 12px", width: "160px" }}
-              >
-                <option value="/french_hero.png">🖼️ Método / Frances</option>
-                <option value="/perfect_hero_image.png">🖼️ Estudiante 1 a 1</option>
-                <option value="/level_progress.png">🖼️ Grupo / Clases</option>
-                <option value="/target_3d.png">🖼️ Certificación / Examen</option>
-                <option value="/teacher_hero.png">🖼️ Profesor / Guía</option>
-              </select>
-              <input
-                type="text"
-                className="form-control"
-                value={nuevoPlan.imagen_url || ""}
-                onChange={(e) => setNuevoPlan({ ...nuevoPlan, imagen_url: e.target.value })}
-                placeholder="O pega una URL de imagen externa..."
-                style={{ padding: "8px 12px" }}
+            <label className="form-label" style={{ fontSize: "12px" }}>🖼️ Imagen del Plan (Selección o Subida)</label>
+            <div style={{ display: "flex", alignItems: "center", gap: "12px", padding: "10px", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
+              <img 
+                src={nuevoPlan.imagen_url || "/french_hero.png"} 
+                alt="Vista previa" 
+                style={{ width: "50px", height: "50px", borderRadius: "8px", objectFit: "cover", border: "1px solid #cbd5e1" }} 
               />
+              <div style={{ flex: 1 }}>
+                <div style={{ fontSize: "12px", fontWeight: 700, color: "#0f172a" }}>
+                  {bancoImagenes.find(b => b.url === nuevoPlan.imagen_url)?.titulo || "Imagen Seleccionada"}
+                </div>
+                <div style={{ fontSize: "11px", color: "#64748b", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap", maxWidth: "240px" }}>
+                  {nuevoPlan.imagen_url || "/french_hero.png"}
+                </div>
+              </div>
+
+              <div style={{ display: "flex", gap: "6px" }}>
+                <button
+                  type="button"
+                  onClick={() => { setGaleriaTargetPlanId(null); setModalGaleriaAbierto(true); }}
+                  style={{ padding: "6px 12px", backgroundColor: "#0055a5", color: "#ffffff", border: "none", borderRadius: "8px", fontSize: "12px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "5px" }}
+                >
+                  <ImageIcon size={14} /> Banco de Fotos
+                </button>
+
+                <label style={{ padding: "6px 12px", backgroundColor: "#10b981", color: "#ffffff", borderRadius: "8px", fontSize: "12px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "5px", margin: 0 }}>
+                  {subiendoImagen ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                  {subiendoImagen ? "Subiendo..." : "Subir de mi PC"}
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => handleSubirImagen(e, null)}
+                    style={{ display: "none" }}
+                    disabled={subiendoImagen}
+                  />
+                </label>
+              </div>
             </div>
           </div>
           <div className="form-group" style={{ margin: 0, gridColumn: "span 2" }}>
@@ -314,14 +402,35 @@ export default function PlanesTab({
                             placeholder="Duración (ej: 4 Semanas)"
                             style={{ padding: "4px 8px", fontSize: "11px" }}
                           />
-                          <input
-                            type="text"
-                            defaultValue={p.imagen_url || "/french_hero.png"}
-                            id={`edit-plan-img-${p.id}`}
-                            className="form-control"
-                            placeholder="Imagen URL (/french_hero.png)"
-                            style={{ padding: "4px 8px", fontSize: "11px" }}
-                          />
+                          <div style={{ display: "flex", alignItems: "center", gap: "6px", marginTop: "4px" }}>
+                            <img 
+                              id={`edit-plan-img-preview-${p.id}`}
+                              src={p.imagen_url || "/french_hero.png"} 
+                              alt="preview" 
+                              style={{ width: "36px", height: "36px", borderRadius: "6px", objectFit: "cover", border: "1px solid #cbd5e1" }} 
+                            />
+                            <input
+                              type="hidden"
+                              defaultValue={p.imagen_url || "/french_hero.png"}
+                              id={`edit-plan-img-${p.id}`}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => { setGaleriaTargetPlanId(p.id); setModalGaleriaAbierto(true); }}
+                              style={{ padding: "4px 8px", backgroundColor: "#0055a5", color: "#ffffff", border: "none", borderRadius: "6px", fontSize: "10px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px" }}
+                            >
+                              <ImageIcon size={12} /> Galería
+                            </button>
+                            <label style={{ padding: "4px 8px", backgroundColor: "#10b981", color: "#ffffff", borderRadius: "6px", fontSize: "10px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "4px", margin: 0 }}>
+                              <Upload size={12} /> Subir
+                              <input
+                                type="file"
+                                accept="image/*"
+                                onChange={(e) => handleSubirImagen(e, p.id)}
+                                style={{ display: "none" }}
+                              />
+                            </label>
+                          </div>
                           <textarea
                             defaultValue={p.caracteristicas || ""}
                             id={`edit-plan-caract-${p.id}`}
@@ -484,6 +593,94 @@ export default function PlanesTab({
           </table>
         </div>
       </div>
+
+      {/* 🖼️ MODAL BANCO DE IMÁGENES */}
+      {modalGaleriaAbierto && (
+        <div style={{ position: "fixed", inset: 0, backgroundColor: "rgba(15, 23, 42, 0.65)", backdropFilter: "blur(6px)", zIndex: 9999, display: "flex", alignItems: "center", justifyContent: "center", padding: "20px" }}>
+          <div style={{ backgroundColor: "#ffffff", borderRadius: "24px", maxWidth: "750px", width: "100%", maxHeight: "85vh", overflowY: "auto", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)", padding: "24px", border: "1px solid #e2e8f0" }}>
+            
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "16px", paddingBottom: "12px", borderBottom: "1px solid #f1f5f9" }}>
+              <div>
+                <h3 style={{ fontSize: "18px", fontWeight: 800, color: "#0f172a", margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
+                  <ImageIcon size={20} className="text-[#0055a5]" /> Banco de Imágenes de la Academia
+                </h3>
+                <p style={{ fontSize: "12px", color: "#64748b", margin: "4px 0 0 0" }}>
+                  Haz clic en cualquier imagen para seleccionarla o sube una nueva desde tu computadora.
+                </p>
+              </div>
+              <button onClick={() => setModalGaleriaAbierto(false)} style={{ background: "#f1f5f9", border: "none", borderRadius: "50%", width: "32px", height: "32px", cursor: "pointer", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                <X size={18} className="text-slate-600" />
+              </button>
+            </div>
+
+            {/* Subida rápida desde PC dentro del Modal */}
+            <div style={{ marginBottom: "20px", padding: "16px", backgroundColor: "#f8fafc", borderRadius: "16px", border: "1px dashed #cbd5e1", display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
+              <div>
+                <div style={{ fontSize: "13px", fontWeight: 700, color: "#0f172a" }}>Subir nueva imagen propia</div>
+                <div style={{ fontSize: "11px", color: "#64748b" }}>Formatos permitidos: PNG, JPG, WEBP, SVG</div>
+              </div>
+              <label style={{ padding: "8px 16px", backgroundColor: "#10b981", color: "#ffffff", borderRadius: "10px", fontSize: "12px", fontWeight: 700, cursor: "pointer", display: "flex", alignItems: "center", gap: "6px" }}>
+                {subiendoImagen ? <Loader2 size={14} className="animate-spin" /> : <Upload size={14} />}
+                {subiendoImagen ? "Subiendo..." : "Subir desde PC"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => handleSubirImagen(e, galeriaTargetPlanId)}
+                  style={{ display: "none" }}
+                  disabled={subiendoImagen}
+                />
+              </label>
+            </div>
+
+            {/* Grilla de Tarjetas de Imágenes */}
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: "16px" }}>
+              {bancoImagenes.map((imgItem, idx) => {
+                const isSelected = galeriaTargetPlanId === null 
+                  ? nuevoPlan.imagen_url === imgItem.url 
+                  : (document.getElementById(`edit-plan-img-${galeriaTargetPlanId}`) as HTMLInputElement)?.value === imgItem.url;
+
+                return (
+                  <div 
+                    key={idx} 
+                    onClick={() => seleccionarDeBanco(imgItem.url)}
+                    style={{ 
+                      borderRadius: "16px", 
+                      border: isSelected ? "2px solid #0055a5" : "1px solid #e2e8f0", 
+                      overflow: "hidden", 
+                      backgroundColor: "#ffffff", 
+                      cursor: "pointer", 
+                      transition: "all 0.2s shadow",
+                      position: "relative"
+                    }}
+                    className="hover:shadow-lg transition-transform hover:scale-[1.02]"
+                  >
+                    <div style={{ position: "relative", height: "130px", width: "100%", backgroundColor: "#f1f5f9" }}>
+                      <img src={imgItem.url} alt={imgItem.titulo} style={{ width: "100%", height: "100%", objectFit: "cover" }} />
+                      <span style={{ position: "absolute", top: "8px", left: "8px", backgroundColor: "rgba(255,255,255,0.9)", padding: "2px 8px", borderRadius: "12px", fontSize: "10px", fontWeight: 800, color: "#0f172a" }}>
+                        {imgItem.tag}
+                      </span>
+                      {isSelected && (
+                        <span style={{ position: "absolute", top: "8px", right: "8px", backgroundColor: "#0055a5", color: "#ffffff", borderRadius: "50%", width: "22px", height: "22px", display: "flex", alignItems: "center", justifyContent: "center" }}>
+                          <Check size={14} />
+                        </span>
+                      )}
+                    </div>
+                    <div style={{ padding: "10px 12px" }}>
+                      <div style={{ fontSize: "12px", fontWeight: 700, color: "#0f172a", marginBottom: "2px", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {imgItem.titulo}
+                      </div>
+                      <div style={{ fontSize: "10px", color: "#94a3b8", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+                        {imgItem.url}
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+          </div>
+        </div>
+      )}
     </div>
   );
 }
