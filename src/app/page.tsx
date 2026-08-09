@@ -1297,85 +1297,90 @@ export default function Home() {
           {/* Grid de Tarjetas de Planes V2 con Imágenes y Checklists */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mt-8">
             
-            {/* 🎁 Tarjeta Fija: Clase de Prueba Gratuita */}
-            <div className="reveal-item rounded-[24px] border-2 border-[#10b981] overflow-hidden bg-white flex flex-col justify-between shadow-lg shadow-[#10b981]/10 relative transition-all hover:scale-[1.02]">
-              <div>
-                <div className="relative h-[190px] w-full">
-                  <Image 
-                    src="/teacher_hero.png" 
-                    alt="Clase de Prueba" 
-                    fill 
-                    className="object-cover" 
-                  />
-                  <span className="absolute top-3 left-3 bg-[#10b981] text-white px-3 py-1 rounded-full text-xs font-extrabold shadow-md">
-                    ⭐ {lang === 'es' ? 'GRATIS' : lang === 'fr' ? 'GRATUIT' : 'FREE'}
-                  </span>
+            {/* 🎁 Tarjeta Fija de Respaldo: Clase de Prueba Gratuita (si no se ha registrado un plan gratis en la base de datos) */}
+            {!planes.some(p => p.precio === 0 || p.tipo === 'clase_gratis') && (
+              <div className="reveal-item rounded-[24px] border-2 border-[#10b981] overflow-hidden bg-white flex flex-col justify-between shadow-lg shadow-[#10b981]/10 relative transition-all hover:scale-[1.02]">
+                <div>
+                  <div className="relative h-[190px] w-full">
+                    <Image 
+                      src="/teacher_hero.png" 
+                      alt="Clase de Prueba" 
+                      fill 
+                      className="object-cover" 
+                    />
+                    <span className="absolute top-3 left-3 bg-[#10b981] text-white px-3 py-1 rounded-full text-xs font-extrabold shadow-md">
+                      ⭐ {lang === 'es' ? 'GRATIS' : lang === 'fr' ? 'GRATUIT' : 'FREE'}
+                    </span>
+                  </div>
+
+                  <div className="p-5 sm:p-6">
+                    <h3 className="text-lg sm:text-xl font-extrabold text-[#0f172a] mb-2 leading-snug">
+                      {t.planFreeName}
+                    </h3>
+                    <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed mb-4">
+                      {t.planFreeDesc}
+                    </p>
+                    <p className="text-xs font-bold text-[#10b981] mb-4">
+                      {lang === 'es' ? 'Todos los Niveles • 1 Sesión' : lang === 'fr' ? 'Tous Niveaux • 1 Session' : 'All Levels • 1 Session'}
+                    </p>
+
+                    <ul className="space-y-2.5 pt-3 border-t border-slate-100">
+                      {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
+                        <li key={i} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                          <CheckCircle size={14} className="text-[#10b981] shrink-0" />
+                          <span>{detail}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
                 </div>
 
-                <div className="p-5 sm:p-6">
-                  <h3 className="text-lg sm:text-xl font-extrabold text-[#0f172a] mb-2 leading-snug">
-                    {t.planFreeName}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed mb-4">
-                    {t.planFreeDesc}
-                  </p>
-                  <p className="text-xs font-bold text-[#10b981] mb-4">
-                    {lang === 'es' ? 'Todos los Niveles • 1 Sesión' : lang === 'fr' ? 'Tous Niveaux • 1 Session' : 'All Levels • 1 Session'}
-                  </p>
-
-                  <ul className="space-y-2.5 pt-3 border-t border-slate-100">
-                    {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
-                      <li key={i} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                        <CheckCircle size={14} className="text-[#10b981] shrink-0" />
-                        <span>{detail}</span>
-                      </li>
-                    ))}
-                  </ul>
+                <div className="p-5 border-t border-slate-100 flex items-center justify-between gap-3 bg-slate-50/50">
+                  <span className="text-2xl font-extrabold text-[#0f172a]">{t.planFreePrice}</span>
+                  <a 
+                    href={whatsappUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer" 
+                    className="px-5 py-2.5 rounded-xl bg-[#10b981] hover:bg-[#059669] text-white text-xs font-extrabold transition-all shadow-md"
+                  >
+                    {lang === 'es' ? 'Agendar →' : lang === 'fr' ? 'Réserver →' : 'Book →'}
+                  </a>
                 </div>
               </div>
+            )}
 
-              <div className="p-5 border-t border-slate-100 flex items-center justify-between gap-3 bg-slate-50/50">
-                <span className="text-2xl font-extrabold text-[#0f172a]">{t.planFreePrice}</span>
-                <a 
-                  href={whatsappUrl} 
-                  target="_blank" 
-                  rel="noopener noreferrer" 
-                  className="px-5 py-2.5 rounded-xl bg-[#10b981] hover:bg-[#059669] text-white text-xs font-extrabold transition-all shadow-md"
-                >
-                  {lang === 'es' ? 'Agendar →' : lang === 'fr' ? 'Réserver →' : 'Book →'}
-                </a>
-              </div>
-            </div>
-
-            {/* 💎 Planes Dinámicos desde Supabase */}
+            {/* 💎 Planes Dinámicos desde Supabase (Gestionables desde el Admin) */}
             {planes.map((plan, idx) => {
+              const isFreePlan = Number(plan.precio) === 0 || plan.tipo === 'clase_gratis';
               const featuresList = plan.caracteristicas 
                 ? plan.caracteristicas.split('\n').filter((f: string) => f.trim().length > 0)
-                : [
-                    lang === 'es' ? 'Clases particulares en vivo' : 'Cours particuliers en direct',
-                    lang === 'es' ? 'Material interactivo en PDF incluido' : 'Support de cours PDF inclus',
-                    lang === 'es' ? 'Atención personalizada 1 a 1' : 'Suivi personnalisé 1 à 1'
-                  ];
+                : [];
 
               return (
                 <div 
                   key={plan.id || idx} 
                   className={`reveal-item rounded-[24px] overflow-hidden bg-white flex flex-col justify-between relative transition-all hover:scale-[1.02] ${
-                    plan.recomendado 
-                      ? 'border-2 border-[#0055a5] shadow-xl shadow-[#0055a5]/10' 
-                      : 'border border-slate-200 shadow-sm'
+                    isFreePlan
+                      ? 'border-2 border-[#10b981] shadow-lg shadow-[#10b981]/10'
+                      : plan.recomendado 
+                        ? 'border-2 border-[#0055a5] shadow-xl shadow-[#0055a5]/10' 
+                        : 'border border-slate-200 shadow-sm'
                   }`}
                 >
                   <div>
                     <div className="relative h-[190px] w-full">
                       <Image 
-                        src={plan.imagen_url || (idx % 4 === 0 ? '/french_hero.png' : idx % 4 === 1 ? '/perfect_hero_image.png' : idx % 4 === 2 ? '/level_progress.png' : '/target_3d.png')} 
+                        src={plan.imagen_url || (isFreePlan ? '/teacher_hero.png' : idx % 4 === 0 ? '/french_hero.png' : idx % 4 === 1 ? '/perfect_hero_image.png' : idx % 4 === 2 ? '/level_progress.png' : '/target_3d.png')} 
                         alt={plan.nombre} 
                         fill 
                         className="object-cover" 
                       />
-                      <span className="absolute top-3 left-3 bg-white text-slate-800 px-3 py-1 rounded-full text-xs font-extrabold shadow-md border border-slate-100">
-                        {plan.badge || (plan.recomendado ? 'FR Más Popular' : 'Flexible')}
+                      <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-extrabold shadow-md ${
+                        isFreePlan 
+                          ? 'bg-[#10b981] text-white' 
+                          : 'bg-white text-slate-800 border border-slate-100'
+                      }`}>
+                        {plan.badge || (isFreePlan ? '⭐ GRATIS' : plan.recomendado ? 'FR Más Popular' : 'Flexible')}
                       </span>
                     </div>
 
@@ -1386,32 +1391,50 @@ export default function Home() {
                       <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed mb-4">
                         {plan.descripcion}
                       </p>
-                      <p className="text-xs font-bold text-[#0055a5] mb-4">
-                        {plan.nivel || 'A1-A2'} • {plan.duracion || `${plan.total_clases} ${t.planClasses}`}
+                      <p className={`text-xs font-bold mb-4 ${isFreePlan ? 'text-[#10b981]' : 'text-[#0055a5]'}`}>
+                        {plan.nivel || 'Todos los Niveles'} • {plan.duracion || (plan.total_clases > 0 ? `${plan.total_clases} ${t.planClasses}` : '1 Sesión')}
                       </p>
 
-                      <ul className="space-y-2.5 pt-3 border-t border-slate-100">
-                        {featuresList.map((feature: string, fIdx: number) => (
-                          <li key={fIdx} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                            <CheckCircle size={14} className="text-[#10b981] shrink-0" />
-                            <span>{feature.replace(/^[✓\s-]+/, '')}</span>
-                          </li>
-                        ))}
-                      </ul>
+                      {featuresList.length > 0 && (
+                        <ul className="space-y-2.5 pt-3 border-t border-slate-100">
+                          {featuresList.map((feature: string, fIdx: number) => (
+                            <li key={fIdx} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                              <CheckCircle size={14} className={isFreePlan ? "text-[#10b981] shrink-0" : "text-[#10b981] shrink-0"} />
+                              <span>{feature.replace(/^[✓\s-]+/, '')}</span>
+                            </li>
+                          ))}
+                        </ul>
+                      )}
                     </div>
                   </div>
 
                   <div className="p-5 border-t border-slate-100 flex items-center justify-between gap-3 bg-slate-50/50">
                     <div>
-                      <span className="text-2xl font-extrabold text-[#0f172a]">{formatPrecio(plan.precio)}</span>
-                      <span className="text-[11px] text-slate-400 font-medium block">/ {plan.total_clases} {t.planClasses}</span>
+                      <span className="text-2xl font-extrabold text-[#0f172a]">
+                        {isFreePlan ? (lang === 'es' ? 'GRATIS' : lang === 'fr' ? 'GRATUIT' : 'FREE') : formatPrecio(plan.precio)}
+                      </span>
+                      {!isFreePlan && plan.total_clases > 0 && (
+                        <span className="text-[11px] text-slate-400 font-medium block">/ {plan.total_clases} {t.planClasses}</span>
+                      )}
                     </div>
-                    <Link 
-                      href="/alumno" 
-                      className="px-5 py-2.5 rounded-xl bg-[#0055a5] hover:bg-[#003d7a] text-white text-xs font-extrabold transition-all shadow-md"
-                    >
-                      {lang === 'es' ? 'Elegir Plan →' : lang === 'fr' ? 'Choisir →' : 'Choose →'}
-                    </Link>
+
+                    {isFreePlan ? (
+                      <a 
+                        href={whatsappUrl} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        className="px-5 py-2.5 rounded-xl bg-[#10b981] hover:bg-[#059669] text-white text-xs font-extrabold transition-all shadow-md"
+                      >
+                        {lang === 'es' ? 'Agendar →' : lang === 'fr' ? 'Réserver →' : 'Book →'}
+                      </a>
+                    ) : (
+                      <Link 
+                        href="/alumno" 
+                        className="px-5 py-2.5 rounded-xl bg-[#0055a5] hover:bg-[#003d7a] text-white text-xs font-extrabold transition-all shadow-md"
+                      >
+                        {lang === 'es' ? 'Elegir Plan →' : lang === 'fr' ? 'Choisir →' : 'Choose →'}
+                      </Link>
+                    )}
                   </div>
                 </div>
               );

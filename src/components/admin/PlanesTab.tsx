@@ -244,6 +244,7 @@ export default function PlanesTab({
               <option value="paquete">{t.optPaquete}</option>
               <option value="suscripcion">{t.optSuscripcion}</option>
               <option value="clase_individual">{t.optIndividual}</option>
+              <option value="clase_gratis">🎁 Clase de Prueba Gratuita (WhatsApp)</option>
             </select>
           </div>
           <div className="form-group" style={{ margin: 0 }}>
