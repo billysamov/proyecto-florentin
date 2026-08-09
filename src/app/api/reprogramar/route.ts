@@ -16,12 +16,41 @@ import { createClient } from '@supabase/supabase-js';
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { clase_id, usuario_id, nueva_fecha_hora } = body;
+    const { clase_id, usuario_id, nueva_fecha_hora, es_admin, reset_intentos } = body;
 
     // Validación de entrada
-    if (!clase_id || !usuario_id || !nueva_fecha_hora) {
+    if (!clase_id) {
       return NextResponse.json(
-        { error: 'Se requieren clase_id, usuario_id y nueva_fecha_hora' },
+        { error: 'Se requiere clase_id' },
+        { status: 400 }
+      );
+    }
+
+    // Crear cliente admin para evadir RLS
+    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
+    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
+    const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
+
+    // Accion especial: Restablecer intentos de reprogramacion por el administrador
+    if (reset_intentos) {
+      const { error: resetErr } = await supabaseAdmin
+        .from('clases')
+        .update({ reprogramaciones_restantes: 3 })
+        .eq('id', clase_id);
+
+      if (resetErr) {
+        return NextResponse.json({ error: 'Error al restablecer intentos: ' + resetErr.message }, { status: 500 });
+      }
+
+      return NextResponse.json({
+        success: true,
+        message: '¡Intentos de reprogramación restablecidos exitosamente a 3!'
+      });
+    }
+
+    if (!nueva_fecha_hora) {
+      return NextResponse.json(
+        { error: 'Se requiere nueva_fecha_hora' },
         { status: 400 }
       );
     }
@@ -41,18 +70,11 @@ export async function POST(request: Request) {
       );
     }
 
-    // Crear cliente admin para evadir RLS
-    const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!;
-    const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
-    const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
-
     // ====== PASO 1: Obtener la clase y validar estado e intentos ======
-    const { data: clase, error: claseError } = await supabaseAdmin
-      .from('clases')
-      .select('*')
-      .eq('id', clase_id)
-      .eq('usuario_id', usuario_id)
-      .single();
+    let query = supabaseAdmin.from('clases').select('*').eq('id', clase_id);
+    if (usuario_id) query = query.eq('usuario_id', usuario_id);
+
+    const { data: clase, error: claseError } = await query.single();
 
     if (claseError || !clase) {
       return NextResponse.json(
@@ -68,26 +90,26 @@ export async function POST(request: Request) {
       );
     }
 
-    // Validar regla de las 24 horas sobre el horario ACTUAL de la clase
-    const ahora = new Date();
-    const fechaActualClase = new Date(clase.fecha_hora);
-    const diffHorasActual = (fechaActualClase.getTime() - ahora.getTime()) / (1000 * 60 * 60);
+    // Si NO es el administrador, aplicar reglas estrictas de 24h e intentos
+    if (!es_admin) {
+      const ahora = new Date();
+      const fechaActualClase = new Date(clase.fecha_hora);
+      const diffHorasActual = (fechaActualClase.getTime() - ahora.getTime()) / (1000 * 60 * 60);
 
-    if (diffHorasActual < 24) {
-      return NextResponse.json(
-        { error: 'No puedes reprogramar la clase con menos de 24 horas de anticipación. Por favor contacta al administrador.' },
-        { status: 400 }
-      );
-    }
+      if (diffHorasActual < 24) {
+        return NextResponse.json(
+          { error: 'No puedes reprogramar la clase con menos de 24 horas de anticipación. Por favor contacta al administrador.' },
+          { status: 400 }
+        );
+      }
 
-    // Validar intentos restantes. 
-    // Si la columna no existe aún (hasta que el usuario corra el SQL), asumimos que tiene intentos
-    const intentosRestantes = clase.reprogramaciones_restantes !== undefined ? clase.reprogramaciones_restantes : 2;
-    if (intentosRestantes <= 0) {
-      return NextResponse.json(
-        { error: 'Has agotado el límite de reprogramaciones para esta clase. Por favor contacta al administrador por WhatsApp para resolverlo.' },
-        { status: 400 }
-      );
+      const intentosRestantes = clase.reprogramaciones_restantes !== undefined ? clase.reprogramaciones_restantes : 2;
+      if (intentosRestantes <= 0) {
+        return NextResponse.json(
+          { error: 'Has agotado el límite de reprogramaciones para esta clase. Por favor contacta al administrador por WhatsApp para resolverlo.' },
+          { status: 400 }
+        );
+      }
     }
 
     // ====== PASO 2: Verificación de colisión en el nuevo horario ======
@@ -118,16 +140,13 @@ export async function POST(request: Request) {
     }
 
     // ====== PASO 3: Actualizar fecha e intentos ======
-    const nuevosIntentos = Math.max(0, intentosRestantes - 1);
-    
-    // Armamos los datos a actualizar de forma dinámica para ser tolerantes a si la columna SQL aún no ha sido agregada
     const updateData: any = {
       fecha_hora: nuevaFecha.toISOString()
     };
     
-    // Solo si el campo reprogramaciones_restantes existe en el objeto devuelto por la BD
-    if (clase.reprogramaciones_restantes !== undefined) {
-      updateData.reprogramaciones_restantes = nuevosIntentos;
+    // Si la acción proviene del alumno, se descuenta 1 intento. Si es del Admin, no se descuenta.
+    if (!es_admin && clase.reprogramaciones_restantes !== undefined) {
+      updateData.reprogramaciones_restantes = Math.max(0, clase.reprogramaciones_restantes - 1);
     }
 
     const { error: updateError } = await supabaseAdmin

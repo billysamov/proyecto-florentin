@@ -115,55 +115,120 @@ export default function ResumenTab({
     document.body.removeChild(link);
   };
 
+  const [modalReprogramar, setModalReprogramar] = useState<ClaseAdmin | null>(null);
+  const [nuevaFecha, setNuevaFecha] = useState("");
+  const [nuevaHora, setNuevaHora] = useState("");
+  const [procesando, setProcesando] = useState(false);
+  const [mensajeExito, setMensajeExito] = useState("");
+  const [mensajeError, setMensajeError] = useState("");
+
+  const handleAdminReprogramar = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!modalReprogramar || !nuevaFecha || !nuevaHora) return;
+    setProcesando(true);
+    setMensajeError("");
+    setMensajeExito("");
+
+    try {
+      const fechaHoraIso = `${nuevaFecha}T${nuevaHora}:00.000Z`;
+      const res = await fetch("/api/reprogramar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clase_id: modalReprogramar.id,
+          nueva_fecha_hora: fechaHoraIso,
+          es_admin: true
+        })
+      });
+
+      const data = await res.json();
+      if (!res.ok) {
+        setMensajeError(data.error || "Error al reprogramar clase");
+      } else {
+        setMensajeExito("¡Clase reprogramada exitosamente por el Administrador!");
+        setTimeout(() => {
+          setModalReprogramar(null);
+          window.location.reload();
+        }, 1500);
+      }
+    } catch (err: any) {
+      setMensajeError("Error de red: " + err.message);
+    } finally {
+      setProcesando(false);
+    }
+  };
+
+  const handleRestablecerIntentos = async (claseId: string) => {
+    if (!confirm("¿Deseas restablecer los intentos de reprogramación de esta clase a 3 para el alumno?")) return;
+    try {
+      const res = await fetch("/api/reprogramar", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          clase_id: claseId,
+          reset_intentos: true
+        })
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert("¡Intentos de reprogramación restablecidos exitosamente a 3!");
+        window.location.reload();
+      } else {
+        alert("Error: " + (data.error || "No se pudo restablecer"));
+      }
+    } catch (err: any) {
+      alert("Error de red: " + err.message);
+    }
+  };
+
   return (
-    <div>
-      {/* Resumen de Métricas */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
-        gap: "24px",
-        marginBottom: "32px"
-      }}>
-        <div className="card" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
-          <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{t.ganancias}</span>
-          <span style={{ fontSize: "32px", fontWeight: 800, color: "var(--text-main)" }}>{(ingresosEur + (ingresosUsd / 1.10)).toFixed(2)}€</span>
-          <span style={{ fontSize: "11px", color: "var(--text-muted)", marginTop: "-4px" }}>
-            {t.detalle} {ingresosEur.toFixed(2)}€ | ${ingresosUsd.toFixed(2)}
-          </span>
+    <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+      {/* 💳 Métricas de Ingresos */}
+      <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))", gap: "16px" }}>
+        <div className="card-custom" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
+          <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{t.ingresosEur}</span>
+          <span style={{ fontSize: "32px", fontWeight: 800, color: "#10b981" }}>€{ingresosEur.toFixed(2)} EUR</span>
         </div>
-        <div className="card" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
+
+        <div className="card-custom" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
+          <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{t.ingresosUsd}</span>
+          <span style={{ fontSize: "32px", fontWeight: 800, color: "#3b82f6" }}>${ingresosUsd.toFixed(2)} USD</span>
+        </div>
+
+        <div className="card-custom" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
           <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{t.clasesProg}</span>
           <span style={{ fontSize: "32px", fontWeight: 800, color: "#f97316" }}>
             {clases.filter(c => c.estado === "programada").length}
           </span>
         </div>
-        <div className="card" style={{ padding: "24px", display: "flex", flexDirection: "column", gap: "8px" }}>
+
+        <div className="card-custom" style={{ padding: "20px", display: "flex", flexDirection: "column", gap: "8px" }}>
           <span style={{ fontSize: "13px", color: "var(--text-muted)", fontWeight: 600, textTransform: "uppercase", letterSpacing: "0.5px" }}>{t.totalHistorial}</span>
           <span style={{ fontSize: "32px", fontWeight: 800, color: "hsl(var(--accent-hsl))" }}>{clases.length}</span>
         </div>
       </div>
 
       {/* Listado de Clases */}
-      <div className="card" style={{ padding: "28px" }}>
-        <h3 style={{ fontSize: "20px", marginBottom: "20px", display: "flex", alignItems: "center", gap: "10px" }}>
-          <Calendar size={20} className="text-[#3b82f6] shrink-0" /> {t.tituloAgenda}
+      <div className="card-custom" style={{ padding: "24px" }}>
+        <h3 style={{ fontSize: "18px", fontWeight: 700, marginBottom: "16px" }}>
+          {t.tituloAgenda}
         </h3>
-        
+
         {clases.length === 0 ? (
-          <p style={{ color: "var(--text-muted)", fontSize: "14px", textAlign: "center", padding: "20px 0" }}>
+          <p style={{ color: "var(--text-muted)", fontSize: "14px", fontStyle: "italic" }}>
             {t.noClases}
           </p>
         ) : (
-          <div className="table-responsive" style={{ overflowX: "auto" }}>
-            <table className="table" style={{ width: "100%", borderCollapse: "collapse" }}>
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
               <thead>
-                <tr style={{ borderBottom: "2px solid var(--border-color)", textAlign: "left" }}>
-                  <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thAlumno}</th>
-                  <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thFecha}</th>
-                  <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thHora}</th>
-                  <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thEnlace}</th>
-                  <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)" }}>{t.thEstado}</th>
-                  <th style={{ padding: "12px 16px", fontSize: "13px", fontWeight: 700, color: "var(--text-muted)", textAlign: "right" }}>{t.thAcciones}</th>
+                <tr style={{ borderBottom: "1px solid var(--border-color)", color: "var(--text-muted)", fontSize: "12px", textTransform: "uppercase" }}>
+                  <th style={{ padding: "12px 16px" }}>{t.thAlumno}</th>
+                  <th style={{ padding: "12px 16px" }}>{t.thFecha}</th>
+                  <th style={{ padding: "12px 16px" }}>{t.thHora}</th>
+                  <th style={{ padding: "12px 16px" }}>{t.thEnlace}</th>
+                  <th style={{ padding: "12px 16px" }}>{t.thEstado}</th>
+                  <th style={{ padding: "12px 16px", textAlign: "right" }}>Acciones Admin</th>
                 </tr>
               </thead>
               <tbody>
@@ -307,7 +372,7 @@ export default function ResumenTab({
                         {c.estado === "programada" ? (isFr ? "programmée" : "programada") : c.estado === "completada" ? (isFr ? "complétée" : "completada") : (isFr ? "annulée" : "cancelada")}
                       </span>
                     </td>
-                    <td style={{ padding: "16px", textAlign: "right" }}>
+                    <td style={{ padding: "16px", textAlign: "right", display: "flex", gap: "8px", justifyContent: "flex-end", alignItems: "center" }}>
                       <select
                         value={c.estado}
                         onChange={(e) => cambiarEstadoClase(c.id, e.target.value)}
@@ -324,6 +389,54 @@ export default function ResumenTab({
                         <option value="completada">{t.optCompletada}</option>
                         <option value="cancelada">{t.optCancelada}</option>
                       </select>
+
+                      {/* Botón Admin Reprogramar Horario */}
+                      <button
+                        onClick={() => {
+                          setModalReprogramar(c);
+                          setNuevaFecha("");
+                          setNuevaHora("");
+                          setMensajeError("");
+                          setMensajeExito("");
+                        }}
+                        style={{
+                          backgroundColor: "#3b82f6",
+                          color: "#ffffff",
+                          border: "none",
+                          borderRadius: "6px",
+                          padding: "4px 10px",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px"
+                        }}
+                        title="Cambiar fecha u hora por el administrador sin consumir intentos"
+                      >
+                        📅 Reprogramar
+                      </button>
+
+                      {/* Botón Admin Restablecer Intentos (+3) */}
+                      <button
+                        onClick={() => handleRestablecerIntentos(c.id)}
+                        style={{
+                          backgroundColor: "#10b981",
+                          color: "#ffffff",
+                          border: "none",
+                          borderRadius: "6px",
+                          padding: "4px 10px",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          cursor: "pointer",
+                          display: "inline-flex",
+                          alignItems: "center",
+                          gap: "4px"
+                        }}
+                        title="Restablecer intentos de reprogramación a 3 para el alumno"
+                      >
+                        🔄 Intentos (+3)
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -332,6 +445,92 @@ export default function ResumenTab({
           </div>
         )}
       </div>
+
+      {/* Modal de Reprogramación del Administrador */}
+      {modalReprogramar && (
+        <div style={{
+          position: "fixed",
+          inset: 0,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          zIndex: 1000,
+          padding: "16px"
+        }}>
+          <div style={{
+            backgroundColor: "var(--bg-card)",
+            border: "1px solid var(--border-color)",
+            borderRadius: "16px",
+            padding: "24px",
+            maxWidth: "420px",
+            width: "100%",
+            boxShadow: "0 20px 25px -5px rgba(0,0,0,0.1)"
+          }}>
+            <h3 style={{ fontSize: "18px", fontWeight: 800, marginBottom: "8px" }}>
+              📅 Reprogramar Clase (Admin Override)
+            </h3>
+            <p style={{ fontSize: "12px", color: "var(--text-muted)", marginBottom: "16px" }}>
+              Alumno: <strong>{modalReprogramar.alumno}</strong><br />
+              Horario Actual: {modalReprogramar.fecha} a las {modalReprogramar.hora} hs
+            </p>
+
+            {mensajeError && (
+              <div style={{ padding: "10px", backgroundColor: "#fef2f2", border: "1px solid #fca5a5", color: "#b91c1c", borderRadius: "8px", fontSize: "12px", marginBottom: "12px" }}>
+                {mensajeError}
+              </div>
+            )}
+            {mensajeExito && (
+              <div style={{ padding: "10px", backgroundColor: "#ecfdf5", border: "1px solid #6ee7b7", color: "#047857", borderRadius: "8px", fontSize: "12px", marginBottom: "12px" }}>
+                {mensajeExito}
+              </div>
+            )}
+
+            <form onSubmit={handleAdminReprogramar} style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+              <div>
+                <label style={{ fontSize: "12px", fontWeight: 700, display: "block", marginBottom: "4px" }}>Nueva Fecha:</label>
+                <input
+                  type="date"
+                  value={nuevaFecha}
+                  onChange={(e) => setNuevaFecha(e.target.value)}
+                  required
+                  className="form-control"
+                  style={{ width: "100%", padding: "8px", borderRadius: "6px" }}
+                />
+              </div>
+
+              <div>
+                <label style={{ fontSize: "12px", fontWeight: 700, display: "block", marginBottom: "4px" }}>Nueva Hora:</label>
+                <input
+                  type="time"
+                  value={nuevaHora}
+                  onChange={(e) => setNuevaHora(e.target.value)}
+                  required
+                  className="form-control"
+                  style={{ width: "100%", padding: "8px", borderRadius: "6px" }}
+                />
+              </div>
+
+              <div style={{ display: "flex", gap: "8px", justifyContent: "flex-end", marginTop: "12px" }}>
+                <button
+                  type="button"
+                  onClick={() => setModalReprogramar(null)}
+                  style={{ padding: "8px 16px", borderRadius: "8px", border: "1px solid var(--border-color)", background: "none", cursor: "pointer", fontSize: "12px", fontWeight: 600 }}
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="submit"
+                  disabled={procesando}
+                  style={{ padding: "8px 16px", borderRadius: "8px", border: "none", backgroundColor: "#3b82f6", color: "#ffffff", cursor: "pointer", fontSize: "12px", fontWeight: 700 }}
+                >
+                  {procesando ? "Guardando..." : "Confirmar Reprogramación"}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
