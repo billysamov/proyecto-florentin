@@ -1311,12 +1311,12 @@ export default function Home() {
                 if (n.includes('3') || n.includes('semana')) return '/plan_intensive_3.png';
                 if (n.includes('libre')) return '/plan_libre.png';
                 if (n.includes('4')) return '/plan_pack_4.png';
-                if (n.includes('preply')) return '/level_progress_v4.png';
-                if (n.includes('alexandra')) return '/level_progress_clay.png';
-                if (n.includes('eugenia')) return '/hero_composite.png';
-                if (n.includes('erick')) return '/target_3d.png';
+                if (n.includes('preply')) return '/photo_preply.png';
+                if (n.includes('alexandra')) return '/photo_alexandra.png';
+                if (n.includes('eugenia')) return '/photo_eugenia.png';
+                if (n.includes('erick')) return '/photo_erick.png';
                 
-                const fallbacks = ['/french_hero.png', '/perfect_hero_image.png', '/level_progress.png', '/target_3d.png'];
+                const fallbacks = ['/plan_pack_8.png', '/plan_intensive_3.png', '/plan_libre.png', '/plan_pack_4.png'];
                 return fallbacks[i % fallbacks.length];
               };
 
