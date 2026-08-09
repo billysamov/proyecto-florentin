@@ -146,7 +146,7 @@ export default async function RootLayout({
           />
         )}
       </head>
-      <body>
+      <body suppressHydrationWarning>
         {children}
       </body>
     </html>

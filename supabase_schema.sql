@@ -21,6 +21,7 @@ CREATE TABLE inscripciones (
   stripe_session_id varchar(100),
   monto_pagado numeric(10, 2),
   divisa varchar(10),
+  aviso_renovacion_enviado BOOLEAN DEFAULT false,
   creado_en timestamp with time zone default timezone('utc'::text, now()) not null
 );
 
@@ -141,6 +142,9 @@ CREATE TABLE configuracion_sitio (
   almuerzo_inicio TEXT DEFAULT '13:00',
   almuerzo_fin TEXT DEFAULT '14:00',
   zona_horaria TEXT DEFAULT 'Europe/Paris',
+  email_bienvenida_activo BOOLEAN DEFAULT true,
+  email_recordatorio_activo BOOLEAN DEFAULT true,
+  email_renovacion_activo BOOLEAN DEFAULT true,
   creado_en TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
 

@@ -14,7 +14,7 @@ import {
   Plane, Briefcase, Heart, Rocket,
   XCircle, CheckCircle, Clock, MessageCircle, CalendarCheck,
   Award, Globe2, Users, Star, BadgeCheck, BookOpen, Headphones, Building2,
-  Smartphone, Coins, PlayCircle, Play
+  Smartphone, Coins, PlayCircle, Play, Mail, Phone
 } from "lucide-react";
 
 if (typeof window !== "undefined") {
@@ -1456,6 +1456,35 @@ export default function Home() {
                 : "Professor Florentin's online French academy. Private and group classes tailored to your goals, focused on fluent conversation."
               }
             </p>
+
+            {/* Contacto Directo: Email y Teléfono/WhatsApp */}
+            <div className="flex flex-col gap-2.5 mt-3 pt-3 border-t border-slate-100">
+              <a 
+                href={`mailto:${config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}`}
+                className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0055a5] transition-colors"
+              >
+                <div className="w-7 h-7 rounded-full bg-[#0055a5]/10 text-[#0055a5] flex items-center justify-center shrink-0">
+                  <Mail size={13} />
+                </div>
+                <span>{config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}</span>
+              </a>
+
+              <a 
+                href={`https://wa.me/${(config?.whatsapp_number || '33685744973').replace(/[^0-9]/g, '')}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#10b981] transition-colors"
+              >
+                <div className="w-7 h-7 rounded-full bg-[#10b981]/10 text-[#10b981] flex items-center justify-center shrink-0">
+                  <Phone size={13} />
+                </div>
+                <span>
+                  {config?.whatsapp_number 
+                    ? (config.whatsapp_number.startsWith('+') ? config.whatsapp_number : `+${config.whatsapp_number}`)
+                    : '+33 6 85 74 49 73'}
+                </span>
+              </a>
+            </div>
           </div>
 
           {/* Columna 2: Navegación Rápida */}

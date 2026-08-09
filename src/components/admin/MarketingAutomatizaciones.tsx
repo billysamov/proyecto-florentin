@@ -20,7 +20,7 @@ export default function MarketingAutomatizaciones({
   const [mensajeExito, setMensajeExito] = useState("");
   
   // Estados para el Modal de Previsualización
-  const [previewEmail, setPreviewEmail] = useState<"bienvenida" | "recordatorio" | null>(null);
+  const [previewEmail, setPreviewEmail] = useState<"bienvenida" | "recordatorio" | "renovacion" | null>(null);
   const [previewLang, setPreviewLang] = useState<"es" | "fr" | "en">("es");
 
   const t = {
@@ -36,6 +36,10 @@ export default function MarketingAutomatizaciones({
     recordatorioDesc: isFr 
       ? "Envoye 3 jours apres l'inscription si l'utilisateur n'a pas encore achete de formule." 
       : "Se envía 3 días después del registro si el usuario sigue sin adquirir ningún plan.",
+    renovacionTitulo: isFr ? "Alerte de Renouvellement" : "Aviso de Renovación",
+    renovacionDesc: isFr 
+      ? "S'envoie lorsqu'il reste 2 cours ou moins dans le forfait de l'élève." 
+      : "Se envía cuando al alumno le quedan 2 o menos clases en su plan actual.",
     estado: isFr ? "Statut de la campagne" : "Estado de la campaña",
     activo: isFr ? "Active" : "Activo",
     inactivo: isFr ? "Desactive" : "Desactivado",
@@ -57,7 +61,7 @@ export default function MarketingAutomatizaciones({
     destinatarioSimulado: isFr ? "Aperçu de la boîte de réception de l'élève" : "Bandeja de Entrada del Estudiante (Simulación)"
   };
 
-  const toggleCampana = async (campo: "email_bienvenida_activo" | "email_recordatorio_activo") => {
+  const toggleCampana = async (campo: "email_bienvenida_activo" | "email_recordatorio_activo" | "email_renovacion_activo") => {
     setGuardando(true);
     setMensajeExito("");
     
@@ -238,6 +242,64 @@ export default function MarketingAutomatizaciones({
         };
       }
     }
+    
+    // Renovación
+    if (previewEmail === "renovacion") {
+      if (previewLang === "fr") {
+        return {
+          asunto: "⚠️ Il ne vous reste plus que 2 cours, [Nom de l'élève] !",
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
+              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nom de l'élève],</h2>
+              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Nous espérons que vous appréciez vos cours. Il ne vous reste plus que <strong>2 cours</strong> dans votre plan.</p>
+              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: center;">
+                <p style="margin: 0; font-size: 13.5px; color: #1e293b; font-weight: 700;">Prêt à continuer ?</p>
+                <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #475569;">Découvrez nos nouveaux forfaits et réservez vos prochaines semaines.</p>
+              </div>
+              <div style="text-align: center; margin-top: 15px;">
+                <span style="background-color: #1a2530; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Voir les Plans</span>
+              </div>
+            </div>
+          `
+        };
+      } else if (previewLang === "en") {
+        return {
+          asunto: "⚠️ You only have 2 classes left, [Student's Name]!",
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
+              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Student's Name],</h2>
+              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">We hope you're enjoying your classes. You only have <strong>2 classes</strong> left in your plan.</p>
+              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: center;">
+                <p style="margin: 0; font-size: 13.5px; color: #1e293b; font-weight: 700;">Ready to continue?</p>
+                <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #475569;">Check out our new packages and book your next weeks.</p>
+              </div>
+              <div style="text-align: center; margin-top: 15px;">
+                <span style="background-color: #1a2530; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">View Plans</span>
+              </div>
+            </div>
+          `
+        };
+      } else {
+        return {
+          asunto: "⚠️ ¡Te quedan solo 2 clases, [Nombre del Alumno]!",
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
+              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nombre del Alumno],</h2>
+              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Esperamos que estés disfrutando tus clases. Te quedan solo <strong>2 clases</strong> en tu plan actual.</p>
+              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: center;">
+                <p style="margin: 0; font-size: 13.5px; color: #1e293b; font-weight: 700;">¿Listo para continuar?</p>
+                <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #475569;">Descubre nuestros nuevos paquetes y asegura tus próximas semanas.</p>
+              </div>
+              <div style="text-align: center; margin-top: 15px;">
+                <span style="background-color: #1a2530; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Ver Planes</span>
+              </div>
+            </div>
+          `
+        };
+      }
+    }
+
+    return { asunto: "", html: "" };
   };
 
   const previewData = getPreviewHTML();
@@ -400,6 +462,69 @@ export default function MarketingAutomatizaciones({
           </div>
         </div>
 
+        {/* Tarjeta 3: Aviso de Renovación */}
+        <div className="card" style={{ 
+          padding: "24px", 
+          display: "flex", 
+          flexDirection: "column", 
+          justifyContent: "space-between",
+          border: config.email_renovacion_activo ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid var(--border-color)",
+          backgroundColor: config.email_renovacion_activo ? "rgba(59, 130, 246, 0.01)" : "var(--card-bg)"
+        }}>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+              <div style={{ padding: "10px", backgroundColor: "rgba(59, 130, 246, 0.08)", color: "#3b82f6", borderRadius: "10px" }}>
+                <CheckCircle size={22} />
+              </div>
+              <button 
+                onClick={() => toggleCampana("email_renovacion_activo")}
+                disabled={guardando}
+                style={{ background: "none", border: "none", cursor: "pointer", color: config.email_renovacion_activo ? "#3b82f6" : "var(--text-muted)" }}
+              >
+                {config.email_renovacion_activo ? <ToggleRight size={44} /> : <ToggleLeft size={44} />}
+              </button>
+            </div>
+
+            <h4 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", marginBottom: "8px" }}>
+              {t.renovacionTitulo}
+            </h4>
+            <p style={{ color: "var(--text-muted)", fontSize: "13px", lineHeight: "1.5", marginBottom: "12px" }}>
+              {t.renovacionDesc}
+            </p>
+
+            <button 
+              onClick={() => { setPreviewEmail("renovacion"); setPreviewLang("es"); }}
+              style={{ 
+                marginBottom: "16px", 
+                padding: "6px 14px", 
+                fontSize: "12px", 
+                border: "1px solid #3b82f6", 
+                color: "#3b82f6", 
+                background: "transparent", 
+                borderRadius: "20px", 
+                fontWeight: 600, 
+                cursor: "pointer", 
+                display: "inline-flex", 
+                alignItems: "center", 
+                gap: "6px" 
+              }}
+            >
+              <Eye size={13} /> {t.previewBtn}
+            </button>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#3b82f6", marginBottom: "16px" }}>
+              <Globe size={14} /> {t.idiomaDinamico}
+            </div>
+          </div>
+
+          <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "14px", marginTop: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px" }}>
+            <span style={{ color: "var(--text-muted)" }}>{t.estadisticas}</span>
+            <span style={{ fontWeight: 600, color: "var(--text-main)" }}>
+              {t.enviosTotales} <strong style={{ color: "#3b82f6" }}>{Math.max(1, Math.round(alumnosCount * 0.8)) || 10}</strong>
+            </span>
+          </div>
+        </div>
+
       </div>
 
       {/* Sección Cron Job */}
@@ -474,7 +599,7 @@ export default function MarketingAutomatizaciones({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "14px" }}>
               <h3 style={{ fontSize: "18px", fontWeight: 700, margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
                 <Mail size={18} className="text-[#3b82f6]" /> 
-                {previewEmail === "bienvenida" ? t.bienvenidaTitulo : t.recordatorioTitulo}
+                {previewEmail === "bienvenida" ? t.bienvenidaTitulo : previewEmail === "recordatorio" ? t.recordatorioTitulo : t.renovacionTitulo}
               </h3>
               <button 
                 onClick={() => setPreviewEmail(null)}

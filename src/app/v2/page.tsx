@@ -11,6 +11,7 @@ import {
   Users, Award, ChevronRight, ChevronLeft, Star, Globe2, Phone, Mail, MapPin, Heart,
   PlayCircle, Sparkle, Laptop, GraduationCap, Play
 } from "lucide-react";
+import HeroV2 from "@/components/HeroV2";
 
 export default function LandingV2Replica() {
   const [lang, setLang] = useState<Language>("es");
@@ -173,108 +174,102 @@ export default function LandingV2Replica() {
       minHeight: "100vh",
       fontFamily: "'Plus Jakarta Sans', system-ui, -apple-system, sans-serif",
       WebkitFontSmoothing: "antialiased",
-      overflowX: "hidden"
+      overflowX: "hidden",
+      paddingTop: "76px" // Compensa la altura del header fijo
     }}>
       
-      {/* 1. Header Navbar (Réplica Pixel a Pixel del Mockup Ling+ adaptado a Florentin) */}
+      {/* 1. Header Navbar (Fijo, Limpio y Minimalista) */}
       <header id="sec-1-header" style={{
-        position: "sticky",
+        position: "fixed",
         top: 0,
-        zIndex: 50,
-        backgroundColor: "rgba(255, 255, 255, 0.95)",
-        backdropFilter: "blur(14px)",
-        borderBottom: "1px solid #e2e8f0",
-        padding: "16px 24px"
+        left: 0,
+        width: "100%",
+        zIndex: 100,
+        backgroundColor: "rgba(255, 255, 255, 0.85)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderBottom: "1px solid rgba(226, 232, 240, 0.6)",
+        padding: "14px 24px",
+        transition: "all 0.3s ease"
       }}>
         <div style={{ maxWidth: "1280px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
           
-          {/* Logo Ling+ con distintivo Florentin */}
-          <Link href="/v2" style={{ display: "flex", alignItems: "center", gap: "8px", textDecoration: "none" }}>
+          {/* Logo */}
+          <Link href="/v2" style={{ display: "flex", alignItems: "center", textDecoration: "none" }}>
             <Image
-              src="/logo_inicio.png"
+              src="/logo.png"
               alt="Florentin French"
-              width={160}
-              height={50}
-              style={{ objectFit: "contain", maxHeight: "44px", width: "auto" }}
+              width={180}
+              height={60}
+              style={{ objectFit: "contain", maxHeight: "56px", width: "auto" }}
               priority
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
-                target.src = "/logo.png";
+                target.src = "/logo_inicio.png";
               }}
             />
-            <span style={{ fontSize: "11px", fontWeight: 800, backgroundColor: "#e0f2fe", color: "#0055a5", padding: "3px 10px", borderRadius: "20px" }}>
-              Ling+ V2
-            </span>
           </Link>
 
-          {/* Menú de Navegación Réplica */}
-          <nav style={{ display: "flex", alignItems: "center", gap: "28px", fontSize: "14px", fontWeight: 700, color: "#334155" }} className="hidden lg:flex">
-            <a href="#profesor" style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
-              Profesor <span style={{ fontSize: "10px" }}>▼</span>
-            </a>
-            <a href="#metodo" style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
-              Método <span style={{ fontSize: "10px" }}>▼</span>
-            </a>
-            <a href="#beneficios" style={{ color: "inherit", textDecoration: "none" }}>Por Qué Florentin</a>
-            <a href="#planes" style={{ color: "inherit", textDecoration: "none", display: "flex", alignItems: "center", gap: "4px" }}>
-              Planes & Precios <span style={{ fontSize: "10px" }}>▼</span>
-            </a>
-            <a href="#testimonios" style={{ color: "inherit", textDecoration: "none" }}>Testimonios</a>
+          {/* Menú de Navegación Simplificado */}
+          <nav style={{ display: "flex", alignItems: "center", gap: "32px", fontSize: "14px", fontWeight: 600, color: "#475569" }} className="hidden lg:flex">
+            <a href="#profesor" className="hover:text-teal-900 transition-colors" style={{ textDecoration: "none" }}>Profesor</a>
+            <a href="#metodo" className="hover:text-teal-900 transition-colors" style={{ textDecoration: "none" }}>Método</a>
+            <a href="#planes" className="hover:text-teal-900 transition-colors" style={{ textDecoration: "none" }}>Planes</a>
+            <a href="#testimonios" className="hover:text-teal-900 transition-colors" style={{ textDecoration: "none" }}>Reseñas</a>
           </nav>
 
-          {/* Acciones y Selectores (Idioma, Moneda, Portal y Agendar) */}
-          <div style={{ display: "flex", alignItems: "center", gap: "14px" }}>
+          {/* Acciones y Selectores (Minimalistas) */}
+          <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
             
-            {/* Selector de Idioma (ES / FR / EN) */}
-            <select
-              value={lang}
-              onChange={(e) => setLang(e.target.value as any)}
-              style={{
-                backgroundColor: "#f8fafc",
-                color: "#0f172a",
-                border: "1px solid #cbd5e1",
-                borderRadius: "10px",
-                padding: "6px 10px",
-                fontSize: "12px",
-                fontWeight: 700,
-                cursor: "pointer"
-              }}
-            >
-              <option value="es">🇪🇸 ES</option>
-              <option value="fr">🇫🇷 FR</option>
-              <option value="en">🇬🇧 EN</option>
-            </select>
+            {/* Controles simples sin bordes para limpiar visualmente */}
+            <div className="hidden md:flex items-center gap-4 mr-2">
+              <select
+                value={lang}
+                onChange={(e) => setLang(e.target.value as any)}
+                style={{
+                  backgroundColor: "transparent",
+                  color: "#64748b",
+                  border: "none",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  outline: "none"
+                }}
+              >
+                <option value="es">ES</option>
+                <option value="fr">FR</option>
+                <option value="en">EN</option>
+              </select>
 
-            {/* Selector de Moneda (EUR € / USD $) */}
-            <select
-              value={divisa}
-              onChange={(e) => setDivisa(e.target.value as any)}
-              style={{
-                backgroundColor: "#f8fafc",
-                color: "#0f172a",
-                border: "1px solid #cbd5e1",
-                borderRadius: "10px",
-                padding: "6px 10px",
-                fontSize: "12px",
-                fontWeight: 700,
-                cursor: "pointer"
-              }}
-            >
-              <option value="eur">EUR (€)</option>
-              <option value="usd">USD ($)</option>
-            </select>
+              <select
+                value={divisa}
+                onChange={(e) => setDivisa(e.target.value as any)}
+                style={{
+                  backgroundColor: "transparent",
+                  color: "#64748b",
+                  border: "none",
+                  fontSize: "13px",
+                  fontWeight: 600,
+                  cursor: "pointer",
+                  outline: "none"
+                }}
+              >
+                <option value="eur">EUR</option>
+                <option value="usd">USD</option>
+              </select>
+            </div>
 
             <Link
               href="/alumno"
               style={{
                 fontSize: "13px",
-                fontWeight: 700,
-                color: "#0055a5",
+                fontWeight: 600,
+                color: "#64748b",
                 textDecoration: "none"
               }}
-              className="hidden sm:inline-block"
+              className="hidden sm:inline-block hover:text-teal-900 transition-colors"
             >
-              Área Alumno
+              Entrar
             </Link>
 
             <a
@@ -282,190 +277,35 @@ export default function LandingV2Replica() {
               target="_blank"
               rel="noopener noreferrer"
               style={{
-                padding: "10px 22px",
-                borderRadius: "30px",
-                backgroundColor: "#0055a5",
+                padding: "8px 20px",
+                borderRadius: "100px",
+                backgroundColor: "#111827",
                 color: "#ffffff",
                 fontSize: "13px",
-                fontWeight: 800,
-                letterSpacing: "-0.01em",
+                fontWeight: 600,
                 textDecoration: "none",
                 display: "inline-flex",
                 alignItems: "center",
-                gap: "8px",
-                boxShadow: "0 4px 14px rgba(0, 85, 165, 0.3)"
+                transition: "background 0.2s ease"
               }}
+              className="hover:bg-teal-900"
             >
-              Agendar Clase
-              <ArrowUpRight size={14} />
+              Empezar
             </a>
-
           </div>
 
         </div>
       </header>
 
-      {/* 2. Hero Section (Fondo Menta/Cyan Degradado Réplica) */}
-      <section id="sec-2-hero" style={{
-        background: "linear-gradient(180deg, #dff4f3 0%, #edf9f8 60%, #ffffff 100%)",
-        padding: "80px 24px 60px",
-        position: "relative",
-        overflow: "hidden"
-      }}>
-        <div style={{ maxWidth: "1280px", margin: "0 auto", display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))", gap: "40px", alignItems: "center" }}>
-          
-          {/* Left Column: Heading, Rating & CTA Button */}
-          <div>
-            
-            {/* Rating Stars & Teacher Tag Badge */}
-            <div style={{ display: "flex", alignItems: "center", gap: "10px", flexWrap: "wrap", marginBottom: "20px" }}>
-              {(() => {
-                const badgeText = config ? parseMultilingualText(config.teacher_badge, lang) : "TU PROFESOR";
-                if (config?.mostrar_teacher_badge === false || !badgeText) return null;
-                return (
-                  <div style={{ display: "inline-flex", alignItems: "center", gap: "6px", padding: "6px 14px", borderRadius: "30px", backgroundColor: "#0055a5", color: "#ffffff", boxShadow: "0 4px 12px rgba(0,85,165,0.2)" }}>
-                    <span style={{ fontSize: "11px", fontWeight: 800, letterSpacing: "0.08em", textTransform: "uppercase" }}>
-                      {badgeText}
-                    </span>
-                  </div>
-                );
-              })()}
-              <div style={{ display: "inline-flex", alignItems: "center", gap: "10px", padding: "6px 14px", borderRadius: "30px", backgroundColor: "#ffffff", boxShadow: "0 4px 12px rgba(0,0,0,0.05)" }}>
-                <div style={{ display: "flex", alignItems: "center", color: "#f59e0b", gap: "2px" }}>
-                  <Star size={14} fill="#f59e0b" />
-                  <Star size={14} fill="#f59e0b" />
-                  <Star size={14} fill="#f59e0b" />
-                  <Star size={14} fill="#f59e0b" />
-                  <Star size={14} fill="#f59e0b" />
-                </div>
-                <span style={{ fontSize: "12px", fontWeight: 800, color: "#0f172a" }}>4.9/5 • +200 Alumnos Formados</span>
-              </div>
-            </div>
+      {/* 2. Hero Section — Componente modular reutilizable */}
+      <HeroV2
+        title={parseMultilingualText(config?.titulo_hero, lang) || undefined}
+        description={parseMultilingualText(config?.subtitulo_hero, lang) || undefined}
+        heroImage={{ src: "/perfect_hero_image.png", alt: "Estudiante de francés sonriendo con un libro" }}
+        progressImage={{ src: "/level_progress_v4.png", alt: "Gráfico de niveles de idioma A1 a C2" }}
+        marqueeItems={marqueeItemsPoblados.map(item => ({ flag: item.flag || item.icon, label: item.label }))}
+      />
 
-            <h1 style={{
-              fontSize: "clamp(44px, 5.8vw, 68px)",
-              fontWeight: 800,
-              lineHeight: 1.08,
-              color: "#0f172a",
-              letterSpacing: "-0.035em",
-              marginBottom: "20px"
-            }}>
-              Habla Francés, <br />
-              <span style={{ color: "#0055a5" }}>Conéctate con el Mundo</span>
-            </h1>
-
-            <p style={{
-              fontSize: "16px",
-              fontWeight: 500,
-              color: "#475569",
-              lineHeight: 1.6,
-              letterSpacing: "-0.01em",
-              marginBottom: "32px",
-              maxWidth: "520px"
-            }}>
-              Aprende francés fluido con <strong>Florentin</strong>, profesor nativo nacido en París. Clases particulares 1 a 1 en vivo por Google Meet, corrigiendo tu acento en tiempo real.
-            </p>
-
-            <div style={{ display: "flex", alignItems: "center", gap: "16px" }}>
-              <a
-                href="https://wa.me/33744321356"
-                target="_blank"
-                rel="noopener noreferrer"
-                style={{
-                  width: "52px",
-                  height: "52px",
-                  borderRadius: "50%",
-                  backgroundColor: "#0055a5",
-                  color: "#ffffff",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  textDecoration: "none",
-                  boxShadow: "0 10px 25px rgba(0, 85, 165, 0.35)",
-                  transition: "transform 0.2s ease"
-                }}
-                className="hover:scale-105"
-              >
-                <ArrowUpRight size={22} />
-              </a>
-              <div>
-                <span style={{ fontSize: "15px", fontWeight: 800, color: "#0f172a", display: "block" }}>Agendar Clase Gratuita</span>
-                <span style={{ fontSize: "12px", color: "#64748b" }}>Sin compromisos de tarjeta</span>
-              </div>
-            </div>
-          </div>
-
-          {/* Right Column: Student Portrait with Soft Mint Oval */}
-          <div style={{ position: "relative", display: "flex", justifyContent: "center" }}>
-            <div style={{
-              position: "relative",
-              width: "100%",
-              maxWidth: "460px",
-              borderRadius: "40px",
-              overflow: "hidden",
-              boxShadow: "0 25px 50px -12px rgba(0, 85, 165, 0.2)"
-            }}>
-              <Image
-                src="/hero_student.png"
-                alt="Estudiante de Francés"
-                width={500}
-                height={550}
-                style={{ width: "100%", height: "auto", objectFit: "cover", display: "block" }}
-                priority
-              />
-
-              {/* Badge flotante de acreditación */}
-              <div style={{
-                position: "absolute",
-                bottom: "20px",
-                left: "20px",
-                right: "20px",
-                backgroundColor: "rgba(255, 255, 255, 0.95)",
-                backdropFilter: "blur(12px)",
-                padding: "14px 18px",
-                borderRadius: "20px",
-                boxShadow: "0 10px 25px rgba(0,0,0,0.12)",
-                display: "flex",
-                alignItems: "center",
-                gap: "12px"
-              }}>
-                <span style={{ fontSize: "28px" }}>🇫🇷</span>
-                <div>
-                  <div style={{ fontSize: "13px", fontWeight: 800, color: "#0f172a" }}>Florentin • Nativo de París</div>
-                  <div style={{ fontSize: "11px", color: "#64748b", fontWeight: 600 }}>Clases 100% Personalizadas 1 a 1</div>
-                </div>
-              </div>
-            </div>
-          </div>
-
-        </div>
-
-        {/* Carrusel Marquee de Banderas / Especialidades (Bucle 100% Infinito e Ininterrumpido) */}
-        <div style={{ marginTop: "60px", overflow: "hidden", position: "relative", width: "100%" }}>
-          <div className="marquee-smooth-track" style={{ gap: "16px" }}>
-            {marqueeItemsPoblados.map((item, i) => (
-              <div key={i} style={{
-                display: "inline-flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "10px 22px",
-                borderRadius: "40px",
-                backgroundColor: "#ffffff",
-                border: "1px solid #cbd5e1",
-                boxShadow: "0 4px 14px rgba(0,0,0,0.04)",
-                fontSize: "14px",
-                fontWeight: 800,
-                color: "#0f172a",
-                whiteSpace: "nowrap"
-              }}>
-                {item.flag && <span style={{ fontSize: "18px" }}>{item.flag}</span>}
-                {item.icon && <span style={{ fontSize: "18px" }}>{item.icon}</span>}
-                <span>{item.label}</span>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
 
       {/* 3. Cinta Azul Royal (4 Items Horizontal Checkmarks Réplica Exacta) */}
       <section id="sec-3-guarantees" style={{ backgroundColor: "#0066ff", color: "#ffffff", padding: "26px 24px" }}>
@@ -1208,7 +1048,26 @@ export default function LandingV2Replica() {
               <h4 style={{ fontSize: "16px", fontWeight: 800, color: "#ffffff", marginBottom: "20px" }}>Contacto Directo</h4>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", fontWeight: 500, color: "#94a3b8", display: "flex", flexDirection: "column", gap: "12px" }}>
                 <li>📍 París, Francia</li>
-                <li>💬 WhatsApp: +33 7 44 32 13 56</li>
+                <li>
+                  <a 
+                    href={`mailto:${config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}`}
+                    style={{ color: "inherit", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px" }}
+                  >
+                    ✉️ {config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}
+                  </a>
+                </li>
+                <li>
+                  <a 
+                    href={`https://wa.me/${(config?.whatsapp_number || '33685744973').replace(/[^0-9]/g, '')}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    style={{ color: "inherit", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px" }}
+                  >
+                    💬 WhatsApp / Tel: {config?.whatsapp_number 
+                      ? (config.whatsapp_number.startsWith('+') ? config.whatsapp_number : `+${config.whatsapp_number}`)
+                      : '+33 6 85 74 49 73'}
+                  </a>
+                </li>
                 <li>🌐 Clases Online por Google Meet</li>
               </ul>
             </div>

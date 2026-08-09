@@ -339,3 +339,74 @@ export async function enviarCorreoRecordatorioInactividad(email: string, nombre:
     html: htmlContent
   });
 }
+
+/**
+ * Correo de advertencia cuando al alumno le quedan pocas clases (Renovación).
+ */
+export async function enviarCorreoRenovacionPlan(email: string, nombre: string, clasesRestantes: number, idioma: string = 'es') {
+  const isFr = idioma === 'fr';
+  const isEn = idioma === 'en';
+
+  let subject = `⚠️ ¡Te quedan solo ${clasesRestantes} clases, ${nombre}!`;
+  if (isFr) {
+    subject = `⚠️ Il ne vous reste plus que ${clasesRestantes} cours, ${nombre} !`;
+  } else if (isEn) {
+    subject = `⚠️ You only have ${clasesRestantes} classes left, ${nombre}!`;
+  }
+
+  const htmlContent = `
+    <div style="font-family: 'Plus Jakarta Sans', sans-serif; max-width: 600px; margin: 0 auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 12px; background-color: #ffffff;">
+      <div style="text-align: center; margin-bottom: 20px;">
+        <span style="font-size: 24px; font-weight: 800; color: #1a2530; letter-spacing: 1px;">FLORENTIN</span>
+      </div>
+      <h2 style="color: #1a2530; font-family: 'Playfair Display', Georgia, serif; font-size: 20px; border-bottom: 1px solid #f3f4f6; padding-bottom: 12px;">
+        Bonjour ${nombre},
+      </h2>
+      <p style="font-size: 15px; color: #4b5563; line-height: 1.6;">
+        ${isFr 
+          ? `Nous espérons que vous appréciez vos cours de français. Nous vous écrivons pour vous informer qu'il ne vous reste plus que <strong>${clasesRestantes} cours</strong> dans votre plan actuel.` 
+          : isEn
+            ? `We hope you are enjoying your French classes. We are writing to let you know that you only have <strong>${clasesRestantes} classes</strong> left in your current plan.`
+            : `Esperamos que estés disfrutando tus clases de francés. Te escribimos para avisarte que te quedan solo <strong>${clasesRestantes} clases</strong> en tu plan actual.`}
+      </p>
+      <p style="font-size: 15px; color: #4b5563; line-height: 1.6;">
+        ${isFr
+          ? "Pour ne pas interrompre votre progression, nous vous invitons à renouveler votre plan dès aujourd'hui."
+          : isEn
+            ? "To keep up your progress without interruptions, we invite you to renew your plan today."
+            : "Para no interrumpir tu progreso, te invitamos a renovar tu plan hoy mismo."}
+      </p>
+      
+      <div style="margin: 28px 0; padding: 20px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: center;">
+        <p style="margin: 0; font-size: 15px; color: #1e293b; font-weight: 700;">
+          🎓 ${isFr ? "Prêt à continuer ?" : isEn ? "Ready to continue?" : "¿Listo para continuar?"}
+        </p>
+        <p style="margin: 6px 0 0 0; font-size: 13.5px; color: #475569; line-height: 1.5;">
+          ${isFr
+            ? "Découvrez nos nouveaux forfaits et réservez vos prochaines semaines de cours."
+            : isEn
+              ? "Check out our new packages and book your next weeks of classes."
+              : "Descubre nuestros nuevos paquetes y asegura tus próximas semanas de clases."}
+        </p>
+      </div>
+
+      <div style="text-align: center; margin-top: 30px;">
+        <a href="${process.env.NEXT_PUBLIC_APP_URL || 'https://www.lefrancaisavecflorentin.com'}/alumno" 
+           style="background-color: #1a2530; color: #ffffff; padding: 12px 32px; text-decoration: none; border-radius: 30px; font-weight: 700; display: inline-block; box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);">
+          ${isFr ? "Voir les Plans et Renouveler" : isEn ? "View Plans and Renew" : "Ver Planes y Renovar"}
+        </a>
+      </div>
+
+      <hr style="border: 0; border-top: 1px solid #f3f4f6; margin: 30px 0;" />
+      <p style="font-size: 11px; color: #9ca3af; text-align: center; line-height: 1.4;">
+        Florentin French. © ${new Date().getFullYear()} Paris, France. <br/>
+      </p>
+    </div>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html: htmlContent
+  });
+}
