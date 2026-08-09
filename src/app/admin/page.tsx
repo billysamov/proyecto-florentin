@@ -1252,21 +1252,39 @@ export default function AdminDashboard() {
   };
 
   const guardarEdicionPlan = async (id: number, fields: any) => {
-    const { error } = await supabase
+    const updatePayload: any = {
+      nombre: fields.nombre,
+      descripcion: fields.descripcion,
+      precio: fields.precio,
+      total_clases: fields.total_clases,
+      nivel: fields.nivel,
+      orden: fields.orden
+    };
+
+    if (fields.imagen_url) updatePayload.imagen_url = fields.imagen_url;
+    if (fields.badge) updatePayload.badge = fields.badge;
+    if (fields.duracion) updatePayload.duracion = fields.duracion;
+    if (fields.caracteristicas !== undefined) updatePayload.caracteristicas = fields.caracteristicas;
+
+    let { error } = await supabase
       .from("planes_estudio")
-      .update({
-        nombre: fields.nombre,
-        descripcion: fields.descripcion,
-        precio: fields.precio,
-        total_clases: fields.total_clases,
-        nivel: fields.nivel,
-        orden: fields.orden,
-        imagen_url: fields.imagen_url || "/french_hero.png",
-        badge: fields.badge || "Flexible",
-        duracion: fields.duracion || "4 Semanas",
-        caracteristicas: fields.caracteristicas || ""
-      })
+      .update(updatePayload)
       .eq("id", id);
+
+    if (error && error.message?.includes("schema cache")) {
+      const { error: coreErr } = await supabase
+        .from("planes_estudio")
+        .update({
+          nombre: fields.nombre,
+          descripcion: fields.descripcion,
+          precio: fields.precio,
+          total_clases: fields.total_clases,
+          nivel: fields.nivel,
+          orden: fields.orden
+        })
+        .eq("id", id);
+      error = coreErr;
+    }
 
     if (error) {
       alert("Error al actualizar plan: " + error.message);
