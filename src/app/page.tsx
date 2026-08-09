@@ -1297,58 +1297,6 @@ export default function Home() {
           {/* Grid de Tarjetas de Planes V2 con Imágenes y Checklists */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mt-8">
             
-            {/* 🎁 Tarjeta Fija de Respaldo: Clase de Prueba Gratuita (si no se ha registrado un plan gratis en la base de datos) */}
-            {!planes.some(p => p.precio === 0 || p.tipo === 'clase_gratis') && (
-              <div className="reveal-item rounded-[24px] border-2 border-[#10b981] overflow-hidden bg-white flex flex-col justify-between shadow-lg shadow-[#10b981]/10 relative transition-all hover:scale-[1.02]">
-                <div>
-                  <div className="relative h-[190px] w-full">
-                    <Image 
-                      src="/teacher_hero.png" 
-                      alt="Clase de Prueba" 
-                      fill 
-                      className="object-cover" 
-                    />
-                    <span className="absolute top-3 left-3 bg-[#10b981] text-white px-3 py-1 rounded-full text-xs font-extrabold shadow-md">
-                      ⭐ {lang === 'es' ? 'GRATIS' : lang === 'fr' ? 'GRATUIT' : 'FREE'}
-                    </span>
-                  </div>
-
-                  <div className="p-5 sm:p-6">
-                    <h3 className="text-lg sm:text-xl font-extrabold text-[#0f172a] mb-2 leading-snug">
-                      {t.planFreeName}
-                    </h3>
-                    <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed mb-4">
-                      {t.planFreeDesc}
-                    </p>
-                    <p className="text-xs font-bold text-[#10b981] mb-4">
-                      {lang === 'es' ? 'Todos los Niveles • 1 Sesión' : lang === 'fr' ? 'Tous Niveaux • 1 Session' : 'All Levels • 1 Session'}
-                    </p>
-
-                    <ul className="space-y-2.5 pt-3 border-t border-slate-100">
-                      {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
-                        <li key={i} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                          <CheckCircle size={14} className="text-[#10b981] shrink-0" />
-                          <span>{detail}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
-                </div>
-
-                <div className="p-5 border-t border-slate-100 flex items-center justify-between gap-3 bg-slate-50/50">
-                  <span className="text-2xl font-extrabold text-[#0f172a]">{t.planFreePrice}</span>
-                  <a 
-                    href={whatsappUrl} 
-                    target="_blank" 
-                    rel="noopener noreferrer" 
-                    className="px-5 py-2.5 rounded-xl bg-[#10b981] hover:bg-[#059669] text-white text-xs font-extrabold transition-all shadow-md"
-                  >
-                    {lang === 'es' ? 'Agendar →' : lang === 'fr' ? 'Réserver →' : 'Book →'}
-                  </a>
-                </div>
-              </div>
-            )}
-
             {/* 💎 Planes Dinámicos desde Supabase (Gestionables desde el Admin) */}
             {planes.map((plan, idx) => {
               const isFreePlan = Number(plan.precio) === 0 || plan.tipo === 'clase_gratis';
@@ -1356,19 +1304,23 @@ export default function Home() {
                 ? plan.caracteristicas.split('\n').filter((f: string) => f.trim().length > 0)
                 : [];
 
-              const uniquePlanImages = [
-                '/plan_pack_8.png',
-                '/plan_intensive_3.png',
-                '/plan_libre.png',
-                '/plan_pack_4.png',
-                '/french_hero.png',
-                '/perfect_hero_image.png',
-                '/level_progress.png',
-                '/target_3d.png'
-              ];
+              const getUniquePlanImage = (name: string, isFree: boolean, i: number) => {
+                const n = (name || "").toLowerCase();
+                if (isFree || n.includes('prueba')) return '/teacher_hero.png';
+                if (n.includes('8')) return '/plan_pack_8.png';
+                if (n.includes('3') || n.includes('semana')) return '/plan_intensive_3.png';
+                if (n.includes('libre')) return '/plan_libre.png';
+                if (n.includes('4')) return '/plan_pack_4.png';
+                if (n.includes('preply')) return '/level_progress_v4.png';
+                if (n.includes('alexandra')) return '/level_progress_clay.png';
+                if (n.includes('eugenia')) return '/hero_composite.png';
+                if (n.includes('erick')) return '/target_3d.png';
+                
+                const fallbacks = ['/french_hero.png', '/perfect_hero_image.png', '/level_progress.png', '/target_3d.png'];
+                return fallbacks[i % fallbacks.length];
+              };
 
-              const planImgSrc = plan.imagen_url 
-                || (isFreePlan ? '/teacher_hero.png' : uniquePlanImages[idx % uniquePlanImages.length]);
+              const planImgSrc = plan.imagen_url || getUniquePlanImage(plan.nombre, isFreePlan, idx);
 
               return (
                 <div 
