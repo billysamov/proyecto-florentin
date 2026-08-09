@@ -3,7 +3,19 @@ import { Shield, Edit, Trash2 } from "lucide-react";
 
 interface PlanesTabProps {
   planes: any[];
-  nuevoPlan: { nombre: string; descripcion: string; precio: number; totalClases: number; tipo: string; nivel: string; orden: number };
+  nuevoPlan: { 
+    nombre: string; 
+    descripcion: string; 
+    precio: number; 
+    totalClases: number; 
+    tipo: string; 
+    nivel: string; 
+    orden: number;
+    imagen_url?: string;
+    badge?: string;
+    duracion?: string;
+    caracteristicas?: string;
+  };
   setNuevoPlan: (val: any) => void;
   planExito: boolean;
   editingPlanId: number | null;
@@ -177,6 +189,53 @@ export default function PlanesTab({
               <option value="C1">{t.nivelC1}</option>
             </select>
           </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label" style={{ fontSize: "12px" }}>Insignia / Badge</label>
+            <input
+              type="text"
+              className="form-control"
+              value={nuevoPlan.badge || "Flexible"}
+              onChange={(e) => setNuevoPlan({ ...nuevoPlan, badge: e.target.value })}
+              placeholder="Ej: Más Popular, Flexible, Avanzado"
+              style={{ padding: "8px 12px" }}
+            />
+          </div>
+          <div className="form-group" style={{ margin: 0 }}>
+            <label className="form-label" style={{ fontSize: "12px" }}>Duración / Ritmo</label>
+            <input
+              type="text"
+              className="form-control"
+              value={nuevoPlan.duracion || "4 Semanas"}
+              onChange={(e) => setNuevoPlan({ ...nuevoPlan, duracion: e.target.value })}
+              placeholder="Ej: 4 Semanas, 1 Hora, 3 Meses"
+              style={{ padding: "8px 12px" }}
+            />
+          </div>
+          <div className="form-group" style={{ margin: 0, gridColumn: "span 2" }}>
+            <label className="form-label" style={{ fontSize: "12px" }}>🖼️ Imagen del Plan (URL o Selección)</label>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <select
+                className="form-control"
+                value={nuevoPlan.imagen_url || "/french_hero.png"}
+                onChange={(e) => setNuevoPlan({ ...nuevoPlan, imagen_url: e.target.value })}
+                style={{ padding: "8px 12px", width: "160px" }}
+              >
+                <option value="/french_hero.png">🖼️ Método / Frances</option>
+                <option value="/perfect_hero_image.png">🖼️ Estudiante 1 a 1</option>
+                <option value="/level_progress.png">🖼️ Grupo / Clases</option>
+                <option value="/target_3d.png">🖼️ Certificación / Examen</option>
+                <option value="/teacher_hero.png">🖼️ Profesor / Guía</option>
+              </select>
+              <input
+                type="text"
+                className="form-control"
+                value={nuevoPlan.imagen_url || ""}
+                onChange={(e) => setNuevoPlan({ ...nuevoPlan, imagen_url: e.target.value })}
+                placeholder="O pega una URL de imagen externa..."
+                style={{ padding: "8px 12px" }}
+              />
+            </div>
+          </div>
           <div className="form-group" style={{ margin: 0, gridColumn: "span 2" }}>
             <label className="form-label" style={{ fontSize: "12px" }}>{t.descPlan}</label>
             <input
@@ -187,6 +246,17 @@ export default function PlanesTab({
               placeholder="Ej: Acceso a clases..."
               style={{ padding: "8px 12px" }}
               required
+            />
+          </div>
+          <div className="form-group" style={{ margin: 0, gridColumn: "span 2" }}>
+            <label className="form-label" style={{ fontSize: "12px" }}>✨ Qué incluye cada plan (1 beneficio por línea)</label>
+            <textarea
+              className="form-control"
+              rows={3}
+              value={nuevoPlan.caracteristicas || ""}
+              onChange={(e) => setNuevoPlan({ ...nuevoPlan, caracteristicas: e.target.value })}
+              placeholder={"✓ Clases particulares en vivo\n✓ Material interactivo en PDF incluido\n✓ Atención personalizada 1 a 1"}
+              style={{ padding: "8px 12px", fontSize: "12px" }}
             />
           </div>
           <button type="submit" className="btn btn-primary" style={{ padding: "10px 16px" }}>
@@ -230,16 +300,46 @@ export default function PlanesTab({
                           />
                           <input
                             type="text"
-                            defaultValue={p.descripcion}
-                            id={`edit-plan-desc-${p.id}`}
+                            defaultValue={p.badge || "Flexible"}
+                            id={`edit-plan-badge-${p.id}`}
                             className="form-control"
-                            style={{ padding: "4px 8px", fontSize: "12px" }}
+                            placeholder="Badge (ej: Más Popular)"
+                            style={{ padding: "4px 8px", fontSize: "11px" }}
+                          />
+                          <input
+                            type="text"
+                            defaultValue={p.duracion || "4 Semanas"}
+                            id={`edit-plan-duracion-${p.id}`}
+                            className="form-control"
+                            placeholder="Duración (ej: 4 Semanas)"
+                            style={{ padding: "4px 8px", fontSize: "11px" }}
+                          />
+                          <input
+                            type="text"
+                            defaultValue={p.imagen_url || "/french_hero.png"}
+                            id={`edit-plan-img-${p.id}`}
+                            className="form-control"
+                            placeholder="Imagen URL (/french_hero.png)"
+                            style={{ padding: "4px 8px", fontSize: "11px" }}
+                          />
+                          <textarea
+                            defaultValue={p.caracteristicas || ""}
+                            id={`edit-plan-caract-${p.id}`}
+                            className="form-control"
+                            rows={2}
+                            placeholder="Beneficios (1 por línea)"
+                            style={{ padding: "4px 8px", fontSize: "11px" }}
                           />
                         </div>
                       ) : (
                         <div>
-                          <div style={{ fontWeight: 700 }}>{p.nombre}</div>
-                          <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>{p.descripcion}</div>
+                          <div style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+                            <img src={p.imagen_url || "/french_hero.png"} alt={p.nombre} style={{ width: "32px", height: "32px", borderRadius: "6px", objectFit: "cover" }} />
+                            <div>
+                              <div style={{ fontWeight: 700 }}>{p.nombre} <span style={{ fontSize: "10px", backgroundColor: "#e0f2fe", color: "#0369a1", padding: "2px 6px", borderRadius: "10px" }}>{p.badge || "Flexible"}</span></div>
+                              <div style={{ fontSize: "12px", color: "var(--text-muted)", marginTop: "2px" }}>{p.descripcion}</div>
+                            </div>
+                          </div>
                         </div>
                       )}
                     </td>
@@ -325,7 +425,11 @@ export default function PlanesTab({
                               const totalClases = parseInt((document.getElementById(`edit-plan-clases-${p.id}`) as HTMLInputElement).value);
                               const nivel = (document.getElementById(`edit-plan-nivel-${p.id}`) as HTMLSelectElement).value;
                               const orden = parseInt((document.getElementById(`edit-plan-orden-${p.id}`) as HTMLInputElement).value) || 0;
-                              guardarEdicionPlan(p.id, { nombre, descripcion, precio, total_clases: totalClases, nivel, orden });
+                              const badge = (document.getElementById(`edit-plan-badge-${p.id}`) as HTMLInputElement).value;
+                              const duracion = (document.getElementById(`edit-plan-duracion-${p.id}`) as HTMLInputElement).value;
+                              const imagen_url = (document.getElementById(`edit-plan-img-${p.id}`) as HTMLInputElement).value;
+                              const caracteristicas = (document.getElementById(`edit-plan-caract-${p.id}`) as HTMLTextAreaElement).value;
+                              guardarEdicionPlan(p.id, { nombre, descripcion, precio, total_clases: totalClases, nivel, orden, badge, duracion, imagen_url, caracteristicas });
                             }}
                             className="btn btn-primary"
                             style={{ padding: "4px 10px", fontSize: "11px" }}

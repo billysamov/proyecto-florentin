@@ -1265,67 +1265,158 @@ export default function Home() {
 
 
       {/* ═══════════════════════════════════════
-          5. PLANES — Prueba Gratis + De Pago
+          5. PLANES — Carrusel & Tarjetas V2 Réplica
       ═══════════════════════════════════════ */}
-      <section id="plans" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-[#f1f5f9]">
+      <section id="plans" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-[#ffffff]">
         <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">{t.plansBadge}</span>
-            <h2 className="reveal-item text-3xl sm:text-4xl md:text-6xl font-black tracking-tighter text-[#0c1b33] mb-4 font-serif">{t.plansTitle}</h2>
-            <p className="reveal-item text-slate-500 text-base sm:text-lg max-w-xl mx-auto font-medium">{t.plansSubtitle}</p>
-            <div className="reveal-item flex justify-center items-center mt-6">
-              {/* Selector de divisa */}
-              <div className="flex gap-2">
-                {(["eur", "usd"] as const).map((d) => (
-                  <button key={d} onClick={() => changeDivisa(d)} className={`px-5 py-2 rounded-full font-bold text-sm transition-colors ${divisa === d ? "bg-[#0c1b33] text-white" : "bg-[#0c1b33]/5 text-[#0c1b33] hover:bg-[#0c1b33]/10"}`}>{d.toUpperCase()}</button>
-                ))}
-              </div>
+          
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
+            <div>
+              <span className="reveal-item inline-block text-xs sm:text-sm font-extrabold text-[#0055a5] tracking-[0.1em] uppercase mb-3">
+                • {lang === 'es' ? 'NUESTROS PLANES DE ESTUDIO' : lang === 'fr' ? 'NOS FORMULES D\'ÉTUDE' : 'OUR STUDY PLANS'}
+              </span>
+              <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#0f172a] font-serif">
+                {lang === 'es' ? 'Aprende Rápido. Explora Nuestros Planes' : lang === 'fr' ? 'Apprenez Vite. Explorez Nos Formules' : 'Learn Fast. Explore Our Plans'}
+              </h2>
+            </div>
+
+            {/* Selector de divisa EUR / USD */}
+            <div className="reveal-item flex items-center gap-2 bg-[#f8fafc] p-1.5 rounded-full border border-slate-200">
+              {(["eur", "usd"] as const).map((d) => (
+                <button 
+                  key={d} 
+                  onClick={() => changeDivisa(d)} 
+                  className={`px-5 py-2 rounded-full font-bold text-xs sm:text-sm transition-all ${divisa === d ? "bg-[#0055a5] text-white shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
+                >
+                  {d.toUpperCase()}
+                </button>
+              ))}
             </div>
           </div>
 
-          {/* Rejilla de Planes en Orden (Cuadrícula limpia y adaptable) */}
-          <div className="flex flex-col md:flex-row flex-wrap gap-6 sm:gap-8 justify-center items-stretch max-w-7xl mx-auto px-4 mt-10">
-            {/* Free Trial Card */}
-            <div className="reveal-item w-full md:w-[340px] lg:w-[350px] p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-gradient-to-br from-[#0c1b33] to-[#152e54] text-white relative overflow-hidden shadow-xl shadow-[#0c1b33]/10 border border-white/10">
-              <div className="absolute top-4 right-4 px-3 py-1 bg-white/10 rounded-full text-xs font-bold text-white tracking-wider">
-                {lang === 'es' ? '⭐ GRATIS' : lang === 'fr' ? '⭐ GRATUIT' : '⭐ FREE'}
-              </div>
+          {/* Grid de Tarjetas de Planes V2 con Imágenes y Checklists */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mt-8">
+            
+            {/* 🎁 Tarjeta Fija: Clase de Prueba Gratuita */}
+            <div className="reveal-item rounded-[24px] border-2 border-[#10b981] overflow-hidden bg-white flex flex-col justify-between shadow-lg shadow-[#10b981]/10 relative transition-all hover:scale-[1.02]">
               <div>
-                <h3 className="text-2xl sm:text-3xl font-black mb-2">{t.planFreeName}</h3>
-                <div className="text-4xl sm:text-5xl font-black tracking-tighter mb-6">{t.planFreePrice}</div>
-                <p className="text-white/70 text-base font-medium mb-6">{t.planFreeDesc}</p>
-                <ul className="space-y-3 mb-8">
-                  {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
-                    <li key={i} className="flex items-start gap-2 text-sm font-medium text-white/80">
-                      <CheckCircle size={18} className="text-[#3b82f6] shrink-0 mt-0.5" />{detail}
-                    </li>
-                  ))}
-                </ul>
+                <div className="relative h-[190px] w-full">
+                  <Image 
+                    src="/teacher_hero.png" 
+                    alt="Clase de Prueba" 
+                    fill 
+                    className="object-cover" 
+                  />
+                  <span className="absolute top-3 left-3 bg-[#10b981] text-white px-3 py-1 rounded-full text-xs font-extrabold shadow-md">
+                    ⭐ {lang === 'es' ? 'GRATIS' : lang === 'fr' ? 'GRATUIT' : 'FREE'}
+                  </span>
+                </div>
+
+                <div className="p-5 sm:p-6">
+                  <h3 className="text-lg sm:text-xl font-extrabold text-[#0f172a] mb-2 leading-snug">
+                    {t.planFreeName}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed mb-4">
+                    {t.planFreeDesc}
+                  </p>
+                  <p className="text-xs font-bold text-[#10b981] mb-4">
+                    {lang === 'es' ? 'Todos los Niveles • 1 Sesión' : lang === 'fr' ? 'Tous Niveaux • 1 Session' : 'All Levels • 1 Session'}
+                  </p>
+
+                  <ul className="space-y-2.5 pt-3 border-t border-slate-100">
+                    {[t.planFreeDetail1, t.planFreeDetail2, t.planFreeDetail3].map((detail: string, i: number) => (
+                      <li key={i} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                        <CheckCircle size={14} className="text-[#10b981] shrink-0" />
+                        <span>{detail}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
               </div>
-              <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#ef4444] text-white hover:bg-[#d9383a] transition-all hover:scale-105 shadow-md">
-                {lang === 'es' ? 'Agendar mi clase de prueba gratuita' : lang === 'fr' ? 'Réserver mon cours d\'essai gratuit' : 'Book my free trial class'}
-              </a>
+
+              <div className="p-5 border-t border-slate-100 flex items-center justify-between gap-3 bg-slate-50/50">
+                <span className="text-2xl font-extrabold text-[#0f172a]">{t.planFreePrice}</span>
+                <a 
+                  href={whatsappUrl} 
+                  target="_blank" 
+                  rel="noopener noreferrer" 
+                  className="px-5 py-2.5 rounded-xl bg-[#10b981] hover:bg-[#059669] text-white text-xs font-extrabold transition-all shadow-md"
+                >
+                  {lang === 'es' ? 'Agendar →' : lang === 'fr' ? 'Réserver →' : 'Book →'}
+                </a>
+              </div>
             </div>
 
-            {/* Paid Plans from Supabase */}
-            {planes.map((plan, idx) => (
-              <div key={plan.id} className={`reveal-item w-full md:w-[340px] lg:w-[350px] p-8 sm:p-10 rounded-2xl sm:rounded-[2rem] flex flex-col justify-between bg-white text-slate-800 border border-slate-200/80 relative transition-transform hover:scale-[1.02] ${plan.recomendado ? 'shadow-lg border-[#3b82f6]/20' : 'shadow-sm'}`}>
-                {plan.recomendado && (
-                  <div className="absolute -top-0 right-4 px-3 py-1 bg-[#ef4444] rounded-b-lg text-xs font-bold text-white tracking-wider">{t.recommended}</div>
-                )}
-                <div>
-                  <h3 className="text-2xl sm:text-3xl font-black text-[#0c1b33] mb-2">{plan.nombre}</h3>
-                  <div className="text-4xl sm:text-5xl font-black tracking-tighter text-[#0c1b33] mb-2">
-                    {formatPrecio(plan.precio)}
+            {/* 💎 Planes Dinámicos desde Supabase */}
+            {planes.map((plan, idx) => {
+              const featuresList = plan.caracteristicas 
+                ? plan.caracteristicas.split('\n').filter((f: string) => f.trim().length > 0)
+                : [
+                    lang === 'es' ? 'Clases particulares en vivo' : 'Cours particuliers en direct',
+                    lang === 'es' ? 'Material interactivo en PDF incluido' : 'Support de cours PDF inclus',
+                    lang === 'es' ? 'Atención personalizada 1 a 1' : 'Suivi personnalisé 1 à 1'
+                  ];
+
+              return (
+                <div 
+                  key={plan.id || idx} 
+                  className={`reveal-item rounded-[24px] overflow-hidden bg-white flex flex-col justify-between relative transition-all hover:scale-[1.02] ${
+                    plan.recomendado 
+                      ? 'border-2 border-[#0055a5] shadow-xl shadow-[#0055a5]/10' 
+                      : 'border border-slate-200 shadow-sm'
+                  }`}
+                >
+                  <div>
+                    <div className="relative h-[190px] w-full">
+                      <Image 
+                        src={plan.imagen_url || (idx % 4 === 0 ? '/french_hero.png' : idx % 4 === 1 ? '/perfect_hero_image.png' : idx % 4 === 2 ? '/level_progress.png' : '/target_3d.png')} 
+                        alt={plan.nombre} 
+                        fill 
+                        className="object-cover" 
+                      />
+                      <span className="absolute top-3 left-3 bg-white text-slate-800 px-3 py-1 rounded-full text-xs font-extrabold shadow-md border border-slate-100">
+                        {plan.badge || (plan.recomendado ? 'FR Más Popular' : 'Flexible')}
+                      </span>
+                    </div>
+
+                    <div className="p-5 sm:p-6">
+                      <h3 className="text-lg sm:text-xl font-extrabold text-[#0f172a] mb-2 leading-snug">
+                        {plan.nombre}
+                      </h3>
+                      <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed mb-4">
+                        {plan.descripcion}
+                      </p>
+                      <p className="text-xs font-bold text-[#0055a5] mb-4">
+                        {plan.nivel || 'A1-A2'} • {plan.duracion || `${plan.total_clases} ${t.planClasses}`}
+                      </p>
+
+                      <ul className="space-y-2.5 pt-3 border-t border-slate-100">
+                        {featuresList.map((feature: string, fIdx: number) => (
+                          <li key={fIdx} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
+                            <CheckCircle size={14} className="text-[#10b981] shrink-0" />
+                            <span>{feature.replace(/^[✓\s-]+/, '')}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
                   </div>
-                  <p className="text-slate-400 text-sm font-medium mb-6">/ {plan.total_clases} {t.planClasses}</p>
-                  <p className="text-slate-600 text-base font-medium mb-8 leading-relaxed h-[72px] overflow-hidden line-clamp-3">{plan.descripcion}</p>
+
+                  <div className="p-5 border-t border-slate-100 flex items-center justify-between gap-3 bg-slate-50/50">
+                    <div>
+                      <span className="text-2xl font-extrabold text-[#0f172a]">{formatPrecio(plan.precio)}</span>
+                      <span className="text-[11px] text-slate-400 font-medium block">/ {plan.total_clases} {t.planClasses}</span>
+                    </div>
+                    <Link 
+                      href="/alumno" 
+                      className="px-5 py-2.5 rounded-xl bg-[#0055a5] hover:bg-[#003d7a] text-white text-xs font-extrabold transition-all shadow-md"
+                    >
+                      {lang === 'es' ? 'Elegir Plan →' : lang === 'fr' ? 'Choisir →' : 'Choose →'}
+                    </Link>
+                  </div>
                 </div>
-                <Link href="/alumno" className="block w-full py-4 sm:py-5 rounded-full text-center font-bold text-base sm:text-lg bg-[#0c1b33] text-white hover:bg-[#152e54] transition-all hover:scale-105 shadow-sm">
-                  {lang === 'es' ? 'Elegir este plan' : lang === 'fr' ? 'Choisir cette formule' : 'Choose this plan'}
-                </Link>
-              </div>
-            ))}
+              );
+            })}
+
           </div>
         </div>
       </section>

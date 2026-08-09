@@ -192,7 +192,19 @@ export default function AdminDashboard() {
   const [feedbackNota, setFeedbackNota] = useState("");
   const [feedbackGrabacion, setFeedbackGrabacion] = useState("");
 
-  const [nuevoPlan, setNuevoPlan] = useState({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1", orden: 0 });
+  const [nuevoPlan, setNuevoPlan] = useState({
+    nombre: "",
+    descripcion: "",
+    precio: 49.00,
+    totalClases: 8,
+    tipo: "paquete",
+    nivel: "A1",
+    orden: 0,
+    imagen_url: "/french_hero.png",
+    badge: "Flexible",
+    duracion: "4 Semanas",
+    caracteristicas: "Clases particulares en vivo\nMaterial interactivo en PDF incluido\nAtención personalizada 1 a 1"
+  });
   const [plExito, setPlExito] = useState(false);
   const [plError, setPlError] = useState("");
   const [editingPlanId, setEditingPlanId] = useState<number | null>(null);
@@ -705,7 +717,11 @@ export default function AdminDashboard() {
             total_clases: nuevoPlan.totalClases,
             tipo: nuevoPlan.tipo,
             nivel: nuevoPlan.nivel,
-            orden: nuevoPlan.orden
+            orden: nuevoPlan.orden,
+            imagen_url: nuevoPlan.imagen_url || "/french_hero.png",
+            badge: nuevoPlan.badge || "Flexible",
+            duracion: nuevoPlan.duracion || "4 Semanas",
+            caracteristicas: nuevoPlan.caracteristicas || ""
           })
           .eq("id", editingPlanId);
 
@@ -715,7 +731,7 @@ export default function AdminDashboard() {
         }
 
         setEditingPlanId(null);
-        setNuevoPlan({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1", orden: 0 });
+        setNuevoPlan({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1", orden: 0, imagen_url: "/french_hero.png", badge: "Flexible", duracion: "4 Semanas", caracteristicas: "Clases particulares en vivo\nMaterial interactivo en PDF incluido\nAtención personalizada 1 a 1" });
         setPlExito(true);
         cargarDatos();
         setTimeout(() => setPlExito(false), 3000);
@@ -730,7 +746,11 @@ export default function AdminDashboard() {
             tipo: nuevoPlan.tipo,
             nivel: nuevoPlan.nivel,
             activo: true,
-            orden: nuevoPlan.orden
+            orden: nuevoPlan.orden,
+            imagen_url: nuevoPlan.imagen_url || "/french_hero.png",
+            badge: nuevoPlan.badge || "Flexible",
+            duracion: nuevoPlan.duracion || "4 Semanas",
+            caracteristicas: nuevoPlan.caracteristicas || "Clases particulares en vivo\nMaterial interactivo en PDF incluido\nAtención personalizada 1 a 1"
           });
 
         if (error) {
@@ -738,7 +758,7 @@ export default function AdminDashboard() {
           return;
         }
 
-        setNuevoPlan({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1", orden: 0 });
+        setNuevoPlan({ nombre: "", descripcion: "", precio: 49.00, totalClases: 8, tipo: "paquete", nivel: "A1", orden: 0, imagen_url: "/french_hero.png", badge: "Flexible", duracion: "4 Semanas", caracteristicas: "Clases particulares en vivo\nMaterial interactivo en PDF incluido\nAtención personalizada 1 a 1" });
         setPlExito(true);
         cargarDatos();
         setTimeout(() => setPlExito(false), 3000);
@@ -754,10 +774,14 @@ export default function AdminDashboard() {
       nombre: plan.nombre,
       descripcion: plan.descripcion,
       precio: Number(plan.precio),
-      totalClases: Number(plan.totalClases),
+      totalClases: Number(plan.total_clases || plan.totalClases || 8),
       tipo: plan.tipo || "paquete",
       nivel: plan.nivel || "A1",
-      orden: plan.orden || 0
+      orden: plan.orden || 0,
+      imagen_url: plan.imagen_url || "/french_hero.png",
+      badge: plan.badge || "Flexible",
+      duracion: plan.duracion || "4 Semanas",
+      caracteristicas: plan.caracteristicas || "Clases particulares en vivo\nMaterial interactivo en PDF incluido\nAtención personalizada 1 a 1"
     });
   };
 
@@ -1211,7 +1235,11 @@ export default function AdminDashboard() {
         precio: fields.precio,
         total_clases: fields.total_clases,
         nivel: fields.nivel,
-        orden: fields.orden
+        orden: fields.orden,
+        imagen_url: fields.imagen_url || "/french_hero.png",
+        badge: fields.badge || "Flexible",
+        duracion: fields.duracion || "4 Semanas",
+        caracteristicas: fields.caracteristicas || ""
       })
       .eq("id", id);
 

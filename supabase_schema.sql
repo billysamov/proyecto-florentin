@@ -161,8 +161,17 @@ CREATE TABLE planes_estudio (
   tipo TEXT DEFAULT 'paquete',
   nivel TEXT DEFAULT 'A1',
   activo BOOLEAN DEFAULT TRUE,
+  imagen_url TEXT DEFAULT '/french_hero.png',
+  badge TEXT DEFAULT 'Popular',
+  duracion TEXT DEFAULT '4 Semanas',
+  caracteristicas TEXT DEFAULT 'Clases particulares en vivo\nMaterial interactivo en PDF incluido\nAtención personalizada 1 a 1',
   creado_en TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
+
+ALTER TABLE planes_estudio ADD COLUMN IF NOT EXISTS imagen_url TEXT DEFAULT '/french_hero.png';
+ALTER TABLE planes_estudio ADD COLUMN IF NOT EXISTS badge TEXT DEFAULT 'Popular';
+ALTER TABLE planes_estudio ADD COLUMN IF NOT EXISTS duracion TEXT DEFAULT '4 Semanas';
+ALTER TABLE planes_estudio ADD COLUMN IF NOT EXISTS caracteristicas TEXT DEFAULT 'Clases particulares en vivo\nMaterial interactivo en PDF incluido\nAtención personalizada 1 a 1';
 
 -- Habilitar RLS para tablas del CMS
 ALTER TABLE configuracion_sitio ENABLE ROW LEVEL SECURITY;

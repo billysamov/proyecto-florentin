@@ -878,9 +878,22 @@ export default function LandingV2Replica() {
                     <p style={{ fontSize: "13px", fontWeight: 500, color: "#64748b", lineHeight: 1.5, marginBottom: "12px" }}>
                       {course.desc}
                     </p>
-                    <p style={{ fontSize: "12px", fontWeight: 700, color: "#0055a5", margin: 0 }}>
+                    <p style={{ fontSize: "12px", fontWeight: 700, color: "#0055a5", marginBottom: "12px" }}>
                       {course.level} • {course.duration}
                     </p>
+
+                    <ul style={{ listStyle: "none", padding: "12px 0 0 0", margin: 0, borderTop: "1px solid #f1f5f9", display: "flex", flexDirection: "column", gap: "8px" }}>
+                      {[
+                        "Clases particulares en vivo",
+                        "Material interactivo en PDF incluido",
+                        "Atención personalizada 1 a 1"
+                      ].map((item, fIdx) => (
+                        <li key={fIdx} style={{ fontSize: "12px", color: "#334155", display: "flex", alignItems: "center", gap: "8px", fontWeight: 600 }}>
+                          <CheckCircle2 size={14} style={{ color: "#10b981", flexShrink: 0 }} />
+                          <span>{item}</span>
+                        </li>
+                      ))}
+                    </ul>
                   </div>
                 </div>
 
