@@ -263,7 +263,32 @@ export default function AdminDashboard() {
       }).catch(err => console.error("Error limpieza inactivos:", err));
 
       // 1. Obtener Alumnos, Inscripciones y Planes
-      const { data: planesCatalog } = await supabase.from("planes_estudio").select("*");
+      let { data: planesCatalog } = await supabase.from("planes_estudio").select("*");
+
+      // Auto-insertar el plan "Clase de Prueba" editable si no existe en la base de datos
+      if (planesCatalog && !planesCatalog.some((p: any) => Number(p.precio) === 0 || p.tipo === 'clase_gratis')) {
+        const { data: newFreePlan } = await supabase
+          .from("planes_estudio")
+          .insert({
+            nombre: "Clase de Prueba",
+            descripcion: "Una sesión de 30 minutos para conocer el método y evaluar tu nivel actual.",
+            precio: 0.00,
+            total_clases: 1,
+            tipo: "clase_gratis",
+            nivel: "Todos los Niveles",
+            orden: 0,
+            imagen_url: "/teacher_hero.png",
+            badge: "⭐ GRATIS",
+            duracion: "1 Sesión",
+            caracteristicas: "1 clase de 30 min por Microsoft Teams\nEvaluación de nivel personalizada\nSin compromiso de compra",
+            activo: true
+          })
+          .select();
+
+        if (newFreePlan && newFreePlan.length > 0) {
+          planesCatalog = [newFreePlan[0], ...planesCatalog];
+        }
+      }
 
       const { data: usuariosDb, error: usrErr } = await supabase
         .from("usuarios")
@@ -704,7 +729,7 @@ export default function AdminDashboard() {
     e.preventDefault();
     setPlError("");
     setPlExito(false);
-    if (!nuevoPlan.nombre || nuevoPlan.precio <= 0) return;
+    if (!nuevoPlan.nombre || nuevoPlan.precio < 0) return;
     
     try {
       if (editingPlanId) {
