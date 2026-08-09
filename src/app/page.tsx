@@ -1307,16 +1307,16 @@ export default function Home() {
               const getUniquePlanImage = (name: string, isFree: boolean, i: number) => {
                 const n = (name || "").toLowerCase();
                 if (isFree || n.includes('prueba')) return '/teacher_hero.png';
-                if (n.includes('8')) return '/plan_pack_8.png';
-                if (n.includes('3') || n.includes('semana')) return '/plan_intensive_3.png';
-                if (n.includes('libre')) return '/plan_libre.png';
-                if (n.includes('4')) return '/plan_pack_4.png';
+                if (n.includes('libre')) return '/photo_libre.png';
+                if (n.includes('4')) return '/photo_pack_4.png';
+                if (n.includes('8')) return '/photo_pack_8.png';
+                if (n.includes('3') || n.includes('semana')) return '/photo_intensive_3.png';
                 if (n.includes('preply')) return '/photo_preply.png';
                 if (n.includes('alexandra')) return '/photo_alexandra.png';
                 if (n.includes('eugenia')) return '/photo_eugenia.png';
                 if (n.includes('erick')) return '/photo_erick.png';
                 
-                const fallbacks = ['/plan_pack_8.png', '/plan_intensive_3.png', '/plan_libre.png', '/plan_pack_4.png'];
+                const fallbacks = ['/photo_pack_8.png', '/photo_intensive_3.png', '/photo_libre.png', '/photo_pack_4.png'];
                 return fallbacks[i % fallbacks.length];
               };
 

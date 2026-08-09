@@ -4,15 +4,14 @@ import { supabase } from "@/lib/supabase";
 
 const BANCO_IMAGENES_DEFAULT = [
   { url: "/teacher_hero.png", titulo: "🎁 Clase de Prueba (Profesor)", tag: "Prueba" },
-  { url: "/plan_pack_8.png", titulo: "📦 Pack de 8 Clases (Estudiante)", tag: "Pack 8" },
-  { url: "/plan_intensive_3.png", titulo: "⚡ Intensivo 3 Clases/Semana (Laptop)", tag: "Intensivo" },
-  { url: "/plan_libre.png", titulo: "🎫 Clase Libre (1 a 1 Auriculares)", tag: "Individual" },
-  { url: "/plan_pack_4.png", titulo: "📚 Pack de 4 Clases (Estudio Libreta)", tag: "Pack 4" },
+  { url: "/photo_libre.png", titulo: "🎫 Clase Libre (1 a 1 Auriculares)", tag: "Individual" },
+  { url: "/photo_pack_4.png", titulo: "📚 Pack de 4 Clases (Estudio Libreta)", tag: "Pack 4" },
+  { url: "/photo_pack_8.png", titulo: "📦 Pack de 8 Clases (Estudiante)", tag: "Pack 8" },
+  { url: "/photo_intensive_3.png", titulo: "⚡ Intensivo 3 Clases/Semana (Laptop)", tag: "Intensivo" },
   { url: "/photo_preply.png", titulo: "💻 Plan Preply (Workspace)", tag: "Preply" },
   { url: "/photo_alexandra.png", titulo: "🎓 Plan Alexandra (Tutoría 1 a 1)", tag: "Personal" },
   { url: "/photo_eugenia.png", titulo: "📝 Plan Eugenia (Apuntes Francés)", tag: "Estudio" },
-  { url: "/photo_erick.png", titulo: "🚀 Plan Erick (Sesión en Vivo)", tag: "Sesión" },
-  { url: "/french_hero.png", titulo: "🇫🇷 Método / Conversación", tag: "Francés" }
+  { url: "/photo_erick.png", titulo: "🚀 Plan Erick (Sesión en Vivo)", tag: "Sesión" }
 ];
 
 interface PlanesTabProps {
