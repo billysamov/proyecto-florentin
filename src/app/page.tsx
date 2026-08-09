@@ -1356,6 +1356,20 @@ export default function Home() {
                 ? plan.caracteristicas.split('\n').filter((f: string) => f.trim().length > 0)
                 : [];
 
+              const uniquePlanImages = [
+                '/plan_pack_8.png',
+                '/plan_intensive_3.png',
+                '/plan_libre.png',
+                '/plan_pack_4.png',
+                '/french_hero.png',
+                '/perfect_hero_image.png',
+                '/level_progress.png',
+                '/target_3d.png'
+              ];
+
+              const planImgSrc = plan.imagen_url 
+                || (isFreePlan ? '/teacher_hero.png' : uniquePlanImages[idx % uniquePlanImages.length]);
+
               return (
                 <div 
                   key={plan.id || idx} 
@@ -1370,7 +1384,7 @@ export default function Home() {
                   <div>
                     <div className="relative h-[190px] w-full">
                       <Image 
-                        src={plan.imagen_url || (isFreePlan ? '/teacher_hero.png' : idx % 4 === 0 ? '/french_hero.png' : idx % 4 === 1 ? '/perfect_hero_image.png' : idx % 4 === 2 ? '/level_progress.png' : '/target_3d.png')} 
+                        src={planImgSrc} 
                         alt={plan.nombre} 
                         fill 
                         className="object-cover" 

@@ -3,14 +3,15 @@ import { Shield, Edit, Trash2, Upload, Image as ImageIcon, Check, X, FolderPlus,
 import { supabase } from "@/lib/supabase";
 
 const BANCO_IMAGENES_DEFAULT = [
+  { url: "/teacher_hero.png", titulo: "🎁 Clase de Prueba (Profesor)", tag: "Prueba" },
+  { url: "/plan_pack_8.png", titulo: "📦 Pack de 8 Clases (Escritorio 3D)", tag: "Pack 8" },
+  { url: "/plan_intensive_3.png", titulo: "⚡ Intensivo 3 Clases/Semana", tag: "Intensivo" },
+  { url: "/plan_libre.png", titulo: "🎫 Clase Libre (Ticket 3D)", tag: "Individual" },
+  { url: "/plan_pack_4.png", titulo: "📚 Pack de 4 Clases (Badges 3D)", tag: "Pack 4" },
   { url: "/french_hero.png", titulo: "🇫🇷 Método / Conversación", tag: "Francés" },
   { url: "/perfect_hero_image.png", titulo: "🎓 Estudiante 1 a 1", tag: "Particular" },
   { url: "/level_progress.png", titulo: "📈 Progreso y Niveles", tag: "Grupal" },
-  { url: "/target_3d.png", titulo: "🎯 Certificación DELF/DALF", tag: "Exámenes" },
-  { url: "/teacher_hero.png", titulo: "👨‍🏫 Profesor Florentin", tag: "Guía" },
-  { url: "/level_progress_v4.png", titulo: "🚀 Progreso V4", tag: "Avanzado" },
-  { url: "/level_progress_clay.png", titulo: "✨ Clay Progress", tag: "3D" },
-  { url: "/hero_composite.png", titulo: "🖼️ Composite Hero", tag: "General" }
+  { url: "/target_3d.png", titulo: "🎯 Certificación DELF/DALF", tag: "Exámenes" }
 ];
 
 interface PlanesTabProps {
