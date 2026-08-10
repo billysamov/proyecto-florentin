@@ -1382,7 +1382,7 @@ export default function AdminDashboard() {
   return (
     <div style={{ display: "flex", minHeight: "100vh", backgroundColor: "#f8fafc" }}>
       
-      {/* 1. SIDEBAR LATERAL (RESPONSIVO) */}
+      {/* 1. SIDEBAR LATERAL (RESPONSIVO Y DESPLAZABLE) */}
       <aside style={{
         backgroundColor: "#0f172a",
         color: "#ffffff",
@@ -1393,6 +1393,8 @@ export default function AdminDashboard() {
         bottom: 0,
         left: 0,
         zIndex: 30,
+        overflowY: "auto",
+        maxHeight: "100vh",
         borderRight: "1px solid rgba(255, 255, 255, 0.05)"
       }} className={`w-72 transition-transform duration-300 ease-in-out lg:translate-x-0 lg:flex ${sidebarOpen ? 'translate-x-0' : '-translate-x-full'}`}>
         {/* Header del Sidebar */}
@@ -1461,14 +1463,10 @@ export default function AdminDashboard() {
         </div>
 
         {/* Menú de Navegación */}
-        <nav style={{ flex: 1, padding: "24px 16px", display: "flex", flexDirection: "column", gap: "8px" }}>
+        <nav style={{ flex: 1, padding: "24px 16px", display: "flex", flexDirection: "column", gap: "8px", overflowY: "auto" }}>
           {sidebarItems.map((item) => {
             const isSelected = activeTab === item.id;
-            
-  
-  
-
-  return (
+            return (
               <button
                 key={item.id}
                 onClick={() => {
