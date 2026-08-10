@@ -1516,29 +1516,25 @@ export default function Home() {
           9. FOOTER
       ═══════════════════════════════════════ */}
       <footer className="py-16 border-t border-slate-200 bg-white px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 sm:gap-16 pb-12">
-          {/* Columna 1: Branding y Propósito */}
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+          
+          {/* Columna 1: Marca & Contacto Principal */}
           <div className="flex flex-col gap-4">
-            <div className="relative w-44 h-12">
+            <Link href="/" className="inline-block">
               <Image 
-                src="/logo.png" 
-                alt="Logo Florentin" 
-                fill
-                sizes="176px"
-                className="object-contain object-left"
+                src="/logo_florentin.png" 
+                alt="Florentin French" 
+                width={160} 
+                height={50} 
+                className="h-10 w-auto object-contain" 
               />
-            </div>
-            <p className="text-slate-400 text-sm leading-relaxed max-w-sm mt-2 font-medium">
-              {lang === 'es' 
-                ? 'Academia de francés en línea del Profesor Florentin. Clases particulares y grupales adaptadas a tus objetivos, enfocadas en la conversación fluida.'
-                : lang === 'fr'
-                ? "Académie de français en ligne du Professeur Florentin. Cours particuliers et en groupe adaptés à vos objectifs, axés sur la conversation fluide."
-                : "Professor Florentin's online French academy. Private and group classes tailored to your goals, focused on fluent conversation."
-              }
+            </Link>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
+              {t.footerTagline}
             </p>
 
             {/* Contacto Directo: Email y Teléfono/WhatsApp */}
-            <div className="flex flex-col gap-2.5 mt-3 pt-3 border-t border-slate-100">
+            <div className="flex flex-col gap-2.5 mt-2 pt-3 border-t border-slate-100">
               <a 
                 href={`mailto:${config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}`}
                 className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0055a5] transition-colors"
@@ -1546,7 +1542,7 @@ export default function Home() {
                 <div className="w-7 h-7 rounded-full bg-[#0055a5]/10 text-[#0055a5] flex items-center justify-center shrink-0">
                   <Mail size={13} />
                 </div>
-                <span>{config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}</span>
+                <span className="truncate">{config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}</span>
               </a>
 
               <a 
@@ -1567,26 +1563,35 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Columna 2: Navegación Rápida */}
+          {/* Columna 2: NAVEGACIÓN */}
           <div className="flex flex-col gap-4">
             <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">
               {lang === 'es' ? 'Navegación' : lang === 'fr' ? 'Navigation' : 'Navigation'}
             </h4>
-            <div className="grid grid-cols-2 gap-2 text-sm text-slate-400 font-semibold">
+            <div className="flex flex-col gap-2.5 text-sm text-slate-500 font-semibold">
               <a href="#method" className="hover:text-[#0c1b33] transition-colors">
                 {lang === 'es' ? 'Método' : lang === 'fr' ? 'Méthode' : 'Method'}
-              </a>
-              <a href="#plans" className="hover:text-[#0c1b33] transition-colors">
-                {lang === 'es' ? 'Planes' : lang === 'fr' ? 'Formules' : 'Plans'}
               </a>
               <a href="#teacher" className="hover:text-[#0c1b33] transition-colors">
                 {lang === 'es' ? 'Profesor' : lang === 'fr' ? 'Professeur' : 'Teacher'}
               </a>
-              <a href="#faq" className="hover:text-[#0c1b33] transition-colors">
-                {lang === 'es' ? 'Preguntas' : lang === 'fr' ? 'FAQ' : 'FAQ'}
-              </a>
               <a href="#contact" className="hover:text-[#0c1b33] transition-colors">
                 {lang === 'es' ? 'Contacto' : lang === 'fr' ? 'Contact' : 'Contact'}
+              </a>
+            </div>
+          </div>
+
+          {/* Columna 3: ACADEMIA */}
+          <div className="flex flex-col gap-4">
+            <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">
+              {lang === 'es' ? 'Academia' : lang === 'fr' ? 'Académie' : 'Academy'}
+            </h4>
+            <div className="flex flex-col gap-2.5 text-sm text-slate-500 font-semibold">
+              <a href="#plans" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Planes' : lang === 'fr' ? 'Formules' : 'Plans'}
+              </a>
+              <a href="#faq" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Preguntas' : lang === 'fr' ? 'FAQ' : 'FAQ'}
               </a>
               <Link href="/alumno" className="hover:text-[#0c1b33] transition-colors">
                 {lang === 'es' ? 'Portal Alumnos' : lang === 'fr' ? "Portail de l'Élève" : 'Student Portal'}
@@ -1594,16 +1599,21 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Columna 3: Información Legal y Créditos */}
+          {/* Columna 4: POLÍTICAS Y SOPORTE */}
           <div className="flex flex-col gap-4">
             <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">
               {lang === 'es' ? 'Políticas y Soporte' : lang === 'fr' ? 'Soutien et Politiques' : 'Policies & Support'}
             </h4>
-            <div className="flex flex-col gap-2 text-sm text-slate-400 font-semibold">
+            <div className="flex flex-col gap-2.5 text-sm text-slate-500 font-semibold">
               <Link href="/privacidad" className="hover:text-[#0c1b33] transition-colors">{t.footerPrivacy}</Link>
               <Link href="/terminos" className="hover:text-[#0c1b33] transition-colors">{t.footerTerms}</Link>
-              <a href={`mailto:${config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}`} className="hover:text-[#0c1b33] transition-colors">
-                {config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}
+              <a 
+                href={whatsappUrl} 
+                target="_blank" 
+                rel="noopener noreferrer" 
+                className="hover:text-[#10b981] transition-colors"
+              >
+                {lang === 'es' ? 'Soporte en WhatsApp' : lang === 'fr' ? 'Support WhatsApp' : 'WhatsApp Support'}
               </a>
             </div>
           </div>
