@@ -37,6 +37,7 @@ interface ClaseAdmin {
   notes?: string;
   recording_url?: string;
   fecha_original?: string;
+  alumno_zona_horaria?: string;
 }
 
 interface RecursoAdmin {
@@ -398,7 +399,8 @@ export default function AdminDashboard() {
           usuario_id,
           usuarios (
             nombre,
-            email
+            email,
+            zona_horaria
           )
         `)
         .order("fecha_hora", { ascending: true });
@@ -423,7 +425,8 @@ export default function AdminDashboard() {
             link: c.enlace_meet || "pendiente",
             notes: c.notas_profesor || "",
             recording_url: c.enlace_grabacion || "",
-            fecha_original: c.fecha_hora
+            fecha_original: c.fecha_hora,
+            alumno_zona_horaria: c.usuarios?.zona_horaria || ""
           };
         });
         setClases(clasesMap);
@@ -1666,6 +1669,7 @@ export default function AdminDashboard() {
                 guardarLinkClase={guardarLinkClase}
                 cambiarEstadoClase={cambiarEstadoClase}
                 lang={adminLang}
+                config={config}
               />
             )}
 

@@ -31,6 +31,33 @@ export async function POST(request: Request) {
     const supabaseKey = process.env.SUPABASE_SERVICE_ROLE_KEY!;
     const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 
+    // Las acciones que se autodeclaran como administrador requieren verificar
+    // una sesión real con rol "admin". Sin esto, cualquiera podría enviar
+    // es_admin/reset_intentos en el body y saltarse las restricciones.
+    if (es_admin || reset_intentos) {
+      const authHeader = request.headers.get('authorization');
+      const token = authHeader?.startsWith('Bearer ') ? authHeader.substring(7) : '';
+
+      if (!token) {
+        return NextResponse.json({ error: 'No autorizado. Inicie sesión nuevamente.' }, { status: 401 });
+      }
+
+      const { data: { user } } = await supabaseAdmin.auth.getUser(token);
+      if (!user) {
+        return NextResponse.json({ error: 'No autorizado. Inicie sesión nuevamente.' }, { status: 401 });
+      }
+
+      const { data: perfil } = await supabaseAdmin
+        .from('usuarios')
+        .select('rol')
+        .eq('id', user.id)
+        .single();
+
+      if (!perfil || perfil.rol !== 'admin') {
+        return NextResponse.json({ error: 'Acceso denegado. Se requieren permisos de administrador.' }, { status: 403 });
+      }
+    }
+
     // Accion especial: Restablecer intentos de reprogramacion por el administrador
     if (reset_intentos) {
       const { error: resetErr } = await supabaseAdmin
@@ -164,7 +191,9 @@ export async function POST(request: Request) {
 
     return NextResponse.json({
       success: true,
-      intentos_restantes: nuevosIntentos,
+      intentos_restantes: updateData.reprogramaciones_restantes !== undefined
+        ? updateData.reprogramaciones_restantes
+        : clase.reprogramaciones_restantes,
       nueva_fecha_hora: nuevaFecha.toISOString(),
       message: '¡Clase reprogramada exitosamente!'
     });

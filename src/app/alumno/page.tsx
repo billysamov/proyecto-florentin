@@ -992,6 +992,12 @@ export default function AlumnoPortal() {
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
 
+    // Sincronizar la zona horaria elegida con el perfil, sin bloquear la reserva si falla.
+    if (userTimeZone) {
+      supabase.from("usuarios").update({ zona_horaria: userTimeZone }).eq("id", user.id)
+        .then(({ error }) => { if (error) console.warn("No se pudo sincronizar zona horaria:", error.message); });
+    }
+
     // Llamar al backend para reserva ATÓMICA con validación anti-colisión
     try {
       setReservaError("");
@@ -1233,6 +1239,12 @@ export default function AlumnoPortal() {
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return;
+
+    // Sincronizar la zona horaria elegida con el perfil, sin bloquear la reprogramación si falla.
+    if (userTimeZone) {
+      supabase.from("usuarios").update({ zona_horaria: userTimeZone }).eq("id", user.id)
+        .then(({ error }) => { if (error) console.warn("No se pudo sincronizar zona horaria:", error.message); });
+    }
 
     try {
       setReproError("");
