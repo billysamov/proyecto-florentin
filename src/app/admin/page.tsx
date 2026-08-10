@@ -1552,7 +1552,10 @@ export default function AdminDashboard() {
         flex: 1,
         display: "flex",
         flexDirection: "column",
-        minHeight: "100vh"
+        minHeight: "100vh",
+        minWidth: 0,
+        maxWidth: "100%",
+        overflowX: "hidden"
       }} className="lg:ml-72 ml-0 w-full transition-all duration-300">
         
         {/* HEADER SUPERIOR (MÓVIL Y ESCRITORIO) */}
@@ -1647,8 +1650,8 @@ export default function AdminDashboard() {
         </header>
 
         {/* CONTENIDO PRINCIPAL */}
-        <main style={{ flex: 1, padding: "32px 24px", backgroundColor: "#f8fafc" }}>
-          <div style={{ maxWidth: "1200px", margin: "0 auto" }}>
+        <main style={{ flex: 1, padding: "32px 24px", backgroundColor: "#f8fafc", width: "100%", maxWidth: "100%", overflowX: "auto" }}>
+          <div style={{ maxWidth: "1400px", margin: "0 auto", width: "100%" }}>
             
             {/* TAB 1: RESUMEN Y AGENDA */}
             {activeTab === "resumen" && (
