@@ -1520,13 +1520,13 @@ export default function Home() {
           
           {/* Columna 1: Marca & Contacto Principal */}
           <div className="flex flex-col gap-4">
-            <Link href="/" className="inline-block">
+            <Link href="/" className="inline-block relative h-10 w-44">
               <Image 
-                src="/logo_florentin.png" 
+                src="/logo.png" 
                 alt="Florentin French" 
-                width={160} 
-                height={50} 
-                className="h-10 w-auto object-contain" 
+                fill
+                sizes="176px"
+                className="object-contain object-left" 
               />
             </Link>
             <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
