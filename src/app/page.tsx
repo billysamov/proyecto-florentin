@@ -1519,22 +1519,27 @@ export default function Home() {
         <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
           
           {/* Columna 1: Marca & Contacto Principal */}
-          <div className="flex flex-col gap-4">
-            <Link href="/" className="inline-block relative h-10 w-44">
+          <div className="flex flex-col gap-3">
+            <Link href="/" className="inline-block relative h-12 w-48 mb-1">
               <Image 
                 src="/logo.png" 
                 alt="Florentin French" 
                 fill
-                sizes="176px"
+                sizes="192px"
                 className="object-contain object-left" 
               />
             </Link>
             <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
-              {t.footerTagline}
+              {lang === 'es' 
+                ? 'Academia de francés en línea del Profesor Florentin. Clases particulares y grupales adaptadas a tus objetivos, enfocadas en la conversación fluida.'
+                : lang === 'fr'
+                ? "Académie de français en ligne du Professeur Florentin. Cours particuliers et en groupe adaptés à vos objectifs, axés sur la conversation fluide."
+                : "Professor Florentin's online French academy. Private and group classes tailored to your goals, focused on fluent conversation."
+              }
             </p>
 
             {/* Contacto Directo: Email y Teléfono/WhatsApp */}
-            <div className="flex flex-col gap-2.5 mt-2 pt-3 border-t border-slate-100">
+            <div className="flex flex-col gap-2.5 mt-2">
               <a 
                 href={`mailto:${config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}`}
                 className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0055a5] transition-colors"
