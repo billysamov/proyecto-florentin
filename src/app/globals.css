@@ -46,65 +46,80 @@
    💅 ESTILO PERSONALIZADO DE BARRAS DE DESPLAZAMIENTO (SCROLLBARS) PREMIUM
    ========================================================================== */
 
-/* Chrome, Edge, Safari y Brave */
+/* Ocultar botones de flecha nativas de Windows (▲ y ▼) en todos los navegadores WebKit */
+::-webkit-scrollbar-button {
+  display: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
+
+/* Chrome, Edge, Safari, Brave y Opera */
 ::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+  width: 6px !important;
+  height: 6px !important;
 }
 
 ::-webkit-scrollbar-track {
-  background: rgba(15, 23, 42, 0.04);
-  border-radius: 9999px;
+  background: transparent !important;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: rgba(59, 130, 246, 0.35);
-  border-radius: 9999px;
-  border: 2px solid transparent;
-  background-clip: padding-box;
-  transition: background 0.3s ease;
+  background: rgba(59, 130, 246, 0.35) !important;
+  border-radius: 9999px !important;
+  transition: background 0.3s ease !important;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: rgba(59, 130, 246, 0.7);
+  background: rgba(59, 130, 246, 0.8) !important;
 }
 
 ::-webkit-scrollbar-corner {
-  background: transparent;
+  background: transparent !important;
 }
 
-/* Scrollbar estilo ultra-fino para el Sidebar del Admin */
+/* Scrollbar ultra-elegante flotante para el Sidebar del Admin (Fondo Oscuro) */
+aside,
+aside *,
+nav,
+nav * {
+  scrollbar-width: thin !important;
+  scrollbar-color: rgba(255, 255, 255, 0.25) transparent !important;
+}
+
 aside::-webkit-scrollbar,
-aside ::-webkit-scrollbar {
-  width: 6px;
-  height: 6px;
+nav::-webkit-scrollbar,
+aside *::-webkit-scrollbar,
+nav *::-webkit-scrollbar {
+  width: 5px !important;
+  height: 5px !important;
 }
 
 aside::-webkit-scrollbar-track,
-aside ::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.02);
+nav::-webkit-scrollbar-track,
+aside *::-webkit-scrollbar-track,
+nav *::-webkit-scrollbar-track {
+  background: transparent !important;
 }
 
 aside::-webkit-scrollbar-thumb,
-aside ::-webkit-scrollbar-thumb {
-  background: rgba(255, 255, 255, 0.2);
-  border-radius: 9999px;
+nav::-webkit-scrollbar-thumb,
+aside *::-webkit-scrollbar-thumb,
+nav *::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.25) !important;
+  border-radius: 9999px !important;
 }
 
 aside::-webkit-scrollbar-thumb:hover,
-aside ::-webkit-scrollbar-thumb:hover {
-  background: rgba(201, 154, 60, 0.7);
+nav::-webkit-scrollbar-thumb:hover,
+aside *::-webkit-scrollbar-thumb:hover,
+nav *::-webkit-scrollbar-thumb:hover {
+  background: rgba(201, 154, 60, 0.85) !important;
 }
 
 /* Soporte para Firefox */
 * {
   scrollbar-width: thin;
-  scrollbar-color: rgba(59, 130, 246, 0.4) rgba(15, 23, 42, 0.04);
-}
-
-aside, aside * {
-  scrollbar-width: thin;
-  scrollbar-color: rgba(255, 255, 255, 0.25) rgba(15, 23, 42, 0.95);
+  scrollbar-color: rgba(59, 130, 246, 0.4) transparent;
 }
 
 html, body {
