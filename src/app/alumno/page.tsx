@@ -280,12 +280,19 @@ export default function AlumnoPortal() {
         });
         setHistorialPagos(historialEnriquecido);
 
-        const activa = inscripciones.find((i) => i.estado_pago === "pagado");
-        if (activa) {
-          const planInfo = planesDb?.find(p => p.id === activa.plan_id);
-          setClasesRestantes(activa.clases_restantes);
-          setTotalClases(planInfo ? planInfo.total_clases : (activa.plan_id === 1 ? 8 : activa.plan_id === 2 ? 12 : 4));
-          setPlanActual(planInfo ? planInfo.nombre : (activa.plan_id === 1 ? "Curso Principiante A1" : activa.plan_id === 2 ? "Conversación Intermedia B2" : "Membresía Mensual Pro"));
+        // Cada compra queda como una inscripción separada (no se fusionan). El saldo
+        // visible es la SUMA de todas las compras pagadas, para no perder clases
+        // cuando el alumno adquiere un plan nuevo teniendo saldo de uno anterior.
+        const planInfoDe = (planId: number) => planesDb?.find(p => p.id === planId);
+        const pagadas = inscripciones.filter((i) => i.estado_pago === "pagado");
+        if (pagadas.length > 0) {
+          const masReciente = pagadas[0];
+          const planInfo = planInfoDe(masReciente.plan_id);
+          const sumaRestantes = pagadas.reduce((acc, i) => acc + (i.clases_restantes || 0), 0);
+          const sumaTotal = pagadas.reduce((acc, i) => acc + (planInfoDe(i.plan_id)?.total_clases ?? (i.plan_id === 1 ? 8 : i.plan_id === 2 ? 12 : 4)), 0);
+          setClasesRestantes(sumaRestantes);
+          setTotalClases(sumaTotal);
+          setPlanActual(planInfo ? planInfo.nombre : (masReciente.plan_id === 1 ? "Curso Principiante A1" : masReciente.plan_id === 2 ? "Conversación Intermedia B2" : "Membresía Mensual Pro"));
         } else {
           setClasesRestantes(0);
           setTotalClases(0);
@@ -1769,7 +1776,7 @@ export default function AlumnoPortal() {
             </div>
           </div>
 
-          {planActual === "Sin plan activo" && (
+          {(
             <div className="card" style={{ marginBottom: "40px", padding: "32px", border: "1px solid var(--border-color)" }}>
               <div style={{ textAlign: "center", marginBottom: "24px" }}>
                 <h3 style={{ fontSize: "22px", marginBottom: "8px" }}>{t.buyPlanTitle}</h3>

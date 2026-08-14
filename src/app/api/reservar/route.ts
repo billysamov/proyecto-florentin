@@ -53,14 +53,17 @@ export async function POST(request: Request) {
     const supabaseAdmin = createClient(supabaseUrl, supabaseKey);
 
     // ====== PASO 1: Verificar que el alumno tiene clases disponibles ======
-    const { data: inscripcion, error: insError } = await supabaseAdmin
+    // Cada compra es una inscripción separada (no se fusionan). Se descuenta de la
+    // compra más antigua que aún tenga saldo (FIFO), para no perder clases de
+    // planes anteriores cuando el alumno adquiere uno nuevo.
+    const { data: inscripcionesPagadas, error: insError } = await supabaseAdmin
       .from('inscripciones')
       .select('id, clases_restantes')
       .eq('usuario_id', usuario_id)
       .eq('estado_pago', 'pagado')
-      .order('creado_en', { ascending: false })
-      .limit(1)
-      .maybeSingle();
+      .gt('clases_restantes', 0)
+      .order('creado_en', { ascending: true })
+      .limit(1);
 
     if (insError) {
       console.error('Error verificando inscripción:', insError);
@@ -69,6 +72,8 @@ export async function POST(request: Request) {
         { status: 500 }
       );
     }
+
+    const inscripcion = inscripcionesPagadas && inscripcionesPagadas.length > 0 ? inscripcionesPagadas[0] : null;
 
     if (!inscripcion || inscripcion.clases_restantes <= 0) {
       return NextResponse.json(

@@ -318,10 +318,15 @@ export default function AdminDashboard() {
         let totalIngresosEur = 0;
         let totalIngresosUsd = 0;
         const alumnosMap = usuariosDb.map((u: any) => {
-          const ins = u.inscripciones && u.inscripciones.length > 0 
-            ? [...u.inscripciones].sort((a: any, b: any) => b.id - a.id)[0] 
-            : null;
-          
+          // Cada compra queda como una inscripción separada (no se fusionan). El saldo
+          // y los ingresos se calculan sumando TODAS las compras pagadas del alumno,
+          // no solo la más reciente, para no perder clases/ingresos de compras previas.
+          const todas: any[] = u.inscripciones || [];
+          const pagadas = [...todas]
+            .filter((i: any) => i.estado_pago === "pagado")
+            .sort((a: any, b: any) => b.id - a.id);
+          const masReciente = pagadas.length > 0 ? pagadas[0] : null;
+
           let planNombre = "Sin plan activo";
           let clasesRest = 0;
           let clasesTot = 0;
@@ -329,40 +334,39 @@ export default function AdminDashboard() {
           let divisaPlan = "EUR";
           let fechaInscr = "-";
 
-          if (ins && ins.estado_pago === "pagado") {
-            clasesRest = ins.clases_restantes;
-            divisaPlan = ins.divisa ? ins.divisa.toUpperCase() : "EUR";
-            precioPlan = ins.monto_pagado || 0;
+          if (masReciente) {
+            divisaPlan = masReciente.divisa ? masReciente.divisa.toUpperCase() : "EUR";
 
-            const planInfo = planesCatalog?.find((p: any) => p.id === ins.plan_id);
-            if (planInfo) {
-              // Plan aún existe en el catálogo
-              clasesTot = planInfo.total_clases || 0;
-              precioPlan = ins.monto_pagado || planInfo.precio || 0;
-              planNombre = planInfo.nombre || "Plan no encontrado";
-            } else {
-              // Plan fue eliminado del catálogo (plan personalizado ya consumido)
-              // Calculamos total_clases sumando restantes + ya tomadas (de clases completadas)
-              clasesTot = ins.clases_restantes; // Mínimo igual a restantes
-              planNombre = ins.monto_pagado
-                ? `Plan personalizado (${ins.monto_pagado}${divisaPlan === "USD" ? "$" : "€"})`
-                : "Plan personalizado";
-            }
+            const planInfoReciente = planesCatalog?.find((p: any) => p.id === masReciente.plan_id);
+            planNombre = planInfoReciente
+              ? (planInfoReciente.nombre || "Plan no encontrado")
+              : (masReciente.monto_pagado
+                  ? `Plan personalizado (${masReciente.monto_pagado}${divisaPlan === "USD" ? "$" : "€"})`
+                  : "Plan personalizado");
 
-            if (ins.creado_en) {
-              const dtInscr = new Date(ins.creado_en);
+            if (masReciente.creado_en) {
+              const dtInscr = new Date(masReciente.creado_en);
               if (!isNaN(dtInscr.getTime())) {
                 fechaInscr = dtInscr.toISOString().split("T")[0];
               }
             }
 
-            if (divisaPlan === "USD") {
-              totalIngresosUsd += precioPlan;
-            } else {
-              totalIngresosEur += precioPlan;
+            for (const ins of pagadas) {
+              clasesRest += ins.clases_restantes || 0;
+
+              const planInfo = planesCatalog?.find((p: any) => p.id === ins.plan_id);
+              clasesTot += planInfo ? (planInfo.total_clases || 0) : (ins.clases_restantes || 0);
+
+              const monto = ins.monto_pagado || (planInfo ? planInfo.precio || 0 : 0);
+              precioPlan += monto;
+              const divisaIns = ins.divisa ? ins.divisa.toUpperCase() : "EUR";
+              if (divisaIns === "USD") {
+                totalIngresosUsd += monto;
+              } else {
+                totalIngresosEur += monto;
+              }
             }
           }
-
 
           return {
             id: u.id,
