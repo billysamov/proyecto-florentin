@@ -1833,14 +1833,30 @@ export default function AlumnoPortal() {
                         {plan.descripcion}
                       </p>
                     </div>
-                    <button
-                      onClick={() => handleComprarPlan(plan.id)}
-                      disabled={comprarLoading !== null}
-                      className={idx === 1 ? "btn btn-accent" : "btn btn-primary"}
-                      style={{ width: "100%", fontSize: "13px", color: idx === 1 ? "#14171a" : undefined }}
-                    >
-                      {comprarLoading === plan.id ? (lang === "fr" ? "Chargement..." : lang === "en" ? "Loading..." : "Cargando...") : t.buyBtn}
-                    </button>
+                    {plan.tipo === "clase_gratis" || Number(plan.precio) === 0 ? (
+                      <a
+                        href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33685744973'}?text=${encodeURIComponent(
+                          lang === "fr" ? "Bonjour Florentin, je voudrais réserver mon cours d'essai gratuit." :
+                          lang === "en" ? "Hi Florentin, I want to book my free trial class." :
+                          "Hola Florentin, quiero agendar mi clase de prueba gratuita."
+                        )}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={idx === 1 ? "btn btn-accent" : "btn btn-primary"}
+                        style={{ width: "100%", fontSize: "13px", color: idx === 1 ? "#14171a" : undefined, textAlign: "center" }}
+                      >
+                        {lang === "fr" ? "Réserver via WhatsApp" : lang === "en" ? "Book via WhatsApp" : "Agendar por WhatsApp"}
+                      </a>
+                    ) : (
+                      <button
+                        onClick={() => handleComprarPlan(plan.id)}
+                        disabled={comprarLoading !== null}
+                        className={idx === 1 ? "btn btn-accent" : "btn btn-primary"}
+                        style={{ width: "100%", fontSize: "13px", color: idx === 1 ? "#14171a" : undefined }}
+                      >
+                        {comprarLoading === plan.id ? (lang === "fr" ? "Chargement..." : lang === "en" ? "Loading..." : "Cargando...") : t.buyBtn}
+                      </button>
+                    )}
                   </div>
                 ))}
               </div>

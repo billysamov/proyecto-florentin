@@ -149,6 +149,7 @@ export default function PlanesTab({
     lblMensual: isFr ? "Mensuel" : "Mensual",
     lblIndividual: isFr ? "Individuel" : "Individual",
     lblPaquete: isFr ? "Forfait" : "Paquete",
+    lblGratis: isFr ? "Essai Gratuit" : "Prueba Gratis",
     lblClases: isFr ? "cours" : "clases",
     lblNivel: isFr ? "Niveau :" : "Nivel:",
     btnGuardar: isFr ? "Enregistrer" : "Guardar",
@@ -390,6 +391,14 @@ export default function PlanesTab({
                           />
                           <input
                             type="text"
+                            defaultValue={p.descripcion || ""}
+                            id={`edit-plan-desc-${p.id}`}
+                            className="form-control"
+                            placeholder="Descripción breve del plan"
+                            style={{ padding: "4px 8px", fontSize: "11px" }}
+                          />
+                          <input
+                            type="text"
                             defaultValue={p.badge || "Flexible"}
                             id={`edit-plan-badge-${p.id}`}
                             className="form-control"
@@ -455,17 +464,31 @@ export default function PlanesTab({
                       )}
                     </td>
                     <td style={{ padding: "16px" }}>
-                      <span style={{
-                        padding: "4px 8px",
-                        borderRadius: "var(--radius-sm)",
-                        fontSize: "11px",
-                        fontWeight: 700,
-                        backgroundColor: p.tipo === "suscripcion" ? "rgba(201, 154, 60, 0.08)" : p.tipo === "clase_individual" ? "#f1f5f9" : "rgba(59, 130, 246, 0.08)",
-                        color: p.tipo === "suscripcion" ? "hsl(var(--accent-hsl))" : p.tipo === "clase_individual" ? "var(--text-muted)" : "#3b82f6",
-                        border: p.tipo === "suscripcion" ? "1px solid rgba(201, 154, 60, 0.15)" : p.tipo === "clase_individual" ? "1px solid #e2e8f0" : "1px solid rgba(59, 130, 246, 0.15)"
-                      }}>
-                        {p.tipo === "suscripcion" ? t.lblMensual : p.tipo === "clase_individual" ? t.lblIndividual : t.lblPaquete}
-                      </span>
+                      {isEditing ? (
+                        <select
+                          defaultValue={p.tipo}
+                          id={`edit-plan-tipo-${p.id}`}
+                          className="form-control"
+                          style={{ padding: "4px 8px", fontSize: "12px" }}
+                        >
+                          <option value="paquete">{t.optPaquete}</option>
+                          <option value="suscripcion">{t.optSuscripcion}</option>
+                          <option value="clase_individual">{t.optIndividual}</option>
+                          <option value="clase_gratis">🎁 Clase de Prueba Gratuita (WhatsApp)</option>
+                        </select>
+                      ) : (
+                        <span style={{
+                          padding: "4px 8px",
+                          borderRadius: "var(--radius-sm)",
+                          fontSize: "11px",
+                          fontWeight: 700,
+                          backgroundColor: p.tipo === "suscripcion" ? "rgba(201, 154, 60, 0.08)" : p.tipo === "clase_individual" ? "#f1f5f9" : p.tipo === "clase_gratis" ? "rgba(16, 185, 129, 0.08)" : "rgba(59, 130, 246, 0.08)",
+                          color: p.tipo === "suscripcion" ? "hsl(var(--accent-hsl))" : p.tipo === "clase_individual" ? "var(--text-muted)" : p.tipo === "clase_gratis" ? "#10b981" : "#3b82f6",
+                          border: p.tipo === "suscripcion" ? "1px solid rgba(201, 154, 60, 0.15)" : p.tipo === "clase_individual" ? "1px solid #e2e8f0" : p.tipo === "clase_gratis" ? "1px solid rgba(16, 185, 129, 0.15)" : "1px solid rgba(59, 130, 246, 0.15)"
+                        }}>
+                          {p.tipo === "suscripcion" ? t.lblMensual : p.tipo === "clase_individual" ? t.lblIndividual : p.tipo === "clase_gratis" ? t.lblGratis : t.lblPaquete}
+                        </span>
+                      )}
                     </td>
                     <td style={{ padding: "16px", fontSize: "14px" }}>
                       {isEditing ? (
@@ -531,6 +554,7 @@ export default function PlanesTab({
                           <button
                             onClick={() => {
                               const nombre = (document.getElementById(`edit-plan-nombre-${p.id}`) as HTMLInputElement).value;
+                              const tipo = (document.getElementById(`edit-plan-tipo-${p.id}`) as HTMLSelectElement).value;
                               const descripcion = (document.getElementById(`edit-plan-desc-${p.id}`) as HTMLInputElement).value;
                               const precio = parseFloat((document.getElementById(`edit-plan-precio-${p.id}`) as HTMLInputElement).value);
                               const totalClases = parseInt((document.getElementById(`edit-plan-clases-${p.id}`) as HTMLInputElement).value);
@@ -540,7 +564,7 @@ export default function PlanesTab({
                               const duracion = (document.getElementById(`edit-plan-duracion-${p.id}`) as HTMLInputElement).value;
                               const imagen_url = (document.getElementById(`edit-plan-img-${p.id}`) as HTMLInputElement).value;
                               const caracteristicas = (document.getElementById(`edit-plan-caract-${p.id}`) as HTMLTextAreaElement).value;
-                              guardarEdicionPlan(p.id, { nombre, descripcion, precio, total_clases: totalClases, nivel, orden, badge, duracion, imagen_url, caracteristicas });
+                              guardarEdicionPlan(p.id, { nombre, tipo, descripcion, precio, total_clases: totalClases, nivel, orden, badge, duracion, imagen_url, caracteristicas });
                             }}
                             className="btn btn-primary"
                             style={{ padding: "4px 10px", fontSize: "11px" }}

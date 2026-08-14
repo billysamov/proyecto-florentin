@@ -1268,6 +1268,8 @@ export default function AdminDashboard() {
       orden: fields.orden
     };
 
+    if (fields.tipo) updatePayload.tipo = fields.tipo;
+
     if (fields.imagen_url) updatePayload.imagen_url = fields.imagen_url;
     if (fields.badge) updatePayload.badge = fields.badge;
     if (fields.duracion) updatePayload.duracion = fields.duracion;
