@@ -13,12 +13,20 @@ import {
 } from "lucide-react";
 import HeroV2 from "@/components/HeroV2";
 
+const getYoutubeId = (url: string) => {
+  if (!url) return null;
+  if (url.includes("youtube.com/watch?v=")) return url.split("v=")[1]?.split("&")[0];
+  if (url.includes("youtu.be/")) return url.split("youtu.be/")[1]?.split("?")[0];
+  return null;
+};
+
 export default function LandingV2Replica() {
   const [lang, setLang] = useState<Language>("es");
   const [divisa, setDivisa] = useState<"eur" | "usd">("eur");
   const [activeCategory, setActiveCategory] = useState<string>("todos");
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [config, setConfig] = useState<any>(null);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
 
   useEffect(() => {
     const loadConfig = async () => {
@@ -32,19 +40,20 @@ export default function LandingV2Replica() {
     loadConfig();
   }, []);
 
-  const getEmbedUrl = (url: string) => {
+  const getEmbedUrl = (url: string, autoPlay: boolean = false) => {
     if (!url) return "";
+    const autoPlayParam = autoPlay ? "1" : "0";
     if (url.includes("youtube.com/watch?v=")) {
       const id = url.split("v=")[1]?.split("&")[0];
-      return `https://www.youtube.com/embed/${id}?autoplay=0`;
+      return `https://www.youtube.com/embed/${id}?autoplay=${autoPlayParam}&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&color=white`;
     }
     if (url.includes("youtu.be/")) {
       const id = url.split("youtu.be/")[1]?.split("?")[0];
-      return `https://www.youtube.com/embed/${id}?autoplay=0`;
+      return `https://www.youtube.com/embed/${id}?autoplay=${autoPlayParam}&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&color=white`;
     }
     if (url.includes("vimeo.com/")) {
       const id = url.split("vimeo.com/")[1]?.split("?")[0];
-      return `https://player.vimeo.com/video/${id}`;
+      return `https://player.vimeo.com/video/${id}?autoplay=${autoPlayParam}`;
     }
     return url;
   };
@@ -96,9 +105,9 @@ export default function LandingV2Replica() {
       id: "individual",
       categoria: "principiantes",
       title: "Clase Individual 1 a 1",
-      desc: "1 hora de clase particular enfocada en tu meta personal o dudas de gramática y pronunciación.",
+      desc: "50 minutos de clase particular enfocada en tu meta personal o dudas de gramática y pronunciación.",
       level: "Todos los Niveles",
-      duration: "1 Hora",
+      duration: "50 Minutos",
       precioEur: 15,
       img: "/course_french.png",
       flag: "🥐",
@@ -344,51 +353,70 @@ export default function LandingV2Replica() {
 
       {/* 3.5. Nueva Sección de Video Presentación Interactivo (Ubicada entre Tu Profesor y Por Qué) */}
       {config?.mostrar_seccion_video !== false && (
-        <section id="sec-3-5-video" style={{ padding: "80px 24px", backgroundColor: "#f8fafc", borderTop: "1px solid #e2e8f0", borderBottom: "1px solid #e2e8f0" }}>
-          <div style={{ maxWidth: "1100px", margin: "0 auto", textAlign: "center" }}>
-            {(() => {
-              const badgeText = config ? parseMultilingualText(config.video_badge, lang) : "VIDEO DE PRESENTACIÓN";
-              if (config?.mostrar_video_badge === false || !badgeText) return null;
-              return (
-                <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase", display: "inline-block", marginBottom: "14px", backgroundColor: "rgba(0, 85, 165, 0.08)", padding: "6px 18px", borderRadius: "20px" }}>
-                  {badgeText}
-                </span>
-              );
-            })()}
-            <h2 style={{ fontSize: "clamp(28px, 4vw, 42px)", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", marginBottom: "14px" }}>
-              {parseMultilingualText(config?.video_titulo, lang) || "Conoce a tu Profesor y su Método de Enseñanza"}
-            </h2>
-            <p style={{ fontSize: "16px", fontWeight: 500, color: "#64748b", maxWidth: "680px", margin: "0 auto 36px", lineHeight: 1.6 }}>
-              {parseMultilingualText(config?.video_subtitulo, lang) || "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural."}
-            </p>
+        <section id="sec-3-5-video" style={{ padding: "140px 24px 100px", backgroundColor: "#f8fafc", position: "relative", overflow: "hidden" }}>
+          {/* Fondo Estilo Tranqui / Pastel - Más Azul */}
+          <div style={{ position: "absolute", top: "50%", left: "50%", transform: "translate(-50%, -50%)", width: "70%", maxWidth: "1000px", aspectRatio: "16/9", backgroundColor: "rgba(96, 165, 250, 0.3)", filter: "blur(120px)", borderRadius: "50%", pointerEvents: "none" }}></div>
+          <div style={{ position: "absolute", top: "0%", right: "0%", width: "40%", height: "40%", backgroundColor: "rgba(147, 197, 253, 0.25)", filter: "blur(100px)", borderRadius: "50%", pointerEvents: "none" }}></div>
+          <div style={{ position: "absolute", bottom: "0%", left: "0%", width: "50%", height: "50%", backgroundColor: "rgba(94, 234, 212, 0.2)", filter: "blur(120px)", borderRadius: "50%", pointerEvents: "none" }}></div>
 
-            {/* Reproductor de Video Embebido / Responsive Card */}
-            <div style={{
-              position: "relative",
-              width: "100%",
-              maxWidth: "900px",
-              margin: "0 auto",
-              borderRadius: "28px",
-              overflow: "hidden",
-              boxShadow: "0 20px 50px rgba(0, 85, 165, 0.15)",
-              backgroundColor: "#0f172a",
-              aspectRatio: "16 / 9"
-            }}>
+          <div style={{ position: "relative", maxWidth: "1200px", margin: "0 auto", textAlign: "center", zIndex: 10 }}>
+            {/* Reproductor de Video Embebido / Responsive Card con Facade */}
+            <div 
+              style={{
+                position: "relative",
+                width: "100%",
+                margin: "0 auto",
+                borderRadius: "28px",
+                overflow: "hidden",
+                boxShadow: "0 25px 50px -12px rgba(59, 130, 246, 0.15)",
+                backgroundColor: "#0f172a",
+                border: "1px solid #e2e8f0",
+                aspectRatio: "16 / 9",
+                cursor: "pointer"
+              }}
+              onClick={() => setIsVideoPlaying(true)}
+            >
               {config?.video_url ? (
-                <iframe
-                  src={getEmbedUrl(config.video_url)}
-                  title="Video de Presentación"
-                  style={{ width: "100%", height: "100%", border: "none" }}
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                isVideoPlaying ? (
+                  <iframe
+                    src={getEmbedUrl(config.video_url, true)}
+                    title="Video de Presentación"
+                    style={{ width: "100%", height: "100%", border: "none", position: "absolute", top: 0, left: 0 }}
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div style={{ position: "relative", width: "100%", height: "100%" }} className="group">
+                    {/* Imagen de fondo (Miniatura de YouTube o fallback) */}
+                    <img 
+                      src={getYoutubeId(config.video_url) ? `https://img.youtube.com/vi/${getYoutubeId(config.video_url)}/maxresdefault.jpg` : "/perfect_hero_image.png"} 
+                      alt="Miniatura del video" 
+                      style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transition: "transform 0.7s ease" }}
+                      onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.05)"}
+                      onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+                      loading="lazy"
+                    />
+                    {/* Capa oscura (Gradiente para leer el texto) */}
+                    <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(15, 23, 42, 1) 0%, rgba(15, 23, 42, 0.6) 50%, rgba(15, 23, 42, 0.3) 100%)" }}></div>
+                    
+                    {/* Contenido de la portada (Textos sin botón azul) */}
+                    <div style={{ position: "absolute", inset: 0, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", color: "white", padding: "24px", transition: "transform 0.3s ease" }}
+                         onMouseOver={(e) => e.currentTarget.style.transform = "scale(1.02)"}
+                         onMouseOut={(e) => e.currentTarget.style.transform = "scale(1)"}
+                    >
+                      <h3 style={{ fontSize: "32px", fontWeight: 700, letterSpacing: "-0.02em", marginBottom: "12px", textShadow: "0 2px 8px rgba(0,0,0,0.6)" }}>Descubre mi método</h3>
+                      <p style={{ fontSize: "17px", fontWeight: 500, color: "#f8fafc", textShadow: "0 1px 4px rgba(0,0,0,0.6)", display: "flex", alignItems: "center", gap: "8px" }}>
+                        <PlayCircle size={20} /> Haz clic para ver mi presentación
+                      </p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div style={{ width: "100%", height: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "linear-gradient(135deg, #091021 0%, #1e293b 100%)", color: "#ffffff", padding: "40px" }}>
-                  <div style={{ width: "72px", height: "72px", borderRadius: "50%", backgroundColor: "#0055a5", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px", boxShadow: "0 0 30px rgba(59, 130, 246, 0.5)" }}>
-                    <Play size={36} fill="#ffffff" color="#ffffff" style={{ marginLeft: "4px" }} />
+                  <div style={{ width: "72px", height: "72px", borderRadius: "50%", backgroundColor: "#334155", display: "flex", alignItems: "center", justifyContent: "center", marginBottom: "16px" }}>
+                    <PlayCircle size={32} color="#64748b" />
                   </div>
-                  <span style={{ fontSize: "18px", fontWeight: 800 }}>Video Demo del Profesor</span>
-                  <span style={{ fontSize: "13px", color: "#94a3b8", marginTop: "6px" }}>Agrega la URL de tu video desde el panel de administración</span>
+                  <span style={{ fontSize: "20px", fontWeight: 700, color: "#94a3b8" }}>Sin video configurado</span>
                 </div>
               )}
             </div>
@@ -546,7 +574,7 @@ export default function LandingV2Replica() {
           </span>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "48px", flexWrap: "wrap", opacity: 0.7 }}>
             <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>🇫🇷 París, Francia</span>
-            <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>🌐 Google Meet</span>
+            <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>🌐 Microsoft Teams</span>
             <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>📜 DALF C2 Certified</span>
             <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>💳 Stripe Payments</span>
             <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>⭐ 4.9/5 Calificación</span>
@@ -582,7 +610,7 @@ export default function LandingV2Replica() {
               Francés desde la Comodidad de tu Hogar
             </h2>
             <p style={{ fontSize: "15px", fontWeight: 500, color: "#64748b", lineHeight: 1.6, marginBottom: "28px" }}>
-              Disfruta de sesiones individuales por Google Meet diseñadas exclusivamente para que avances con confianza.
+              Disfruta de sesiones individuales por Microsoft Teams diseñadas exclusivamente para que avances con confianza.
             </p>
 
             <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -1081,7 +1109,7 @@ export default function LandingV2Replica() {
                       : '+33 6 85 74 49 73'}
                   </a>
                 </li>
-                <li>🌐 Clases Online por Google Meet</li>
+                <li>🌐 Clases Online por Microsoft Teams</li>
               </ul>
             </div>
 

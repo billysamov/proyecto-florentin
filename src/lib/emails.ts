@@ -120,7 +120,7 @@ export async function enviarCorreoRecordatorioClase(email: string, nombreAlumno:
       <div style="text-align: center; margin-top: 30px;">
         <a href="${meetLink}" 
            style="background-color: #d4a359; color: #1a2530; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: 700; display: inline-block;">
-          Ingresar al Aula Virtual (Google Meet)
+          Ingresar al Aula Virtual (Microsoft Teams)
         </a>
       </div>
       <p style="font-size: 13px; color: #9a9a9a; margin-top: 20px; text-align: center;">

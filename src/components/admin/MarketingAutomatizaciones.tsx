@@ -20,7 +20,7 @@ export default function MarketingAutomatizaciones({
   const [mensajeExito, setMensajeExito] = useState("");
   
   // Estados para el Modal de Previsualización
-  const [previewEmail, setPreviewEmail] = useState<"bienvenida" | "recordatorio" | "renovacion" | null>(null);
+  const [previewEmail, setPreviewEmail] = useState<"bienvenida" | "recordatorio" | "renovacion" | "recordatorio_clase" | null>(null);
   const [previewLang, setPreviewLang] = useState<"es" | "fr" | "en">("es");
 
   const t = {
@@ -40,6 +40,10 @@ export default function MarketingAutomatizaciones({
     renovacionDesc: isFr 
       ? "S'envoie lorsqu'il reste 2 cours ou moins dans le forfait de l'élève." 
       : "Se envía cuando al alumno le quedan 2 o menos clases en su plan actual.",
+    clasesTitulo: isFr ? "Rappel de Cours" : "Recordatorio de Clase (24h)",
+    clasesDesc: isFr 
+      ? "S'envoie automatiquement 24h avant le début d'un cours programmé." 
+      : "Se envía automáticamente 24h antes del inicio de una clase programada.",
     estado: isFr ? "Statut de la campagne" : "Estado de la campaña",
     activo: isFr ? "Active" : "Activo",
     inactivo: isFr ? "Desactive" : "Desactivado",
@@ -61,7 +65,7 @@ export default function MarketingAutomatizaciones({
     destinatarioSimulado: isFr ? "Aperçu de la boîte de réception de l'élève" : "Bandeja de Entrada del Estudiante (Simulación)"
   };
 
-  const toggleCampana = async (campo: "email_bienvenida_activo" | "email_recordatorio_activo" | "email_renovacion_activo") => {
+  const toggleCampana = async (campo: "email_bienvenida_activo" | "email_recordatorio_activo" | "email_renovacion_activo" | "email_recordatorio_clase_activo") => {
     setGuardando(true);
     setMensajeExito("");
     
@@ -184,7 +188,7 @@ export default function MarketingAutomatizaciones({
           `
         };
       }
-    } else {
+    } else if (previewEmail === "recordatorio") {
       // Recordatorio
       if (previewLang === "fr") {
         return {
@@ -292,6 +296,59 @@ export default function MarketingAutomatizaciones({
               </div>
               <div style="text-align: center; margin-top: 15px;">
                 <span style="background-color: #1a2530; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Ver Planes</span>
+              </div>
+            </div>
+          `
+        };
+      }
+    } else if (previewEmail === "recordatorio_clase") {
+      if (previewLang === "fr") {
+        return {
+          asunto: "Rappel de Cours de Français ⏰",
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
+              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nom de l'élève],</h2>
+              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Ceci est un rappel : vous avez un cours de français programmé très bientôt ! Préparez vos documents pour la leçon.</p>
+              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: left;">
+                <p style="margin: 0; font-size: 13.5px; color: #1e293b;"><strong>Date :</strong> Demain</p>
+                <p style="margin: 4px 0 0 0; font-size: 13.5px; color: #1e293b;"><strong>Heure :</strong> 10:00 AM</p>
+              </div>
+              <div style="text-align: center; margin-top: 15px;">
+                <span style="background-color: #d4a359; color: #1a2530; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Rejoindre la Classe Virtuelle</span>
+              </div>
+            </div>
+          `
+        };
+      } else if (previewLang === "en") {
+        return {
+          asunto: "French Class Reminder ⏰",
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
+              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Student's Name],</h2>
+              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">This is a friendly reminder that you have a French class scheduled very soon! Prepare your materials for the lesson.</p>
+              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: left;">
+                <p style="margin: 0; font-size: 13.5px; color: #1e293b;"><strong>Date:</strong> Tomorrow</p>
+                <p style="margin: 4px 0 0 0; font-size: 13.5px; color: #1e293b;"><strong>Time:</strong> 10:00 AM</p>
+              </div>
+              <div style="text-align: center; margin-top: 15px;">
+                <span style="background-color: #d4a359; color: #1a2530; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Join Virtual Classroom</span>
+              </div>
+            </div>
+          `
+        };
+      } else {
+        return {
+          asunto: "Recordatorio de Clase de Francés ⏰",
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
+              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nombre del Alumno],</h2>
+              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Le recordamos que tiene una clase de francés programada muy pronto. ¡Prepare sus materiales de la última lección!</p>
+              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: left;">
+                <p style="margin: 0; font-size: 13.5px; color: #1e293b;"><strong>Fecha:</strong> Mañana</p>
+                <p style="margin: 4px 0 0 0; font-size: 13.5px; color: #1e293b;"><strong>Hora:</strong> 10:00 AM</p>
+              </div>
+              <div style="text-align: center; margin-top: 15px;">
+                <span style="background-color: #d4a359; color: #1a2530; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Ingresar al Aula Virtual</span>
               </div>
             </div>
           `
@@ -516,11 +573,72 @@ export default function MarketingAutomatizaciones({
               <Globe size={14} /> {t.idiomaDinamico}
             </div>
           </div>
-
           <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "14px", marginTop: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px" }}>
             <span style={{ color: "var(--text-muted)" }}>{t.estadisticas}</span>
             <span style={{ fontWeight: 600, color: "var(--text-main)" }}>
               {t.enviosTotales} <strong style={{ color: "#3b82f6" }}>{Math.max(1, Math.round(alumnosCount * 0.8)) || 10}</strong>
+            </span>
+          </div>
+        </div>
+
+        {/* Tarjeta 4: Recordatorio de Clases */}
+        <div className="card" style={{ 
+          padding: "24px", 
+          display: "flex", 
+          flexDirection: "column", 
+          justifyContent: "space-between",
+          border: config.email_recordatorio_clase_activo ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid var(--border-color)",
+          backgroundColor: config.email_recordatorio_clase_activo ? "rgba(59, 130, 246, 0.01)" : "var(--card-bg)"
+        }}>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+              <div style={{ padding: "10px", backgroundColor: "rgba(59, 130, 246, 0.08)", color: "#3b82f6", borderRadius: "10px" }}>
+                <CheckCircle size={22} />
+              </div>
+              <button 
+                onClick={() => toggleCampana("email_recordatorio_clase_activo")}
+                disabled={guardando}
+                style={{ background: "none", border: "none", cursor: "pointer", color: config.email_recordatorio_clase_activo ? "#3b82f6" : "var(--text-muted)" }}
+              >
+                {config.email_recordatorio_clase_activo ? <ToggleRight size={44} /> : <ToggleLeft size={44} />}
+              </button>
+            </div>
+
+            <h4 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", marginBottom: "8px" }}>
+              {t.clasesTitulo}
+            </h4>
+            <p style={{ color: "var(--text-muted)", fontSize: "13px", lineHeight: "1.5", marginBottom: "12px" }}>
+              {t.clasesDesc}
+            </p>
+
+            <button 
+              onClick={() => { setPreviewEmail("recordatorio_clase"); setPreviewLang("es"); }}
+              style={{ 
+                marginBottom: "16px", 
+                padding: "6px 14px", 
+                fontSize: "12px", 
+                border: "1px solid #3b82f6", 
+                color: "#3b82f6", 
+                background: "transparent", 
+                borderRadius: "20px", 
+                fontWeight: 600, 
+                cursor: "pointer", 
+                display: "inline-flex", 
+                alignItems: "center", 
+                gap: "6px" 
+              }}
+            >
+              <Eye size={13} /> {t.previewBtn}
+            </button>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#3b82f6", marginBottom: "16px" }}>
+              <Globe size={14} /> {t.idiomaDinamico}
+            </div>
+          </div>
+          <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "14px", marginTop: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px" }}>
+            <span style={{ color: "var(--text-muted)" }}>{t.estadisticas}</span>
+            <span style={{ fontWeight: 600, color: "var(--text-main)" }}>
+              {t.enviosTotales} <strong style={{ color: "#3b82f6" }}>0</strong>
             </span>
           </div>
         </div>
@@ -599,7 +717,7 @@ export default function MarketingAutomatizaciones({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "14px" }}>
               <h3 style={{ fontSize: "18px", fontWeight: 700, margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
                 <Mail size={18} className="text-[#3b82f6]" /> 
-                {previewEmail === "bienvenida" ? t.bienvenidaTitulo : previewEmail === "recordatorio" ? t.recordatorioTitulo : t.renovacionTitulo}
+                {previewEmail === "bienvenida" ? t.bienvenidaTitulo : previewEmail === "recordatorio" ? t.recordatorioTitulo : previewEmail === "recordatorio_clase" ? t.clasesTitulo : t.renovacionTitulo}
               </h3>
               <button 
                 onClick={() => setPreviewEmail(null)}

@@ -85,7 +85,7 @@ export const translations = {
     faq1Q: "¿Cómo son los pagos?",
     faq1A: "Los pagos se realizan de forma segura a través de Stripe. Puedes pagar con tarjeta de crédito o débito. El pago es único por paquete de clases, sin suscripciones ni cargos recurrentes.",
     faq2Q: "¿En qué consisten las clases?",
-    faq2A: "Son sesiones individuales de 1 hora por Google Meet. Cada clase combina conversación, gramática práctica, vocabulario contextual y corrección de pronunciación. Recibirás material de apoyo (PDFs y audios) tras cada sesión.",
+    faq2A: "Son sesiones individuales de 50 minutos por Microsoft Teams. Cada clase combina conversación, gramática práctica, vocabulario contextual y corrección de pronunciación. Recibirás material de apoyo (PDFs y audios) tras cada sesión.",
     faq3Q: "¿Necesito algún nivel previo?",
     faq3A: "No. Acepto alumnos desde nivel cero absoluto hasta avanzado. En tu clase de prueba gratuita evalúo tu nivel y diseño un plan personalizado.",
     faq4Q: "¿Qué pasa si necesito cancelar una clase?",
@@ -93,7 +93,7 @@ export const translations = {
     faq5Q: "¿Las clases son solo en francés?",
     faq5A: "Depende de tu nivel. Con principiantes uso español como apoyo. A medida que avanzas, la clase se vuelve cada vez más en francés para una inmersión natural.",
     faq6Q: "¿Puedo tomar clases desde cualquier país?",
-    faq6A: "¡Sí! Solo necesitas conexión a internet. Las clases son por Google Meet y las programamos según tu zona horaria.",
+    faq6A: "¡Sí! Solo necesitas conexión a internet. Las clases son por Microsoft Teams y las programamos según tu zona horaria.",
 
     // Testimonials
     testimBadge: "EXPERIENCIAS",
@@ -255,7 +255,7 @@ export const translations = {
     faq1Q: "Comment fonctionnent les paiements ?",
     faq1A: "Les paiements sont effectués de manière sécurisée via Stripe. Vous pouvez payer par carte de crédit ou de débit. Le paiement est unique par forfait de cours, sans abonnement ni frais récurrents.",
     faq2Q: "En quoi consistent les cours ?",
-    faq2A: "Ce sont des sessions individuelles d'1 heure via Google Meet. Chaque cours combine conversation, grammaire pratique, vocabulaire contextuel et correction de prononciation. Vous recevrez du matériel de soutien après chaque session.",
+    faq2A: "Ce sont des sessions individuelles de 50 minutes via Microsoft Teams. Chaque cours combine conversation, grammaire pratique, vocabulaire contextuel et correction de prononciation. Vous recevrez du matériel de soutien après chaque session.",
     faq3Q: "Ai-je besoin d'un niveau préalable ?",
     faq3A: "Non. J'accepte des élèves de niveau zéro absolu à avancé. Lors de votre cours d'essai gratuit, j'évalue votre niveau et je conçois un plan personnalisé.",
     faq4Q: "Que se passe-t-il si je dois annuler un cours ?",
@@ -263,7 +263,7 @@ export const translations = {
     faq5Q: "Les cours sont-ils uniquement en français ?",
     faq5A: "Cela dépend de votre niveau. Avec les débutants, j'utilise l'espagnol ou l'anglais comme soutien. À mesure que vous progressez, le cours devient de plus en plus en français.",
     faq6Q: "Puis-je prendre des cours depuis n'importe quel pays ?",
-    faq6A: "Oui ! Vous avez juste besoin d'une connexion internet. Les cours sont via Google Meet et nous les programmons selon votre fuseau horaire.",
+    faq6A: "Oui ! Vous avez juste besoin d'une connexion internet. Les cours sont via Microsoft Teams et nous les programmons selon votre fuseau horaire.",
 
     // Testimonials
     testimBadge: "EXPÉRIENCES",
@@ -425,7 +425,7 @@ export const translations = {
     faq1Q: "How do payments work?",
     faq1A: "Payments are made securely through Stripe. You can pay with credit or debit card. It's a one-time payment per class package, no subscriptions or recurring charges.",
     faq2Q: "What are the classes like?",
-    faq2A: "They are individual 1-hour sessions via Google Meet. Each class combines conversation, practical grammar, contextual vocabulary, and pronunciation correction. You'll receive support material (PDFs and audios) after each session.",
+    faq2A: "They are individual 50-minute sessions via Microsoft Teams. Each class combines conversation, practical grammar, contextual vocabulary, and pronunciation correction. You'll receive support material (PDFs and audios) after each session.",
     faq3Q: "Do I need any prior level?",
     faq3A: "No. I accept students from absolute zero to advanced. In your free trial class, I assess your level and design a personalized plan.",
     faq4Q: "What if I need to cancel a class?",
@@ -433,7 +433,7 @@ export const translations = {
     faq5Q: "Are classes only in French?",
     faq5A: "It depends on your level. With beginners, I use English or Spanish as support. As you progress, the class becomes increasingly in French for natural immersion.",
     faq6Q: "Can I take classes from any country?",
-    faq6A: "Yes! You just need an internet connection. Classes are via Google Meet and we schedule them according to your timezone.",
+    faq6A: "Yes! You just need an internet connection. Classes are via Microsoft Teams and we schedule them according to your timezone.",
 
     // Testimonials
     testimBadge: "EXPERIENCES",

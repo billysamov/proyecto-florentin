@@ -48,7 +48,7 @@ const defaultSpanishConfig: Record<string, string> = {
   ps_prob_3_title: "Horarios rígidos",
   ps_prob_3_desc: "Las academias te obligan a adaptarte a sus horarios. Tú trabajas, viajas, vives.",
   ps_sol_3_title: "Flexibilidad total",
-  ps_sol_3_desc: "Tú eliges el día y la hora. Clases por Google Meet desde donde estés, en tu zona horaria.",
+  ps_sol_3_desc: "Tú eliges el día y la hora. Clases por Microsoft Teams desde donde estés, en tu zona horaria.",
   for_whom_badge: "¿PARA QUIÉN ES?",
   for_whom_title: "Florentin es para ti si…",
   for_whom_1_title: "Quieres vivir en Francia",
@@ -104,21 +104,29 @@ const defaultKeysMap: Record<string, string> = {
   cta_btn_text: "ctaBtn"
 };
 
-const getEmbedUrl = (url: string) => {
+const getEmbedUrl = (url: string, autoPlay: boolean = false) => {
   if (!url) return "";
+  const autoPlayParam = autoPlay ? "1" : "0";
   if (url.includes("youtube.com/watch?v=")) {
     const id = url.split("v=")[1]?.split("&")[0];
-    return `https://www.youtube.com/embed/${id}?autoplay=0`;
+    return `https://www.youtube.com/embed/${id}?autoplay=${autoPlayParam}&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&color=white`;
   }
   if (url.includes("youtu.be/")) {
     const id = url.split("youtu.be/")[1]?.split("?")[0];
-    return `https://www.youtube.com/embed/${id}?autoplay=0`;
+    return `https://www.youtube.com/embed/${id}?autoplay=${autoPlayParam}&rel=0&modestbranding=1&showinfo=0&iv_load_policy=3&color=white`;
   }
   if (url.includes("vimeo.com/")) {
     const id = url.split("vimeo.com/")[1]?.split("?")[0];
-    return `https://player.vimeo.com/video/${id}`;
+    return `https://player.vimeo.com/video/${id}?autoplay=${autoPlayParam}`;
   }
-  return url;
+    return url;
+};
+
+const getYoutubeId = (url: string) => {
+  if (!url) return null;
+  if (url.includes("youtube.com/watch?v=")) return url.split("v=")[1]?.split("&")[0];
+  if (url.includes("youtu.be/")) return url.split("youtu.be/")[1]?.split("?")[0];
+  return null;
 };
 
 export default function Home() {
@@ -131,6 +139,7 @@ export default function Home() {
 
   const [originalConfig, setOriginalConfig] = useState<any>(null);
   const [translating, setTranslating] = useState(false);
+  const [isVideoPlaying, setIsVideoPlaying] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const plansContainerRef = useRef<HTMLDivElement>(null);
   const langRef = useRef<HTMLDivElement>(null);
@@ -707,12 +716,12 @@ export default function Home() {
   ];
 
   const faqItems = [
-    { q: t.faq1Q, a: t.faq1A },
-    { q: t.faq2Q, a: t.faq2A },
-    { q: t.faq3Q, a: t.faq3A },
-    { q: t.faq4Q, a: t.faq4A },
-    { q: t.faq5Q, a: t.faq5A },
-    { q: t.faq6Q, a: t.faq6A },
+    { q: config?.faq_1_q || t.faq1Q, a: config?.faq_1_a || t.faq1A },
+    { q: config?.faq_2_q || t.faq2Q, a: config?.faq_2_a || t.faq2A },
+    { q: config?.faq_3_q || t.faq3Q, a: config?.faq_3_a || t.faq3A },
+    { q: config?.faq_4_q || t.faq4Q, a: config?.faq_4_a || t.faq4A },
+    { q: config?.faq_5_q || t.faq5Q, a: config?.faq_5_a || t.faq5A },
+    { q: config?.faq_6_q || t.faq6Q, a: config?.faq_6_a || t.faq6A },
   ];
 
   const testimonials = [
@@ -1122,41 +1131,51 @@ export default function Home() {
           2.5. SECCIÓN DE VIDEO PRESENTACIÓN INTERACTIVO
       ═══════════════════════════════════════ */}
       {config?.mostrar_seccion_video !== false && (
-        <section id="video-demo" className="reveal-section py-20 sm:py-28 px-4 sm:px-6 bg-slate-50 border-y border-slate-200/80">
-          <div className="max-w-5xl mx-auto text-center">
-            {(() => {
-              const badgeText = config ? parseMultilingualText(config.video_badge, lang) : "VIDEO DE PRESENTACIÓN";
-              if (config?.mostrar_video_badge === false || !badgeText) return null;
-              return (
-                <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-                  {badgeText}
-                </span>
-              );
-            })()}
-            <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] tracking-tight mb-4">
-              {parseMultilingualText(config?.video_titulo, lang) || "Conoce a tu Profesor y su Método de Enseñanza"}
-            </h2>
-            <p className="reveal-item text-slate-600 font-medium text-base sm:text-lg max-w-2xl mx-auto mb-10 leading-relaxed">
-              {parseMultilingualText(config?.video_subtitulo, lang) || "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural."}
-            </p>
-
-            {/* Video Container */}
-            <div className="reveal-item relative w-full max-w-4xl mx-auto aspect-video rounded-3xl overflow-hidden shadow-2xl bg-slate-900 border border-slate-200">
+        <section id="video-demo" className="relative reveal-section py-20 sm:py-28 px-4 sm:px-6 bg-[#f8fafc] overflow-hidden border-y border-slate-200/80">
+          {/* Fondo Estilo Tranqui / Pastel - Más Azul */}
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] max-w-4xl aspect-video bg-blue-400/30 blur-[120px] rounded-full pointer-events-none"></div>
+          <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-blue-300/25 blur-[100px] rounded-full pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-[50%] h-[50%] bg-teal-300/20 blur-[120px] rounded-full pointer-events-none"></div>
+          
+          <div className="relative z-10 max-w-5xl mx-auto text-center">
+            {/* Video Container con Facade */}
+            <div className="reveal-item relative w-full aspect-video rounded-3xl overflow-hidden shadow-[0_20px_50px_rgba(59,130,246,0.15)] bg-slate-900 border border-slate-200/80 group cursor-pointer" onClick={() => setIsVideoPlaying(true)}>
               {config?.video_url ? (
-                <iframe
-                  src={getEmbedUrl(config.video_url)}
-                  title="Video de Presentación"
-                  className="w-full h-full border-0"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
+                isVideoPlaying ? (
+                  <iframe
+                    src={getEmbedUrl(config.video_url, true)}
+                    title="Video de Presentación"
+                    className="w-full h-full border-0 absolute top-0 left-0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
+                  />
+                ) : (
+                  <div className="relative w-full h-full">
+                    {/* Imagen de fondo (Miniatura de YouTube o fallback) */}
+                    <img 
+                      src={getYoutubeId(config.video_url) ? `https://img.youtube.com/vi/${getYoutubeId(config.video_url)}/maxresdefault.jpg` : "/perfect_hero_image.png"} 
+                      alt="Miniatura del video" 
+                      className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+                      loading="lazy"
+                    />
+                    {/* Capa oscura (Gradiente para leer el texto) */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/60 to-slate-900/30"></div>
+                    
+                    {/* Contenido de la portada (Textos sin botón azul) */}
+                    <div className="absolute inset-0 flex flex-col items-center justify-center text-white p-6 transition-all duration-300">
+                      <h3 className="text-2xl sm:text-3xl font-bold tracking-tight mb-3 drop-shadow-md">Descubre mi método</h3>
+                      <p className="text-sm sm:text-base font-medium text-slate-200 drop-shadow flex items-center gap-2 group-hover:text-white transition-colors duration-300">
+                        <PlayCircle size={18} className="text-white" /> Haz clic para ver mi presentación
+                      </p>
+                    </div>
+                  </div>
+                )
               ) : (
                 <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 text-white p-8">
-                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-[#3b82f6] flex items-center justify-center mb-4 shadow-lg shadow-blue-500/40">
-                    <PlayCircle size={40} className="text-white ml-1" />
+                  <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-full bg-slate-700 flex items-center justify-center mb-4">
+                    <PlayCircle size={40} className="text-slate-500 ml-1" />
                   </div>
-                  <span className="text-lg sm:text-xl font-bold">Video Demo del Profesor</span>
-                  <span className="text-xs sm:text-sm text-slate-400 mt-2">Agrega la URL de tu video desde el panel de administración</span>
+                  <span className="text-lg sm:text-xl font-bold text-slate-400">Sin video configurado</span>
                 </div>
               )}
             </div>

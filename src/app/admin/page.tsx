@@ -160,6 +160,7 @@ export default function AdminDashboard() {
     whatsapp_number: "",
     email_bienvenida_activo: true,
     email_recordatorio_activo: true,
+    email_recordatorio_clase_activo: true,
     mostrar_testimonios: true
   });
   const [configExito, setConfigExito] = useState(false);
@@ -577,7 +578,8 @@ export default function AdminDashboard() {
           mostrar_testimonios: configDb.mostrar_testimonios !== false,
           exclusiones_horario: configDb.exclusiones_horario || "[]",
           email_bienvenida_activo: configDb.email_bienvenida_activo !== false,
-          email_recordatorio_activo: configDb.email_recordatorio_activo !== false
+          email_recordatorio_activo: configDb.email_recordatorio_activo !== false,
+          email_recordatorio_clase_activo: configDb.email_recordatorio_clase_activo !== false,
         });
       }
 
@@ -1006,6 +1008,18 @@ export default function AdminDashboard() {
         for_whom_3_desc: config.for_whom_3_desc,
         for_whom_4_title: config.for_whom_4_title,
         for_whom_4_desc: config.for_whom_4_desc,
+        faq_1_q: config.faq_1_q,
+        faq_1_a: config.faq_1_a,
+        faq_2_q: config.faq_2_q,
+        faq_2_a: config.faq_2_a,
+        faq_3_q: config.faq_3_q,
+        faq_3_a: config.faq_3_a,
+        faq_4_q: config.faq_4_q,
+        faq_4_a: config.faq_4_a,
+        faq_5_q: config.faq_5_q,
+        faq_5_a: config.faq_5_a,
+        faq_6_q: config.faq_6_q,
+        faq_6_a: config.faq_6_a,
         cta_badge: config.cta_badge,
         cta_title: config.cta_title,
         cta_subtitle: config.cta_subtitle,
@@ -1016,7 +1030,8 @@ export default function AdminDashboard() {
         mostrar_testimonios: config.mostrar_testimonios !== false,
         exclusiones_horario: config.exclusiones_horario,
         email_bienvenida_activo: config.email_bienvenida_activo,
-        email_recordatorio_activo: config.email_recordatorio_activo
+        email_recordatorio_activo: config.email_recordatorio_activo,
+        email_recordatorio_clase_activo: config.email_recordatorio_clase_activo,
       });
       
     if (error) {

@@ -347,7 +347,7 @@ export default function PlanesTab({
               value={nuevoPlan.caracteristicas || ""}
               onChange={(e) => setNuevoPlan({ ...nuevoPlan, caracteristicas: e.target.value })}
               placeholder={"✓ Clases particulares en vivo\n✓ Material interactivo en PDF incluido\n✓ Atención personalizada 1 a 1"}
-              style={{ padding: "8px 12px", fontSize: "12px" }}
+              style={{ padding: "8px 12px", fontSize: "12px", minHeight: "80px", resize: "vertical" }}
             />
           </div>
           <button type="submit" className="btn btn-primary" style={{ padding: "10px 16px" }}>
@@ -448,7 +448,7 @@ export default function PlanesTab({
                             className="form-control"
                             rows={2}
                             placeholder="Beneficios (1 por línea)"
-                            style={{ padding: "4px 8px", fontSize: "11px" }}
+                            style={{ padding: "4px 8px", fontSize: "11px", minHeight: "80px", resize: "vertical" }}
                           />
                         </div>
                       ) : (

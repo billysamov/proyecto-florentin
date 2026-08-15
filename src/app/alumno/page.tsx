@@ -104,7 +104,7 @@ export default function AlumnoPortal() {
 
   const generarGoogleCalendarLink = (clase: Clase) => {
     const start = new Date(clase.fecha_original);
-    const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hora de duración
+    const end = new Date(start.getTime() + 50 * 60 * 1000); // 50 minutos de duración
 
     const formatGDate = (date: Date) => 
       date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
@@ -123,7 +123,7 @@ export default function AlumnoPortal() {
 
   const descargarICS = (clase: Clase) => {
     const start = new Date(clase.fecha_original);
-    const end = new Date(start.getTime() + 60 * 60 * 1000);
+    const end = new Date(start.getTime() + 50 * 60 * 1000);
 
     const formatICSDate = (date: Date) => 
       date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";

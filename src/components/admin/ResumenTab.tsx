@@ -55,15 +55,29 @@ export default function ResumenTab({
   const [activeCalendarMenu, setActiveCalendarMenu] = useState<string | null>(null);
   const [filtroAlumno, setFiltroAlumno] = useState("");
   const [filtroEstado, setFiltroEstado] = useState<"todos" | "programada" | "completada" | "cancelada">("todos");
+  const [ocultarPasadas, setOcultarPasadas] = useState(true);
   const isFr = lang === "fr";
 
   const clasesFiltradas = useMemo(() => {
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+
     return clases.filter(c => {
       const coincideAlumno = c.alumno.toLowerCase().includes(filtroAlumno.trim().toLowerCase());
       const coincideEstado = filtroEstado === "todos" || c.estado === filtroEstado;
-      return coincideAlumno && coincideEstado;
+      
+      let pasaFiltroFecha = true;
+      if (ocultarPasadas && c.fecha_original) {
+        const fechaClase = new Date(c.fecha_original);
+        fechaClase.setHours(0, 0, 0, 0);
+        if (fechaClase < hoy) {
+          pasaFiltroFecha = false;
+        }
+      }
+
+      return coincideAlumno && coincideEstado && pasaFiltroFecha;
     });
-  }, [clases, filtroAlumno, filtroEstado]);
+  }, [clases, filtroAlumno, filtroEstado, ocultarPasadas]);
 
   const t = {
     ganancias: isFr ? "Revenus Totaux (Estimés)" : "Ganancias Totales (Estimado)",
@@ -90,7 +104,7 @@ export default function ResumenTab({
   const generarGoogleCalendarLink = (clase: ClaseAdmin) => {
     if (!clase.fecha_original) return "#";
     const start = new Date(clase.fecha_original);
-    const end = new Date(start.getTime() + 60 * 60 * 1000); // 1 hora de duración
+    const end = new Date(start.getTime() + 50 * 60 * 1000); // 50 minutos de duración
 
     const formatGDate = (date: Date) => 
       date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
@@ -106,7 +120,7 @@ export default function ResumenTab({
   const descargarICS = (clase: ClaseAdmin) => {
     if (!clase.fecha_original) return;
     const start = new Date(clase.fecha_original);
-    const end = new Date(start.getTime() + 60 * 60 * 1000);
+    const end = new Date(start.getTime() + 50 * 60 * 1000);
 
     const formatICSDate = (date: Date) => 
       date.toISOString().replace(/[-:]/g, "").split(".")[0] + "Z";
@@ -404,7 +418,7 @@ export default function ResumenTab({
           {t.tituloAgenda}
         </h3>
 
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "16px" }}>
+        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", marginBottom: "16px", alignItems: "center" }}>
           <input
             type="text"
             value={filtroAlumno}
@@ -424,6 +438,14 @@ export default function ResumenTab({
             <option value="completada">{t.optCompletada}</option>
             <option value="cancelada">{t.optCancelada}</option>
           </select>
+          <label style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "13px", color: "var(--text-main)", cursor: "pointer", marginLeft: "auto" }}>
+            <input 
+              type="checkbox" 
+              checked={ocultarPasadas} 
+              onChange={(e) => setOcultarPasadas(e.target.checked)} 
+            />
+            {isFr ? "Masquer les cours passés" : "Ocultar clases pasadas"}
+          </label>
         </div>
 
         {clasesFiltradas.length === 0 ? (

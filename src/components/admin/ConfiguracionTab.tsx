@@ -7,8 +7,8 @@ interface ConfiguracionTabProps {
   configExito: boolean;
   configError?: string;
   guardarConfiguracion: (e: React.FormEvent) => Promise<void>;
-  subTabCMS: "general" | "profesor" | "metodo" | "destino" | "negocio";
-  setSubTabCMS: (tab: "general" | "profesor" | "metodo" | "destino" | "negocio") => void;
+  subTabCMS: "general" | "profesor" | "metodo" | "destino" | "negocio" | "faq";
+  setSubTabCMS: (tab: "general" | "profesor" | "metodo" | "destino" | "negocio" | "faq") => void;
   lang?: "es" | "fr";
   clases?: any[];
 }
@@ -288,7 +288,8 @@ export default function ConfiguracionTab({
     { id: "profesor", label: isFr ? "Profil Enseignant" : "Perfil Profesor" },
     { id: "metodo", label: isFr ? "Méthode d'Apprentissage" : "Método de Aprendizaje" },
     { id: "destino", label: isFr ? "Pour Qui & CTA" : "Para Quién y CTA" },
-    { id: "negocio", label: isFr ? "Limites & Horaires" : "Límites y Horarios" }
+    { id: "negocio", label: isFr ? "Limites & Horaires" : "Límites y Horarios" },
+    { id: "faq", label: isFr ? "Questions Fréquentes" : "Preguntas Frecuentes" }
   ];
 
   const t = {
@@ -2183,6 +2184,57 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                     </table>
                   </div>
                 )}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* TAB FAQ */}
+        {subTabCMS === "faq" && (
+          <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+            <div className="card-custom" style={{ padding: "24px", borderTop: "4px solid #6366f1" }}>
+              <h3 style={{ fontSize: "16px", fontWeight: 700, marginBottom: "16px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span>❓</span>
+                {isFr ? "Questions Fréquentes (FAQ)" : "Preguntas Frecuentes (FAQ)"}
+              </h3>
+              <p style={{ fontSize: "13px", color: "var(--text-muted)", marginBottom: "20px" }}>
+                {isFr ? "Ces questions s'afficheront dans la section FAQ de la Landing Page." : "Estas preguntas se mostrarán en la sección de preguntas frecuentes de la Landing Page."}
+              </p>
+
+              <div style={{ display: "flex", flexDirection: "column", gap: "24px" }}>
+                {[1, 2, 3, 4, 5, 6].map((num) => (
+                  <div key={`faq_${num}`} style={{ padding: "16px", backgroundColor: "var(--bg-main)", borderRadius: "8px", border: "1px solid var(--border-color)" }}>
+                    <h4 style={{ fontSize: "14px", fontWeight: 700, marginBottom: "12px", color: "var(--text-main)" }}>
+                      Pregunta {num}
+                    </h4>
+                    <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: "12px" }}>
+                      <div>
+                        <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>
+                          {isFr ? "Question :" : "Pregunta:"}
+                        </label>
+                        <input
+                          type="text"
+                          value={config[`faq_${num}_q`] || ""}
+                          onChange={(e) => handleTextChange(`faq_${num}_q`, e.target.value)}
+                          className="form-control"
+                          placeholder={`Ej: ¿Pregunta ${num}?`}
+                        />
+                      </div>
+                      <div>
+                        <label style={{ fontSize: "12px", fontWeight: 600, display: "block", marginBottom: "4px" }}>
+                          {isFr ? "Réponse :" : "Respuesta:"}
+                        </label>
+                        <textarea
+                          value={config[`faq_${num}_a`] || ""}
+                          onChange={(e) => handleTextChange(`faq_${num}_a`, e.target.value)}
+                          className="form-control"
+                          placeholder={`Respuesta ${num}...`}
+                          style={{ minHeight: "80px", resize: "vertical" }}
+                        />
+                      </div>
+                    </div>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
