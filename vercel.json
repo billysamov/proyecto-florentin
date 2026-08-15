@@ -3,10 +3,6 @@
     {
       "path": "/api/cron/lead-nurturing?token=florentin_secret_nurturing_token",
       "schedule": "0 8 * * *"
-    },
-    {
-      "path": "/api/cron/recordatorios-clase?token=florentin_secret_nurturing_token",
-      "schedule": "0 * * * *"
     }
   ]
 }
