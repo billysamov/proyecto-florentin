@@ -20,7 +20,7 @@ export default function MarketingAutomatizaciones({
   const [mensajeExito, setMensajeExito] = useState("");
   
   // Estados para el Modal de Previsualización
-  const [previewEmail, setPreviewEmail] = useState<"bienvenida" | "recordatorio" | "renovacion" | "recordatorio_clase" | null>(null);
+  const [previewEmail, setPreviewEmail] = useState<"bienvenida" | "recordatorio" | "renovacion" | "recordatorio_clase" | "reprogramacion" | null>(null);
   const [previewLang, setPreviewLang] = useState<"es" | "fr" | "en">("es");
 
   const t = {
@@ -44,6 +44,10 @@ export default function MarketingAutomatizaciones({
     clasesDesc: isFr 
       ? "S'envoie automatiquement 24h avant le début d'un cours programmé." 
       : "Se envía automáticamente 24h antes del inicio de una clase programada.",
+    reprogramacionTitulo: isFr ? "Changement d'horaire / Reprogrammation" : "Cambio de Horario (Reprogramación)",
+    reprogramacionDesc: isFr 
+      ? "S'envoie automatiquement à l'élève lorsqu'un cours est déplacé ou reprogrammé." 
+      : "Se envía automáticamente al alumno cuando su clase cambia de fecha u horario.",
     estado: isFr ? "Statut de la campagne" : "Estado de la campaña",
     activo: isFr ? "Active" : "Activo",
     inactivo: isFr ? "Desactive" : "Desactivado",
@@ -65,7 +69,7 @@ export default function MarketingAutomatizaciones({
     destinatarioSimulado: isFr ? "Aperçu de la boîte de réception de l'élève" : "Bandeja de Entrada del Estudiante (Simulación)"
   };
 
-  const toggleCampana = async (campo: "email_bienvenida_activo" | "email_recordatorio_activo" | "email_renovacion_activo" | "email_recordatorio_clase_activo") => {
+  const toggleCampana = async (campo: "email_bienvenida_activo" | "email_recordatorio_activo" | "email_renovacion_activo" | "email_recordatorio_clase_activo" | "email_reprogramacion_activo") => {
     setGuardando(true);
     setMensajeExito("");
     
@@ -122,21 +126,28 @@ export default function MarketingAutomatizaciones({
         return {
           asunto: "Bienvenue chez Florentin ! Votre apprentissage du français commence aujourd'hui 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nom de l'élève]!</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;"> Nous sommes ravis de vous accueillir sur notre plateforme. Votre compte a été créé avec succès.</p>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Apprendre une nouvelle langue est une aventure passionnante. Avec nos cours particuliers sur mesure, vous progresserez rapidement avec un professeur natif certifié.</p>
-              <div style="background-color: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin: 15px 0;">
-                <h4 style="margin: 0 0 6px 0; font-size: 13px; color: #1e293b;">Ce qui vous attend :</h4>
-                <ul style="padding-left: 20px; margin: 0; font-size: 12.5px; color: #475569;">
-                  <li>👨‍🏫 <strong>Professeur Natif :</strong> Cours axés sur la conversation réelle.</li>
-                  <li>📅 <strong>Flexibilité Totale :</strong> Planifiez vos cours selon vos disponibilités.</li>
-                  <li>📝 <strong>Matériel Exclusif :</strong> Accès à des fiches de cours et des leçons enregistrées.</li>
-                </ul>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Bonjour [Nom de l'élève] !</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">Je suis ravi de vous accueillir et de commencer cette belle aventure avec vous.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">Si vous êtes ici, c'est probablement parce que vous souhaitez mieux parler français, gagner en confiance et communiquer naturellement.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Je m'appelle Florentin et je serai votre professeur de français. À travers mes cours, je vous accompagnerai pas à pas selon vos besoins.</p>
+              <div style="background-color: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 16px 0; text-align: left;">
+                <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #0055a5;">📍 Ce que je vais vous apporter :</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">✨ <strong>Accompagnement personnalisé :</strong> Cours adaptés à vos difficultés et objectifs.</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">🗣️ <strong>Français pour la vraie vie :</strong> Parler, comprendre et vous exprimer avec aisance.</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">📚 <strong>Ressources & exercices :</strong> Matériel exclusif pour continuer à progresser.</p>
+                <p style="margin: 0; font-size: 12.5px; color: #475569;">🎯 <strong>Apprentissage ciblé :</strong> Voyage, travail ou préparation d'examens.</p>
               </div>
-              <p style="color: #6b7280; font-size: 13px; font-style: italic; text-align: center;">Faites le premier pas aujourd'hui en choisissant le plan d'études qui correspond à vos objectifs.</p>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #3b82f6; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Découvrir les Plans</span>
+              <div style="background-color: #eff6ff; padding: 14px; border-radius: 8px; margin: 16px 0; border: 1px solid #bfdbfe; text-align: center;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; color: #1e3a8a; font-weight: 700;">🚀 Et maintenant ? Votre compte est prêt !</p>
+                <p style="margin: 0 0 12px 0; font-size: 12.5px; color: #3b82f6;">Découvrez nos forfaits d'études et choisissez celui qui vous convient.</p>
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Découvrir les forfaits</span>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">À très bientôt,</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
@@ -145,21 +156,28 @@ export default function MarketingAutomatizaciones({
         return {
           asunto: "Welcome to Florentin! Your French learning journey starts today 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Student's Name]!</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">We are delighted to welcome you to our platform. Your account has been successfully created.</p>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Learning a new language is an exciting adventure. With our tailored private lessons, you will progress quickly with a certified native teacher.</p>
-              <div style="background-color: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin: 15px 0;">
-                <h4 style="margin: 0 0 6px 0; font-size: 13px; color: #1e293b;">What awaits you:</h4>
-                <ul style="padding-left: 20px; margin: 0; font-size: 12.5px; color: #475569;">
-                  <li>👨‍🏫 <strong>Native Teacher:</strong> Lessons focused on real conversation.</li>
-                  <li>📅 <strong>Total Flexibility:</strong> Schedule lessons according to your availability.</li>
-                  <li>📝 <strong>Exclusive Material:</strong> Access to study sheets and recorded lessons.</li>
-                </ul>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hello [Student's Name]!</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">I am thrilled to welcome you and start this exciting adventure together.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">If you're here, it's probably because you want to speak French better, gain confidence, and communicate naturally.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">My name is Florentin and I will be your French teacher. I will guide you step by step according to your needs.</p>
+              <div style="background-color: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 16px 0; text-align: left;">
+                <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #0055a5;">📍 What I will provide for you:</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">✨ <strong>Personalized support:</strong> Lessons tailored to your challenges and goals.</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">🗣️ <strong>Real-life French:</strong> Speak, understand, and express yourself with ease.</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">📚 <strong>Adapted materials:</strong> Resources and exercises to progress between classes.</p>
+                <p style="margin: 0; font-size: 12.5px; color: #475569;">🎯 <strong>Goal-focused learning:</strong> Travel, career, or exam prep.</p>
               </div>
-              <p style="color: #6b7280; font-size: 13px; font-style: italic; text-align: center;">Take the first step today by choosing the study plan that fits your goals.</p>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #3b82f6; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Explore Study Plans</span>
+              <div style="background-color: #eff6ff; padding: 14px; border-radius: 8px; margin: 16px 0; border: 1px solid #bfdbfe; text-align: center;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; color: #1e3a8a; font-weight: 700;">🚀 What's next? Your account is ready!</p>
+                <p style="margin: 0 0 12px 0; font-size: 12.5px; color: #3b82f6;">Explore our study plans and choose the one that fits your goals.</p>
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Explore Study Plans</span>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">See you very soon,</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
@@ -168,78 +186,106 @@ export default function MarketingAutomatizaciones({
         return {
           asunto: "¡Bienvenido a Florentin! Tu viaje con el francés comienza hoy 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nombre del Alumno]!</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Nos alegra mucho darte la bienvenida a nuestra plataforma. Tu cuenta ha sido creada con éxito.</p>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Aprender un nuevo idioma es una aventura emocionante. Con nuestras clases particulares a medida, avanzarás rápidamente de la mano de un profesor nativo certificado.</p>
-              <div style="background-color: #f8fafc; padding: 12px; border-radius: 6px; border: 1px solid #e2e8f0; margin: 15px 0;">
-                <h4 style="margin: 0 0 6px 0; font-size: 13px; color: #1e293b;">Lo que te espera:</h4>
-                <ul style="padding-left: 20px; margin: 0; font-size: 12.5px; color: #475569;">
-                  <li>👨‍🏫 <strong>Profesor Nativo:</strong> Clases enfocadas en conversación real.</li>
-                  <li>📅 <strong>Flexibilidad Total:</strong> Programa tus clases según tu propio horario.</li>
-                  <li>📝 <strong>Material Exclusivo:</strong> Acceso a fichas de estudio y lecciones grabadas.</li>
-                </ul>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">¡Hola [Nombre del alumno/a]!</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">Me alegra muchísimo darte la bienvenida y comenzar esta aventura contigo.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">Si estás aquí, probablemente sea porque quieres hablar mejor francés, ganar confianza y comunicarte de forma natural en situaciones reales.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Me llamo Florentin y seré tu profesor de francés. Te acompañaré paso a paso, con actividades adaptadas a tu nivel, objetivos y necesidades.</p>
+              <div style="background-color: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 16px 0; text-align: left;">
+                <p style="margin: 0 0 8px 0; font-size: 13px; font-weight: 700; color: #0055a5;">📍 Lo que voy a aportarte :</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">✨ <strong>Un acompañamiento personalizado:</strong> Clases adaptadas a tus dificultades y metas.</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">🗣️ <strong>Francés para la vida real:</strong> Hablar, comprender y expresarte con soltura.</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">📚 <strong>Recursos y ejercicios adaptados:</strong> Material para progresar entre clases.</p>
+                <p style="margin: 0; font-size: 12.5px; color: #475569;">🎯 <strong>Aprendizaje centrado en tus objetivos:</strong> Viajes, trabajo o exámenes.</p>
               </div>
-              <p style="color: #6b7280; font-size: 13px; font-style: italic; text-align: center;">Da el primer paso hoy mismo eligiendo el plan de estudios que mejor se adapte a tus metas.</p>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #3b82f6; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Ver Planes de Estudio</span>
+              <div style="background-color: #eff6ff; padding: 14px; border-radius: 8px; margin: 16px 0; border: 1px solid #bfdbfe; text-align: center;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; color: #1e3a8a; font-weight: 700;">🚀 ¿Y ahora qué? ¡Tu cuenta ya está lista!</p>
+                <p style="margin: 0 0 12px 0; font-size: 12.5px; color: #3b82f6;">Te invito a descubrir los planes de estudio y elegir el mejor para ti.</p>
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Descubrir los planes</span>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Hasta muy pronto,</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
         };
       }
     } else if (previewEmail === "recordatorio") {
-      // Recordatorio
+      // Recordatorio a los 3 días de inactividad
       if (previewLang === "fr") {
         return {
-          asunto: "Prêt à faire votre premier pas en français ? 🚀",
+          asunto: "Prêt à faire votre premier pas en français ? 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nom de l'élève],</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Il y a quelques jours, vous avez créé votre compte sur notre plateforme. Nous espérons que vous êtes prêt à commencer !</p>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Le meilleur moment pour apprendre une langue, c'est aujourd'hui. Ne laissez pas passer l'opportunité de parler français couramment avec confiance.</p>
-              <div style="margin: 15px 0; padding: 15px; background-color: #fffbeb; border-radius: 6px; border: 1px solid #fde68a; text-align: center;">
-                <p style="margin: 0; font-size: 13.5px; color: #b45309; font-weight: 700;">💡 Besoin d'aide pour choisir un plan ?</p>
-                <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #d97706;">Vous pouvez répondre directement à cet e-mail si vous avez des questions ou si vous souhaitez planifier un appel d'orientation.</p>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Bonjour [Nom de l'élève] :</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Il y a quelques jours, vous avez créé votre compte sur ma plateforme. ¡Il ne vous reste plus qu'à franchir le premier pas !</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Si vous souhaitez parler français avec plus de fluidité, de confiance et de naturel, je souhaite vous aider à y parvenir.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Vous n'avez pas besoin d'attendre de « mieux parler » pour commencer. Commencez dès aujourd'hui et progressez pas à pas avec moi.</p>
+              <div style="text-align: center; margin: 18px 0;">
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Découvrir les forfaits</span>
               </div>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #3b82f6; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Commencer mon Apprentissage</span>
+              <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0055a5;">💡 Besoin d'aide pour choisir votre plan ?</p>
+                <p style="margin: 0; font-size: 12.5px; color: #475569;">Si vous avez la moindre question, vous pouvez répondre directement à cet e-mail et je vous aiderai personnellement.</p>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">À très bientôt,</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
         };
       } else if (previewLang === "en") {
         return {
-          asunto: "Ready to take your first step in French? 🚀",
+          asunto: "Ready to take your first step in French? 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Student's Name],</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">A few days ago, you created your account on our platform. We hope you are ready to begin!</p>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">The best time to learn a language is today. Don't let the opportunity to speak French fluently and confidently slip away.</p>
-              <div style="margin: 15px 0; padding: 15px; background-color: #fffbeb; border-radius: 6px; border: 1px solid #fde68a; text-align: center;">
-                <p style="margin: 0; font-size: 13.5px; color: #b45309; font-weight: 700;">💡 Need help choosing a plan?</p>
-                <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #d97706;">You can reply directly to this email if you have any questions or want to schedule an orientation call.</p>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hello [Student's Name]:</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">A few days ago you created your account on my platform. Now you're just one step away from getting started!</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">If you want to speak French with more fluency, confidence, and natural ease, I'd love to help you achieve it.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">You don't need to wait until you "speak better" to begin. Start today and improve step by step with me.</p>
+              <div style="text-align: center; margin: 18px 0;">
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Explore Study Plans</span>
               </div>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #3b82f6; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Start My Learning</span>
+              <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0055a5;">💡 Need help choosing your plan?</p>
+                <p style="margin: 0; font-size: 12.5px; color: #475569;">If you have any questions, you can reply directly to this email and I will personally assist you.</p>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">See you very soon,</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
         };
       } else {
         return {
-          asunto: "¿Listo para dar tu primer paso en francés? 🚀",
+          asunto: "¿Listo para dar tu primer paso en francés? 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nombre del Alumno],</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Hace unos días creaste tu cuenta en nuestra plataforma. ¡Esperamos que estés listo para comenzar!</p>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">El mejor momento para aprender un idioma es hoy. No dejes pasar la oportunidad de hablar francés con fluidez y confianza.</p>
-              <div style="margin: 15px 0; padding: 15px; background-color: #fffbeb; border-radius: 6px; border: 1px solid #fde68a; text-align: center;">
-                <p style="margin: 0; font-size: 13.5px; color: #b45309; font-weight: 700;">💡 ¿Necesitas ayuda para elegir un plan?</p>
-                <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #d97706;">Puedes responder directamente a este correo si tienes alguna duda o si deseas agendar una llamada de orientación gratis.</p>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hola [Nombre]:</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Hace unos días creaste tu cuenta en mi plataforma. ¡Ahora solo te falta dar el primer paso!</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Si quieres hablar francés con más fluidez, confianza y naturalidad, quiero ayudarte a conseguirlo.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">No necesitas esperar a «hablar mejor» para empezar. Empieza hoy y mejora paso a paso conmigo.</p>
+              <div style="text-align: center; margin: 18px 0;">
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Explorar los planes</span>
               </div>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #3b82f6; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Iniciar mi Aprendizaje</span>
+              <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0055a5;">💡 ¿Necesitas ayuda para elegir tu plan?</p>
+                <p style="margin: 0; font-size: 12.5px; color: #475569;">Si tienes alguna duda, puedes responder directamente a este correo y yo te ayudaré personalmente.</p>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Hasta muy pronto,</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
@@ -251,51 +297,81 @@ export default function MarketingAutomatizaciones({
     if (previewEmail === "renovacion") {
       if (previewLang === "fr") {
         return {
-          asunto: "⚠️ Il ne vous reste plus que 2 cours, [Nom de l'élève] !",
+          asunto: "Il ne vous reste plus que 2 cours dans votre plan, [Nom de l'élève] ! 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nom de l'élève],</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Nous espérons que vous appréciez vos cours. Il ne vous reste plus que <strong>2 cours</strong> dans votre plan.</p>
-              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: center;">
-                <p style="margin: 0; font-size: 13.5px; color: #1e293b; font-weight: 700;">Prêt à continuer ?</p>
-                <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #475569;">Découvrez nos nouveaux forfaits et réservez vos prochaines semaines.</p>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Bonjour [Nom de l'élève] !</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">J'espère que vous appréciez vos cours et que vous constatez vos progrès en français.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">Je voulais vous informer qu'il ne vous reste plus que <strong>2 cours</strong> dans votre forfait actuel.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">¡Mais ne vous inquiétez pas ! Si vous souhaitez continuer à progresser, vous pouvez choisir un nuevo forfait et poursuivre vos cours avec moi.</p>
+              <div style="background-color: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 16px 0; text-align: left;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #0055a5;">🎯 Envie de continuer à progresser ?</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">Chaque nouvelle étape est une opportunité de gagner en confiance, de vous exprimer avec plus d'aisance et de perfectionner votre français.</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">Je continuerai à adapter les cours à votre niveau, vos objectifs et vos besoins.</p>
+                <p style="margin: 0; font-size: 12.5px; color: #0055a5; font-weight: 600;">Choisissez le forfait qui vous convient le mieux et réservez vos prochains cours.</p>
               </div>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #1a2530; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Voir les Plans</span>
+              <div style="text-align: center; margin: 18px 0;">
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Voir mes forfaits</span>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">À très bientôt en cours !</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
         };
       } else if (previewLang === "en") {
         return {
-          asunto: "⚠️ You only have 2 classes left, [Student's Name]!",
+          asunto: "You only have 2 classes left in your plan, [Student's Name]! 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Student's Name],</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">We hope you're enjoying your classes. You only have <strong>2 classes</strong> left in your plan.</p>
-              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: center;">
-                <p style="margin: 0; font-size: 13.5px; color: #1e293b; font-weight: 700;">Ready to continue?</p>
-                <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #475569;">Check out our new packages and book your next weeks.</p>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hello [Student's Name]!</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">I hope you're enjoying your lessons and seeing your progress in French.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">I wanted to let you know that you only have <strong>2 classes</strong> left in your current plan.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Don't worry! If you want to keep advancing, you can choose a new study plan and continue your lessons with me.</p>
+              <div style="background-color: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 16px 0; text-align: left;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #0055a5;">🎯 Want to keep progressing?</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">Each new stage is an opportunity to build confidence, speak more fluently, and improve your French.</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">I will continue to tailor the lessons to your level, goals, and specific areas you'd like to work on.</p>
+                <p style="margin: 0; font-size: 12.5px; color: #0055a5; font-weight: 600;">Choose the plan that suits you best and book your next classes.</p>
               </div>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #1a2530; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">View Plans</span>
+              <div style="text-align: center; margin: 18px 0;">
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">View My Plans</span>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">See you soon in class!</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
         };
       } else {
         return {
-          asunto: "⚠️ ¡Te quedan solo 2 clases, [Nombre del Alumno]!",
+          asunto: "¡Solo te quedan 2 clases en tu plan, [Nombre del alumno/a]! 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nombre del Alumno],</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Esperamos que estés disfrutando tus clases. Te quedan solo <strong>2 clases</strong> en tu plan actual.</p>
-              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: center;">
-                <p style="margin: 0; font-size: 13.5px; color: #1e293b; font-weight: 700;">¿Listo para continuar?</p>
-                <p style="margin: 4px 0 0 0; font-size: 12.5px; color: #475569;">Descubre nuestros nuevos paquetes y asegura tus próximas semanas.</p>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">¡Hola [Nombre del alumno/a]!</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">Espero que estés disfrutando de tus clases y que estés viendo tus progresos en francés.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">Quería avisarte de que solo te quedan <strong>2 clases</strong> en tu plan actual.</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">¡Pero no te preocupes! Si quieres seguir avanzando, puedes elegir un nuevo plan y continuar con tus clases conmigo.</p>
+              <div style="background-color: #f8fafc; padding: 16px; border-radius: 8px; border: 1px solid #e2e8f0; margin: 16px 0; text-align: left;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #0055a5;">🎯 ¿Quieres seguir progresando?</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">Cada nueva etapa es una oportunidad para ganar confianza, hablar con más soltura y seguir mejorando tu francés.</p>
+                <p style="margin: 0 0 6px 0; font-size: 12.5px; color: #475569;">Yo seguiré adaptando las clases a tu nivel, tus objetivos y a las dificultades que quieras trabajar.</p>
+                <p style="margin: 0; font-size: 12.5px; color: #0055a5; font-weight: 600;">Elige el plan que mejor se adapte a ti y reserva tus próximas clases.</p>
               </div>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #1a2530; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Ver Planes</span>
+              <div style="text-align: center; margin: 18px 0;">
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Ver mis planes</span>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">¡Nos vemos pronto en clase!</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
@@ -304,51 +380,161 @@ export default function MarketingAutomatizaciones({
     } else if (previewEmail === "recordatorio_clase") {
       if (previewLang === "fr") {
         return {
-          asunto: "Rappel de Cours de Français ⏰",
+          asunto: "Rappel : notre cours de français de demain ! 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nom de l'élève],</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Ceci est un rappel : vous avez un cours de français programmé très bientôt ! Préparez vos documents pour la leçon.</p>
-              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: left;">
-                <p style="margin: 0; font-size: 13.5px; color: #1e293b;"><strong>Date :</strong> Demain</p>
-                <p style="margin: 4px 0 0 0; font-size: 13.5px; color: #1e293b;"><strong>Heure :</strong> 10:00 AM</p>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Bonjour [Nom de l'élève] !</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">Je vous écris pour vous rappeler que nous avons notre cours de français demain !</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">J'ai hâte de vous retrouver et de continuer à progresser ensemble en français.</p>
+              <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #0055a5;">📍 Notre prochain cours</p>
+                <p style="margin: 0; font-size: 13px; color: #475569;"><strong>Date :</strong> Demain</p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #475569;"><strong>Heure :</strong> 10:00 AM</p>
               </div>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #d4a359; color: #1a2530; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Rejoindre la Classe Virtuelle</span>
+              <p style="color: #475569; font-size: 13px; line-height: 1.5; margin-bottom: 16px;">Si vous le souhaitez, vous pouvez jeter un œil à ce que nous avons travaillé lors de notre dernier cours. Mais surtout, <strong>venez avec l'envie de parler français !</strong></p>
+              <div style="background-color: #eff6ff; padding: 14px; border-radius: 8px; margin: 16px 0; border: 1px solid #bfdbfe; text-align: center;">
+                <p style="margin: 0 0 10px 0; font-size: 13px; color: #3b82f6; font-weight: 600;">🚀 À demain ! Cliquez pour entrer dans notre classe virtuelle :</p>
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Rejoindre la classe virtuelle</span>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">À demain !</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
         };
       } else if (previewLang === "en") {
         return {
-          asunto: "French Class Reminder ⏰",
+          asunto: "Reminder: our French class tomorrow! 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Student's Name],</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">This is a friendly reminder that you have a French class scheduled very soon! Prepare your materials for the lesson.</p>
-              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: left;">
-                <p style="margin: 0; font-size: 13.5px; color: #1e293b;"><strong>Date:</strong> Tomorrow</p>
-                <p style="margin: 4px 0 0 0; font-size: 13.5px; color: #1e293b;"><strong>Time:</strong> 10:00 AM</p>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hello [Student's Name]!</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">I'm writing to remind you that we have our French class tomorrow!</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">I look forward to seeing you again and continuing to work on your French together.</p>
+              <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #0055a5;">📍 Our next class</p>
+                <p style="margin: 0; font-size: 13px; color: #475569;"><strong>Date:</strong> Tomorrow</p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #475569;"><strong>Time:</strong> 10:00 AM</p>
               </div>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #d4a359; color: #1a2530; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Join Virtual Classroom</span>
+              <p style="color: #475569; font-size: 13px; line-height: 1.5; margin-bottom: 16px;">If you'd like, you can take a quick look at what we worked on in our last lesson. But above all, <strong>come ready to speak French!</strong></p>
+              <div style="background-color: #eff6ff; padding: 14px; border-radius: 8px; margin: 16px 0; border: 1px solid #bfdbfe; text-align: center;">
+                <p style="margin: 0 0 10px 0; font-size: 13px; color: #3b82f6; font-weight: 600;">🚀 See you tomorrow! Click to enter our virtual classroom:</p>
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Join Virtual Classroom</span>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">See you tomorrow!</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
         };
       } else {
         return {
-          asunto: "Recordatorio de Clase de Francés ⏰",
+          asunto: "¡Recordatorio de nuestra clase de francés mañana! 🇫🇷",
           html: `
-            <div style="font-family: Arial, sans-serif; padding: 15px; border-radius: 8px;">
-              <h2 style="color: #1a2530; font-size: 18px;">Bonjour [Nombre del Alumno],</h2>
-              <p style="color: #4b5563; font-size: 14px; line-height: 1.5;">Le recordamos que tiene una clase de francés programada muy pronto. ¡Prepare sus materiales de la última lección!</p>
-              <div style="margin: 15px 0; padding: 15px; background-color: #f8fafc; border-radius: 6px; text-align: left;">
-                <p style="margin: 0; font-size: 13.5px; color: #1e293b;"><strong>Fecha:</strong> Mañana</p>
-                <p style="margin: 4px 0 0 0; font-size: 13.5px; color: #1e293b;"><strong>Hora:</strong> 10:00 AM</p>
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">¡Hola [Nombre del alumno/a]!</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 8px;">¡Te escribo para recordarte que mañana tenemos nuestra clase de francés!</p>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Estoy deseando volver a verte y seguir trabajando juntos en tu francés.</p>
+              <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #0055a5;">📍 Nuestra próxima clase</p>
+                <p style="margin: 0; font-size: 13px; color: #475569;"><strong>Fecha:</strong> Mañana</p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #475569;"><strong>Hora:</strong> 10:00 AM</p>
               </div>
-              <div style="text-align: center; margin-top: 15px;">
-                <span style="background-color: #d4a359; color: #1a2530; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Ingresar al Aula Virtual</span>
+              <p style="color: #475569; font-size: 13px; line-height: 1.5; margin-bottom: 16px;">Si quieres, puedes echar un vistazo a lo que trabajamos en nuestra última clase para llegar preparado/a. Pero, sobre todo, <strong>¡ven con ganas de hablar francés!</strong></p>
+              <div style="background-color: #eff6ff; padding: 14px; border-radius: 8px; margin: 16px 0; border: 1px solid #bfdbfe; text-align: center;">
+                <p style="margin: 0 0 10px 0; font-size: 13px; color: #3b82f6; font-weight: 600;">🚀 Nos vemos mañana. Solo tienes que hacer clic para entrar:</p>
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Ingresar al aula virtual</span>
+              </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">¡Hasta mañana!</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+              </div>
+            </div>
+          `
+        };
+      }
+    } else if (previewEmail === "reprogramacion") {
+      if (previewLang === "fr") {
+        return {
+          asunto: "Changement d'horaire : votre cours de français du 28 août 🕒",
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Bonjour [Nom] :</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 14px;">Je tenais à vous informer que votre cours du <strong>28 août</strong> aura lieu à <strong>11:00</strong> au lieu de <strong>10:00</strong>.</p>
+              <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #0055a5;">🕒 Détails du nouvel horaire</p>
+                <p style="margin: 0; font-size: 13px; color: #475569;"><strong>Date :</strong> 28 août</p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #475569;"><strong>Nouvel horaire :</strong> <span style="color: #0055a5; font-weight: 700;">11:00 AM</span></p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #94a3b8;"><strong>Ancien horaire :</strong> <span style="text-decoration: line-through;">10:00 AM</span></p>
+              </div>
+              <div style="text-align: center; margin: 18px 0;">
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Accéder à mon espace cours</span>
+              </div>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Merci pour votre compréhension !</p>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Un saludo,</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+              </div>
+            </div>
+          `
+        };
+      } else if (previewLang === "en") {
+        return {
+          asunto: "Schedule update: your French class on August 28 🕒",
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hello [Name]:</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 14px;">I wanted to let you know that your class on <strong>August 28</strong> will take place at <strong>11:00 AM</strong> instead of <strong>10:00 AM</strong>.</p>
+              <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #0055a5;">🕒 Updated Schedule Details</p>
+                <p style="margin: 0; font-size: 13px; color: #475569;"><strong>Date:</strong> August 28</p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #475569;"><strong>New Time:</strong> <span style="color: #0055a5; font-weight: 700;">11:00 AM</span></p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #94a3b8;"><strong>Previous Time:</strong> <span style="text-decoration: line-through;">10:00 AM</span></p>
+              </div>
+              <div style="text-align: center; margin: 18px 0;">
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Go to my classroom</span>
+              </div>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Thank you for your understanding!</p>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Best regards,</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+              </div>
+            </div>
+          `
+        };
+      } else {
+        return {
+          asunto: "Cambio de horario: tu clase de francés del 28 de agosto 🕒",
+          html: `
+            <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+              <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hola [Nombre]:</h2>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 14px;">Quería informarte de que tu clase del <strong>28 de agosto</strong> tendrá lugar a las <strong>11:00 AM</strong> en lugar de las <strong>10:00 AM</strong>.</p>
+              <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                <p style="margin: 0 0 6px 0; font-size: 13px; font-weight: 700; color: #0055a5;">🕒 Detalles del nuevo horario</p>
+                <p style="margin: 0; font-size: 13px; color: #475569;"><strong>Fecha:</strong> 28 de agosto</p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #475569;"><strong>Nueva Hora:</strong> <span style="color: #0055a5; font-weight: 700;">11:00 AM</span></p>
+                <p style="margin: 4px 0 0 0; font-size: 13px; color: #94a3b8;"><strong>Hora Anterior:</strong> <span style="text-decoration: line-through;">10:00 AM</span></p>
+              </div>
+              <div style="text-align: center; margin: 18px 0;">
+                <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Ir a mi aula virtual</span>
+              </div>
+              <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">¡Gracias por tu comprensión!</p>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Un saludo,</p>
+              <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+              <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
               </div>
             </div>
           `
@@ -613,6 +799,68 @@ export default function MarketingAutomatizaciones({
 
             <button 
               onClick={() => { setPreviewEmail("recordatorio_clase"); setPreviewLang("es"); }}
+              style={{ 
+                marginBottom: "16px", 
+                padding: "6px 14px", 
+                fontSize: "12px", 
+                border: "1px solid #3b82f6", 
+                color: "#3b82f6", 
+                background: "transparent", 
+                borderRadius: "20px", 
+                fontWeight: 600, 
+                cursor: "pointer", 
+                display: "inline-flex", 
+                alignItems: "center", 
+                gap: "6px" 
+              }}
+            >
+              <Eye size={13} /> {t.previewBtn}
+            </button>
+
+            <div style={{ display: "flex", alignItems: "center", gap: "6px", fontSize: "12px", color: "#3b82f6", marginBottom: "16px" }}>
+              <Globe size={14} /> {t.idiomaDinamico}
+            </div>
+          </div>
+          <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "14px", marginTop: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px" }}>
+            <span style={{ color: "var(--text-muted)" }}>{t.estadisticas}</span>
+            <span style={{ fontWeight: 600, color: "var(--text-main)" }}>
+              {t.enviosTotales} <strong style={{ color: "#3b82f6" }}>0</strong>
+            </span>
+          </div>
+        </div>
+
+        {/* Tarjeta 5: Cambio de Horario / Reprogramación */}
+        <div className="card" style={{ 
+          padding: "24px", 
+          display: "flex", 
+          flexDirection: "column", 
+          justifyContent: "space-between",
+          border: config.email_reprogramacion_activo !== false ? "1px solid rgba(59, 130, 246, 0.2)" : "1px solid var(--border-color)",
+          backgroundColor: config.email_reprogramacion_activo !== false ? "rgba(59, 130, 246, 0.01)" : "var(--card-bg)"
+        }}>
+          <div>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start", marginBottom: "16px" }}>
+              <div style={{ padding: "10px", backgroundColor: "rgba(59, 130, 246, 0.08)", color: "#3b82f6", borderRadius: "10px" }}>
+                <Clock size={22} />
+              </div>
+              <button 
+                onClick={() => toggleCampana("email_reprogramacion_activo")}
+                disabled={guardando}
+                style={{ background: "none", border: "none", cursor: "pointer", color: config.email_reprogramacion_activo !== false ? "#3b82f6" : "var(--text-muted)" }}
+              >
+                {config.email_reprogramacion_activo !== false ? <ToggleRight size={44} /> : <ToggleLeft size={44} />}
+              </button>
+            </div>
+
+            <h4 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", marginBottom: "8px" }}>
+              {t.reprogramacionTitulo}
+            </h4>
+            <p style={{ color: "var(--text-muted)", fontSize: "13px", lineHeight: "1.5", marginBottom: "12px" }}>
+              {t.reprogramacionDesc}
+            </p>
+
+            <button 
+              onClick={() => { setPreviewEmail("reprogramacion"); setPreviewLang("es"); }}
               style={{ 
                 marginBottom: "16px", 
                 padding: "6px 14px", 

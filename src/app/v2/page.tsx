@@ -123,7 +123,7 @@ export default function LandingV2Replica() {
       precioEur: 49,
       img: "/hero_student.png",
       flag: "🇫🇷",
-      badge: "Más Popular"
+      badge: "Recomendado"
     },
     {
       id: "intensivo",
@@ -827,7 +827,7 @@ export default function LandingV2Replica() {
                 • NUESTROS PLANES DE ESTUDIO
               </span>
               <h2 style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", margin: 0 }}>
-                Aprende Rápido. Explora Nuestros Planes
+                Explora los planes
               </h2>
             </div>
 
@@ -883,13 +883,13 @@ export default function LandingV2Replica() {
             {cursosFiltrados.map((course, idx) => (
               <div key={idx} style={{
                 borderRadius: "24px",
-                border: course.badge === "Más Popular" ? "2px solid #0055a5" : "1px solid #e2e8f0",
+                border: course.badge === "Recomendado" ? "2px solid #0055a5" : "1px solid #e2e8f0",
                 overflow: "hidden",
                 backgroundColor: "#ffffff",
                 display: "flex",
                 flexDirection: "column",
                 justifyContent: "space-between",
-                boxShadow: course.badge === "Más Popular" ? "0 15px 35px rgba(0, 85, 165, 0.15)" : "0 4px 12px rgba(0,0,0,0.03)"
+                boxShadow: course.badge === "Recomendado" ? "0 15px 35px rgba(0, 85, 165, 0.15)" : "0 4px 12px rgba(0,0,0,0.03)"
               }}>
                 <div>
                   <div style={{ position: "relative", height: "190px" }}>

@@ -160,7 +160,9 @@ export default function AdminDashboard() {
     whatsapp_number: "",
     email_bienvenida_activo: true,
     email_recordatorio_activo: true,
+    email_renovacion_activo: true,
     email_recordatorio_clase_activo: true,
+    email_reprogramacion_activo: true,
     mostrar_testimonios: true
   });
   const [configExito, setConfigExito] = useState(false);
@@ -477,7 +479,12 @@ export default function AdminDashboard() {
           tipo: p.tipo || "paquete",
           nivel: p.nivel || "Todos",
           activo: p.activo,
-          orden: p.orden || 0
+          orden: p.orden || 0,
+          recomendado: p.recomendado === true,
+          imagen_url: p.imagen_url,
+          badge: p.badge,
+          duracion: p.duracion,
+          caracteristicas: p.caracteristicas
         })));
       }
 
@@ -579,6 +586,7 @@ export default function AdminDashboard() {
           exclusiones_horario: configDb.exclusiones_horario || "[]",
           email_bienvenida_activo: configDb.email_bienvenida_activo !== false,
           email_recordatorio_activo: configDb.email_recordatorio_activo !== false,
+          email_renovacion_activo: configDb.email_renovacion_activo !== false,
           email_recordatorio_clase_activo: configDb.email_recordatorio_clase_activo !== false,
         });
       }
@@ -1031,6 +1039,7 @@ export default function AdminDashboard() {
         exclusiones_horario: config.exclusiones_horario,
         email_bienvenida_activo: config.email_bienvenida_activo,
         email_recordatorio_activo: config.email_recordatorio_activo,
+        email_renovacion_activo: config.email_renovacion_activo,
         email_recordatorio_clase_activo: config.email_recordatorio_clase_activo,
       });
       
@@ -1381,17 +1390,77 @@ export default function AdminDashboard() {
     }
   };
 
-  const toggleEstadoPlan = togglePlanActivo;
-  const crearPlan = guardarPlan;
+  const toggleEstadoPlan = async (id: number) => {
+    const targetPlan = planes.find(p => p.id === id);
+    if (!targetPlan) return;
+    const nuevoEstado = !targetPlan.activo;
+
+    // Actualización inmediata en pantalla (optimista)
+    setPlanes(prev => prev.map(p => p.id === id ? { ...p, activo: nuevoEstado } : p));
+
+    const { error } = await supabase
+      .from("planes_estudio")
+      .update({ activo: nuevoEstado })
+      .eq("id", id);
+    if (error) {
+      alert("Error al cambiar estado del plan: " + error.message);
+      cargarDatos();
+    }
+  };
+
+  const crearPlan = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const { error } = await supabase
+      .from("planes_estudio")
+      .insert({
+        nombre: nuevoPlan.nombre,
+        descripcion: nuevoPlan.descripcion,
+        precio: nuevoPlan.precio,
+        total_clases: nuevoPlan.totalClases,
+        tipo: nuevoPlan.tipo,
+        nivel: nuevoPlan.nivel,
+        orden: nuevoPlan.orden,
+        imagen_url: nuevoPlan.imagen_url || "/french_hero.png",
+        badge: nuevoPlan.badge || "Flexible",
+        duracion: nuevoPlan.duracion || "4 Semanas",
+        caracteristicas: nuevoPlan.caracteristicas || "",
+        activo: true,
+        recomendado: false
+      });
+
+    if (error) {
+      setPlError("Error: " + error.message);
+      alert("Error al crear plan: " + error.message);
+    } else {
+      setPlExito(true);
+      setTimeout(() => setPlExito(false), 3000);
+      setNuevoPlan({
+        nombre: "",
+        descripcion: "",
+        precio: 49.00,
+        totalClases: 8,
+        tipo: "paquete",
+        nivel: "A1",
+        orden: 0,
+        imagen_url: "/french_hero.png",
+        badge: "Flexible",
+        duracion: "4 Semanas",
+        caracteristicas: "Clases particulares en vivo\nMaterial interactivo en PDF incluido\nAtención personalizada 1 a 1"
+      });
+      cargarDatos();
+    }
+  };
 
   const toggleRecomendadoPlan = async (id: number, isRecomendado: boolean) => {
+    // Actualización inmediata en pantalla (optimista)
+    setPlanes(prev => prev.map(p => p.id === id ? { ...p, recomendado: isRecomendado } : p));
+
     const { error } = await supabase
       .from("planes_estudio")
       .update({ recomendado: isRecomendado })
       .eq("id", id);
     if (error) {
       alert("Error al actualizar recomendado: " + error.message);
-    } else {
       cargarDatos();
     }
   };

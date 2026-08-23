@@ -14,7 +14,8 @@ import {
   Plane, Briefcase, Heart, Rocket,
   XCircle, CheckCircle, Clock, MessageCircle, CalendarCheck,
   Award, Globe2, Users, Star, BadgeCheck, BookOpen, Headphones, Building2,
-  Smartphone, Coins, PlayCircle, Play, Mail, Phone
+  Smartphone, Coins, PlayCircle, Play, Mail, Phone,
+  GraduationCap, Landmark, Languages, MessageSquare, CheckCircle2
 } from "lucide-react";
 
 if (typeof window !== "undefined") {
@@ -28,13 +29,14 @@ const defaultSpanishConfig: Record<string, string> = {
   meta_descripcion: "Plataforma educativa para aprender francés. Reserva tus clases en tiempo real, accede a material didáctico exclusivo y sigue tu progreso personalizado.",
   palabras_clave: "aprender frances, clases de frances, profesor de frances, frances online, reserva clases de frances",
   teacher_name: "Florentin",
-  teacher_title: "Profesor Nativo de Francés | París, Francia",
-  teacher_bio: "Soy Florentin, nacido y criado en París. Llevo más de 5 años enseñando francés a estudiantes de todo el mundo. Mi método se centra en la inmersión cultural y la conversación real, no en la memorización de reglas. Creo que aprender un idioma debe ser una experiencia emocionante, no una tarea aburrida.",
-  teacher_experience: "+5 años",
-  teacher_students: "+200 alumnos",
-  teacher_countries: "+15 países",
-  teacher_skills: "Pronunciación nativa, Cultura francesa, Gramática aplicada, Preparación DELF/DALF, Francés para negocios",
-  teacher_certs: "Licenciatura en Lenguas Extranjeras, Certificación DALF C2, Formación en Pedagogía de Idiomas",
+  teacher_badge: "¿QUIÉN SOY?",
+  teacher_title: "Profesor nativo de francés | Diplomado en pedagogía",
+  teacher_bio: "Me llamo Florentin. Llevo más de cinco años enseñando francés a alumnos de todos los niveles, desde primaria hasta la universidad, aquí en Francia. He viajado por Latinoamérica y el Cáucaso: descubrir otras culturas me llena de energía. Aprender de ellas y acompañar a las personas en su propio cambio es una motivación. Para mí, enseñar francés no es solo transmitir reglas: es guiarte hacia una nueva cultura lingüística, histórica y geográfica.\n\nMi método se centra en la conversación y la interacción directa. En mis clases, el alumno es totalmente activo: hablarás desde la primera clase. La gramática no se memoriza con listas, se fija con práctica regular y constante, en contexto. Estoy convencido de que aprender debe ser una experiencia dinámica: el disfrute y el rigor van de la mano.",
+  teacher_experience: "+5 years",
+  teacher_students: "+200 students",
+  teacher_countries: "+15 countries",
+  teacher_skills: "Pronunciación auténtica, Cultura francesa, Gramática aplicada, Preparación aux exámenes DELF/DALF, Francés para debutantes, Francés avanzado, Preparación TCF / TEF",
+  teacher_certs: "Máster en docencia y formación, Licenciatura en historia y ciencias políticas, Pedagogía de lenguas, DELE C1 (español)",
   ps_badge: "¿POR QUÉ FLORENTIN?",
   ps_title: "El problema de aprender francés… y la solución",
   ps_prob_1_title: "Apps genéricas",
@@ -776,7 +778,7 @@ export default function Home() {
   };
 
   return (
-    <main ref={containerRef} className="overflow-x-hidden w-full max-w-full bg-[#f8fafc] text-[#0c1b33] selection:bg-[#3b82f6]/20 selection:text-[#0c1b33] font-sans">
+    <main ref={containerRef} className="overflow-x-clip w-full max-w-full bg-[#f8fafc] text-[#0c1b33] selection:bg-[#3b82f6]/20 selection:text-[#0c1b33] font-sans">
       {/* Datos Estructurados Schema.org JSON-LD para Google */}
       <script
         type="application/ld+json"
@@ -1019,7 +1021,7 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           2. TU PROFESOR — Florentin
       ═══════════════════════════════════════ */}
-      <section id="teacher" className="reveal-section py-20 sm:py-32 md:py-40 px-4 sm:px-6 bg-white relative overflow-hidden">
+      <section id="teacher" className="reveal-section py-20 sm:py-28 px-4 sm:px-6 bg-white relative">
         {/* Auroras de la Bandera de Francia de Fondo */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
           <div className="absolute -top-20 left-1/4 w-[400px] sm:w-[600px] h-[300px] sm:h-[450px] bg-[radial-gradient(circle,rgba(59,130,246,0.04)_0%,transparent_70%)] rounded-full blur-[80px] sm:blur-[140px] animate-aurora-1" />
@@ -1031,89 +1033,78 @@ export default function Home() {
             const badgeText = config ? parseMultilingualText(config.teacher_badge, lang) : t.teacherBadge;
             if (config?.mostrar_teacher_badge === false || !badgeText) return null;
             return (
-              <div className="text-center mb-14 sm:mb-20">
-                <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
+              <div className="text-center mb-12 sm:mb-16">
+                <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[3px] uppercase bg-[#3b82f6]/8 text-[#0055a5] border border-[#3b82f6]/20 shadow-xs">
                   {badgeText}
                 </span>
               </div>
             );
           })()}
 
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10 sm:gap-16 items-start">
-            {/* Columna Izquierda: Foto y Certificaciones debajo */}
-            <div className="flex flex-col items-center lg:sticky lg:top-24 gap-8 self-start w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 relative items-start">
+            {/* Columna Izquierda: Sticky Grid Item */}
+            <div 
+              className="lg:col-span-5 w-full flex flex-col items-center gap-8 lg:sticky lg:top-[120px] lg:self-start transition-all duration-300"
+              style={{ position: "sticky", top: "120px", alignSelf: "flex-start" }}
+            >
               {/* Photo */}
-              <div className="reveal-item relative flex justify-center w-full">
-                <div className="relative w-full max-w-[380px] aspect-[4/5] h-auto rounded-3xl overflow-hidden border border-slate-200 shadow-xl animate-float-slow">
-                  <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 280px, 380px" />
+              <div className="relative flex justify-center w-full">
+                <div className="relative w-full max-w-[340px] sm:max-w-[380px] aspect-[4/5] h-auto rounded-3xl overflow-hidden border border-slate-200/90 shadow-xl animate-float-slow hover:shadow-2xl transition-all duration-500">
+                  <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 300px, 380px" priority />
                 </div>
                 {/* Floating badges */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-3 z-20 w-[95%] sm:w-auto justify-center">
+                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20 w-[95%] sm:w-auto justify-center">
                   {[
-                    { icon: <Users size={16} />, text: config?.teacher_students || t.teacherStudents },
-                    { icon: <Globe2 size={16} />, text: config?.teacher_countries || t.teacherCountries },
-                    { icon: <Clock size={16} />, text: config?.teacher_experience || t.teacherExperience },
+                    { icon: <Users size={15} />, text: config?.teacher_students || t.teacherStudents },
+                    { icon: <Globe2 size={15} />, text: config?.teacher_countries || t.teacherCountries },
+                    { icon: <Clock size={15} />, text: config?.teacher_experience || t.teacherExperience },
                   ].map((badge, i) => (
                     <div 
                       key={i} 
-                      className="bg-white border border-slate-200 rounded-full px-3 sm:px-4 py-2 flex items-center gap-2 text-[10px] sm:text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
+                      className="bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-full px-3 sm:px-4 py-2 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
                     >
-                      <span className="text-[#3b82f6]">{badge.icon}</span>{badge.text}
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Certificaciones Oficiales debajo de la foto */}
-              <div className="reveal-item w-full max-w-[380px] mt-4">
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6 text-center lg:text-left">{lang === 'es' ? 'Certificaciones Oficiales' : lang === 'fr' ? 'Certifications Officielles' : 'Official Certifications'}</h4>
-                <div className="flex flex-col gap-4">
-                  {certs.map((cert: string, i: number) => (
-                    <div 
-                      key={i} 
-                      className="flex items-start gap-4 p-4 rounded-2xl bg-slate-50 border border-slate-200/80 transition-all duration-300 hover:shadow-md hover:border-[#3b82f6]/20 cursor-default"
-                    >
-                      <div className="flex items-center justify-center w-10 h-10 rounded-xl bg-[#3b82f6]/10 text-[#3b82f6] shrink-0">
-                        <Award size={20} />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-[#0c1b33] leading-snug">{cert}</span>
-                        <span className="text-[11px] font-semibold text-slate-400 mt-1 uppercase tracking-wider">{lang === 'es' ? 'Verificado' : lang === 'fr' ? 'Vérifié' : 'Verified'}</span>
-                      </div>
+                      <span className="text-[#0055a5]">{badge.icon}</span>{badge.text}
                     </div>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* Columna Derecha: Bio y Habilidades */}
-            <div className="reveal-item w-full">
-              <p className="text-[#3b82f6] font-bold text-base sm:text-lg mb-6">{config?.teacher_title || t.teacherTitle}</p>
-              <div className="text-slate-600 text-base sm:text-lg leading-relaxed mb-10 font-medium" style={{ whiteSpace: "pre-wrap" }}>
-                {config?.teacher_bio || t.teacherBio}
-                <div className="mt-4 flex justify-end">
-                  <span className="font-script text-[#ef4444] text-5xl sm:text-6xl select-none tracking-wide transform -rotate-3 block pr-6">
+            {/* Columna Derecha: Bio, Habilidades y Nueva Estructura de Certificaciones */}
+            <div className="lg:col-span-7 w-full flex flex-col gap-7">
+              {/* Título y Bio */}
+              <div>
+                <h3 className="text-[#0055a5] font-bold text-lg sm:text-xl mb-4 leading-snug">
+                  {config?.teacher_title || t.teacherTitle}
+                </h3>
+                <div className="text-slate-600 text-sm sm:text-base leading-relaxed space-y-4 font-normal" style={{ whiteSpace: "pre-line" }}>
+                  {config?.teacher_bio || t.teacherBio}
+                </div>
+                <div className="mt-2 flex justify-end">
+                  <span className="font-script text-[#ef4444] text-4xl sm:text-5xl select-none tracking-wide transform -rotate-3 block pr-4">
                     Florentin
                   </span>
                 </div>
               </div>
 
-              {/* Skills */}
-              <div className="reveal-item w-full">
-                <h4 className="text-xs font-bold text-slate-400 uppercase tracking-widest mb-6">{lang === 'es' ? 'Habilidades' : lang === 'fr' ? 'Compétences' : 'Skills'}</h4>
+              {/* Habilidades */}
+              <div className="pt-2 border-t border-slate-100">
+                <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-widest mb-3.5">
+                  {lang === 'es' ? 'HABILIDADES' : lang === 'fr' ? 'COMPÉTENCES' : 'SKILLS'}
+                </h4>
                 <div className="flex flex-wrap gap-2">
                   {skillsList.map((skill: string, i: number) => {
                     const icons = [
-                      <Headphones size={14} key="1" />,
-                      <Globe2 size={14} key="2" />,
-                      <BookOpen size={14} key="3" />,
-                      <BadgeCheck size={14} key="4" />,
-                      <Building2 size={14} key="5" />
+                      <Headphones size={13} key="1" />,
+                      <Globe2 size={13} key="2" />,
+                      <BookOpen size={13} key="3" />,
+                      <BadgeCheck size={13} key="4" />,
+                      <Building2 size={13} key="5" />
                     ];
                     return (
                       <span 
                         key={i} 
-                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#3b82f6]/10 border border-[#3b82f6]/20 rounded-full text-xs font-bold text-[#3b82f6] hover:bg-[#3b82f6]/20 transition-all duration-300 cursor-default"
+                        className="flex items-center gap-1.5 px-3 py-1.5 bg-[#eff6ff] border border-[#bfdbfe] rounded-full text-xs font-bold text-[#1d4ed8] hover:bg-[#dbeafe] transition-all duration-300 cursor-default"
                       >
                         {icons[i % icons.length]} {skill}
                       </span>
@@ -1121,6 +1112,90 @@ export default function Home() {
                   })}
                 </div>
               </div>
+
+              {/* Nueva Estructura: Formación y Certificaciones */}
+              <div className="pt-4 border-t border-slate-100 flex flex-col gap-3.5">
+                <div>
+                  <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
+                    {t.teacherCertsSectionTitle || (lang === 'es' ? 'FORMACIÓN Y CERTIFICACIONES' : lang === 'fr' ? 'FORMATION ET CERTIFICATIONS' : 'EDUCATION & CERTIFICATIONS')}
+                  </h4>
+                  <p className="text-xs sm:text-sm text-slate-600 font-medium">
+                    {t.teacherCertsSectionSubtitle || (lang === 'es' ? 'Titulación universitaria y formación especializada en enseñanza de idiomas' : lang === 'fr' ? 'Diplôme universitaire et formation spécialisée dans l\'enseignement des langues' : 'University degree and specialized training in language teaching')}
+                  </p>
+                </div>
+
+                {/* Tarjeta 1: Máster (Destacada con borde azul) */}
+                <div className="bg-white border-2 border-[#93c5fd] rounded-2xl sm:rounded-3xl p-4 sm:p-5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 shadow-xs hover:shadow-md transition-all">
+                  <div className="flex items-center gap-3.5 sm:gap-4">
+                    <div className="w-12 h-12 rounded-full bg-[#dbeafe] text-[#2563eb] flex items-center justify-center shrink-0">
+                      <GraduationCap size={24} />
+                    </div>
+                    <div>
+                      <h5 className="text-base sm:text-lg font-bold text-slate-900 leading-snug">
+                        {t.teacherMasterTitle || (lang === 'es' ? 'Máster en docencia y formación' : lang === 'fr' ? 'Master en enseignement et formation' : 'Master in Teaching and Training')}
+                      </h5>
+                      <p className="text-xs sm:text-sm text-slate-500 font-medium mt-0.5">
+                        {t.teacherMasterDesc || (lang === 'es' ? 'Especialización en pedagogía y enseñanza' : lang === 'fr' ? 'Spécialisation en pédagogie et enseignement' : 'Specialization in pedagogy and teaching')}
+                      </p>
+                    </div>
+                  </div>
+                  <div className="self-end sm:self-center shrink-0">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-[#dcfce7] text-[#15803d] border border-[#bbf7d0] text-xs font-bold rounded-full shadow-2xs">
+                      <CheckCircle2 size={13} className="text-[#16a34a]" /> {t.verified || (lang === 'es' ? 'Verificado' : lang === 'fr' ? 'Vérifié' : 'Verified')}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Grid 2 Columnas: Licenciatura y Pedagogía */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-3.5">
+                  {/* Tarjeta 2: Licenciatura */}
+                  <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs hover:border-[#93c5fd] transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#0055a5] flex items-center justify-center mb-3">
+                        <Landmark size={18} />
+                      </div>
+                      <h5 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                        {t.teacherLicTitle || (lang === 'es' ? 'Licenciatura en historia y ciencias políticas' : lang === 'fr' ? 'Licence en histoire et sciences politiques' : 'Bachelor in History and Political Science')}
+                      </h5>
+                      <p className="text-xs text-slate-500 font-medium mt-1.5">
+                        {t.teacherLicDesc || (lang === 'es' ? 'Título universitario' : lang === 'fr' ? 'Diplôme universitaire' : 'University degree')}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Tarjeta 3: Pedagogía de lenguas */}
+                  <div className="bg-white border border-slate-200/90 rounded-2xl p-4 sm:p-5 shadow-xs hover:border-[#93c5fd] transition-all flex flex-col justify-between">
+                    <div>
+                      <div className="w-8 h-8 rounded-lg bg-blue-50 text-[#0055a5] flex items-center justify-center mb-3">
+                        <Languages size={18} />
+                      </div>
+                      <h5 className="text-sm sm:text-base font-bold text-slate-900 leading-snug">
+                        {t.teacherPedagogyTitle || (lang === 'es' ? 'Pedagogía de lenguas' : lang === 'fr' ? 'Pédagogie des langues' : 'Language pedagogy')}
+                      </h5>
+                      <p className="text-xs text-slate-500 font-medium mt-1.5">
+                        {t.teacherPedagogyDesc || (lang === 'es' ? 'Formación especializada' : lang === 'fr' ? 'Formation spécialisée' : 'Specialized training')}
+                      </p>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Tarjeta 4: DELE C1 español */}
+                <div className="bg-white border border-slate-200/90 rounded-2xl p-3.5 sm:p-4 px-4 sm:px-5 shadow-xs flex items-center gap-3">
+                  <div className="w-7 h-7 rounded-md bg-blue-50 text-[#0055a5] flex items-center justify-center shrink-0">
+                    <MessageSquare size={16} />
+                  </div>
+                  <div className="flex flex-wrap items-baseline gap-x-3 gap-y-0.5">
+                    <span className="font-bold text-slate-900 text-sm sm:text-base">
+                      {t.teacherDeleTitle || (lang === 'es' ? 'DELE C1 — español' : lang === 'fr' ? 'DELE C1 — espagnol' : 'DELE C1 — Spanish')}
+                    </span>
+                    <span className="text-xs sm:text-sm text-slate-500 font-medium">
+                      {t.teacherDeleDesc || (lang === 'es' ? 'Te explico en tu idioma sin problema' : lang === 'fr' ? 'Je vous explique dans votre langue sans problème' : 'I explain in your language without problem')}
+                    </span>
+                  </div>
+                </div>
+
+              </div>
+
             </div>
           </div>
         </div>
@@ -1295,7 +1370,7 @@ export default function Home() {
                 • {lang === 'es' ? 'NUESTROS PLANES DE ESTUDIO' : lang === 'fr' ? 'NOS FORMULES D\'ÉTUDE' : 'OUR STUDY PLANS'}
               </span>
               <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#0f172a] font-serif">
-                {lang === 'es' ? 'Aprende Rápido. Explora Nuestros Planes' : lang === 'fr' ? 'Apprenez Vite. Explorez Nos Formules' : 'Learn Fast. Explore Our Plans'}
+                {lang === 'es' ? 'Explora los planes' : lang === 'fr' ? 'Explorez Nos Formules' : 'Explore Our Plans'}
               </h2>
             </div>
 
@@ -1360,12 +1435,18 @@ export default function Home() {
                         fill 
                         className="object-cover" 
                       />
-                      <span className={`absolute top-3 left-3 px-3 py-1 rounded-full text-xs font-extrabold shadow-md ${
+                      <span className={`absolute top-3 left-3 px-3.5 py-1 rounded-full text-xs font-extrabold shadow-md flex items-center gap-1.5 ${
                         isFreePlan 
                           ? 'bg-[#10b981] text-white' 
-                          : 'bg-white text-slate-800 border border-slate-100'
+                          : plan.recomendado
+                            ? 'bg-[#0055a5] text-white border border-[#0055a5] shadow-blue-500/20'
+                            : 'bg-white text-slate-800 border border-slate-100'
                       }`}>
-                        {plan.badge || (isFreePlan ? '⭐ GRATIS' : plan.recomendado ? 'FR Más Popular' : 'Flexible')}
+                        {isFreePlan 
+                          ? '⭐ GRATIS' 
+                          : plan.recomendado 
+                            ? '🇫🇷 Recomendado' 
+                            : (plan.badge && plan.badge !== 'FR Más Popular' && plan.badge !== 'Más Popular' ? plan.badge : 'Flexible')}
                       </span>
                     </div>
 

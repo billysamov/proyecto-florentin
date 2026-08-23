@@ -102,7 +102,7 @@ export default async function RootLayout({
     .single();
 
   return (
-    <html lang="es" className={`${outfit.variable} ${plusJakarta.variable} ${playfair.variable} ${greatVibes.variable} overflow-x-hidden w-full max-w-full`}>
+    <html lang="es" className={`${outfit.variable} ${plusJakarta.variable} ${playfair.variable} ${greatVibes.variable} overflow-x-clip w-full max-w-full`}>
       <head>
         <link rel="preconnect" href="https://fonts.googleapis.com" />
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />

@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
+import { enviarCorreoReprogramacionClase } from '@/lib/emails';
 
 /**
  * POST /api/reprogramar
@@ -187,6 +188,39 @@ export async function POST(request: Request) {
         { error: 'Error al reprogramar la clase en la base de datos' },
         { status: 500 }
       );
+    }
+
+    // ====== PASO 4: Enviar Correo Automatizado de Notificación ======
+    try {
+      const { data: usuario } = await supabaseAdmin
+        .from('usuarios')
+        .select('email, nombre')
+        .eq('id', clase.usuario_id)
+        .single();
+
+      if (usuario?.email) {
+        const fechaOld = new Date(clase.fecha_hora);
+        const fechaNew = new Date(nuevaFecha);
+
+        const opcionesFecha: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
+        const opcionesHora: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
+
+        const fechaStr = fechaNew.toLocaleDateString('es-ES', opcionesFecha);
+        const nuevaHoraStr = fechaNew.toLocaleTimeString('es-ES', opcionesHora);
+        const horaAnteriorStr = fechaOld.toLocaleTimeString('es-ES', opcionesHora);
+
+        await enviarCorreoReprogramacionClase(
+          usuario.email,
+          usuario.nombre || 'Estudiante',
+          fechaStr,
+          nuevaHoraStr,
+          horaAnteriorStr,
+          'es',
+          clase.enlace_meet
+        );
+      }
+    } catch (mailErr) {
+      console.error('Error no bloqueante al enviar correo de reprogramación:', mailErr);
     }
 
     return NextResponse.json({

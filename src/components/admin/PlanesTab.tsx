@@ -272,7 +272,7 @@ export default function PlanesTab({
               className="form-control"
               value={nuevoPlan.badge || "Flexible"}
               onChange={(e) => setNuevoPlan({ ...nuevoPlan, badge: e.target.value })}
-              placeholder="Ej: Más Popular, Flexible, Avanzado"
+              placeholder="Ej: Recomendado, Flexible, Intensivo"
               style={{ padding: "8px 12px" }}
             />
           </div>
@@ -402,7 +402,7 @@ export default function PlanesTab({
                             defaultValue={p.badge || "Flexible"}
                             id={`edit-plan-badge-${p.id}`}
                             className="form-control"
-                            placeholder="Badge (ej: Más Popular)"
+                            placeholder="Badge (ej: Recomendado)"
                             style={{ padding: "4px 8px", fontSize: "11px" }}
                           />
                           <input
@@ -581,28 +581,63 @@ export default function PlanesTab({
                         </div>
                       ) : (
                         <div style={{ display: "inline-flex", gap: "8px", alignItems: "center" }}>
+                          {/* Botón Recomendado / Destacado con indicación clara de estado */}
                           <button
+                            type="button"
                             onClick={() => toggleRecomendadoPlan(p.id, !p.recomendado)}
-                            title={p.recomendado ? t.quitarRecomendado : t.marcarRecomendado}
-                            style={{ background: "none", border: "none", cursor: "pointer", padding: "4px", fontSize: "18px", lineHeight: 1 }}
+                            title={p.recomendado ? (isFr ? "Cliquer pour retirer la recommandation" : "Clic para quitar recomendación en Landing") : (isFr ? "Cliquer pour marquer comme recommandé" : "Clic para marcar como Recomendado en Landing")}
+                            style={{
+                              display: "inline-flex",
+                              alignItems: "center",
+                              gap: "4px",
+                              padding: "4px 10px",
+                              borderRadius: "20px",
+                              fontSize: "11px",
+                              fontWeight: p.recomendado ? 700 : 600,
+                              backgroundColor: p.recomendado ? "#fef3c7" : "#f8fafc",
+                              color: p.recomendado ? "#92400e" : "#64748b",
+                              border: p.recomendado ? "1px solid #fde68a" : "1px solid #e2e8f0",
+                              cursor: "pointer",
+                              transition: "all 0.15s ease"
+                            }}
                           >
-                            {p.recomendado ? '⭐' : '☆'}
+                            <span>{p.recomendado ? '⭐' : '☆'}</span>
+                            <span>{p.recomendado ? (isFr ? 'Recommandé' : 'Recomendado') : (isFr ? 'Non mis en avant' : 'No destacado')}</span>
                           </button>
+
+                          {/* Botón Activar / Desactivar con contraste garantizado y letras blancas */}
                           <button
+                            type="button"
                             onClick={() => toggleEstadoPlan(p.id)}
-                            className={`btn ${p.activo ? 'btn-secondary' : 'btn-accent'}`}
-                            style={{ padding: "4px 10px", fontSize: "11px" }}
+                            style={{
+                              padding: "4px 12px",
+                              fontSize: "11px",
+                              fontWeight: 700,
+                              borderRadius: "20px",
+                              border: p.activo ? "1px solid #cbd5e1" : "none",
+                              backgroundColor: p.activo ? "#f1f5f9" : "#0055a5",
+                              color: p.activo ? "#475569" : "#ffffff",
+                              cursor: "pointer",
+                              boxShadow: p.activo ? "none" : "0 2px 6px rgba(0, 85, 165, 0.25)",
+                              transition: "all 0.15s ease"
+                            }}
                           >
                             {p.activo ? t.desactivar : t.activar}
                           </button>
+
+                          {/* Botón Editar */}
                           <button
+                            type="button"
                             onClick={() => setEditingPlanId(p.id)}
                             style={{ background: "none", border: "none", cursor: "pointer", padding: "4px" }}
                             title={t.btnGuardar}
                           >
-                            <Edit size={16} className="text-[#3b82f6]" />
+                            <Edit size={16} className="text-[#0055a5]" />
                           </button>
+
+                          {/* Botón Eliminar */}
                           <button
+                            type="button"
                             onClick={() => handleEliminar(p.id)}
                             style={{ background: "none", border: "none", cursor: "pointer", padding: "4px" }}
                             title="Eliminar"

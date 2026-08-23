@@ -145,8 +145,12 @@ CREATE TABLE configuracion_sitio (
   email_bienvenida_activo BOOLEAN DEFAULT true,
   email_recordatorio_activo BOOLEAN DEFAULT true,
   email_renovacion_activo BOOLEAN DEFAULT true,
+  email_recordatorio_clase_activo BOOLEAN DEFAULT true,
+  email_reprogramacion_activo BOOLEAN DEFAULT true,
   creado_en TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
 );
+
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS email_reprogramacion_activo BOOLEAN DEFAULT true;
 
 -- Insertar fila única por defecto
 INSERT INTO configuracion_sitio (id) VALUES (1) ON CONFLICT DO NOTHING;
