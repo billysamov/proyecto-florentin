@@ -7,10 +7,6 @@
     {
       "path": "/api/cron/renovacion-plan?token=florentin_secret_nurturing_token",
       "schedule": "0 9 * * *"
-    },
-    {
-      "path": "/api/cron/recordatorios-clase?token=florentin_secret_nurturing_token",
-      "schedule": "0 * * * *"
     }
   ]
 }
