@@ -1,12 +1,12 @@
 {
   "crons": [
     {
-      "path": "/api/cron/lead-nurturing?token=florentin_secret_nurturing_token",
-      "schedule": "0 8 * * *"
+      "path": "/api/cron/recordatorios-clase",
+      "schedule": "0 7 * * *"
     },
     {
-      "path": "/api/cron/renovacion-plan?token=florentin_secret_nurturing_token",
-      "schedule": "0 9 * * *"
+      "path": "/api/cron/lead-nurturing",
+      "schedule": "0 8 * * *"
     }
   ]
 }

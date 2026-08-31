@@ -8,11 +8,13 @@ export async function GET(request: Request) {
     const token = searchParams.get("token");
     const authHeader = request.headers.get("authorization");
 
-    // Validar token de seguridad (soporta Vercel Cron y servicios externos como cron-job.org)
+    // Validar token de seguridad (soporta Vercel Cron nativo y servicios externos con token)
     const vercelCronSecret = process.env.CRON_SECRET;
     const customToken = "florentin_secret_nurturing_token";
+    const isVercelCron = request.headers.get("user-agent")?.includes("vercel-cron") || request.headers.get("x-vercel-cron") === "1";
 
     const isValidToken = 
+      isVercelCron ||
       token === customToken || 
       (vercelCronSecret && token === vercelCronSecret) || 
       (vercelCronSecret && authHeader === `Bearer ${vercelCronSecret}`);
@@ -38,9 +40,9 @@ export async function GET(request: Request) {
       return NextResponse.json({ success: true, message: "Aviso de recordatorio de clase desactivado por configuración de usuario" });
     }
 
-    // 2. Obtener clases programadas en las próximas 24 horas a las que no se les haya enviado el aviso
+    // 2. Obtener clases programadas en las próximas 30 horas a las que no se les haya enviado el aviso
     const ahora = new Date();
-    const en24Horas = new Date(ahora.getTime() + 24 * 60 * 60 * 1000);
+    const en30Horas = new Date(ahora.getTime() + 30 * 60 * 60 * 1000);
 
     const { data: clases, error: errClases } = await supabaseAdmin
       .from("clases")
@@ -54,7 +56,7 @@ export async function GET(request: Request) {
       .eq("estado", "programada")
       .eq("recordatorio_enviado", false)
       .gt("fecha_hora", ahora.toISOString())
-      .lte("fecha_hora", en24Horas.toISOString());
+      .lte("fecha_hora", en30Horas.toISOString());
 
     if (errClases) {
       console.error("Error obteniendo clases para recordatorios:", errClases);

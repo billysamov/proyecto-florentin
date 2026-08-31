@@ -8,11 +8,13 @@ export async function GET(request: Request) {
     const token = searchParams.get("token");
     const authHeader = request.headers.get("authorization");
 
-    // Validar token de seguridad (soporta Vercel Cron y servicios externos como cron-job.org)
+    // Validar token de seguridad (soporta Vercel Cron nativo y servicios externos con token)
     const vercelCronSecret = process.env.CRON_SECRET;
     const customToken = "florentin_secret_nurturing_token";
+    const isVercelCron = request.headers.get("user-agent")?.includes("vercel-cron") || request.headers.get("x-vercel-cron") === "1";
 
     const isValidToken = 
+      isVercelCron ||
       token === customToken || 
       (vercelCronSecret && token === vercelCronSecret) || 
       (vercelCronSecret && authHeader === `Bearer ${vercelCronSecret}`);
