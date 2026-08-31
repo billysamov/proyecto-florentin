@@ -129,7 +129,7 @@ export const translations = {
     ctaBtnAlt: "También puedes escribirme un email",
 
     // Footer
-    footerRights: "© 2026 Florentin French. Todos los derechos reservados.",
+    footerRights: "Todos los derechos reservados.",
     footerPrivacy: "Privacidad",
     footerTerms: "Términos",
 
@@ -309,7 +309,7 @@ export const translations = {
     ctaBtnAlt: "Vous pouvez aussi m'écrire par email",
 
     // Footer
-    footerRights: "© 2026 Florentin French. Tous droits réservés.",
+    footerRights: "Tous droits réservés.",
     footerPrivacy: "Confidentialité",
     footerTerms: "Conditions",
 
@@ -489,7 +489,7 @@ export const translations = {
     ctaBtnAlt: "You can also email me",
 
     // Footer
-    footerRights: "© 2026 Florentin French. All rights reserved.",
+    footerRights: "All rights reserved.",
     footerPrivacy: "Privacy",
     footerTerms: "Terms",
 

@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
-import { enviarCorreoReprogramacionClase } from '@/lib/emails';
+import { 
+  enviarCorreoReprogramacionClase, 
+  enviarCorreoReprogramacionProfesor 
+} from '@/lib/emails';
 
 /**
  * POST /api/reprogramar
@@ -192,32 +195,58 @@ export async function POST(request: Request) {
 
     // ====== PASO 4: Enviar Correo Automatizado de Notificación ======
     try {
-      const { data: usuario } = await supabaseAdmin
-        .from('usuarios')
-        .select('email, nombre')
-        .eq('id', clase.usuario_id)
-        .single();
+      const [usuarioRes, configRes] = await Promise.all([
+        supabaseAdmin
+          .from('usuarios')
+          .select('email, nombre, idioma')
+          .eq('id', clase.usuario_id)
+          .single(),
+        supabaseAdmin
+          .from('configuracion_sitio')
+          .select('email_notificaciones')
+          .eq('id', 1)
+          .single()
+      ]);
+
+      const usuario = usuarioRes.data;
+      const emailProfesor = configRes.data?.email_notificaciones || process.env.SMTP_USER || 'lefrancaisavecflorentin@outlook.com';
 
       if (usuario?.email) {
         const fechaOld = new Date(clase.fecha_hora);
         const fechaNew = new Date(nuevaFecha);
+        const cleanIdioma = (usuario.idioma || 'es').toLowerCase();
 
+        const localeStr = cleanIdioma === 'fr' ? 'fr-FR' : cleanIdioma === 'en' ? 'en-US' : 'es-ES';
         const opcionesFecha: Intl.DateTimeFormatOptions = { day: 'numeric', month: 'long', year: 'numeric' };
         const opcionesHora: Intl.DateTimeFormatOptions = { hour: '2-digit', minute: '2-digit', hour12: true };
 
-        const fechaStr = fechaNew.toLocaleDateString('es-ES', opcionesFecha);
-        const nuevaHoraStr = fechaNew.toLocaleTimeString('es-ES', opcionesHora);
-        const horaAnteriorStr = fechaOld.toLocaleTimeString('es-ES', opcionesHora);
+        const fechaStr = fechaNew.toLocaleDateString(localeStr, opcionesFecha);
+        const nuevaHoraStr = fechaNew.toLocaleTimeString(localeStr, opcionesHora);
+        const horaAnteriorStr = fechaOld.toLocaleTimeString(localeStr, opcionesHora);
 
+        // 1. Enviar correo al estudiante (en su idioma)
         await enviarCorreoReprogramacionClase(
           usuario.email,
           usuario.nombre || 'Estudiante',
           fechaStr,
           nuevaHoraStr,
           horaAnteriorStr,
-          'es',
+          cleanIdioma,
           clase.enlace_meet
         );
+
+        // 2. Enviar correo de notificación al profesor (siempre informado)
+        if (emailProfesor) {
+          await enviarCorreoReprogramacionProfesor(
+            emailProfesor,
+            usuario.nombre || 'Estudiante',
+            usuario.email,
+            fechaStr,
+            nuevaHoraStr,
+            horaAnteriorStr,
+            clase.enlace_meet
+          );
+        }
       }
     } catch (mailErr) {
       console.error('Error no bloqueante al enviar correo de reprogramación:', mailErr);

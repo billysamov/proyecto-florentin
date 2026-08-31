@@ -187,3 +187,21 @@ CREATE POLICY "Escritura de configuracion solo admin" ON configuracion_sitio FOR
 
 CREATE POLICY "Lectura publica de planes" ON planes_estudio FOR SELECT USING (activo = true OR public.es_admin(auth.uid()));
 CREATE POLICY "Escritura de planes solo admin" ON planes_estudio FOR ALL USING (public.es_admin(auth.uid()));
+
+-- ==========================================
+-- 8. TABLA DE REGISTRO DE CORREOS (Email Logs)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS email_logs (
+  id SERIAL PRIMARY KEY,
+  destinatario TEXT NOT NULL,
+  asunto TEXT NOT NULL,
+  tipo TEXT NOT NULL DEFAULT 'general',
+  estado TEXT NOT NULL DEFAULT 'enviado',
+  error_mensaje TEXT,
+  creado_en TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+ALTER TABLE email_logs ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Lectura email_logs solo admin" ON email_logs FOR SELECT USING (public.es_admin(auth.uid()));
+CREATE POLICY "Escritura email_logs solo admin" ON email_logs FOR ALL USING (public.es_admin(auth.uid()));
+

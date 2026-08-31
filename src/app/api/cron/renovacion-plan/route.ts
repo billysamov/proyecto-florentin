@@ -6,10 +6,18 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");
+    const authHeader = request.headers.get("authorization");
 
-    // Validar token de seguridad simple para evitar ejecuciones maliciosas externas
-    const cronToken = process.env.CRON_SECRET || "florentin_secret_nurturing_token";
-    if (token !== cronToken) {
+    // Validar token de seguridad (soporta Vercel Cron y servicios externos como cron-job.org)
+    const vercelCronSecret = process.env.CRON_SECRET;
+    const customToken = "florentin_secret_nurturing_token";
+
+    const isValidToken = 
+      token === customToken || 
+      (vercelCronSecret && token === vercelCronSecret) || 
+      (vercelCronSecret && authHeader === `Bearer ${vercelCronSecret}`);
+
+    if (!isValidToken) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
@@ -37,7 +45,7 @@ export async function GET(request: Request) {
         id,
         clases_restantes,
         usuario_id,
-        usuarios ( email, nombre, idioma )
+        usuarios ( email, nombre )
       `)
       .lte("clases_restantes", 2)
       .eq("aviso_renovacion_enviado", false);

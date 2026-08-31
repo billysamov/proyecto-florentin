@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
-import { MessageSquare, Calendar, BookOpen, Download, TrendingUp, HelpCircle, User, Mail, Lock, Phone, GraduationCap, Globe, Target } from "lucide-react";
+import { MessageSquare, Calendar, BookOpen, Download, TrendingUp, HelpCircle, User, Mail, Lock, Phone, GraduationCap, Globe, Target, Key, ArrowLeft, CheckCircle2 } from "lucide-react";
 
 interface Clase {
   id: string;
@@ -175,6 +175,20 @@ export default function AlumnoPortal() {
   const [registerNivel, setRegisterNivel] = useState("A1");
   const [registerZonaHoraria, setRegisterZonaHoraria] = useState("Europe/Paris");
   const [registerObjetivos, setRegisterObjetivos] = useState("");
+
+  // Estados para Recuperación y Restablecimiento de Contraseña
+  const [isForgotPassword, setIsForgotPassword] = useState(false);
+  const [forgotEmail, setForgotEmail] = useState("");
+  const [forgotLoading, setForgotLoading] = useState(false);
+  const [forgotSuccess, setForgotSuccess] = useState(false);
+  const [forgotMsg, setForgotMsg] = useState("");
+
+  const [isUpdatingPassword, setIsUpdatingPassword] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmNewPassword, setConfirmNewPassword] = useState("");
+  const [updatePasswordLoading, setUpdatePasswordLoading] = useState(false);
+  const [updatePasswordSuccess, setUpdatePasswordSuccess] = useState(false);
+  const [updatePasswordMsg, setUpdatePasswordMsg] = useState("");
 
   // Datos del alumno
   const [alumnoNombre, setAlumnoNombre] = useState("");
@@ -469,12 +483,27 @@ export default function AlumnoPortal() {
       window.history.replaceState({}, document.title, window.location.pathname);
     }
 
+    // Verificar si venimos de un enlace de recuperación de contraseña
+    if (typeof window !== "undefined") {
+      const hash = window.location.hash || "";
+      const search = window.location.search || "";
+      if (hash.includes("type=recovery") || search.includes("type=recovery") || search.includes("reset=true")) {
+        setIsUpdatingPassword(true);
+      }
+    }
+
     // Verificar si hay sesión activa al montar
     const checkSession = async () => {
       const { data: { session } } = await supabase.auth.getSession();
       if (session) {
-        setIsLoggedIn(true);
-        cargarDatos(session.user.id);
+        const hash = typeof window !== "undefined" ? window.location.hash : "";
+        if (!hash.includes("type=recovery")) {
+          setIsLoggedIn(true);
+          cargarDatos(session.user.id);
+        } else {
+          setIsUpdatingPassword(true);
+          setLoading(false);
+        }
       } else {
         setLoading(false);
       }
@@ -482,10 +511,17 @@ export default function AlumnoPortal() {
     checkSession();
 
     // Escuchar cambios de autenticación
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      if (session) {
-        setIsLoggedIn(true);
-        cargarDatos(session.user.id);
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
+      if (event === "PASSWORD_RECOVERY") {
+        setIsUpdatingPassword(true);
+        setIsLoggedIn(false);
+        setLoading(false);
+      } else if (session) {
+        const hash = typeof window !== "undefined" ? window.location.hash : "";
+        if (!hash.includes("type=recovery")) {
+          setIsLoggedIn(true);
+          cargarDatos(session.user.id);
+        }
       } else {
         setIsLoggedIn(false);
         setLoading(false);
@@ -806,6 +842,82 @@ export default function AlumnoPortal() {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
       setLoginError("Error de acceso: " + error.message);
+    }
+  };
+
+  const handleSendRecovery = async (e: React.FormEvent) => {
+    e.preventDefault();
+    const targetEmail = forgotEmail || email;
+    if (!targetEmail || !targetEmail.includes("@")) {
+      setLoginError(lang === "fr" ? "Veuillez entrer un e-mail valide." : lang === "en" ? "Please enter a valid email." : "Por favor, ingresa un correo válido.");
+      return;
+    }
+
+    setForgotLoading(true);
+    setLoginError("");
+    setForgotSuccess(false);
+
+    try {
+      const res = await fetch("/api/auth/recuperar-password", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email: targetEmail, idioma: lang })
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setForgotSuccess(true);
+        setForgotMsg(lang === "fr" 
+          ? "¡E-mail envoyé ! Vérifiez votre boîte de réception (et vos spams) pour réinitialiser votre mot de passe." 
+          : lang === "en" 
+            ? "Email sent! Check your inbox (and spam folder) to reset your password." 
+            : "¡Correo enviado! Revisa tu bandeja de entrada (y carpeta de spam) para restablecer tu contraseña.");
+      } else {
+        setLoginError(data.error || "Hubo un error al procesar tu solicitud.");
+      }
+    } catch (err) {
+      setLoginError("Error de conexión al enviar la solicitud.");
+    } finally {
+      setForgotLoading(false);
+    }
+  };
+
+  const handleSaveNewPassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPassword || newPassword.length < 6) {
+      setLoginError(lang === "fr" ? "Le mot de passe doit comporter au moins 6 caractères." : lang === "en" ? "Password must be at least 6 characters." : "La contraseña debe tener al menos 6 caracteres.");
+      return;
+    }
+    if (newPassword !== confirmNewPassword) {
+      setLoginError(lang === "fr" ? "Les mots de passe ne correspondent pas." : lang === "en" ? "Passwords do not match." : "Las contraseñas no coinciden.");
+      return;
+    }
+
+    setUpdatePasswordLoading(true);
+    setLoginError("");
+
+    try {
+      const { data, error } = await supabase.auth.updateUser({ password: newPassword });
+      if (error) {
+        setLoginError(lang === "fr" ? "Erreur : " + error.message : "Error al actualizar contraseña: " + error.message);
+        setUpdatePasswordLoading(false);
+      } else {
+        setUpdatePasswordSuccess(true);
+        setUpdatePasswordMsg(lang === "fr" ? "Mot de passe mis à jour avec succès ! Connexion en cours..." : lang === "en" ? "Password updated successfully! Logging you in..." : "¡Contraseña actualizada con éxito! Ingresando a tu portal...");
+        
+        setTimeout(async () => {
+          setIsUpdatingPassword(false);
+          if (data.user) {
+            setIsLoggedIn(true);
+            await cargarDatos(data.user.id);
+          }
+          if (typeof window !== "undefined") {
+            window.history.replaceState(null, "", window.location.pathname);
+          }
+        }, 1800);
+      }
+    } catch (err: any) {
+      setLoginError("Error inesperado: " + (err.message || ""));
+      setUpdatePasswordLoading(false);
     }
   };
 
@@ -1334,10 +1446,18 @@ export default function AlumnoPortal() {
               </div>
             </Link>
             <h2 style={{ fontSize: "20px", marginTop: "16px", color: "var(--text-main)", fontWeight: 700, fontFamily: "var(--font-serif)" }}>
-              {isRegistering ? t.portalTitleRegister : t.portalTitleLogin}
+              {isUpdatingPassword
+                ? (lang === "fr" ? "Nouveau Mot de Passe" : lang === "en" ? "Set New Password" : "Crea tu Nueva Contraseña")
+                : isForgotPassword
+                  ? (lang === "fr" ? "Mot de passe oublié ?" : lang === "en" ? "Reset Password" : "Recuperar Contraseña")
+                  : isRegistering ? t.portalTitleRegister : t.portalTitleLogin}
             </h2>
             <p style={{ fontSize: "14px", color: "var(--text-muted)", marginTop: "8px" }}>
-              {isRegistering ? t.portalSubtitleRegister : t.portalSubtitleLogin}
+              {isUpdatingPassword
+                ? (lang === "fr" ? "Choisissez un nouveau mot de passe sécurisé pour votre compte." : lang === "en" ? "Choose a new secure password for your account." : "Introduce tu nueva contraseña para acceder a tu aula virtual.")
+                : isForgotPassword
+                  ? (lang === "fr" ? "Entrez votre e-mail pour recevoir un lien de réinitialisation sécurisé." : lang === "en" ? "Enter your email to receive a secure recovery link." : "Ingresa tu correo y te enviaremos un enlace seguro para restablecerla.")
+                  : isRegistering ? t.portalSubtitleRegister : t.portalSubtitleLogin}
             </p>
           </div>
 
@@ -1385,226 +1505,448 @@ export default function AlumnoPortal() {
             </select>
           </div>
 
-          <form 
-            onSubmit={(e) => {
-              e.preventDefault();
-              if (isRegistering && stepRegister === 1) {
-                // Prevenir envío y avanzar al paso 2
-                if (!nombre || !email || !password) {
-                  setLoginError(lang === "fr" ? "Veuillez remplir tous les champs." : lang === "en" ? "Please fill all fields." : "Por favor, completa todos los campos.");
-                  return;
-                }
-                if (password.length < 6) {
-                  setLoginError(lang === "fr" ? "Le mot de passe doit comporter au moins 6 caractères." : lang === "en" ? "Password must be at least 6 characters." : "La contraseña debe tener al menos 6 caracteres.");
-                  return;
-                }
-                setStepRegister(2);
-                setLoginError("");
-                return;
-              }
-              isRegistering ? handleRegister(e) : handleLogin(e);
-            }} 
-            className="card"
-          >
-            {/* Registro Paso 1 o Login Normal */}
-            {(!isRegistering || (isRegistering && stepRegister === 1)) && (
-              <>
-                {isRegistering && (
+          {/* 1. CASO: USUARIO ESTABLECIENDO NUEVA CONTRASEÑA (Vía Enlace del Correo) */}
+          {isUpdatingPassword ? (
+            <form onSubmit={handleSaveNewPassword} className="card">
+              <div style={{ textAlign: "center", marginBottom: "16px" }}>
+                <div style={{ display: "inline-flex", padding: "12px", borderRadius: "50%", backgroundColor: "rgba(0, 85, 165, 0.1)", color: "#0055a5", marginBottom: "8px" }}>
+                  <Key size={26} />
+                </div>
+              </div>
+
+              {updatePasswordSuccess ? (
+                <div style={{
+                  padding: "16px",
+                  borderRadius: "var(--radius-sm)",
+                  backgroundColor: "rgba(34, 197, 94, 0.1)",
+                  border: "1px solid rgba(34, 197, 94, 0.3)",
+                  color: "#15803d",
+                  fontSize: "13.5px",
+                  textAlign: "center",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "8px",
+                  justifyContent: "center"
+                }}>
+                  <CheckCircle2 size={18} />
+                  <span>{updatePasswordMsg}</span>
+                </div>
+              ) : (
+                <>
                   <div className="form-group">
-                    <label className="form-label" htmlFor="register-nombre">{t.fullName}</label>
+                    <label className="form-label" htmlFor="new-password">
+                      {lang === "fr" ? "Nouveau Mot de Passe" : lang === "en" ? "New Password" : "Nueva Contraseña"}
+                    </label>
                     <input
                       className="form-control"
-                      type="text"
-                      id="register-nombre"
-                      placeholder="Ej. Sofía Pérez"
-                      value={nombre}
-                      onChange={(e) => setNombre(e.target.value)}
+                      type="password"
+                      id="new-password"
+                      placeholder="Mínimo 6 caracteres"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
                       required
                     />
                   </div>
-                )}
-
-                <div className="form-group">
-                  <label className="form-label" htmlFor="login-email">{t.email}</label>
-                  <input
-                    className="form-control"
-                    type="email"
-                    id="login-email"
-                    placeholder="alumno@prueba.com"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <div className="form-group">
-                  <label className="form-label" htmlFor="login-password">{t.password}</label>
-                  <input
-                    className="form-control"
-                    type="password"
-                    id="login-password"
-                    placeholder="••••••••"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    required
-                  />
-                </div>
-
-                <button 
-                  type="submit" 
-                  className="btn btn-primary" 
-                  style={{ width: "100%", marginTop: "8px" }}
-                >
-                  {isRegistering 
-                    ? (lang === "fr" ? "Étape Suivante ➔" : lang === "en" ? "Next Step ➔" : "Siguiente Paso ➔") 
-                    : t.loginBtn}
-                </button>
-              </>
-            )}
-
-            {/* Registro Paso 2: Información de Aprendizaje */}
-            {isRegistering && stepRegister === 2 && (
-              <>
-                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", borderBottom: "1px solid var(--border-color)", paddingBottom: "8px" }}>
-                  <span style={{ fontSize: "12px", fontWeight: 700, color: "hsl(var(--accent-hsl))" }}>
-                    {lang === "fr" ? "ÉTAPE 2 SUR 2" : lang === "en" ? "STEP 2 OF 2" : "PASO 2 DE 2"}
-                  </span>
-                  <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
-                    {lang === "fr" ? "Profil d'Étudiant" : lang === "en" ? "Student Profile" : "Perfil de Estudiante"}
-                  </span>
-                </div>
-
-                {/* WhatsApp */}
-                <div className="form-group">
-                  <label className="form-label" htmlFor="register-telefono" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <Phone size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
-                    {lang === "fr" ? "Numéro WhatsApp" : lang === "en" ? "WhatsApp Number" : "Número de WhatsApp"}
-                  </label>
-                  <input
-                    className="form-control"
-                    type="tel"
-                    id="register-telefono"
-                    placeholder="ej: +51 987 654 321"
-                    value={registerTelefono}
-                    onChange={(e) => setRegisterTelefono(e.target.value)}
-                  />
-                </div>
-
-                {/* Grid para Nivel y Zona Horaria */}
-                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
-                  <div className="form-group">
-                    <label className="form-label" htmlFor="register-nivel" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <GraduationCap size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
-                      {lang === "fr" ? "Niveau" : lang === "en" ? "Level" : "Nivel"}
-                    </label>
-                    <select
-                      className="form-control"
-                      id="register-nivel"
-                      value={registerNivel}
-                      onChange={(e) => setRegisterNivel(e.target.value)}
-                      style={{ padding: "10px", appearance: "auto" }}
-                    >
-                      <option value="A1">A1 (Principiante)</option>
-                      <option value="A2">A2 (Básico)</option>
-                      <option value="B1">B1 (Intermedio)</option>
-                      <option value="B2">B2 (Avanzado)</option>
-                      <option value="C1">C1 (Experto)</option>
-                      <option value="C2">C2 (Bilingüe)</option>
-                    </select>
-                  </div>
 
                   <div className="form-group">
-                    <label className="form-label" htmlFor="register-timezone" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                      <Globe size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
-                      {lang === "fr" ? "Timezone" : lang === "en" ? "Timezone" : "Zona Horaria"}
+                    <label className="form-label" htmlFor="confirm-new-password">
+                      {lang === "fr" ? "Confirmez le Mot de Passe" : lang === "en" ? "Confirm Password" : "Confirmar Nueva Contraseña"}
                     </label>
-                    <select
+                    <input
                       className="form-control"
-                      id="register-timezone"
-                      value={registerZonaHoraria}
-                      onChange={(e) => setRegisterZonaHoraria(e.target.value)}
-                      style={{ padding: "10px", appearance: "auto" }}
-                    >
-                      <option value="Europe/Paris">Europe/Paris</option>
-                      <option value="America/Bogota">America/Bogota</option>
-                      <option value="America/Mexico_City">America/Mexico_City</option>
-                      <option value="America/Santiago">America/Santiago</option>
-                      <option value="America/Argentina/Buenos_Aires">America/Buenos_Aires</option>
-                      <option value="America/Caracas">America/Caracas</option>
-                      <option value="America/New_York">America/New_York</option>
-                    </select>
+                      type="password"
+                      id="confirm-new-password"
+                      placeholder="Repite la contraseña"
+                      value={confirmNewPassword}
+                      onChange={(e) => setConfirmNewPassword(e.target.value)}
+                      required
+                    />
                   </div>
-                </div>
 
-                {/* Objetivos */}
-                <div className="form-group">
-                  <label className="form-label" htmlFor="register-objetivos" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
-                    <Target size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
-                    {lang === "fr" ? "Objectifs" : lang === "en" ? "Goals" : "Objetivos y Metas"}
-                  </label>
-                  <textarea
-                    className="form-control"
-                    id="register-objetivos"
-                    rows={2}
-                    placeholder={lang === "fr" ? "Quels sont vos objectifs ?" : lang === "en" ? "What are your goals?" : "¿Qué te gustaría lograr con el francés?"}
-                    value={registerObjetivos}
-                    onChange={(e) => setRegisterObjetivos(e.target.value)}
-                    style={{ resize: "none" }}
-                  ></textarea>
-                </div>
+                  {loginError && (
+                    <div style={{
+                      marginBottom: "14px",
+                      padding: "10px",
+                      borderRadius: "var(--radius-sm)",
+                      backgroundColor: "rgba(220, 53, 69, 0.1)",
+                      color: "darkred",
+                      fontSize: "13px",
+                      textAlign: "center"
+                    }}>
+                      {loginError}
+                    </div>
+                  )}
 
-                <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
                   <button 
-                    type="button" 
-                    className="btn btn-outline" 
+                    type="submit" 
+                    disabled={updatePasswordLoading}
+                    className="btn btn-primary" 
+                    style={{ width: "100%", marginTop: "8px" }}
+                  >
+                    {updatePasswordLoading 
+                      ? (lang === "fr" ? "Enregistrement..." : lang === "en" ? "Saving..." : "Guardando...")
+                      : (lang === "fr" ? "Enregistrer et Accéder" : lang === "en" ? "Save & Enter Portal" : "Guardar y Entrar al Portal")}
+                  </button>
+                </>
+              )}
+            </form>
+          ) : isForgotPassword ? (
+            /* 2. CASO: SOLICITAR RECUPERACIÓN DE CONTRASEÑA */
+            <form onSubmit={handleSendRecovery} className="card">
+              <div style={{ textAlign: "center", marginBottom: "14px" }}>
+                <div style={{ display: "inline-flex", padding: "10px", borderRadius: "50%", backgroundColor: "rgba(0, 85, 165, 0.08)", color: "#0055a5", marginBottom: "6px" }}>
+                  <Key size={22} />
+                </div>
+              </div>
+
+              {forgotSuccess ? (
+                <div>
+                  <div style={{
+                    padding: "16px",
+                    borderRadius: "8px",
+                    backgroundColor: "rgba(34, 197, 94, 0.08)",
+                    border: "1px solid rgba(34, 197, 94, 0.25)",
+                    color: "#15803d",
+                    fontSize: "13.5px",
+                    lineHeight: 1.5,
+                    textAlign: "center",
+                    marginBottom: "18px"
+                  }}>
+                    <div style={{ display: "flex", justifyContent: "center", marginBottom: "6px" }}>
+                      <CheckCircle2 size={24} className="text-emerald-600" />
+                    </div>
+                    {forgotMsg}
+                  </div>
+
+                  <button
+                    type="button"
                     onClick={() => {
-                      setStepRegister(1);
+                      setIsForgotPassword(false);
+                      setForgotSuccess(false);
                       setLoginError("");
                     }}
-                    style={{ flex: 1, padding: "10px" }}
+                    className="btn btn-primary"
+                    style={{ width: "100%" }}
                   >
-                    {lang === "fr" ? "Retour" : lang === "en" ? "Back" : "Atrás"}
+                    {lang === "fr" ? "Retour à la Connexion" : lang === "en" ? "Back to Login" : "Volver a Iniciar Sesión"}
                   </button>
+                </div>
+              ) : (
+                <>
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="forgot-email">{t.email}</label>
+                    <input
+                      className="form-control"
+                      type="email"
+                      id="forgot-email"
+                      placeholder="alumno@prueba.com"
+                      value={forgotEmail || email}
+                      onChange={(e) => {
+                        setForgotEmail(e.target.value);
+                        setEmail(e.target.value);
+                      }}
+                      required
+                    />
+                  </div>
+
+                  {loginError && (
+                    <div style={{
+                      marginBottom: "14px",
+                      padding: "10px",
+                      borderRadius: "var(--radius-sm)",
+                      backgroundColor: "rgba(220, 53, 69, 0.1)",
+                      color: "darkred",
+                      fontSize: "13px",
+                      textAlign: "center"
+                    }}>
+                      {loginError}
+                    </div>
+                  )}
+
+                  <button 
+                    type="submit" 
+                    disabled={forgotLoading}
+                    className="btn btn-primary" 
+                    style={{ width: "100%", marginTop: "8px" }}
+                  >
+                    {forgotLoading 
+                      ? (lang === "fr" ? "Envoi en cours..." : lang === "en" ? "Sending..." : "Enviando enlace...")
+                      : (lang === "fr" ? "Envoyer le lien de récupération" : lang === "en" ? "Send Recovery Link" : "Enviar enlace de recuperación")}
+                  </button>
+
+                  <div style={{ textAlign: "center", marginTop: "16px" }}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setIsForgotPassword(false);
+                        setLoginError("");
+                      }}
+                      style={{
+                        background: "none",
+                        border: "none",
+                        color: "var(--text-muted)",
+                        fontSize: "13px",
+                        fontWeight: 600,
+                        cursor: "pointer",
+                        display: "inline-flex",
+                        alignItems: "center",
+                        gap: "6px"
+                      }}
+                    >
+                      <ArrowLeft size={14} />
+                      {lang === "fr" ? "Retour à la connexion" : lang === "en" ? "Back to login" : "Volver a iniciar sesión"}
+                    </button>
+                  </div>
+                </>
+              )}
+            </form>
+          ) : (
+            /* 3. CASO: LOGIN Y REGISTRO HABITUAL */
+            <form 
+              onSubmit={(e) => {
+                e.preventDefault();
+                if (isRegistering && stepRegister === 1) {
+                  // Prevenir envío y avanzar al paso 2
+                  if (!nombre || !email || !password) {
+                    setLoginError(lang === "fr" ? "Veuillez remplir tous les champs." : lang === "en" ? "Please fill all fields." : "Por favor, completa todos los campos.");
+                    return;
+                  }
+                  if (password.length < 6) {
+                    setLoginError(lang === "fr" ? "Le mot de passe doit comporter au moins 6 caractères." : lang === "en" ? "Password must be at least 6 characters." : "La contraseña debe tener al menos 6 caracteres.");
+                    return;
+                  }
+                  setStepRegister(2);
+                  setLoginError("");
+                  return;
+                }
+                isRegistering ? handleRegister(e) : handleLogin(e);
+              }} 
+              className="card"
+            >
+              {/* Registro Paso 1 o Login Normal */}
+              {(!isRegistering || (isRegistering && stepRegister === 1)) && (
+                <>
+                  {isRegistering && (
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="register-nombre">{t.fullName}</label>
+                      <input
+                        className="form-control"
+                        type="text"
+                        id="register-nombre"
+                        placeholder="Ej. Sofía Pérez"
+                        value={nombre}
+                        onChange={(e) => setNombre(e.target.value)}
+                        required
+                      />
+                    </div>
+                  )}
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="login-email">{t.email}</label>
+                    <input
+                      className="form-control"
+                      type="email"
+                      id="login-email"
+                      placeholder="alumno@prueba.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="login-password">{t.password}</label>
+                    <input
+                      className="form-control"
+                      type="password"
+                      id="login-password"
+                      placeholder="••••••••"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      required
+                    />
+                  </div>
+
+                  {/* Enlace "¿Olvidaste tu contraseña?" (Solo visible en Login) */}
+                  {!isRegistering && (
+                    <div style={{ display: "flex", justifyContent: "flex-end", marginTop: "-4px", marginBottom: "12px" }}>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setIsForgotPassword(true);
+                          setForgotEmail(email);
+                          setLoginError("");
+                        }}
+                        style={{
+                          background: "none",
+                          border: "none",
+                          color: "hsl(var(--accent-hsl))",
+                          fontSize: "12.5px",
+                          fontWeight: 600,
+                          cursor: "pointer",
+                          padding: "2px 0"
+                        }}
+                      >
+                        {lang === "fr" ? "Mot de passe oublié ?" : lang === "en" ? "Forgot password?" : "¿Olvidaste tu contraseña?"}
+                      </button>
+                    </div>
+                  )}
+
                   <button 
                     type="submit" 
                     className="btn btn-primary" 
-                    style={{ flex: 2, padding: "10px" }}
+                    style={{ width: "100%", marginTop: "8px" }}
                   >
-                    {t.registerBtn}
+                    {isRegistering 
+                      ? (lang === "fr" ? "Étape Suivante ➔" : lang === "en" ? "Next Step ➔" : "Siguiente Paso ➔") 
+                      : t.loginBtn}
                   </button>
+                </>
+              )}
+
+              {/* Registro Paso 2: Información de Aprendizaje */}
+              {isRegistering && stepRegister === 2 && (
+                <>
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "12px", borderBottom: "1px solid var(--border-color)", paddingBottom: "8px" }}>
+                    <span style={{ fontSize: "12px", fontWeight: 700, color: "hsl(var(--accent-hsl))" }}>
+                      {lang === "fr" ? "ÉTAPE 2 SUR 2" : lang === "en" ? "STEP 2 OF 2" : "PASO 2 DE 2"}
+                    </span>
+                    <span style={{ fontSize: "12px", color: "var(--text-muted)" }}>
+                      {lang === "fr" ? "Profil d'Étudiant" : lang === "en" ? "Student Profile" : "Perfil de Estudiante"}
+                    </span>
+                  </div>
+
+                  {/* WhatsApp */}
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="register-telefono" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <Phone size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                      {lang === "fr" ? "Numéro WhatsApp" : lang === "en" ? "WhatsApp Number" : "Número de WhatsApp"}
+                    </label>
+                    <input
+                      className="form-control"
+                      type="tel"
+                      id="register-telefono"
+                      placeholder="ej: +51 987 654 321"
+                      value={registerTelefono}
+                      onChange={(e) => setRegisterTelefono(e.target.value)}
+                    />
+                  </div>
+
+                  {/* Grid para Nivel y Zona Horaria */}
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "12px" }}>
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="register-nivel" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <GraduationCap size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                        {lang === "fr" ? "Niveau" : lang === "en" ? "Level" : "Nivel"}
+                      </label>
+                      <select
+                        className="form-control"
+                        id="register-nivel"
+                        value={registerNivel}
+                        onChange={(e) => setRegisterNivel(e.target.value)}
+                        style={{ padding: "10px", appearance: "auto" }}
+                      >
+                        <option value="A1">A1 (Principiante)</option>
+                        <option value="A2">A2 (Básico)</option>
+                        <option value="B1">B1 (Intermedio)</option>
+                        <option value="B2">B2 (Avanzado)</option>
+                        <option value="C1">C1 (Experto)</option>
+                        <option value="C2">C2 (Bilingüe)</option>
+                      </select>
+                    </div>
+
+                    <div className="form-group">
+                      <label className="form-label" htmlFor="register-timezone" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                        <Globe size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                        {lang === "fr" ? "Timezone" : lang === "en" ? "Timezone" : "Zona Horaria"}
+                      </label>
+                      <select
+                        className="form-control"
+                        id="register-timezone"
+                        value={registerZonaHoraria}
+                        onChange={(e) => setRegisterZonaHoraria(e.target.value)}
+                        style={{ padding: "10px", appearance: "auto" }}
+                      >
+                        <option value="Europe/Paris">Europe/Paris</option>
+                        <option value="America/Bogota">America/Bogota</option>
+                        <option value="America/Mexico_City">America/Mexico_City</option>
+                        <option value="America/Santiago">America/Santiago</option>
+                        <option value="America/Argentina/Buenos_Aires">America/Buenos_Aires</option>
+                        <option value="America/Caracas">America/Caracas</option>
+                        <option value="America/New_York">America/New_York</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  {/* Objetivos */}
+                  <div className="form-group">
+                    <label className="form-label" htmlFor="register-objetivos" style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                      <Target size={14} style={{ color: "hsl(var(--accent-hsl))" }} />
+                      {lang === "fr" ? "Objectifs" : lang === "en" ? "Goals" : "Objetivos y Metas"}
+                    </label>
+                    <textarea
+                      className="form-control"
+                      id="register-objetivos"
+                      rows={2}
+                      placeholder={lang === "fr" ? "Quels sont vos objectifs ?" : lang === "en" ? "What are your goals?" : "¿Qué te gustaría lograr con el francés?"}
+                      value={registerObjetivos}
+                      onChange={(e) => setRegisterObjetivos(e.target.value)}
+                      style={{ resize: "none" }}
+                    ></textarea>
+                  </div>
+
+                  <div style={{ display: "flex", gap: "10px", marginTop: "12px" }}>
+                    <button 
+                      type="button" 
+                      className="btn btn-outline" 
+                      onClick={() => {
+                        setStepRegister(1);
+                        setLoginError("");
+                      }}
+                      style={{ flex: 1, padding: "10px" }}
+                    >
+                      {lang === "fr" ? "Retour" : lang === "en" ? "Back" : "Atrás"}
+                    </button>
+                    <button 
+                      type="submit" 
+                      className="btn btn-primary" 
+                      style={{ flex: 2, padding: "10px" }}
+                    >
+                      {t.registerBtn}
+                    </button>
+                  </div>
+                </>
+              )}
+
+              {loginError && (
+                <div style={{
+                  marginTop: "16px",
+                  padding: "10px",
+                  borderRadius: "var(--radius-sm)",
+                  backgroundColor: "rgba(220, 53, 69, 0.1)",
+                  color: "darkred",
+                  fontSize: "13px",
+                  textAlign: "center"
+                }}>
+                  {loginError}
                 </div>
-              </>
-            )}
+              )}
 
-            {loginError && (
-              <div style={{
-                marginTop: "16px",
-                padding: "10px",
-                borderRadius: "var(--radius-sm)",
-                backgroundColor: "rgba(220, 53, 69, 0.1)",
-                color: "darkred",
-                fontSize: "13px",
-                textAlign: "center"
-              }}>
-                {loginError}
+              <div style={{ textAlign: "center", marginTop: "16px" }}>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setIsRegistering(!isRegistering);
+                    setStepRegister(1);
+                    setLoginError("");
+                  }}
+                  style={{ background: "none", border: "none", color: "hsl(var(--accent-hsl))", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
+                >
+                  {isRegistering ? t.hasAccount : t.noAccount}
+                </button>
               </div>
-            )}
-
-
-            <div style={{ textAlign: "center", marginTop: "16px" }}>
-              <button
-                type="button"
-                onClick={() => {
-                  setIsRegistering(!isRegistering);
-                  setStepRegister(1);
-                  setLoginError("");
-                }}
-                style={{ background: "none", border: "none", color: "hsl(var(--accent-hsl))", fontWeight: 600, cursor: "pointer", fontSize: "14px" }}
-              >
-                {isRegistering ? t.hasAccount : t.noAccount}
-              </button>
-            </div>
-          </form>
+            </form>
+          )}
 
           <p style={{ textAlign: "center", marginTop: "24px", fontSize: "13px" }}>
             <Link href="/" style={{ color: "hsl(var(--accent-hsl))", fontWeight: 600 }}>{t.backHome}</Link>

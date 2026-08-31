@@ -18,6 +18,20 @@ import {
   GraduationCap, Landmark, Languages, MessageSquare, CheckCircle2
 } from "lucide-react";
 
+const Facebook = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path>
+  </svg>
+);
+
+const Instagram = ({ size = 24, className = "" }: { size?: number, className?: string }) => (
+  <svg xmlns="http://www.w3.org/2000/svg" width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className={className}>
+    <rect width="20" height="20" x="2" y="2" rx="5" ry="5"></rect>
+    <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path>
+    <line x1="17.5" x2="17.51" y1="6.5" y2="6.5"></line>
+  </svg>
+);
+
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
 }
@@ -1119,9 +1133,6 @@ export default function Home() {
                   <h4 className="text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">
                     {t.teacherCertsSectionTitle || (lang === 'es' ? 'FORMACIÓN Y CERTIFICACIONES' : lang === 'fr' ? 'FORMATION ET CERTIFICATIONS' : 'EDUCATION & CERTIFICATIONS')}
                   </h4>
-                  <p className="text-xs sm:text-sm text-slate-600 font-medium">
-                    {t.teacherCertsSectionSubtitle || (lang === 'es' ? 'Titulación universitaria y formación especializada en enseñanza de idiomas' : lang === 'fr' ? 'Diplôme universitaire et formation spécialisée dans l\'enseignement des langues' : 'University degree and specialized training in language teaching')}
-                  </p>
                 </div>
 
                 {/* Tarjeta 1: Máster (Destacada con borde azul) */}
@@ -1616,10 +1627,10 @@ export default function Home() {
           9. FOOTER
       ═══════════════════════════════════════ */}
       <footer className="py-16 border-t border-slate-200 bg-white px-4 sm:px-6">
-        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 mb-12">
+        <div className="max-w-6xl mx-auto grid grid-cols-1 md:grid-cols-5 gap-8 mb-12">
           
           {/* Columna 1: Marca & Contacto Principal */}
-          <div className="flex flex-col gap-3">
+          <div className="flex flex-col gap-3 md:col-span-2">
             <Link href="/" className="inline-block relative h-12 w-48 mb-1">
               <Image 
                 src="/logo.png" 
@@ -1629,12 +1640,12 @@ export default function Home() {
                 className="object-contain object-left" 
               />
             </Link>
-            <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
+            <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed md:pr-6">
               {lang === 'es' 
-                ? 'Academia de francés en línea del Profesor Florentin. Clases particulares y grupales adaptadas a tus objetivos, enfocadas en la conversación fluida.'
+                ? 'Academia de francés en línea. Clases particulares y grupales adaptadas a tus objetivos, enfocadas en la conversación fluida.'
                 : lang === 'fr'
-                ? "Académie de français en ligne du Professeur Florentin. Cours particuliers et en groupe adaptés à vos objectifs, axés sur la conversation fluide."
-                : "Professor Florentin's online French academy. Private and group classes tailored to your goals, focused on fluent conversation."
+                ? "Académie de français en ligne. Cours particuliers et en groupe adaptés à vos objectifs, axés sur la conversation fluide."
+                : "Online French academy. Private and group classes tailored to your goals, focused on fluent conversation."
               }
             </p>
 
@@ -1664,6 +1675,16 @@ export default function Home() {
                     ? (config.whatsapp_number.startsWith('+') ? config.whatsapp_number : `+${config.whatsapp_number}`)
                     : '+33 6 85 74 49 73'}
                 </span>
+              </a>
+            </div>
+
+            {/* Redes Sociales */}
+            <div className="flex items-center gap-3 mt-3">
+              <a href="#" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#0055a5] hover:text-white transition-all">
+                <Facebook size={16} />
+              </a>
+              <a href="#" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#e1306c] hover:text-white transition-all">
+                <Instagram size={16} />
               </a>
             </div>
           </div>

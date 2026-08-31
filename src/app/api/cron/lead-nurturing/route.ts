@@ -6,10 +6,18 @@ export async function GET(request: Request) {
   try {
     const { searchParams } = new URL(request.url);
     const token = searchParams.get("token");
+    const authHeader = request.headers.get("authorization");
 
-    // Validar token de seguridad simple para evitar ejecuciones maliciosas externas
-    const cronToken = process.env.CRON_SECRET || "florentin_secret_nurturing_token";
-    if (token !== cronToken) {
+    // Validar token de seguridad (soporta Vercel Cron y servicios externos como cron-job.org)
+    const vercelCronSecret = process.env.CRON_SECRET;
+    const customToken = "florentin_secret_nurturing_token";
+
+    const isValidToken = 
+      token === customToken || 
+      (vercelCronSecret && token === vercelCronSecret) || 
+      (vercelCronSecret && authHeader === `Bearer ${vercelCronSecret}`);
+
+    if (!isValidToken) {
       return NextResponse.json({ error: "No autorizado" }, { status: 401 });
     }
 
@@ -39,7 +47,7 @@ export async function GET(request: Request) {
     // 1. Obtener usuarios creados en ese intervalo
     const { data: usuarios, error: errUsers } = await supabaseAdmin
       .from("usuarios")
-      .select("id, email, nombre, idioma, creado_en")
+      .select("id, email, nombre, creado_en")
       .eq("rol", "alumno")
       .gte("creado_en", hace96h)
       .lte("creado_en", hace72h);

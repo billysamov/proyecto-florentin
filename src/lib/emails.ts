@@ -1,4 +1,5 @@
 import nodemailer from 'nodemailer';
+import path from 'path';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://www.lefrancaisavecflorentin.com';
 const smtpHost = process.env.SMTP_HOST || '';
@@ -61,40 +62,75 @@ export async function sendEmail({
   subject, 
   html, 
   text,
-  replyTo 
+  replyTo,
+  attachments,
+  tipo = 'general'
 }: { 
   to: string; 
   subject: string; 
   html: string; 
   text?: string;
   replyTo?: string;
+  attachments?: any[];
+  tipo?: string;
 }) {
+  let estado = 'enviado';
+  let errorMsg: string | null = null;
+  let messageId: string | null = null;
+
   if (!transporter) {
     console.log(`[EMAIL SIMULADO (Nodemailer)]
 Para: ${to}
 Asunto: ${subject}
 Contenido: ${html.substring(0, 150)}... [Simulado]`);
-    return { success: true, simulated: true };
+    estado = 'simulado';
+  } else {
+    try {
+      const plainText = text || htmlToPlainText(html);
+      const info = await transporter.sendMail({
+        from: cleanSmtpFrom,
+        to,
+        subject,
+        text: plainText,
+        html,
+        replyTo: replyTo || process.env.SMTP_REPLY_TO || cleanSmtpFrom,
+        attachments,
+        headers: {
+          'X-Entity-Ref-ID': `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
+        }
+      });
+      messageId = info.messageId;
+      estado = 'enviado';
+    } catch (error: any) {
+      console.error("Error enviando correo con Nodemailer (SMTP):", error);
+      estado = 'error';
+      errorMsg = error?.message || 'Error SMTP desconocido';
+    }
   }
 
+  // Guardar registro histórico en la base de datos (no bloqueante)
   try {
-    const plainText = text || htmlToPlainText(html);
-    const info = await transporter.sendMail({
-      from: cleanSmtpFrom,
-      to,
-      subject,
-      text: plainText,
-      html,
-      replyTo: replyTo || process.env.SMTP_REPLY_TO || cleanSmtpFrom,
-      headers: {
-        'X-Entity-Ref-ID': `${Date.now()}-${Math.random().toString(36).substring(2, 9)}`,
-      }
-    });
-    return { success: true, id: info.messageId };
-  } catch (error) {
-    console.error("Error enviando correo con Nodemailer (SMTP):", error);
-    return { success: false, error };
+    const { getSupabaseAdmin } = await import('@/lib/supabase');
+    const supabaseAdmin = getSupabaseAdmin();
+    await supabaseAdmin
+      .from('email_logs')
+      .insert({
+        destinatario: to,
+        asunto: subject,
+        tipo: tipo,
+        estado: estado,
+        error_mensaje: errorMsg
+      });
+  } catch (logErr) {
+    // Si la tabla no existe aún, se omite silenciosamente sin frenar la ejecución
   }
+
+  return { 
+    success: estado !== 'error', 
+    id: messageId, 
+    simulated: estado === 'simulado', 
+    error: errorMsg 
+  };
 }
 
 /**
@@ -142,7 +178,8 @@ export async function enviarCorreoConfirmacionPago(
   return sendEmail({
     to: email,
     subject: `¡Bienvenido a Florentin! Confirmación de inscripción en ${planNombre}`,
-    html: htmlContent
+    html: htmlContent,
+    tipo: 'pago'
   });
 }
 
@@ -249,7 +286,8 @@ export async function enviarCorreoRecordatorioClase(
   return sendEmail({
     to: email,
     subject,
-    html: htmlContent
+    html: htmlContent,
+    tipo: 'recordatorio_clase'
   });
 }
 
@@ -299,7 +337,8 @@ export async function enviarCorreoNotificacionProfesor(
   return sendEmail({
     to: emailProfesor,
     subject: `💰 ¡Nueva Venta! ${nombreAlumno} se ha inscrito en ${planNombre}`,
-    html: htmlContent
+    html: htmlContent,
+    tipo: 'notificacion_profesor'
   });
 }
 
@@ -406,6 +445,14 @@ export async function enviarCorreoBienvenidaLead(email: string, nombre: string, 
             : "¡Estoy deseando empezar a trabajar contigo y ver todo lo que vas a conseguir!"}
       </p>
 
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 20px; font-weight: 500; background-color: #f8fafc; padding: 16px; border-left: 4px solid #0055a5; border-radius: 4px;">
+        ${isFr 
+          ? "En pièce jointe, vous trouverez un guide PDF qui explique comment fonctionne le portail. N'hésitez pas à me contacter si vous avez des questions." 
+          : isEn
+            ? "Attached you will find a PDF guide explaining how the portal works. Let me know if you have any questions."
+            : "En adjunto, encontrarás una guía en PDF que explica cómo funciona el portal. Por cualquier duda, avísame."}
+      </p>
+
       <p style="font-size: 15px; color: #334155; margin-top: 24px; margin-bottom: 4px; font-weight: 600;">
         ${isFr ? "À très bientôt," : isEn ? "See you very soon," : "Hasta muy pronto,"}
       </p>
@@ -425,10 +472,20 @@ export async function enviarCorreoBienvenidaLead(email: string, nombre: string, 
     </div>
   `;
 
+  const fileName = (isEn || isFr) ? 'Student_Portal_Guide_EN.pdf' : 'Guia_Portal_Estudiante_ES.pdf';
+  const filePath = path.join(process.cwd(), 'public', fileName);
+
   return sendEmail({
     to: email,
     subject,
-    html: htmlContent
+    html: htmlContent,
+    attachments: [
+      {
+        filename: fileName,
+        path: filePath
+      }
+    ],
+    tipo: 'bienvenida'
   });
 }
 
@@ -492,7 +549,7 @@ export async function enviarCorreoRecordatorioInactividad(email: string, nombre:
         </h4>
         <p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.6;">
           ${isFr
-            ? "Si vous avez la moindre question, vous pouvez répondre directement à cet e-mail et je vous aiderai personnellement."
+            ? "Si vous avez la moindre question, vous pouvez répondre directamente à cet e-mail et je vous aiderai personnellement."
             : isEn
               ? "If you have any questions, you can reply directly to this email and I will personally assist you."
               : "Si tienes alguna duda, puedes responder directamente a este correo y yo te ayudaré personalmente."}
@@ -521,7 +578,8 @@ export async function enviarCorreoRecordatorioInactividad(email: string, nombre:
   return sendEmail({
     to: email,
     subject,
-    html: htmlContent
+    html: htmlContent,
+    tipo: 'inactividad_3dias'
   });
 }
 
@@ -628,7 +686,8 @@ export async function enviarCorreoRenovacionPlan(email: string, nombre: string, 
   return sendEmail({
     to: email,
     subject,
-    html: htmlContent
+    html: htmlContent,
+    tipo: 'renovacion'
   });
 }
 
@@ -684,7 +743,7 @@ export async function enviarCorreoReprogramacionClase(
       <!-- Botón Ingreso al Aula Virtual / Panel -->
       <div style="text-align: center; margin: 24px 0;">
         <a href="${enlaceMeet && enlaceMeet !== 'pendiente' ? enlaceMeet : `${BASE_URL}/alumno`}" 
-           style="background-color: #0055a5; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: 700; font-size: 14px; display: inline-block; box-shadow: 0 4px 12px rgba(0, 85, 165, 0.25);">
+            style="background-color: #0055a5; color: #ffffff; padding: 12px 30px; text-decoration: none; border-radius: 30px; font-weight: 700; font-size: 14px; display: inline-block; box-shadow: 0 4px 12px rgba(0, 85, 165, 0.25);">
           ${isFr ? "Accéder à mon espace cours" : isEn ? "Go to my classroom" : "Ir a mi aula virtual"}
         </a>
       </div>
@@ -719,6 +778,176 @@ export async function enviarCorreoReprogramacionClase(
   return sendEmail({
     to: email,
     subject,
-    html: htmlContent
+    html: htmlContent,
+    tipo: 'reprogramacion'
   });
 }
+
+/**
+ * Notificación al profesor cuando un alumno reprograma una clase.
+ */
+export async function enviarCorreoReprogramacionProfesor(
+  emailProfesor: string,
+  nombreAlumno: string,
+  emailAlumno: string,
+  fecha: string,
+  nuevaHora: string,
+  horaAnterior: string,
+  enlaceMeet?: string
+) {
+  const htmlContent = `
+    <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 16px; background-color: #ffffff;">
+      
+      <div style="display: inline-block; background-color: #fef3c7; color: #b45309; padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 700; margin-bottom: 16px;">
+        ⚠️ AVISO DE REPROGRAMACIÓN
+      </div>
+
+      <h2 style="color: #0c1b33; font-size: 20px; font-weight: 800; margin-bottom: 12px;">
+        Bonjour Florentin,
+      </h2>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 14px;">
+        El estudiante <strong>${nombreAlumno}</strong> ha modificado el horario de su clase.
+      </p>
+
+      <!-- Caja Detalles del Nuevo Horario -->
+      <div style="background-color: #f8fafc; padding: 18px 20px; border-radius: 12px; margin: 20px 0; border: 1px solid #e2e8f0; text-align: left;">
+        <h4 style="margin: 0 0 12px 0; color: #0055a5; font-size: 14.5px; font-weight: 700;">
+          📋 Datos del cambio:
+        </h4>
+        <ul style="padding-left: 20px; margin: 0; font-size: 13.5px; color: #475569; line-height: 1.9;">
+          <li><strong>Estudiante:</strong> ${nombreAlumno} (<a href="mailto:${emailAlumno}" style="color: #0055a5; text-decoration: none;">${emailAlumno}</a>)</li>
+          <li><strong>Fecha:</strong> ${fecha}</li>
+          <li><strong>Nuevo horario:</strong> <span style="color: #0055a5; font-weight: 800; font-size: 14px;">${nuevaHora}</span></li>
+          <li><strong>Horario anterior:</strong> <span style="text-decoration: line-through; color: #94a3b8;">${horaAnterior}</span></li>
+        </ul>
+      </div>
+
+      <!-- Botones de Acción -->
+      <div style="text-align: center; margin: 24px 0;">
+        <a href="${BASE_URL}/admin" 
+           style="background-color: #0c1b33; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 700; font-size: 13.5px; display: inline-block; margin-right: 8px;">
+          Ver en Panel Administrador
+        </a>
+        ${enlaceMeet && enlaceMeet !== 'pendiente' ? `
+          <a href="${enlaceMeet}" 
+             style="background-color: #0055a5; color: #ffffff; padding: 12px 24px; text-decoration: none; border-radius: 30px; font-weight: 700; font-size: 13.5px; display: inline-block;">
+            Enlace Google Meet
+          </a>
+        ` : ''}
+      </div>
+
+      <p style="font-size: 13px; color: #64748b; margin-top: 24px; text-align: center;">
+        Este es un aviso automático de tu plataforma de clases <strong>Le Français avec Florentin</strong>.
+      </p>
+
+      <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 20px 0 16px;" />
+
+      <div style="text-align: center;">
+        <img src="${BASE_URL}/logo.png" alt="Le Français avec Florentin" style="height: 36px; max-width: 160px; object-fit: contain; margin-bottom: 6px;" />
+        <p style="font-size: 10px; color: #94a3b8; margin: 0;">
+          Le Français avec Florentin • Sistema de Gestión de Alumnos
+        </p>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({
+    to: emailProfesor,
+    subject: `⚠️ Alumno Reprogramó Clase: ${nombreAlumno} (${fecha} a las ${nuevaHora})`,
+    html: htmlContent,
+    tipo: 'reprogramacion_profesor'
+  });
+}
+
+/**
+ * Correo de recuperación de contraseña para el alumno.
+ */
+export async function enviarCorreoRecuperacionPassword(
+  email: string,
+  nombre: string,
+  recoveryLink: string,
+  idioma: string = 'es'
+) {
+  const isFr = idioma === 'fr';
+  const isEn = idioma === 'en';
+
+  let subject = "Restablece tu contraseña en Florentin 🔑";
+  if (isFr) {
+    subject = "Réinitialisez votre mot de passe Florentin 🔑";
+  } else if (isEn) {
+    subject = "Reset your Florentin password 🔑";
+  }
+
+  const htmlContent = `
+    <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 16px; background-color: #ffffff;">
+      
+      <div style="text-align: center; margin-bottom: 20px;">
+        <img src="${BASE_URL}/logo.png" alt="Le Français avec Florentin" style="height: 48px; max-width: 200px; object-fit: contain;" />
+      </div>
+
+      <h2 style="color: #0c1b33; font-size: 20px; font-weight: 800; margin-bottom: 16px; text-align: center;">
+        ${isFr ? `Bonjour ${nombre} !` : isEn ? `Hello ${nombre}!` : `¡Hola ${nombre}!`}
+      </h2>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 14px; text-align: center;">
+        ${isFr 
+          ? "Nous avons reçu une demande de réinitialisation du mot de passe pour votre compte étudiant." 
+          : isEn
+            ? "We received a request to reset the password for your student account."
+            : "Hemos recibido una solicitud para restablecer la contraseña de tu cuenta de alumno."}
+      </p>
+
+      <p style="font-size: 14.5px; color: #475569; line-height: 1.6; margin-bottom: 24px; text-align: center;">
+        ${isFr
+          ? "Cliquez sur le bouton ci-dessous pour choisir un nouveau mot de passe sécurisé :"
+          : isEn
+            ? "Click the button below to choose a new secure password:"
+            : "Haz clic en el botón de abajo para elegir tu nueva contraseña segura:"}
+      </p>
+
+      <!-- Botón de Restablecimiento -->
+      <div style="text-align: center; margin: 28px 0;">
+        <a href="${recoveryLink}" 
+           style="background-color: #0055a5; color: #ffffff; padding: 14px 36px; text-decoration: none; border-radius: 30px; font-weight: 700; font-size: 15px; display: inline-block; box-shadow: 0 4px 14px rgba(0, 85, 165, 0.3);">
+          ${isFr ? "Réinitialiser mon mot de passe" : isEn ? "Reset My Password" : "Restablecer mi contraseña"}
+        </a>
+      </div>
+
+      <!-- Aviso de Seguridad -->
+      <div style="background-color: #f8fafc; padding: 16px; border-radius: 10px; margin: 24px 0; border: 1px solid #e2e8f0; text-align: left;">
+        <p style="margin: 0; font-size: 12.5px; color: #64748b; line-height: 1.5;">
+          🔒 ${isFr 
+            ? "Si vous n'avez pas demandé ce changement, vous pouvez ignorer cet e-mail en toute sécurité. Ce lien expire dans 24 heures." 
+            : isEn
+              ? "If you did not request this change, you can safely ignore this email. This link will expire in 24 hours."
+              : "Si no solicitaste este cambio, puedes ignorar este correo sin problemas. Este enlace expirará en 24 horas."}
+        </p>
+      </div>
+
+      <p style="font-size: 14px; color: #334155; margin-top: 24px; margin-bottom: 4px; font-weight: 600; text-align: center;">
+        ${isFr ? "À très bientôt," : isEn ? "Best regards," : "Hasta muy pronto,"}
+      </p>
+      <p style="font-size: 16px; color: #0055a5; font-weight: 800; margin-top: 0; margin-bottom: 20px; text-align: center;">
+        Florentin
+      </p>
+
+      <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 20px 0 16px;" />
+
+      <div style="text-align: center;">
+        <p style="font-size: 11px; color: #94a3b8; margin: 0;">
+          Le Français avec Florentin • Clases Personalizadas 1 a 1 de Francés Nativo
+        </p>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html: htmlContent,
+    tipo: 'recuperacion_clave'
+  });
+}
+
+

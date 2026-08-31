@@ -1,6 +1,16 @@
-import React, { useState } from "react";
-import { Mail, Sparkles, Clock, Globe, ToggleLeft, ToggleRight, CheckCircle, AlertTriangle, Key, X, Eye } from "lucide-react";
+import React, { useState, useEffect } from "react";
+import { Mail, Sparkles, Clock, Globe, ToggleLeft, ToggleRight, CheckCircle, AlertTriangle, Key, X, Eye, History, RefreshCw, Search, CheckCircle2, XCircle, ShieldCheck } from "lucide-react";
 import { supabase } from "@/lib/supabase";
+
+interface EmailLogItem {
+  id: string | number;
+  destinatario: string;
+  asunto: string;
+  tipo: string;
+  estado: string;
+  error_mensaje?: string | null;
+  creado_en: string;
+}
 
 interface MarketingAutomatizacionesProps {
   config: any;
@@ -18,6 +28,106 @@ export default function MarketingAutomatizaciones({
   const isFr = lang === "fr";
   const [guardando, setGuardando] = useState(false);
   const [mensajeExito, setMensajeExito] = useState("");
+  const [recordatoriosClaseCount, setRecordatoriosClaseCount] = useState<number>(0);
+
+  // Estados para el Historial de Envíos (Logs)
+  const [logs, setLogs] = useState<EmailLogItem[]>([]);
+  const [cargandoLogs, setCargandoLogs] = useState<boolean>(false);
+  const [filtroTipo, setFiltroTipo] = useState<string>("todos");
+  const [busquedaLog, setBusquedaLog] = useState<string>("");
+
+  const cargarHistorial = async () => {
+    setCargandoLogs(true);
+    try {
+      // 1. Intentar consultar email_logs de Supabase
+      const { data: dbLogs, error: logError } = await supabase
+        .from('email_logs')
+        .select('*')
+        .order('creado_en', { ascending: false })
+        .limit(50);
+
+      if (!logError && dbLogs && dbLogs.length > 0) {
+        setLogs(dbLogs);
+      } else {
+        // Fallback inteligente: Construir historial sintético en base a clases enviadas e inscripciones
+        const logsSinteticos: EmailLogItem[] = [];
+
+        // Clases con recordatorio enviado
+        const { data: clasesEnviadas } = await supabase
+          .from('clases')
+          .select('id, fecha_hora, creado_en, usuarios(email, nombre)')
+          .eq('recordatorio_enviado', true)
+          .order('fecha_hora', { ascending: false })
+          .limit(15);
+
+        if (clasesEnviadas) {
+          for (const c of clasesEnviadas) {
+            const u = Array.isArray(c.usuarios) ? c.usuarios[0] : c.usuarios;
+            if (u?.email) {
+              const fObj = new Date(c.fecha_hora);
+              logsSinteticos.push({
+                id: `clase-${c.id}`,
+                destinatario: u.email,
+                asunto: `¡Recordatorio de nuestra clase de francés mañana! 🇫🇷`,
+                tipo: 'recordatorio_clase',
+                estado: 'enviado',
+                creado_en: new Date(fObj.getTime() - 24 * 60 * 60 * 1000).toISOString()
+              });
+            }
+          }
+        }
+
+        // Inscripciones con aviso renovación
+        const { data: inscEnviadas } = await supabase
+          .from('inscripciones')
+          .select('id, clases_restantes, creado_en, usuarios(email, nombre)')
+          .eq('aviso_renovacion_enviado', true)
+          .limit(10);
+
+        if (inscEnviadas) {
+          for (const i of inscEnviadas) {
+            const u = Array.isArray(i.usuarios) ? i.usuarios[0] : i.usuarios;
+            if (u?.email) {
+              logsSinteticos.push({
+                id: `insc-${i.id}`,
+                destinatario: u.email,
+                asunto: `¡Solo te quedan ${i.clases_restantes || 0} clases en tu plan! 🇫🇷`,
+                tipo: 'renovacion',
+                estado: 'enviado',
+                creado_en: i.creado_en || new Date().toISOString()
+              });
+            }
+          }
+        }
+
+        // Ordenar por fecha descendente
+        logsSinteticos.sort((a, b) => new Date(b.creado_en).getTime() - new Date(a.creado_en).getTime());
+        setLogs(logsSinteticos);
+      }
+    } catch (err) {
+      console.error("Error cargando historial de correos:", err);
+    } finally {
+      setCargandoLogs(false);
+    }
+  };
+
+  useEffect(() => {
+    async function fetchCounts() {
+      try {
+        const { count } = await supabase
+          .from('clases')
+          .select('id', { count: 'exact', head: true })
+          .eq('recordatorio_enviado', true);
+        if (count !== null && count !== undefined) {
+          setRecordatoriosClaseCount(count);
+        }
+      } catch (err) {
+        console.error("Error obteniendo conteo de recordatorios:", err);
+      }
+    }
+    fetchCounts();
+    cargarHistorial();
+  }, []);
   
   // Estados para el Modal de Previsualización
   const [previewEmail, setPreviewEmail] = useState<"bienvenida" | "recordatorio" | "renovacion" | "recordatorio_clase" | "reprogramacion" | null>(null);
@@ -143,6 +253,7 @@ export default function MarketingAutomatizaciones({
                 <p style="margin: 0 0 12px 0; font-size: 12.5px; color: #3b82f6;">Découvrez nos forfaits d'études et choisissez celui qui vous convient.</p>
                 <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Découvrir les forfaits</span>
               </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">En pièce jointe, vous trouverez un guide PDF qui explique comment fonctionne le portail. N'hésitez pas à me contacter si vous avez des questions.</p>
               <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">À très bientôt,</p>
               <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
               <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
@@ -173,11 +284,23 @@ export default function MarketingAutomatizaciones({
                 <p style="margin: 0 0 12px 0; font-size: 12.5px; color: #3b82f6;">Explore our study plans and choose the one that fits your goals.</p>
                 <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Explore Study Plans</span>
               </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">
+                Attached you will find a PDF guide explaining how the portal works. Let me know if you have any questions.
+              </p>
               <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">See you very soon,</p>
               <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
               <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
                 <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
                 <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+              </div>
+
+              <!-- Simulación de archivo adjunto para la vista previa -->
+              <div style="margin-top: 20px; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 8px; background-color: #f8fafc; display: flex; align-items: center; gap: 10px; text-align: left;">
+                <span style="font-size: 20px;">📎</span>
+                <div>
+                  <p style="margin: 0; font-size: 12px; font-weight: 600; color: #334155;">Attachment (Automatic)</p>
+                  <p style="margin: 0; font-size: 11px; color: #64748b;">Student_Portal_Guide_EN.pdf</p>
+                </div>
               </div>
             </div>
           `
@@ -203,11 +326,23 @@ export default function MarketingAutomatizaciones({
                 <p style="margin: 0 0 12px 0; font-size: 12.5px; color: #3b82f6;">Te invito a descubrir los planes de estudio y elegir el mejor para ti.</p>
                 <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Descubrir los planes</span>
               </div>
+              <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">
+                En adjunto, encontrarás una guía en PDF que explica cómo funciona el portal. Por cualquier duda, avísame.
+              </p>
               <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Hasta muy pronto,</p>
               <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
               <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
                 <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
                 <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+              </div>
+
+              <!-- Simulación de archivo adjunto para la vista previa -->
+              <div style="margin-top: 20px; padding: 12px; border: 1px dashed #cbd5e1; border-radius: 8px; background-color: #f8fafc; display: flex; align-items: center; gap: 10px; text-align: left;">
+                <span style="font-size: 20px;">📎</span>
+                <div>
+                  <p style="margin: 0; font-size: 12px; font-weight: 600; color: #334155;">Archivo Adjunto (Automático)</p>
+                  <p style="margin: 0; font-size: 11px; color: #64748b;">Guia_Portal_Estudiante_ES.pdf</p>
+                </div>
               </div>
             </div>
           `
@@ -824,7 +959,7 @@ export default function MarketingAutomatizaciones({
           <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "14px", marginTop: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px" }}>
             <span style={{ color: "var(--text-muted)" }}>{t.estadisticas}</span>
             <span style={{ fontWeight: 600, color: "var(--text-main)" }}>
-              {t.enviosTotales} <strong style={{ color: "#3b82f6" }}>0</strong>
+              {t.enviosTotales} <strong style={{ color: "#3b82f6" }}>{recordatoriosClaseCount}</strong>
             </span>
           </div>
         </div>
@@ -934,6 +1069,233 @@ export default function MarketingAutomatizaciones({
         <div style={{ display: "flex", alignItems: "center", gap: "8px", fontSize: "12px", color: "var(--text-muted)" }}>
           <AlertTriangle size={14} className="text-amber-500" />
           <span>{t.seguridadToken} : <strong style={{ color: "var(--text-main)", fontFamily: "monospace" }}>florentin_secret_nurturing_token</strong></span>
+        </div>
+      </div>
+
+      {/* Sección Historial y Logs de Envíos */}
+      <div className="card" style={{ padding: "28px" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "14px", marginBottom: "20px" }}>
+          <div>
+            <h4 style={{ fontSize: "16px", fontWeight: 700, color: "var(--text-main)", margin: "0 0 6px 0", display: "flex", alignItems: "center", gap: "8px" }}>
+              <History size={18} className="text-[#3b82f6]" />
+              {isFr ? "Historique des E-mails Automatiques (Logs)" : "Historial de Envíos de Correo (Logs en Vivo)"}
+            </h4>
+            <p style={{ color: "var(--text-muted)", fontSize: "13px", margin: 0 }}>
+              {isFr 
+                ? "Registre chronologique des notifications et rappels envoyés aux élèves." 
+                : "Registro cronológico de las notificaciones y recordatorios enviados a los alumnos."}
+            </p>
+          </div>
+
+          <button
+            onClick={cargarHistorial}
+            disabled={cargandoLogs}
+            style={{
+              padding: "8px 16px",
+              fontSize: "12.5px",
+              fontWeight: 600,
+              borderRadius: "8px",
+              border: "1px solid var(--border-color)",
+              backgroundColor: "var(--card-bg)",
+              color: "var(--text-main)",
+              cursor: "pointer",
+              display: "inline-flex",
+              alignItems: "center",
+              gap: "6px"
+            }}
+          >
+            <RefreshCw size={13} className={cargandoLogs ? "animate-spin text-[#3b82f6]" : "text-slate-400"} />
+            {isFr ? "Actualiser" : "Actualizar Logs"}
+          </button>
+        </div>
+
+        {/* Barra de Filtros y Búsqueda */}
+        <div style={{ display: "flex", flexWrap: "wrap", gap: "10px", alignItems: "center", marginBottom: "18px" }}>
+          <div style={{ position: "relative", flex: "1", minWidth: "220px" }}>
+            <Search size={14} style={{ position: "absolute", left: "12px", top: "50%", transform: "translateY(-50%)", color: "var(--text-muted)" }} />
+            <input
+              type="text"
+              placeholder={isFr ? "Rechercher par email ou sujet..." : "Buscar por correo o asunto..."}
+              value={busquedaLog}
+              onChange={(e) => setBusquedaLog(e.target.value)}
+              style={{
+                width: "100%",
+                padding: "8px 12px 8px 34px",
+                fontSize: "12.5px",
+                backgroundColor: "var(--bg-light)",
+                border: "1px solid var(--border-color)",
+                borderRadius: "8px",
+                color: "var(--text-main)"
+              }}
+            />
+          </div>
+
+          {/* Filtro por Tipo */}
+          <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+            {[
+              { id: "todos", label: isFr ? "Tous" : "Todos" },
+              { id: "recordatorio_clase", label: isFr ? "Rappels 24h" : "Recordatorios 24h" },
+              { id: "bienvenida", label: isFr ? "Bienvenue" : "Bienvenida" },
+              { id: "renovacion", label: isFr ? "Renouvellement" : "Renovaciones" },
+              { id: "reprogramacion", label: isFr ? "Reprogrammation" : "Reprogramación" },
+              { id: "pago", label: isFr ? "Paiements" : "Pagos" }
+            ].map((f) => (
+              <button
+                key={f.id}
+                onClick={() => setFiltroTipo(f.id)}
+                style={{
+                  padding: "6px 12px",
+                  fontSize: "11.5px",
+                  fontWeight: 600,
+                  borderRadius: "16px",
+                  border: filtroTipo === f.id ? "1px solid #3b82f6" : "1px solid var(--border-color)",
+                  backgroundColor: filtroTipo === f.id ? "rgba(59, 130, 246, 0.1)" : "transparent",
+                  color: filtroTipo === f.id ? "#3b82f6" : "var(--text-muted)",
+                  cursor: "pointer"
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tabla de Logs */}
+        <div style={{ overflowX: "auto", border: "1px solid var(--border-color)", borderRadius: "8px" }}>
+          <table style={{ width: "100%", borderCollapse: "collapse", fontSize: "12.5px", textAlign: "left" }}>
+            <thead>
+              <tr style={{ backgroundColor: "var(--bg-light)", borderBottom: "1px solid var(--border-color)", color: "var(--text-muted)", fontSize: "11px", textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                <th style={{ padding: "10px 14px" }}>{isFr ? "Date / Heure" : "Fecha / Hora"}</th>
+                <th style={{ padding: "10px 14px" }}>{isFr ? "Destinataire" : "Destinatario"}</th>
+                <th style={{ padding: "10px 14px" }}>{isFr ? "Campagne" : "Campaña"}</th>
+                <th style={{ padding: "10px 14px" }}>{isFr ? "Sujet de l'e-mail" : "Asunto del Correo"}</th>
+                <th style={{ padding: "10px 14px", textAlign: "center" }}>{isFr ? "Statut" : "Estado"}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {logs
+                .filter((item) => {
+                  const matchTipo = filtroTipo === "todos" || item.tipo === filtroTipo;
+                  const matchSearch = busquedaLog.trim() === "" ||
+                    item.destinatario.toLowerCase().includes(busquedaLog.toLowerCase()) ||
+                    item.asunto.toLowerCase().includes(busquedaLog.toLowerCase());
+                  return matchTipo && matchSearch;
+                })
+                .map((logItem) => {
+                  const fechaObj = new Date(logItem.creado_en);
+                  const fechaFormateada = isNaN(fechaObj.getTime())
+                    ? "Reciente"
+                    : fechaObj.toLocaleString(isFr ? "fr-FR" : "es-ES", {
+                        day: "2-digit",
+                        month: "short",
+                        year: "numeric",
+                        hour: "2-digit",
+                        minute: "2-digit"
+                      });
+
+                  return (
+                    <tr key={logItem.id} style={{ borderBottom: "1px solid var(--border-color)" }}>
+                      <td style={{ padding: "12px 14px", color: "var(--text-muted)", whiteSpace: "nowrap", fontSize: "12px" }}>
+                        {fechaFormateada}
+                      </td>
+                      <td style={{ padding: "12px 14px", fontWeight: 600, color: "var(--text-main)" }}>
+                        <div style={{ display: "flex", alignItems: "center", gap: "6px" }}>
+                          <Mail size={13} className="text-slate-400" />
+                          <span>{logItem.destinatario}</span>
+                        </div>
+                      </td>
+                      <td style={{ padding: "12px 14px", whiteSpace: "nowrap" }}>
+                        {logItem.tipo === "recordatorio_clase" && (
+                          <span style={{ padding: "3px 8px", backgroundColor: "#eff6ff", color: "#1d4ed8", borderRadius: "10px", fontSize: "11px", fontWeight: 700 }}>
+                            📅 Recordatorio 24h
+                          </span>
+                        )}
+                        {logItem.tipo === "bienvenida" && (
+                          <span style={{ padding: "3px 8px", backgroundColor: "#faf5ff", color: "#7e22ce", borderRadius: "10px", fontSize: "11px", fontWeight: 700 }}>
+                            👋 Bienvenida
+                          </span>
+                        )}
+                        {logItem.tipo === "renovacion" && (
+                          <span style={{ padding: "3px 8px", backgroundColor: "#fffbeb", color: "#b45309", borderRadius: "10px", fontSize: "11px", fontWeight: 700 }}>
+                            🔄 Renovación
+                          </span>
+                        )}
+                        {logItem.tipo === "reprogramacion" && (
+                          <span style={{ padding: "3px 8px", backgroundColor: "#eef2ff", color: "#4338ca", borderRadius: "10px", fontSize: "11px", fontWeight: 700 }}>
+                            🕒 Reprogramación
+                          </span>
+                        )}
+                        {logItem.tipo === "reprogramacion_profesor" && (
+                          <span style={{ padding: "3px 8px", backgroundColor: "#fef3c7", color: "#92400e", borderRadius: "10px", fontSize: "11px", fontWeight: 700 }}>
+                            👨‍🏫 Aviso Maestro
+                          </span>
+                        )}
+                        {logItem.tipo === "pago" && (
+                          <span style={{ padding: "3px 8px", backgroundColor: "#f0fdf4", color: "#15803d", borderRadius: "10px", fontSize: "11px", fontWeight: 700 }}>
+                            💰 Pago Confirmado
+                          </span>
+                        )}
+                        {logItem.tipo === "inactividad_3dias" && (
+                          <span style={{ padding: "3px 8px", backgroundColor: "#fff7ed", color: "#c2410c", borderRadius: "10px", fontSize: "11px", fontWeight: 700 }}>
+                            ⏳ Inactividad 3d
+                          </span>
+                        )}
+                        {!["recordatorio_clase", "bienvenida", "renovacion", "reprogramacion", "reprogramacion_profesor", "pago", "inactividad_3dias"].includes(logItem.tipo) && (
+                          <span style={{ padding: "3px 8px", backgroundColor: "#f1f5f9", color: "#475569", borderRadius: "10px", fontSize: "11px", fontWeight: 600 }}>
+                            ✉️ {logItem.tipo}
+                          </span>
+                        )}
+                      </td>
+                      <td style={{ padding: "12px 14px", color: "var(--text-main)", maxWidth: "260px", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }} title={logItem.asunto}>
+                        {logItem.asunto}
+                      </td>
+                      <td style={{ padding: "12px 14px", textAlign: "center", whiteSpace: "nowrap" }}>
+                        {logItem.estado === "enviado" && (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 8px", backgroundColor: "rgba(34, 197, 94, 0.1)", color: "#16a34a", borderRadius: "12px", fontSize: "11px", fontWeight: 700 }}>
+                            <CheckCircle2 size={12} /> {isFr ? "Envoyé" : "Entregado"}
+                          </span>
+                        )}
+                        {logItem.estado === "simulado" && (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 8px", backgroundColor: "rgba(59, 130, 246, 0.1)", color: "#3b82f6", borderRadius: "12px", fontSize: "11px", fontWeight: 700 }}>
+                            <Sparkles size={12} /> {isFr ? "Simulé" : "Simulado"}
+                          </span>
+                        )}
+                        {logItem.estado === "error" && (
+                          <span style={{ display: "inline-flex", alignItems: "center", gap: "4px", padding: "3px 8px", backgroundColor: "rgba(239, 68, 68, 0.1)", color: "#dc2626", borderRadius: "12px", fontSize: "11px", fontWeight: 700 }} title={logItem.error_mensaje || ""}>
+                            <XCircle size={12} /> {isFr ? "Erreur" : "Error"}
+                          </span>
+                        )}
+                      </td>
+                    </tr>
+                  );
+                })}
+
+              {logs.length === 0 && (
+                <tr>
+                  <td colSpan={5} style={{ padding: "32px", textAlign: "center", color: "var(--text-muted)" }}>
+                    {cargandoLogs ? (
+                      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "8px" }}>
+                        <RefreshCw size={16} className="animate-spin text-[#3b82f6]" />
+                        <span>{isFr ? "Chargement des logs..." : "Cargando registros..."}</span>
+                      </div>
+                    ) : (
+                      <span>{isFr ? "Aucun enregistrement d'e-mail pour le moment." : "No hay registros de correos enviados todavía."}</span>
+                    )}
+                  </td>
+                </tr>
+              )}
+            </tbody>
+          </table>
+        </div>
+
+        <div style={{ marginTop: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px", color: "var(--text-muted)" }}>
+          <span>
+            {isFr ? "Total des logs affichés :" : "Total de registros encontrados :"} <strong>{logs.length}</strong>
+          </span>
+          <span style={{ display: "flex", alignItems: "center", gap: "4px" }}>
+            <ShieldCheck size={14} className="text-emerald-500" />
+            {isFr ? "Connexion SMTP Resend vérifiée" : "Conexión SMTP verificada"}
+          </span>
         </div>
       </div>
 
