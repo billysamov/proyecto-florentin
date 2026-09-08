@@ -88,7 +88,7 @@ export async function GET(request: Request) {
     const resultados = [];
     for (const lead of leadsSinPlan) {
       try {
-        const cleanIdioma = (lead.idioma || 'es').toLowerCase();
+        const cleanIdioma = ((lead as any).idioma || 'es').toLowerCase();
         const res = await enviarCorreoRecordatorioInactividad(lead.email, lead.nombre || "Estudiante", cleanIdioma);
         resultados.push({ email: lead.email, success: true, messageId: res.id });
       } catch (errEmail) {

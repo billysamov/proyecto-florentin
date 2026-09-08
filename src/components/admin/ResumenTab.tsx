@@ -81,6 +81,8 @@ export default function ResumenTab({
 
   const t = {
     ganancias: isFr ? "Revenus Totaux (Estimés)" : "Ganancias Totales (Estimado)",
+    ingresosEur: isFr ? "Revenus en Euros" : "Ingresos en Euros",
+    ingresosUsd: isFr ? "Revenus en Dollars" : "Ingresos en Dólares",
     detalle: isFr ? "Détail : " : "Detalle: ",
     clasesProg: isFr ? "Cours Programmés" : "Clases Programadas",
     totalHistorial: isFr ? "Historique Total des Cours" : "Total Historial Clases",

@@ -458,6 +458,34 @@ export default function AlumnoPortal() {
       }, 0);
     }
 
+    // Detección de registro rápido desde el Hero
+    const signup = params.get("signup");
+    const queryNombre = params.get("nombre");
+    const queryEmail = params.get("email");
+
+    if (signup === "true" || queryNombre || queryEmail) {
+      setTimeout(() => {
+        setIsRegistering(true);
+        if (queryNombre) setNombre(decodeURIComponent(queryNombre));
+        if (queryEmail) setEmail(decodeURIComponent(queryEmail));
+      }, 0);
+    }
+
+    if (typeof window !== "undefined") {
+      const prefillRaw = sessionStorage.getItem("florentin_signup_prefill");
+      if (prefillRaw) {
+        try {
+          const prefill = JSON.parse(prefillRaw);
+          setTimeout(() => {
+            setIsRegistering(true);
+            if (prefill.nombre) setNombre(prefill.nombre);
+            if (prefill.email) setEmail(prefill.email);
+          }, 0);
+          sessionStorage.removeItem("florentin_signup_prefill");
+        } catch (e) {}
+      }
+    }
+
     const success = params.get("success");
     const sessionId = params.get("session_id");
 
@@ -1763,6 +1791,7 @@ export default function AlumnoPortal() {
                       placeholder="••••••••"
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
+                      autoFocus={Boolean(isRegistering && nombre && email)}
                       required
                     />
                   </div>

@@ -14,6 +14,7 @@ interface Alumno {
   zona_horaria?: string;
   plan: string;
   clases_restantes: number;
+  clasesRestantes?: number;
   divisa: string;
   totalClases?: number;
   ultimoPago?: string;
@@ -29,6 +30,8 @@ interface ClaseAdmin {
   link: string;
   notes?: string;
   recording_url?: string;
+  usuario_id?: string;
+  alumno_email?: string;
 }
 
 interface RecursoAdmin {
@@ -99,8 +102,7 @@ export default function AlumnosTab({
     if (!inscripciones || inscripciones.length === 0) return [];
     return inscripciones.filter((ins: any) => 
       ins.usuario_id === alumno.id || 
-      ins.email === alumno.email ||
-      (ins.usuarios && ins.usuarios.email === alumno.email)
+      (alumno.email && (ins.email === alumno.email || ins.usuarios?.email === alumno.email))
     ).sort((a: any, b: any) => new Date(b.creado_en || 0).getTime() - new Date(a.creado_en || 0).getTime());
   };
 
@@ -163,24 +165,49 @@ export default function AlumnosTab({
 
   // Calcular estadísticas del alumno seleccionado
   const getAlumnoStats = (alumno: Alumno) => {
-    const clasesAlumno = clases.filter(c => c.alumno === alumno.nombre);
+    const clasesAlumno = clases.filter(c => 
+      (c.usuario_id && c.usuario_id === alumno.id) ||
+      (alumno.nombre && c.alumno && c.alumno.trim().toLowerCase() === alumno.nombre.trim().toLowerCase()) ||
+      (alumno.email && (
+        (c.alumno && c.alumno.trim().toLowerCase() === alumno.email.trim().toLowerCase()) ||
+        (c.alumno_email && c.alumno_email.trim().toLowerCase() === alumno.email.trim().toLowerCase())
+      ))
+    );
     const completadas = clasesAlumno.filter(c => c.estado === "completada").length;
     const canceladas = clasesAlumno.filter(c => c.estado === "cancelada").length;
     const programadas = clasesAlumno.filter(c => c.estado === "programada").length;
 
     const compras = getHistorialComprasAlumno(alumno);
-    const totalClasesAdquiridas = compras.reduce((acc: number, item: any) => {
-      const planObj = planes?.find((p: any) => p.id === item.plan_id);
-      const numClases = planObj ? planObj.total_clases : (item.clases_restantes || 0);
-      return acc + numClases;
-    }, 0) || alumno.totalClases || 0;
+    const totalClasesAdquiridas = compras.length > 0
+      ? compras.reduce((acc: number, item: any) => {
+          const planObj = planes?.find((p: any) => p.id === item.plan_id);
+          const numClases = item.total_clases || (planObj && planObj.total_clases > 0 ? planObj.total_clases : (item.clases_restantes > 0 ? item.clases_restantes : 4));
+          return acc + numClases;
+        }, 0)
+      : (alumno.totalClases || (completadas + programadas + (alumno.clases_restantes || 0)));
 
     const clasesTomadas = completadas;
-    const clasesRestantesReales = Math.max(0, totalClasesAdquiridas - completadas);
+    // Saldo disponible (créditos libres en base de datos para agendar)
+    const saldoDisponible = alumno.clases_restantes ?? alumno.clasesRestantes ?? 0;
+    // Total de clases pendientes por tomar (programadas + créditos disponibles)
+    const totalPendientes = Math.max(0, totalClasesAdquiridas - completadas);
+    // Porcentaje de progreso del paquete
     const progresoPct = totalClasesAdquiridas > 0 ? Math.min(100, Math.round((clasesTomadas / totalClasesAdquiridas) * 100)) : 0;
     const recursosAsig = recursosAsignaciones.filter(a => a.usuario_id === alumno.id).length;
     
-    return { completadas, canceladas, programadas, clasesTomadas, totalClasesAdquiridas, clasesRestantesReales, progresoPct, recursosAsig, clasesAlumno };
+    return { 
+      completadas, 
+      canceladas, 
+      programadas, 
+      clasesTomadas, 
+      totalClasesAdquiridas, 
+      saldoDisponible,
+      totalPendientes,
+      clasesRestantesReales: saldoDisponible, 
+      progresoPct, 
+      recursosAsig, 
+      clasesAlumno 
+    };
   };
 
   return (
@@ -301,14 +328,20 @@ export default function AlumnosTab({
                       <td style={{ padding: "14px 16px", fontSize: "13px" }}>
                         {tienePlan ? (
                           <div>
-                            <div style={{ fontWeight: 700, color: stats.clasesRestantesReales > 0 ? "#3b82f6" : "var(--text-muted)" }}>
-                              {stats.clasesRestantesReales} {t.lblClases}
+                            <div style={{ fontWeight: 700, color: (stats.saldoDisponible > 0 || stats.programadas > 0) ? "#3b82f6" : "var(--text-muted)" }}>
+                              {stats.saldoDisponible} {isFr ? "disponible(s)" : "disponible(s)"}
                             </div>
+                            {stats.programadas > 0 && (
+                              <div style={{ fontSize: "11px", color: "#10b981", fontWeight: 700, marginTop: "2px", display: "flex", alignItems: "center", gap: "4px" }}>
+                                <span style={{ display: "inline-block", width: "6px", height: "6px", borderRadius: "50%", backgroundColor: "#10b981" }}></span>
+                                {stats.programadas} {isFr ? "programmée(s)" : "agendada(s)"}
+                              </div>
+                            )}
                             {stats.totalClasesAdquiridas > 0 && (
                               <div style={{ marginTop: "4px", height: "4px", backgroundColor: "var(--border-color)", borderRadius: "2px", width: "80px" }}>
                                 <div style={{
                                   height: "100%", borderRadius: "2px",
-                                  width: `${Math.min(100, Math.round((stats.completadas / stats.totalClasesAdquiridas) * 100))}%`,
+                                  width: `${stats.progresoPct}%`,
                                   backgroundColor: "#3b82f6"
                                 }} />
                               </div>
@@ -424,10 +457,10 @@ export default function AlumnosTab({
               <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: "0", borderBottom: "1px solid var(--border-color)" }}>
                 {[
                   { icon: <CheckCircle size={16} />, label: isFr ? "Clases tomadas" : "Clases tomadas", value: stats.clasesTomadas, color: "#10b981" },
-                  { icon: <Clock size={16} />, label: isFr ? "Restantes" : "Restantes", value: stats.clasesRestantesReales, color: "#3b82f6" },
-                  { icon: <XCircle size={16} />, label: isFr ? "Canceladas" : "Canceladas", value: stats.canceladas, color: "#ef4444" },
+                  { icon: <Clock size={16} />, label: isFr ? "Solde disponible" : "Saldo disponible", value: stats.saldoDisponible, color: "#3b82f6" },
+                  { icon: <Calendar size={16} />, label: isFr ? "Programmées" : "Programadas", value: stats.programadas, color: "#f59e0b" },
                   { icon: <BookMarked size={16} />, label: isFr ? "Recursos" : "Recursos", value: recursosAsig, color: "#8b5cf6" },
-                  { icon: <Award size={16} />, label: isFr ? "Inversión" : "Inversión", value: `${selectedAlumno.monto || 0}${selectedAlumno.divisa === "USD" ? "$" : "€"}`, color: "#f59e0b" },
+                  { icon: <Award size={16} />, label: isFr ? "Inversión" : "Inversión", value: `${selectedAlumno.monto || 0}${selectedAlumno.divisa === "USD" ? "$" : "€"}`, color: "#10b981" },
                 ].map((kpi, i) => (
                   <div key={i} style={{ padding: "18px 16px", textAlign: "center", borderRight: i < 4 ? "1px solid var(--border-color)" : "none" }}>
                     <div style={{ color: kpi.color, display: "flex", justifyContent: "center", marginBottom: "6px" }}>{kpi.icon}</div>
@@ -467,7 +500,7 @@ export default function AlumnosTab({
                 {fichaTab === "resumen" && (
                   <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
                     {/* Progreso del plan */}
-                    {tienePlan && (selectedAlumno.totalClases || 0) > 0 && (
+                    {tienePlan && (stats.totalClasesAdquiridas || selectedAlumno.totalClases || 0) > 0 && (
                       <div style={{ padding: "18px", backgroundColor: "var(--bg-light)", borderRadius: "var(--radius-sm)", border: "1px solid var(--border-color)" }}>
                         <div style={{ display: "flex", justifyContent: "space-between", marginBottom: "10px" }}>
                           <span style={{ fontSize: "13px", fontWeight: 700 }}>
@@ -486,7 +519,7 @@ export default function AlumnosTab({
                         </div>
                         <div style={{ display: "flex", justifyContent: "space-between", marginTop: "8px", fontSize: "12px", color: "var(--text-muted)" }}>
                           <span>{stats.clasesTomadas} {isFr ? "cours effectués" : "clases tomadas"}</span>
-                          <span>{selectedAlumno.totalClases} {isFr ? "cours au total" : "clases en total"}</span>
+                          <span>{stats.totalClasesAdquiridas} {isFr ? "cours au total" : "clases en total"}</span>
                         </div>
                       </div>
                     )}
@@ -588,11 +621,13 @@ export default function AlumnosTab({
                 {/* TAB: COMPRAS / HISTORIAL DE PLANES */}
                 {fichaTab === "compras" && (() => {
                   const compras = getHistorialComprasAlumno(selectedAlumno);
-                  const totalClasesAdquiridas = compras.reduce((acc: number, item: any) => {
-                    const planObj = planes?.find((p: any) => p.id === item.plan_id);
-                    const numClases = planObj ? planObj.total_clases : (item.clases_restantes || 0);
-                    return acc + numClases;
-                  }, 0) || selectedAlumno.totalClases || 0;
+                  const totalClasesAdquiridas = compras.length > 0
+                    ? compras.reduce((acc: number, item: any) => {
+                        const planObj = planes?.find((p: any) => p.id === item.plan_id);
+                        const numClases = item.total_clases || (planObj && planObj.total_clases > 0 ? planObj.total_clases : (item.clases_restantes > 0 ? item.clases_restantes : 4));
+                        return acc + numClases;
+                      }, 0)
+                    : (selectedAlumno.totalClases || 0);
 
                   return (
                     <div style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
@@ -612,7 +647,7 @@ export default function AlumnosTab({
                             🎟️ {isFr ? "Total Cours Acquis" : "Clases Compradas"}
                           </div>
                           <div style={{ fontSize: "18px", fontWeight: 800, color: "#6366f1", marginTop: "4px" }}>
-                            {stats.totalClasesAdquiridas} {isFr ? "cours" : "clases"}
+                            {totalClasesAdquiridas} {isFr ? "cours" : "clases"}
                           </div>
                         </div>
 
@@ -627,11 +662,16 @@ export default function AlumnosTab({
 
                         <div style={{ padding: "16px", backgroundColor: "#f8fafc", borderRadius: "12px", border: "1px solid #e2e8f0" }}>
                           <div style={{ fontSize: "11px", color: "var(--text-muted)", fontWeight: 700, textTransform: "uppercase" }}>
-                            ⏳ {isFr ? "Cours Disponibles" : "Clases Disponibles"}
+                            ⏳ {isFr ? "Solde Disponible" : "Saldo Disponible"}
                           </div>
-                          <div style={{ fontSize: "18px", fontWeight: 800, color: "#f59e0b", marginTop: "4px" }}>
-                            {stats.clasesRestantesReales} {isFr ? "restantes" : "restantes"}
+                          <div style={{ fontSize: "18px", fontWeight: 800, color: "#3b82f6", marginTop: "4px" }}>
+                            {stats.saldoDisponible} {isFr ? "disponible(s)" : "disponible(s)"}
                           </div>
+                          {stats.programadas > 0 && (
+                            <div style={{ fontSize: "11px", color: "#10b981", fontWeight: 700, marginTop: "2px" }}>
+                              +{stats.programadas} {isFr ? "programmée" : "agendada"}
+                            </div>
+                          )}
                         </div>
                       </div>
 
@@ -665,8 +705,8 @@ export default function AlumnosTab({
                         <div style={{ display: "flex", flexDirection: "column", gap: "10px" }}>
                           {compras.map((item: any, idx: number) => {
                             const planInfo = planes?.find((p: any) => p.id === item.plan_id);
-                            const nombrePlan = planInfo ? planInfo.nombre : (item.plan_id === 1 ? "Curso Principiante A1" : item.plan_id === 2 ? "Conversación Intermedia B2" : selectedAlumno.plan);
-                            const clasesPlan = planInfo ? planInfo.total_clases : (item.clases_restantes || "—");
+                            const nombrePlan = planInfo ? planInfo.nombre : (item.plan_id === 1 ? "Curso Principiante A1" : item.plan_id === 2 ? "Conversación Intermedia B2" : (item.plan_nombre || selectedAlumno.plan));
+                            const clasesPlan = item.total_clases || (planInfo ? planInfo.total_clases : 4);
                             const fechaFormateada = item.creado_en ? new Date(item.creado_en).toLocaleDateString(isFr ? "fr-FR" : "es-ES", { year: "numeric", month: "long", day: "numeric", hour: "2-digit", minute: "2-digit" }) : "—";
 
                             return (
@@ -702,7 +742,7 @@ export default function AlumnosTab({
                                       🎟️ {clasesPlan} {isFr ? "cours inclus" : "clases en paquete"}
                                     </div>
                                     <div style={{ fontSize: "14px", fontWeight: 800, color: "#0f172a", marginTop: "2px" }}>
-                                      {item.monto || 0} {item.divisa || "EUR"}
+                                      {item.monto || item.monto_pagado || 0} {(item.divisa || "EUR").toUpperCase()}
                                     </div>
                                   </div>
 

@@ -3,6 +3,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
 import WelcomeModal from "@/components/WelcomeModal";
@@ -146,12 +147,43 @@ const getYoutubeId = (url: string) => {
 };
 
 export default function Home() {
+  const router = useRouter();
   const [lang, setLang] = useState<Language>("es");
   const [divisa, setDivisa] = useState<"eur" | "usd">("eur");
   const [planes, setPlanes] = useState<any[]>([]);
   const [originalPlanes, setOriginalPlanes] = useState<any[]>([]);
   const [config, setConfig] = useState<any>(defaultSpanishConfig);
   const [isHydrated, setIsHydrated] = useState(false);
+
+  // Estados para el formulario de registro rápido en el Hero
+  const [heroNombre, setHeroNombre] = useState("");
+  const [heroEmail, setHeroEmail] = useState("");
+  const [heroSubmitting, setHeroSubmitting] = useState(false);
+  const [heroError, setHeroError] = useState("");
+
+  const handleHeroSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!heroNombre.trim()) {
+      setHeroError(lang === "fr" ? "Veuillez entrer votre prénom." : lang === "en" ? "Please enter your name." : "Por favor ingresa tu nombre.");
+      return;
+    }
+    if (!heroEmail.trim() || !heroEmail.includes("@")) {
+      setHeroError(lang === "fr" ? "Veuillez entrer un email valide." : lang === "en" ? "Please enter a valid email." : "Por favor ingresa un correo válido.");
+      return;
+    }
+
+    setHeroSubmitting(true);
+    setHeroError("");
+
+    if (typeof window !== "undefined") {
+      sessionStorage.setItem("florentin_signup_prefill", JSON.stringify({
+        nombre: heroNombre.trim(),
+        email: heroEmail.trim()
+      }));
+    }
+
+    router.push(`/alumno?signup=true&nombre=${encodeURIComponent(heroNombre.trim())}&email=${encodeURIComponent(heroEmail.trim())}`);
+  };
 
   const [originalConfig, setOriginalConfig] = useState<any>(null);
   const [translating, setTranslating] = useState(false);
@@ -164,6 +196,7 @@ export default function Home() {
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [divisaDropdownOpen, setDivisaDropdownOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const t = translations[lang] as any;
 
@@ -229,6 +262,7 @@ export default function Home() {
     const translatedConfig = { ...sourceConfig };
     const allTranslatableKeys = [
       "titulo_hero", "subtitulo_hero", "hero_badge",
+      "hero_trust_badge", "hero_highlight_text", "hero_card_badge", "hero_card_title", "hero_card_subtitle", "hero_card_btn", "hero_card_reassurance",
       "meta_titulo", "meta_descripcion", "palabras_clave",
       "teacher_name", "teacher_title", "teacher_bio",
       "teacher_skills", "teacher_certs",
@@ -571,9 +605,40 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
+  useEffect(() => {
+    const handleScroll = () => {
+      setScrolled(window.scrollY > 20);
+    };
+    window.addEventListener("scroll", handleScroll);
+
+    const handleDivisaEvent = (e: any) => {
+      if (e.detail && (e.detail === "eur" || e.detail === "usd")) {
+        setDivisa(e.detail);
+      }
+    };
+    const handleLangEvent = (e: any) => {
+      if (e.detail && (e.detail === "es" || e.detail === "fr" || e.detail === "en") && e.detail !== lang) {
+        changeLang(e.detail);
+      }
+    };
+
+    window.addEventListener("florentin_divisa_changed", handleDivisaEvent);
+    window.addEventListener("florentin_lang_changed", handleLangEvent);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("florentin_divisa_changed", handleDivisaEvent);
+      window.removeEventListener("florentin_lang_changed", handleLangEvent);
+    };
+  }, [lang]);
+
   const changeLang = async (newLang: Language) => {
     setLang(newLang);
-    localStorage.setItem("florentin_lang", newLang);
+    setLangDropdownOpen(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("florentin_lang", newLang);
+      window.dispatchEvent(new CustomEvent("florentin_lang_changed", { detail: newLang }));
+    }
     if (originalConfig) {
       const translated = await translateConfigObject(originalConfig, newLang);
       if (translated) setConfig(translated);
@@ -583,7 +648,15 @@ export default function Home() {
       if (translatedP) setPlanes(translatedP);
     }
   };
-  const changeDivisa = (newDivisa: "eur" | "usd") => { setDivisa(newDivisa); localStorage.setItem("florentin_divisa", newDivisa); };
+
+  const changeDivisa = (newDivisa: "eur" | "usd") => { 
+    setDivisa(newDivisa); 
+    setDivisaDropdownOpen(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("florentin_divisa", newDivisa); 
+      window.dispatchEvent(new CustomEvent("florentin_divisa_changed", { detail: newDivisa }));
+    }
+  };
 
   const handleWelcomeConfirm = async (selectedLang: Language, selectedDivisa: "eur" | "usd") => {
     await changeLang(selectedLang);
@@ -726,8 +799,9 @@ export default function Home() {
     { href: "#teacher", label: t.navTeacher },
     { href: "#method", label: t.navMethod },
     { href: "#for-whom", label: lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom' },
-    { href: "#plans", label: t.navPlans },
     { href: "#faq", label: t.navFaq },
+    { href: "#plans", label: (t as any).navPlansResources || t.navPlans },
+    { href: "/articulos", label: (t as any).navArticles || (lang === 'fr' ? 'Articles' : 'Artículos') },
     { href: "#contact", label: t.navContact },
   ];
 
@@ -873,45 +947,60 @@ export default function Home() {
       {/* ═══════════════════════════════════════
           NAVBAR — Glass Pill Responsive
       ═══════════════════════════════════════ */}
-      <nav className="fixed top-4 sm:top-6 left-1/2 -translate-x-1/2 z-50 w-[94%] sm:w-[90%] max-w-5xl rounded-full bg-white/85 shadow-md backdrop-blur-xl border border-black/5 px-4 sm:px-6 py-2 sm:py-3 flex justify-between items-center md:grid md:grid-cols-[1fr_auto_1fr] md:gap-4 text-[#0c1b33]">
-        <Link href="/" className="flex items-center md:justify-self-start">
-          <div className="relative w-40 h-12 sm:w-56 sm:h-16 hover:scale-105 transition-transform duration-300">
+      <nav
+        className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-6xl transition-all duration-300 rounded-full px-6 py-3.5 flex items-center justify-between ${
+          scrolled
+            ? "bg-white/95 backdrop-blur-md shadow-lg shadow-black/5 border border-slate-200/80"
+            : "bg-white/90 backdrop-blur-md shadow-md shadow-black/5 border border-slate-200/60"
+        }`}
+      >
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2 group shrink-0">
+          <div className="relative w-40 sm:w-48 h-10">
             <Image 
               src="/logo.png" 
               alt="Logo Florentin" 
               fill
-              sizes="(max-width: 640px) 160px, 224px"
-              className="object-contain object-left"
+              sizes="192px"
+              className="object-contain object-left transition-transform group-hover:scale-[1.02]"
+              priority
               onError={(e) => {
                 e.currentTarget.style.display = 'none';
                 const fallback = e.currentTarget.parentElement?.querySelector('.logo-fallback') as HTMLElement;
                 if (fallback) fallback.style.display = 'flex';
               }}
             />
-            <div className="logo-fallback hidden w-full h-full text-slate-800 font-black text-sm items-center justify-start font-serif">FLORENTIN</div>
+            <div className="logo-fallback hidden w-full h-full text-[#0c1b33] font-black text-sm items-center font-serif">
+              FLORENTIN
+            </div>
           </div>
         </Link>
-        <div className="hidden md:flex gap-5 lg:gap-7 text-sm font-semibold text-slate-600 md:justify-self-center items-center">
+
+        {/* Desktop Links */}
+        <div className="hidden md:flex gap-6 lg:gap-8 text-sm font-semibold text-slate-600 items-center">
           {/* Dropdown El Curso */}
-          <div className="relative group py-2 flex items-center">
+          <div className="relative group py-1 flex items-center">
             <button className="flex items-center gap-1 hover:text-[#0c1b33] transition-colors cursor-pointer select-none">
               {lang === 'es' ? 'El Curso' : lang === 'fr' ? 'Le Cours' : 'The Course'}
               <ChevronDown size={14} className="transition-transform duration-300 group-hover:rotate-180 text-slate-400" />
             </button>
-            <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-48 bg-white border border-slate-200/80 rounded-2xl shadow-lg py-2.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200 mt-1">
+            <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-52 bg-white border border-slate-200/80 rounded-2xl shadow-xl py-2 z-50 mt-2">
               <a href="#teacher" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navTeacher}</a>
               <a href="#method" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navMethod}</a>
               <a href="#for-whom" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom'}</a>
+              <a href="#faq" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navFaq}</a>
             </div>
           </div>
 
-          <a href="#plans" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{t.navPlans}</a>
-          <a href="#faq" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{t.navFaq}</a>
+          <a href="#plans" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{(t as any).navPlansResources || t.navPlans}</a>
+          <Link href="/articulos" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{(t as any).navArticles || (lang === 'fr' ? 'Articles' : 'Artículos')}</Link>
           <a href="#contact" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{t.navContact}</a>
         </div>
-        <div className="hidden md:flex gap-3 items-center md:justify-self-end">
+
+        {/* Right CTA & Controls */}
+        <div className="hidden md:flex gap-3 items-center">
           {translating && (
-            <div className="flex items-center gap-1 bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 px-2 py-1 rounded-md text-[10px] font-bold tracking-wider animate-pulse transition-opacity duration-300">
+            <div className="flex items-center gap-1 bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 px-2.5 py-1 rounded-full text-[10px] font-bold tracking-wider animate-pulse transition-opacity duration-300">
               ⚡ {lang === "es" ? "TRADUCIENDO..." : lang === "fr" ? "TRADUCTION..." : "TRANSLATING..."}
             </div>
           )}
@@ -919,13 +1008,18 @@ export default function Home() {
           {/* Dropdown de Idioma */}
           <div ref={langRef} className="relative flex items-center">
             <button 
-              onClick={() => setLangDropdownOpen(!langDropdownOpen)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 hover:bg-black/10 text-slate-700 text-xs font-bold transition-all"
+              onClick={() => {
+                setLangDropdownOpen(!langDropdownOpen);
+                setDivisaDropdownOpen(false);
+              }}
+              className="flex items-center gap-1 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
             >
-              <Globe2 size={14} className="text-slate-500 shrink-0" /> {lang.toUpperCase()} <ChevronDown size={12} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
+              <Globe2 size={14} className="text-slate-500 shrink-0" />
+              {lang.toUpperCase()}
+              <ChevronDown size={12} className={`transition-transform duration-200 ${langDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {langDropdownOpen && (
-              <div className="absolute right-0 top-full mt-1.5 w-28 bg-white border border-slate-200/80 rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+              <div className="absolute right-0 top-full mt-2 w-28 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
                 {(["es", "fr", "en"] as Language[]).map((l) => (
                   <button
                     key={l}
@@ -933,7 +1027,7 @@ export default function Home() {
                       changeLang(l);
                       setLangDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-slate-50 transition-colors ${lang === l ? 'text-[#3b82f6] bg-[#3b82f6]/5' : 'text-slate-700'}`}
+                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-slate-50 transition-colors ${lang === l ? 'text-[#3b82f6] bg-blue-50/50' : 'text-slate-700'}`}
                   >
                     {l === 'es' ? 'Español' : l === 'fr' ? 'Français' : 'English'}
                   </button>
@@ -942,18 +1036,21 @@ export default function Home() {
             )}
           </div>
 
-          <div className="w-px h-4 bg-black/10" />
-
           {/* Dropdown de Divisa */}
           <div ref={divisaRef} className="relative flex items-center">
             <button 
-              onClick={() => setDivisaDropdownOpen(!divisaDropdownOpen)}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-xl bg-black/5 hover:bg-black/10 text-slate-700 text-xs font-bold transition-all"
+              onClick={() => {
+                setDivisaDropdownOpen(!divisaDropdownOpen);
+                setLangDropdownOpen(false);
+              }}
+              className="flex items-center gap-1 px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold transition-all"
             >
-              <Coins size={14} className="text-slate-500 shrink-0" /> {divisa.toUpperCase()} <ChevronDown size={12} className={`transition-transform duration-200 ${divisaDropdownOpen ? 'rotate-180' : ''}`} />
+              <Coins size={14} className="text-slate-500 shrink-0" />
+              {divisa.toUpperCase()}
+              <ChevronDown size={12} className={`transition-transform duration-200 ${divisaDropdownOpen ? 'rotate-180' : ''}`} />
             </button>
             {divisaDropdownOpen && (
-              <div className="absolute right-0 top-full mt-1.5 w-24 bg-white border border-slate-200/80 rounded-xl shadow-lg py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
+              <div className="absolute right-0 top-full mt-2 w-24 bg-white border border-slate-200 rounded-xl shadow-xl py-1.5 z-50 animate-in fade-in slide-in-from-top-1 duration-200">
                 {(["eur", "usd"] as const).map((d) => (
                   <button
                     key={d}
@@ -961,7 +1058,7 @@ export default function Home() {
                       changeDivisa(d);
                       setDivisaDropdownOpen(false);
                     }}
-                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-slate-50 transition-colors ${divisa === d ? 'text-[#3b82f6] bg-[#3b82f6]/5' : 'text-slate-700'}`}
+                    className={`w-full text-left px-4 py-2 text-xs font-semibold hover:bg-slate-50 transition-colors ${divisa === d ? 'text-[#3b82f6] bg-blue-50/50' : 'text-slate-700'}`}
                   >
                     {d.toUpperCase()}
                   </button>
@@ -970,63 +1067,265 @@ export default function Home() {
             )}
           </div>
 
-          <Link href="/alumno" className="bg-[#0c1b33] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:scale-105 transition-transform duration-300">{t.navLogin}</Link>
+          <Link
+            href="/alumno"
+            className="bg-[#0c1b33] text-white px-5 py-2.5 rounded-full text-sm font-bold hover:bg-[#1a2d4f] hover:scale-105 transition-all shadow-sm"
+          >
+            {t.navLogin}
+          </Link>
         </div>
-        <button onClick={() => setMenuOpen(!menuOpen)} className="md:hidden p-2 text-slate-700 hover:text-black" aria-label="Menu">
+
+        {/* Mobile Hamburger Button */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          className="md:hidden p-2 text-slate-700 hover:text-black rounded-lg"
+          aria-label="Abrir Menú"
+        >
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
       </nav>
 
-      {/* Mobile Menu */}
-      <div className={`fixed inset-0 z-40 bg-[#f8fafc]/98 backdrop-blur-2xl transition-all duration-500 md:hidden flex flex-col items-center justify-center gap-6 ${menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"}`}>
-        <div className="flex flex-col items-center gap-5 text-2xl font-bold text-slate-800">
+      {/* Mobile Fullscreen Menu */}
+      <div
+        className={`fixed inset-0 z-40 bg-[#f8fafc]/98 backdrop-blur-2xl transition-all duration-300 md:hidden flex flex-col items-center justify-center gap-6 ${
+          menuOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div className="flex flex-col items-center gap-5 text-xl font-bold text-slate-800">
           {mobileNavLinks.map((link) => (
-            <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className="text-slate-600 hover:text-[#0c1b33] transition-colors">{link.label}</a>
+            link.href.startsWith("/") ? (
+              <Link key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className="text-slate-600 hover:text-[#0c1b33]">
+                {link.label}
+              </Link>
+            ) : (
+              <a key={link.href} href={link.href} onClick={() => setMenuOpen(false)} className="text-slate-600 hover:text-[#0c1b33]">
+                {link.label}
+              </a>
+            )
           ))}
         </div>
-        <div className="flex flex-col items-center gap-4 mt-4">
-          <div className="flex gap-2 text-sm font-bold">
-            {(["es", "fr", "en"] as Language[]).map((l) => (
-              <button key={l} onClick={() => changeLang(l)} className={`px-4 py-2 rounded-full transition-colors ${lang === l ? "bg-[#3b82f6]/15 text-[#3b82f6]" : "bg-black/5 text-slate-600"}`}>{l.toUpperCase()}</button>
-            ))}
-          </div>
-          <div className="flex gap-2 text-sm font-bold">
-            {(["eur", "usd"] as const).map((d) => (
-              <button key={d} onClick={() => changeDivisa(d)} className={`px-4 py-2 rounded-full transition-colors ${divisa === d ? "bg-[#3b82f6]/15 text-[#3b82f6]" : "bg-black/5 text-slate-600"}`}>{d.toUpperCase()}</button>
-            ))}
-          </div>
-          <Link href="/alumno" onClick={() => setMenuOpen(false)} className="mt-2 bg-[#0c1b33] text-white px-8 py-3 rounded-full text-lg font-bold shadow-md hover:bg-[#0c1b33]/90">{t.navLogin}</Link>
-          {translating && (
-            <div className="flex items-center gap-1 bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider animate-pulse transition-opacity duration-300">
-              ⚡ {lang === "es" ? "TRADUCIENDO..." : lang === "fr" ? "TRADUCTION..." : "TRANSLATING..."}
-            </div>
-          )}
+
+        <div className="flex gap-2 text-sm font-bold mt-4">
+          {(["es", "fr", "en"] as Language[]).map((l) => (
+            <button
+              key={l}
+              onClick={() => {
+                changeLang(l);
+              }}
+              className={`px-4 py-2 rounded-full transition-colors ${
+                lang === l ? "bg-[#0c1b33] text-white" : "bg-black/5 text-slate-600"
+              }`}
+            >
+              {l.toUpperCase()}
+            </button>
+          ))}
         </div>
+
+        <div className="flex gap-2 text-sm font-bold">
+          {(["eur", "usd"] as const).map((d) => (
+            <button
+              key={d}
+              onClick={() => {
+                changeDivisa(d);
+              }}
+              className={`px-4 py-2 rounded-full transition-colors ${
+                divisa === d ? "bg-[#0c1b33] text-white" : "bg-black/5 text-slate-600"
+              }`}
+            >
+              {d.toUpperCase()}
+            </button>
+          ))}
+        </div>
+
+        <Link
+          href="/alumno"
+          onClick={() => setMenuOpen(false)}
+          className="bg-[#0c1b33] text-white px-8 py-3 rounded-full text-base font-bold shadow-lg"
+        >
+          {t.navLogin}
+        </Link>
+
+        {translating && (
+          <div className="flex items-center gap-1 bg-[#3b82f6]/10 text-[#3b82f6] border border-[#3b82f6]/20 px-3 py-1.5 rounded-full text-xs font-bold tracking-wider animate-pulse transition-opacity duration-300">
+            ⚡ {lang === "es" ? "TRADUCIENDO..." : lang === "fr" ? "TRADUCTION..." : "TRANSLATING..."}
+          </div>
+        )}
       </div>
 
 
       {/* ═══════════════════════════════════════
-          1. HERO — Enganche prueba gratuita
+          1. HERO — Split Conversion Layout
       ═══════════════════════════════════════ */}
-      <section className="relative min-h-[100svh] flex flex-col items-center justify-center pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6">
+      <section className="relative min-h-[100svh] flex items-center pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8">
+        {/* Fondo con atmósfera parisina sutil */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(59,130,246,0.05)_0%,rgba(248,250,252,1)_80%)] z-10" />
-          <img src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop" alt="Paris" className="hero-bg-img w-full h-full object-cover opacity-10 mix-blend-overlay scale-105" />
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.06)_0%,rgba(248,250,252,1)_70%)] z-10" />
+          <img 
+            src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop" 
+            alt="Paris" 
+            className="hero-bg-img w-full h-full object-cover opacity-[0.07] mix-blend-overlay scale-105" 
+          />
         </div>
-        <div className="relative z-20 text-center max-w-5xl mx-auto flex flex-col items-center">
-          <h1 className="hero-text text-[clamp(2.5rem,7.5vw,6.5rem)] font-black leading-[0.92] tracking-tighter text-[#0c1b33] mb-6 sm:mb-8 font-serif">
-            {renderFormattedTitle(config?.titulo_hero || (t.heroTitle1 + " " + t.heroTitle2))}
-          </h1>
-          <p className="hero-text text-base sm:text-lg md:text-xl font-semibold text-slate-500 max-w-2xl mb-10 px-2 leading-relaxed">
-            {config?.subtitulo_hero || t.heroSubtitle}
-          </p>
-          <div className="hero-btn flex flex-col sm:flex-row gap-3 sm:gap-4 w-full sm:w-auto px-2 sm:px-0">
-            <a href={whatsappUrl} target="_blank" rel="noopener noreferrer" className="bg-[#0c1b33] hover:bg-[#152e54] text-white px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105 shadow-lg shadow-[#0c1b33]/15">
-              {lang === 'es' ? 'Agendar clase de francés gratis por WhatsApp' : lang === 'fr' ? 'Réserver un cours de français gratuit via WhatsApp' : 'Book a free French class via WhatsApp'} <ArrowRight size={20} />
-            </a>
-            <a href="#plans" className="bg-white/70 backdrop-blur-sm hover:bg-white text-slate-700 border border-slate-200 px-8 sm:px-10 py-4 sm:py-5 rounded-full text-base sm:text-lg font-bold flex items-center justify-center gap-2 transition-all duration-500 hover:scale-105 shadow-sm">
-              {lang === 'es' ? 'Ver planes y precios de clases de francés' : lang === 'fr' ? 'Voir nos formules et tarifs de cours' : 'View our class plans and pricing'}
-            </a>
+
+        <div className="relative z-20 max-w-6xl mx-auto w-full">
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
+            
+            {/* ═══════════════════════════════════════
+                COLUMNA IZQUIERDA: Titular, Propuesta & Métricas
+            ═══════════════════════════════════════ */}
+            <div className="lg:col-span-7 flex flex-col items-start text-left">
+              {/* Badge Social Proof (Trustpilot / Alumnos) */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-900 text-xs font-bold mb-6 shadow-xs animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <span className="text-amber-500 font-black">★</span>
+                <span>{(config && config.hero_trust_badge) ? config.hero_trust_badge : (t.heroTrustBadge || (lang === "fr" ? "★ 4,9/5 sur Trustpilot · Avis vérifiés" : lang === "en" ? "★ 4.9/5 on Trustpilot · Verified reviews" : "★ 4.9/5 valoración de alumnos · Clases 1 a 1"))}</span>
+              </div>
+
+              {/* Titular H1 de Impacto */}
+              <h1 className="hero-text text-[clamp(2.3rem,4.4vw,4.1rem)] font-black leading-[1.04] tracking-tight text-[#0c1b33] mb-5 font-serif">
+                {(() => {
+                  const baseTitle = config?.titulo_hero || (t.heroTitle1 + " " + t.heroTitle2);
+                  const highlight = (config && config.hero_highlight_text) ? config.hero_highlight_text : (t.heroHighlightText || (lang === "fr" ? "dès cette semaine." : lang === "en" ? "starting this week." : "desde esta semana."));
+                  return (
+                    <>
+                      {renderFormattedTitle(baseTitle)}{" "}
+                      <span className="text-[#0055a5] inline-block">
+                        {highlight}
+                      </span>
+                    </>
+                  );
+                })()}
+              </h1>
+
+              {/* Subtítulo Persuasivo */}
+              <p className="hero-text text-base sm:text-lg text-slate-600 font-normal leading-relaxed mb-8 max-w-xl">
+                {config?.subtitulo_hero || t.heroSubtitle}
+              </p>
+
+              {/* Barra de Métricas (Reubicada desde la foto de Florentin) */}
+              <div className="w-full pt-6 border-t border-slate-200/80 flex items-center justify-between sm:justify-start sm:gap-10">
+                <div>
+                  <div className="text-2xl sm:text-3xl font-black text-[#0c1b33] tracking-tight font-serif">
+                    {config?.teacher_students ? config.teacher_students.split(" ")[0] : (t.heroStat1Num || "+200")}
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
+                    {t.heroStat1Label || (lang === "fr" ? "élèves guidés" : lang === "en" ? "students taught" : "alumnos formados")}
+                  </div>
+                </div>
+
+                <div className="h-10 w-px bg-slate-200" />
+
+                <div>
+                  <div className="text-2xl sm:text-3xl font-black text-[#0c1b33] tracking-tight font-serif">
+                    {config?.teacher_countries ? config.teacher_countries.split(" ")[0] : (t.heroStat2Num || "+15")}
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
+                    {t.heroStat2Label || (lang === "fr" ? "pays différents" : lang === "en" ? "countries" : "países diferentes")}
+                  </div>
+                </div>
+
+                <div className="h-10 w-px bg-slate-200" />
+
+                <div>
+                  <div className="text-2xl sm:text-3xl font-black text-[#0c1b33] tracking-tight font-serif flex items-center gap-1">
+                    <span>4.9</span>
+                    <span className="text-amber-500 text-xl sm:text-2xl">★</span>
+                  </div>
+                  <div className="text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
+                    {t.heroStat3Label || (lang === "fr" ? "sur Trustpilot" : lang === "en" ? "average rating" : "valoración media")}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* ═══════════════════════════════════════
+                COLUMNA DERECHA: Tarjeta Flotante de Captación Rápida
+            ═══════════════════════════════════════ */}
+            <div className="hero-btn lg:col-span-5 w-full max-w-md mx-auto lg:max-w-none">
+              <div className="relative bg-white rounded-3xl p-7 sm:p-9 shadow-2xl shadow-slate-900/10 border border-slate-200/80 transition-all">
+                {/* Insignia Flotante Superior */}
+                <div className="absolute -top-3.5 left-7 sm:left-9 bg-[#0c1b33] text-white text-[10px] sm:text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
+                  {(config && config.hero_card_badge) ? config.hero_card_badge : (t.heroCardBadge || (lang === "fr" ? "ACCÈS GRATUIT" : lang === "en" ? "FREE ACCESS" : "ACCESO GRATUITO"))}
+                </div>
+
+                {/* Título y Promesa de la Tarjeta */}
+                <div className="mb-6 pt-1">
+                  <h3 className="text-xl sm:text-2xl font-black text-[#0c1b33] tracking-tight font-serif">
+                    {(config && config.hero_card_title) ? config.hero_card_title : (t.heroCardTitle || (lang === "fr" ? "Commencez maintenant" : lang === "en" ? "Start today" : "Empieza hoy mismo"))}
+                  </h3>
+                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
+                    {(config && config.hero_card_subtitle) ? config.hero_card_subtitle : (t.heroCardSubtitle || (lang === "fr" ? "Vos premières leçons vous attendent. Aucune carte bancaire." : lang === "en" ? "Your first lessons await. No credit card required." : "Tu primera sesión te espera. Sin tarjeta de crédito."))}
+                  </p>
+                </div>
+
+                {/* Mensaje de Error si los campos están incompletos */}
+                {heroError && (
+                  <div className="mb-4 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+                    <span className="shrink-0 text-rose-500">⚠</span>
+                    <span>{heroError}</span>
+                  </div>
+                )}
+
+                {/* Formulario Rápido que Conecta con /alumno */}
+                <form onSubmit={handleHeroSubmit} className="space-y-4">
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      {t.heroCardNameLabel || (lang === "fr" ? "Votre prénom *" : lang === "en" ? "Your name *" : "Tu nombre *")}
+                    </label>
+                    <input
+                      type="text"
+                      value={heroNombre}
+                      onChange={(e) => {
+                        setHeroNombre(e.target.value);
+                        if (heroError) setHeroError("");
+                      }}
+                      placeholder={t.heroCardNamePlaceholder || (lang === "fr" ? "Prénom" : lang === "en" ? "Your name" : "Ej. Carlos")}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0c1b33]/15 focus:border-[#0c1b33] transition-all"
+                      required
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
+                      {t.heroCardEmailLabel || (lang === "fr" ? "Votre email *" : lang === "en" ? "Your email *" : "Tu correo electrónico *")}
+                    </label>
+                    <input
+                      type="email"
+                      value={heroEmail}
+                      onChange={(e) => {
+                        setHeroEmail(e.target.value);
+                        if (heroError) setHeroError("");
+                      }}
+                      placeholder={t.heroCardEmailPlaceholder || (lang === "fr" ? "vous@email.fr" : lang === "en" ? "you@email.com" : "tu@email.com")}
+                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0c1b33]/15 focus:border-[#0c1b33] transition-all"
+                      required
+                    />
+                  </div>
+
+                  {/* Nota Legal Discreta */}
+                  <p className="text-[11px] text-slate-400 leading-snug">
+                    {t.heroCardLegalNotice || (lang === "fr" ? "En créant votre compte, vous acceptez nos conditions générales d'utilisation." : lang === "en" ? "By creating your account, you agree to our terms and privacy policy." : "Al crear tu cuenta, aceptas nuestros términos y condiciones de uso.")}
+                  </p>
+
+                  {/* Botón Principal CTA con el color de la marca Florentin */}
+                  <button
+                    type="submit"
+                    disabled={heroSubmitting}
+                    className="w-full bg-[#0c1b33] hover:bg-[#152e54] text-white py-3.5 px-6 rounded-xl font-bold text-base transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-[#0c1b33]/20 flex items-center justify-center gap-2 cursor-pointer select-none"
+                  >
+                    <span>{(config && config.hero_card_btn) ? config.hero_card_btn : (t.heroCardBtn || (lang === "fr" ? "Je commence gratuitement" : lang === "en" ? "Start for free" : "Comenzar gratuitamente"))}</span>
+                    <ArrowRight size={18} />
+                  </button>
+
+                  {/* Reassurance Footer */}
+                  <div className="pt-2 text-center">
+                    <span className="text-xs font-semibold text-slate-500">
+                      {(config && config.hero_card_reassurance) ? config.hero_card_reassurance : (t.heroCardReassurance || (lang === "fr" ? "✓ Sans engagement · 100% en ligne" : lang === "en" ? "✓ No commitment · 100% online" : "✓ Sin compromiso · 100% online"))}
+                    </span>
+                  </div>
+                </form>
+              </div>
+            </div>
+
           </div>
         </div>
       </section>

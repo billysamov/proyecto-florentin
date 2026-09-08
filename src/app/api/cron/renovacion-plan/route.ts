@@ -68,7 +68,7 @@ export async function GET(request: Request) {
       if (!usuario || !usuario.email) continue;
 
       try {
-        const cleanIdioma = (usuario.idioma || 'es').toLowerCase();
+        const cleanIdioma = (((usuario as any).idioma) || 'es').toLowerCase();
         const res = await enviarCorreoRenovacionPlan(usuario.email, usuario.nombre || "Estudiante", inscripcion.clases_restantes || 0, cleanIdioma);
         
         if (res.success) {

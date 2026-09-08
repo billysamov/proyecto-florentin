@@ -33,6 +33,10 @@ export default function ConfiguracionTab({
   const [nuevaExclusionFin, setNuevaExclusionFin] = React.useState("18:00");
   const [relojModo, setRelojModo] = React.useState<"inicio" | "fin">("inicio");
 
+  const handleTextChange = (field: string, val: string) => {
+    setConfig((prev: any) => ({ ...prev, [field]: val }));
+  };
+
   const listaHorasDisponibles = React.useMemo(() => {
     const horas = [];
     for (let h = 0; h < 24; h++) {
@@ -301,6 +305,14 @@ export default function ConfiguracionTab({
     ejecutaScript: isFr ? "Exécutez ce script dans l'éditeur SQL de votre panneau Supabase :" : "Ejecuta este script en el SQL Editor de tu panel de Supabase:",
     // SubTab General y SEO
     tituloHero: isFr ? "Titre Principal (Hero Banner)" : "Título Principal (Hero Banner)",
+    heroSeccion: isFr ? "Hero Principal & Carte de Conversion" : "Hero y Tarjeta de Captación Rápida",
+    heroTrustBadge: isFr ? "Badge Avis / Preuve Sociale (ex: ★ 4,9/5 sur Trustpilot)" : "Insignia de Reseñas / Social Proof (ej: ★ 4.9/5 valoración...)",
+    heroHighlightText: isFr ? "Phrase en Bleu dans le Titre (ex: dès cette semaine.)" : "Frase Acento en Azul Francés en el Titular (ej: desde esta semana.)",
+    heroCardBadge: isFr ? "Badge Supérieur de la Carte (ex: ACCÈS GRATUIT)" : "Insignia Superior de la Tarjeta (ej: ACCESO GRATUITO)",
+    heroCardTitle: isFr ? "Titre de la Carte de Capture (ex: Commencez maintenant)" : "Título de la Tarjeta de Captación (ej: Empieza hoy mismo)",
+    heroCardSubtitle: isFr ? "Sous-titre / Promesse de la Carte" : "Subtítulo / Promesa de la Tarjeta",
+    heroCardBtn: isFr ? "Texte du Bouton d'Action (ex: Je commence gratuitement)" : "Texto del Botón Principal (ej: Comenzar gratuitamente)",
+    heroCardReassurance: isFr ? "Texte de Confiance au bas de la Carte" : "Texto de Confianza / Garantía al pie de la Tarjeta",
     enlaceMeet: isFr ? "Lien du cours par défaut (Meet, Zoom, etc.)" : "Enlace de Clase por Defecto (Meet, Zoom, Teams, etc.)",
     emailNotificaciones: isFr ? "E-mail de Notification des Ventes" : "Correo de Notificaciones de Ventas",
     whatsappNumber: isFr ? "Numéro WhatsApp du Professeur" : "Número de WhatsApp / Celular del Profesor",
@@ -535,6 +547,22 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               </pre>
             </div>
           )}
+
+          {(configError.includes("hero_card_title") || configError.includes("hero_trust_badge")) && (
+            <div style={{ marginTop: "12px", borderTop: "1px dashed rgba(239,68,68,0.2)", paddingTop: "12px" }}>
+              <p style={{ fontWeight: 600, color: "#b91c1c", marginBottom: "4px" }}>💡 {t.solucionRecomendada || "Solución recomendada"}</p>
+              <p style={{ fontSize: "12px", marginBottom: "8px" }}>{t.ejecutaScript || "Ejecuta este comando SQL en el SQL Editor de tu consola de Supabase para habilitar los campos del Hero:"}</p>
+              <pre style={{ backgroundColor: "#1e293b", color: "#f8fafc", padding: "12px", borderRadius: "6px", fontSize: "11px", overflowX: "auto" }}>
+{`ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_trust_badge TEXT DEFAULT '[:es]★ 4.9/5 valoración de alumnos · Clases 1 a 1[:fr]★ 4,9/5 sur Trustpilot · Avis vérifiés[:en]★ 4.9/5 student rating · 1-on-1 classes';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_highlight_text TEXT DEFAULT '[:es]desde esta semana.[:fr]dès cette semaine.[:en]starting this week.';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_badge TEXT DEFAULT '[:es]ACCESO GRATUITO[:fr]ACCÈS GRATUIT[:en]FREE ACCESS';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_title TEXT DEFAULT '[:es]Empieza hoy mismo[:fr]Commencez maintenant[:en]Start today';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_subtitle TEXT DEFAULT '[:es]Tu primera sesión te espera. Sin tarjeta de crédito.[:fr]Vos premières leçons vous attendent. Aucune carte bancaire.[:en]Your first lessons await. No credit card required.';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_btn TEXT DEFAULT '[:es]Comenzar gratuitamente[:fr]Je commence gratuitement[:en]Start for free';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_reassurance TEXT DEFAULT '[:es]✓ Sin compromiso · 100% online[:fr]✓ Sans engagement · 100% en ligne[:en]✓ No commitment · 100% online';`}
+              </pre>
+            </div>
+          )}
         </div>
       )}
 
@@ -676,6 +704,110 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
                 onChange={(e) => setFieldValue("subtitulo_hero", e.target.value)}
                 style={{ padding: "16px", resize: "none" }}
               ></textarea>
+            </div>
+
+            {/* Bloque Especial: Hero Split-Screen y Tarjeta de Captación Rápida */}
+            <div style={{ backgroundColor: "rgba(0,0,0,0.015)", border: "1px solid var(--border-color)", borderRadius: "var(--radius-md)", padding: "20px", marginTop: "8px", marginBottom: "12px" }}>
+              <h4 style={{ fontSize: "14px", marginBottom: "16px", color: "hsl(var(--accent-hsl))", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px", display: "flex", alignItems: "center", gap: "8px" }}>
+                <span>🎯</span> {t.heroSeccion || "Hero y Tarjeta de Captación Rápida"}
+              </h4>
+
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+                <div className="form-group">
+                  <label className="form-label">{t.heroTrustBadge || "Insignia de Reseñas / Social Proof"}</label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    placeholder="★ 4.9/5 valoración de alumnos · Clases 1 a 1"
+                    value={getFieldValue("hero_trust_badge")}
+                    onChange={(e) => setFieldValue("hero_trust_badge", e.target.value)}
+                    style={{ padding: "12px 16px" }}
+                  />
+                </div>
+
+                <div className="form-group">
+                  <label className="form-label">{t.heroHighlightText || "Frase Acento en Azul Francés en el Titular"}</label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    placeholder="desde esta semana."
+                    value={getFieldValue("hero_highlight_text")}
+                    onChange={(e) => setFieldValue("hero_highlight_text", e.target.value)}
+                    style={{ padding: "12px 16px" }}
+                  />
+                </div>
+              </div>
+
+              {/* Subsección Tarjeta Flotante de Registro */}
+              <div style={{ borderTop: "1px dashed var(--border-color)", paddingTop: "14px", marginTop: "12px" }}>
+                <span style={{ fontSize: "12px", fontWeight: 700, color: "var(--text-muted)", display: "block", marginBottom: "14px" }}>
+                  📋 {isFr ? "Champs de la Carte Flottante d'Inscription (Colonne Droite) :" : "Campos de la Tarjeta Flotante de Captación (Columna Derecha) :"}
+                </span>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px", marginBottom: "16px" }}>
+                  <div className="form-group">
+                    <label className="form-label">{t.heroCardBadge || "Insignia Superior de la Tarjeta"}</label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      placeholder="ACCESO GRATUITO"
+                      value={getFieldValue("hero_card_badge")}
+                      onChange={(e) => setFieldValue("hero_card_badge", e.target.value)}
+                      style={{ padding: "12px 16px" }}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">{t.heroCardTitle || "Título de la Tarjeta"}</label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      placeholder="Empieza hoy mismo"
+                      value={getFieldValue("hero_card_title")}
+                      onChange={(e) => setFieldValue("hero_card_title", e.target.value)}
+                      style={{ padding: "12px 16px" }}
+                    />
+                  </div>
+                </div>
+
+                <div className="form-group" style={{ marginBottom: "16px" }}>
+                  <label className="form-label">{t.heroCardSubtitle || "Subtítulo / Promesa de la Tarjeta"}</label>
+                  <input
+                    className="form-control"
+                    type="text"
+                    placeholder="Tu primera sesión te espera. Sin tarjeta de crédito."
+                    value={getFieldValue("hero_card_subtitle")}
+                    onChange={(e) => setFieldValue("hero_card_subtitle", e.target.value)}
+                    style={{ padding: "12px 16px" }}
+                  />
+                </div>
+
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "16px" }}>
+                  <div className="form-group">
+                    <label className="form-label">{t.heroCardBtn || "Texto del Botón Principal"}</label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      placeholder="Comenzar gratuitamente"
+                      value={getFieldValue("hero_card_btn")}
+                      onChange={(e) => setFieldValue("hero_card_btn", e.target.value)}
+                      style={{ padding: "12px 16px" }}
+                    />
+                  </div>
+
+                  <div className="form-group">
+                    <label className="form-label">{t.heroCardReassurance || "Texto de Confianza / Garantía al pie"}</label>
+                    <input
+                      className="form-control"
+                      type="text"
+                      placeholder="✓ Sin compromiso · 100% online"
+                      value={getFieldValue("hero_card_reassurance")}
+                      onChange={(e) => setFieldValue("hero_card_reassurance", e.target.value)}
+                      style={{ padding: "12px 16px" }}
+                    />
+                  </div>
+                </div>
+              </div>
             </div>
 
             <h4 style={{ fontSize: "15px", marginBottom: "8px", marginTop: "16px", color: "hsl(var(--accent-hsl))", fontWeight: 800, textTransform: "uppercase", letterSpacing: "1px" }}>

@@ -13,6 +13,7 @@ import ConfiguracionTab from "@/components/admin/ConfiguracionTab";
 import ManualTab from "@/components/admin/ManualTab";
 import MarketingAutomatizaciones from "@/components/admin/MarketingAutomatizaciones";
 import LogsTab from "@/components/admin/LogsTab";
+import ArticulosTab from "@/components/admin/ArticulosTab";
 
 interface Alumno {
   id: string;
@@ -38,6 +39,38 @@ interface ClaseAdmin {
   recording_url?: string;
   fecha_original?: string;
   alumno_zona_horaria?: string;
+  usuario_id?: string;
+  alumno_email?: string;
+}
+
+function getInscripcionTotalClases(ins: any, planesCatalog?: any[] | null): number {
+  if (ins.total_clases && ins.total_clases > 0) return ins.total_clases;
+  const planInfo = planesCatalog?.find((p: any) => p.id === ins.plan_id);
+  if (planInfo && planInfo.total_clases && planInfo.total_clases > 0) {
+    return planInfo.total_clases;
+  }
+  if (ins.plan_id === 1) return 8;
+  if (ins.plan_id === 2) return 12;
+  if (ins.plan_id === 13) return 12;
+  if (ins.plan_id === 14) return 4;
+  if (ins.plan_id === 15) return 10;
+  if (ins.plan_id === 17) return 12;
+  if (ins.plan_id === 22) return 1;
+  if (ins.plan_id === 25) return 4;
+  if (ins.plan_id === 26) return 1;
+  if (ins.plan_id === 27) return 8;
+  if (ins.plan_id === 28) return 12;
+  if (ins.plan_id === 29) return 8;
+
+  const monto = Number(ins.monto_pagado) || 0;
+  if (monto >= 280) return 12;
+  if (monto >= 200) return 8;
+  if (monto >= 140) return 10;
+  if (monto >= 100) return 8;
+  if (monto >= 50) return 4;
+  if (monto > 0 && monto <= 35) return 1;
+
+  return Math.max(ins.clases_restantes || 0, 4);
 }
 
 interface RecursoAdmin {
@@ -78,20 +111,27 @@ export default function AdminDashboard() {
   const at = adminTranslations[adminLang];
 
   // Pestaña activa del dashboard
-  const [activeTab, setActiveTab] = useState<"resumen" | "recursos" | "alumnos" | "notificaciones" | "planes" | "configuracion" | "manual" | "logs">("resumen");
+  const [activeTab, setActiveTab] = useState<"resumen" | "recursos" | "alumnos" | "notificaciones" | "planes" | "articulos" | "configuracion" | "manual" | "logs">("resumen");
   const [inscripcionesLogs, setInscripcionesLogs] = useState<any[]>([]);
 
   // --- Planes de Estudio ---
   const [planes, setPlanes] = useState<any[]>([]);
 
-  const [subTabCMS, setSubTabCMS] = useState<"general" | "profesor" | "metodo" | "destino" | "negocio">("general");
+  const [subTabCMS, setSubTabCMS] = useState<"general" | "profesor" | "metodo" | "destino" | "negocio" | "faq">("general");
   const [subTabMarketing, setSubTabMarketing] = useState<"mensajes" | "automatizaciones">("mensajes");
 
-  const [config, setConfig] = useState({
+  const [config, setConfig] = useState<any>({
     id: 1,
     titulo_hero: "Domina el francés con clases personalizadas",
     subtitulo_hero: "Aprende a tu ritmo con un profesor nativo. Flexibilidad, material exclusivo y enfoque en la conversación fluida.",
     hero_badge: "Profesor Nativo de París",
+    hero_trust_badge: "[:es]★ 4.9/5 valoración de alumnos · Clases 1 a 1[:fr]★ 4,9/5 sur Trustpilot · Avis vérifiés[:en]★ 4.9/5 student rating · 1-on-1 classes",
+    hero_highlight_text: "[:es]desde esta semana.[:fr]dès cette semaine.[:en]starting this week.",
+    hero_card_badge: "[:es]ACCESO GRATUITO[:fr]ACCÈS GRATUIT[:en]FREE ACCESS",
+    hero_card_title: "[:es]Empieza hoy mismo[:fr]Commencez maintenant[:en]Start today",
+    hero_card_subtitle: "[:es]Tu primera sesión te espera. Sin tarjeta de crédito.[:fr]Vos premières leçons vous attendent. Aucune carte bancaire.[:en]Your first lessons await. No credit card required.",
+    hero_card_btn: "[:es]Comenzar gratuitamente[:fr]Je commence gratuitement[:en]Start for free",
+    hero_card_reassurance: "[:es]✓ Sin compromiso · 100% online[:fr]✓ Sans engagement · 100% en ligne[:en]✓ No commitment · 100% online",
     stripe_public_key: "",
     stripe_secret_key: "",
     google_analytics_id: "",
@@ -357,9 +397,10 @@ export default function AdminDashboard() {
             for (const ins of pagadas) {
               clasesRest += ins.clases_restantes || 0;
 
-              const planInfo = planesCatalog?.find((p: any) => p.id === ins.plan_id);
-              clasesTot += planInfo ? (planInfo.total_clases || 0) : (ins.clases_restantes || 0);
+              const totalClasesIns = getInscripcionTotalClases(ins, planesCatalog);
+              clasesTot += totalClasesIns;
 
+              const planInfo = planesCatalog?.find((p: any) => p.id === ins.plan_id);
               const monto = ins.monto_pagado || (planInfo ? planInfo.precio || 0 : 0);
               precioPlan += monto;
               const divisaIns = ins.divisa ? ins.divisa.toUpperCase() : "EUR";
@@ -426,6 +467,8 @@ export default function AdminDashboard() {
           return {
             id: c.id.toString(),
             alumno: c.usuarios?.nombre || c.usuarios?.email || "Estudiante",
+            usuario_id: c.usuario_id,
+            alumno_email: c.usuarios?.email || "",
             fecha: fechaStr,
             hora: horaStr,
             estado: c.estado,
@@ -488,7 +531,7 @@ export default function AdminDashboard() {
         })));
       }
 
-      // 4b. Obtener historial completo de Inscripciones para Logs
+      // 4b. Obtener historial completo de Inscripciones para Logs y Alumnos
       const { data: allInscripciones } = await supabase
         .from("inscripciones")
         .select(`
@@ -499,13 +542,29 @@ export default function AdminDashboard() {
           estado_pago,
           monto_pagado,
           divisa,
-          creado_en,
-          planes_estudio ( nombre )
+          creado_en
         `)
         .order("id", { ascending: false });
 
       if (allInscripciones) {
-        setInscripcionesLogs(allInscripciones);
+        const enriquecidas = allInscripciones.map((ins: any) => {
+          const planInfo = planesCatalog?.find((p: any) => p.id === ins.plan_id);
+          const totalClases = getInscripcionTotalClases(ins, planesCatalog);
+          const divisaUpper = ins.divisa ? ins.divisa.toUpperCase() : "EUR";
+          const nombrePlan = planInfo
+            ? planInfo.nombre
+            : (ins.monto_pagado
+                ? `Plan personalizado (${ins.monto_pagado}${divisaUpper === "USD" ? "$" : "€"})`
+                : "Plan personalizado");
+          return {
+            ...ins,
+            total_clases: totalClases,
+            planes_estudio: planInfo ? { nombre: planInfo.nombre } : { nombre: nombrePlan },
+            plan_nombre: nombrePlan,
+            monto: ins.monto_pagado || (planInfo ? planInfo.precio || 0 : 0)
+          };
+        });
+        setInscripcionesLogs(enriquecidas);
       }
 
       // 5. Obtener Configuración
@@ -521,6 +580,13 @@ export default function AdminDashboard() {
           titulo_hero: configDb.titulo_hero || "",
           subtitulo_hero: configDb.subtitulo_hero || "",
           hero_badge: configDb.hero_badge || "Profesor Nativo de París",
+          hero_trust_badge: configDb.hero_trust_badge || "",
+          hero_highlight_text: configDb.hero_highlight_text || "",
+          hero_card_badge: configDb.hero_card_badge || "",
+          hero_card_title: configDb.hero_card_title || "",
+          hero_card_subtitle: configDb.hero_card_subtitle || "",
+          hero_card_btn: configDb.hero_card_btn || "",
+          hero_card_reassurance: configDb.hero_card_reassurance || "",
           stripe_public_key: configDb.stripe_public_key || "",
           stripe_secret_key: configDb.stripe_secret_key || "",
           google_analytics_id: configDb.google_analytics_id || "",
@@ -962,6 +1028,13 @@ export default function AdminDashboard() {
         titulo_hero: config.titulo_hero,
         subtitulo_hero: config.subtitulo_hero,
         hero_badge: config.hero_badge,
+        hero_trust_badge: config.hero_trust_badge,
+        hero_highlight_text: config.hero_highlight_text,
+        hero_card_badge: config.hero_card_badge,
+        hero_card_title: config.hero_card_title,
+        hero_card_subtitle: config.hero_card_subtitle,
+        hero_card_btn: config.hero_card_btn,
+        hero_card_reassurance: config.hero_card_reassurance,
         stripe_public_key: config.stripe_public_key,
         stripe_secret_key: config.stripe_secret_key,
         google_analytics_id: config.google_analytics_id,
@@ -1076,6 +1149,15 @@ export default function AdminDashboard() {
       icon: (
         <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
           <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+        </svg>
+      )
+    },
+    {
+      id: "articulos",
+      label: adminLang === "fr" ? "Articles (Blog)" : "Artículos (Blog)",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z" />
         </svg>
       )
     },
@@ -1697,9 +1779,9 @@ export default function AdminDashboard() {
                 margin: 0
               }}>
                 {adminLang === "fr" ? (
-                  activeTab === "resumen" ? "Résumé des Cours" : activeTab === "alumnos" ? "Dossiers des Élèves" : activeTab === "planes" ? "Catalogue de Formules" : activeTab === "recursos" ? "Médiathèque" : activeTab === "notificaciones" ? "Centre de Communication" : activeTab === "manual" ? "Manuel Opérationnel" : activeTab === "logs" ? "Journal d'Audite & Logs" : "Configuration du Site"
+                  activeTab === "resumen" ? "Résumé des Cours" : activeTab === "alumnos" ? "Dossiers des Élèves" : activeTab === "planes" ? "Catalogue de Formules" : activeTab === "articulos" ? "Articles & Blog Pédagogique" : activeTab === "recursos" ? "Médiathèque" : activeTab === "notificaciones" ? "Centre de Communication" : activeTab === "manual" ? "Manuel Opérationnel" : activeTab === "logs" ? "Journal d'Audite & Logs" : "Configuration du Site"
                 ) : (
-                  activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : activeTab === "manual" ? "Manual de Operaciones" : activeTab === "logs" ? "Logs de Auditoría & Cambios" : "Configuración CMS"
+                  activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "articulos" ? "Gestión de Artículos (Blog)" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : activeTab === "manual" ? "Manual de Operaciones" : activeTab === "logs" ? "Logs de Auditoría & Cambios" : "Configuración CMS"
                 )}
               </h1>
             </div>
@@ -1922,6 +2004,11 @@ export default function AdminDashboard() {
                 recursos={recursos as any}
                 lang={adminLang}
               />
+            )}
+
+            {/* TAB 9: ARTÍCULOS (BLOG) */}
+            {activeTab === "articulos" && (
+              <ArticulosTab lang={adminLang} />
             )}
 
           </div>

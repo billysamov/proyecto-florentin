@@ -152,6 +152,15 @@ CREATE TABLE configuracion_sitio (
 
 ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS email_reprogramacion_activo BOOLEAN DEFAULT true;
 
+-- Columnas para el Hero Split-Screen y Tarjeta de Captación Rápida
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_trust_badge TEXT DEFAULT '[:es]★ 4.9/5 valoración de alumnos · Clases 1 a 1[:fr]★ 4,9/5 sur Trustpilot · Avis vérifiés[:en]★ 4.9/5 student rating · 1-on-1 classes';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_highlight_text TEXT DEFAULT '[:es]desde esta semana.[:fr]dès cette semaine.[:en]starting this week.';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_badge TEXT DEFAULT '[:es]ACCESO GRATUITO[:fr]ACCÈS GRATUIT[:en]FREE ACCESS';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_title TEXT DEFAULT '[:es]Empieza hoy mismo[:fr]Commencez maintenant[:en]Start today';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_subtitle TEXT DEFAULT '[:es]Tu primera sesión te espera. Sin tarjeta de crédito.[:fr]Vos premières leçons vous attendent. Aucune carte bancaire.[:en]Your first lessons await. No credit card required.';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_btn TEXT DEFAULT '[:es]Comenzar gratuitamente[:fr]Je commence gratuitement[:en]Start for free';
+ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_reassurance TEXT DEFAULT '[:es]✓ Sin compromiso · 100% online[:fr]✓ Sans engagement · 100% en ligne[:en]✓ No commitment · 100% online';
+
 -- Insertar fila única por defecto
 INSERT INTO configuracion_sitio (id) VALUES (1) ON CONFLICT DO NOTHING;
 
@@ -204,4 +213,49 @@ CREATE TABLE IF NOT EXISTS email_logs (
 ALTER TABLE email_logs ENABLE ROW LEVEL SECURITY;
 CREATE POLICY "Lectura email_logs solo admin" ON email_logs FOR SELECT USING (public.es_admin(auth.uid()));
 CREATE POLICY "Escritura email_logs solo admin" ON email_logs FOR ALL USING (public.es_admin(auth.uid()));
+
+-- ==========================================
+-- 9. TABLA DE ARTÍCULOS (Blog & CMS)
+-- ==========================================
+CREATE TABLE IF NOT EXISTS public.articulos (
+  id SERIAL PRIMARY KEY,
+  slug TEXT UNIQUE NOT NULL,
+  titulo TEXT NOT NULL,
+  extracto TEXT,
+  contenido TEXT NOT NULL,
+  -- Capa Francés
+  titulo_fr TEXT,
+  extracto_fr TEXT,
+  contenido_fr TEXT,
+  meta_titulo_fr TEXT,
+  meta_descripcion_fr TEXT,
+  -- Capa Inglés
+  titulo_en TEXT,
+  extracto_en TEXT,
+  contenido_en TEXT,
+  meta_titulo_en TEXT,
+  meta_descripcion_en TEXT,
+  -- Metadatos generales
+  imagen_portada TEXT DEFAULT '/french_hero.png',
+  categoria TEXT DEFAULT 'Consejos',
+  palabras_clave TEXT,
+  meta_titulo TEXT,
+  meta_descripcion TEXT,
+  tiempo_lectura INTEGER DEFAULT 5,
+  idioma TEXT DEFAULT 'es' CHECK (idioma IN ('es', 'fr', 'en')),
+  autor TEXT DEFAULT 'Florentin',
+  publicado BOOLEAN DEFAULT false,
+  visitas INTEGER DEFAULT 0,
+  creado_en TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
+  actualizado_en TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
+);
+
+CREATE INDEX IF NOT EXISTS idx_articulos_slug ON public.articulos(slug);
+CREATE INDEX IF NOT EXISTS idx_articulos_publicado ON public.articulos(publicado);
+CREATE INDEX IF NOT EXISTS idx_articulos_idioma ON public.articulos(idioma);
+CREATE INDEX IF NOT EXISTS idx_articulos_categoria ON public.articulos(categoria);
+
+ALTER TABLE public.articulos ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "Lectura publica articulos publicados" ON public.articulos FOR SELECT USING (publicado = true OR public.es_admin(auth.uid()));
+CREATE POLICY "Gestion articulos solo admin" ON public.articulos FOR ALL USING (public.es_admin(auth.uid()));
 

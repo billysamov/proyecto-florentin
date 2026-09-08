@@ -64,7 +64,7 @@ export default function LogsTab({
         category: "pago",
         severity: "success",
         action: isFr ? "Paiement Enregistré" : "Pago e Inscripción Registrada",
-        detalles: `${nombreUsuario} adquirió ${planNombre} (${ins.clases_restantes || 0} clases) - ${montoStr}`,
+        detalles: `${nombreUsuario} adquirió ${planNombre} (${ins.total_clases || ins.clases_restantes || 4} clases) - ${montoStr}`,
         usuario: nombreUsuario
       });
     });
