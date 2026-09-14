@@ -232,8 +232,16 @@ Se han implementado mejoras significativas en la robustez, seguridad y rendimien
     *   Auto-traducción en un solo clic a Francés e Inglés con reporte de progreso en vivo.
     *   Botones de auto-traducción individual por idioma (Francés e Inglés).
     *   Contador en tiempo real de palabras y caracteres con insignia de longitud ilimitada.
-*   **Vista Pública y Rendimiento (`/src/components/blog/ArticleClientView.tsx`):**
-    *   Caché en `sessionStorage` para traducciones dinámicas al vuelo sin re-consumo de red en visitas repetidas.
-    *   Eliminación de truncamientos artificiales para lectura completa y fluida en los 3 idiomas (ES, FR, EN).
-
-
+### I. Planificación y Programación de Artículos (Scheduled Publishing)
+*   **Publicación Diferida sin Mantenimiento (Zero-Cron):**
+    *   Se agregó la columna `fecha_publicacion` con índice en la tabla `public.articulos`.
+    *   Lógica sin costo de servidores ni cron jobs: Las consultas del blog filtran automáticamente artículos con `publicado = true` y `fecha_publicacion <= now()`.
+    *   Al llegar el minuto exacto programado, el artículo se vuelve público de manera instantánea y transparente.
+*   **Gestión Editorial en el Panel Administrativo (`/src/components/admin/ArticulosTab.tsx`):**
+    *   Selector triple de estado: **Borrador Privado**, **Publicar Ahora** y **Programar Publicación** con control de fecha y hora local (`datetime-local`).
+    *   Filtros dinámicos en la tabla: *Todos*, *Publicados*, *Programados (🕒)* y *Borradores*.
+    *   Badges informativos con fecha y hora exacta programada y métricas de artículos programados en tiempo real.
+*   **Soporte de Saltos de Línea y Párrafos (`/src/components/blog/ArticleContent.tsx`):**
+    *   Preservación automática de saltos de línea simples (`Enter`) mediante `<br />` de React.
+    *   Soporte para etiquetas `<br>` explícitas y separación de párrafos con doble salto.
+    *   Botón de atajo `↵ <br>` en la barra de herramientas del editor CMS.
