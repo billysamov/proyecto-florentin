@@ -22,11 +22,17 @@ export default function ArticleContent({ content }: ArticleContentProps) {
 
     const flushParagraph = (idx: number) => {
       if (currentParagraph.length > 0) {
-        const text = currentParagraph.join(" ").trim();
-        if (text) {
+        // Preservar saltos de línea (Enter simple) dentro del párrafo usando <br />
+        const linesToRender = currentParagraph.filter((l) => l.trim().length > 0);
+        if (linesToRender.length > 0) {
           elements.push(
             <p key={`p-${idx}`} className="text-slate-700 text-lg leading-relaxed mb-6 font-normal">
-              {parseInlineStyles(text)}
+              {linesToRender.map((lineText, lineIdx) => (
+                <React.Fragment key={lineIdx}>
+                  {parseInlineStyles(lineText)}
+                  {lineIdx < linesToRender.length - 1 && <br />}
+                </React.Fragment>
+              ))}
             </p>
           );
         }
@@ -220,11 +226,23 @@ export default function ArticleContent({ content }: ArticleContentProps) {
     return elements;
   };
 
-  // Función para procesar negritas (**texto**), cursivas (*texto*), código (`code`) y enlaces ([text](url))
+  // Función para procesar negritas (**texto**), cursivas (*texto*), código (`code`), enlaces y etiquetas <br>
   const parseInlineStyles = (text: string): React.ReactNode => {
-    // Si contiene etiquetas HTML básicas, podemos interpretarlas de forma segura o parsear tokens
+    // Si el texto incluye etiquetas <br> o <br/> escritas por el usuario, las procesamos como saltos de línea reales
+    if (/<br\s*\/?>/i.test(text)) {
+      const segments = text.split(/<br\s*\/?>/i);
+      return segments.map((seg, i) => (
+        <React.Fragment key={`br-seg-${i}`}>
+          {parseTokens(seg)}
+          {i < segments.length - 1 && <br />}
+        </React.Fragment>
+      ));
+    }
+    return parseTokens(text);
+  };
+
+  const parseTokens = (text: string): React.ReactNode => {
     const parts: React.ReactNode[] = [];
-    let remaining = text;
     let key = 0;
 
     // Expresión regular para tokens inline: **bold**, *italic*, `code`, [label](url)

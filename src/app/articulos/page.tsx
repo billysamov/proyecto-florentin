@@ -13,7 +13,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: "Artículos y Guías para Aprender Francés | Le Français avec Florentin",
     description:
-      "Aprende francés con método, fonética práctica y cultura parisina. Artículos y recursos educativos por Florentin.",
+      "Aprende francés con método, fonética práctica y cultura francesa. Artículos y recursos educativos por Florentin.",
     type: "website",
     locale: "es_ES"
   }
@@ -26,13 +26,13 @@ const fallbackArticulos: ArticuloItem[] = [
     slug: "como-pronunciar-la-r-francesa-guia-definitiva",
     titulo: "Cómo pronunciar la \"R\" francesa sin morir en el intento",
     extracto:
-      "Descubre el método anatómico y los 3 ejercicios prácticos que uso con mis alumnos de París para dominar la R gutural francesa desde la primera semana.",
+      "Descubre el método anatómico y los 3 ejercicios prácticos que uso con mis alumnos para dominar la R gutural francesa desde la primera semana.",
     titulo_fr: "Comment prononcer le \"R\" français sans effort",
     extracto_fr:
-      "Découvrez la méthode anatomique et les 3 exercices pratiques que j'utilise avec mes élèves à Paris pour maîtriser le R français dès la première semaine.",
+      "Découvrez la méthode anatomique et les 3 exercices pratiques que j'utilise avec mes élèves pour maîtriser le R français dès la première semaine.",
     titulo_en: "How to Pronounce the French \"R\" Without the Struggle",
     extracto_en:
-      "Discover the anatomical technique and 3 practical exercises I use with my students in Paris to master the French guttural R from week one.",
+      "Discover the anatomical technique and 3 practical exercises I use with my students to master the French guttural R from week one.",
     imagen_portada:
       "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80",
     categoria: "Pronunciación",
@@ -67,16 +67,16 @@ const fallbackArticulos: ArticuloItem[] = [
   },
   {
     id: 3,
-    slug: "vocabulario-esencial-restaurante-paris",
-    titulo: "Cómo pedir en un restaurante en París como un auténtico local",
+    slug: "vocabulario-esencial-restaurante-francia",
+    titulo: "Cómo pedir en un restaurante en Francia como un auténtico local",
     extracto:
-      "Las frases indispensables, las normas de cortesía que los parisinos aprecian y los errores más comunes al pedir la cuenta.",
-    titulo_fr: "Comment commander au restaurant à Paris comme un vrai local",
+      "Las frases indispensables, las normas de cortesía que los franceses aprecian y los errores más comunes al pedir la cuenta.",
+    titulo_fr: "Comment commander au restaurant en France comme un vrai local",
     extracto_fr:
-      "Les phrases indispensables, les codes de politesse parisiens et les astuces pour profiter pleinement des cafés et bistrots.",
-    titulo_en: "How to Order at a Restaurant in Paris Like a True Local",
+      "Les phrases indispensables, les codes de politesse français et les astuces pour profiter pleinement des cafés et bistrots.",
+    titulo_en: "How to Order at a Restaurant in France Like a True Local",
     extracto_en:
-      "Essential phrases, cultural etiquette that Parisians appreciate, and tips on water, tipping, and paying the bill.",
+      "Essential phrases, cultural etiquette that French people appreciate, and tips on water, tipping, and paying the bill.",
     imagen_portada:
       "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=80",
     categoria: "Cultura & Viajes",
@@ -94,14 +94,29 @@ export default async function ArticulosPage() {
 
   try {
     const supabase = getSupabaseAdmin();
+    const now = new Date();
+
+    // Consultamos los artículos publicados
     const { data, error } = await supabase
       .from("articulos")
-      .select("id, slug, titulo, extracto, titulo_fr, extracto_fr, contenido_fr, titulo_en, extracto_en, contenido_en, imagen_portada, categoria, palabras_clave, tiempo_lectura, idioma, autor, visitas, creado_en")
-      .eq("publicado", true)
-      .order("creado_en", { ascending: false });
+      .select("id, slug, titulo, extracto, titulo_fr, extracto_fr, contenido_fr, titulo_en, extracto_en, contenido_en, imagen_portada, categoria, palabras_clave, tiempo_lectura, idioma, autor, visitas, creado_en, fecha_publicacion")
+      .eq("publicado", true);
 
     if (!error && data && data.length > 0) {
-      articulos = data;
+      // Filtrar únicamente los que ya alcanzaron su fecha y hora de publicación
+      const visibles = data.filter((art: any) => {
+        if (!art.fecha_publicacion) return true;
+        return new Date(art.fecha_publicacion) <= now;
+      });
+
+      // Ordenar cronológicamente por fecha de publicación (más recientes primero)
+      visibles.sort((a: any, b: any) => {
+        const timeA = new Date(a.fecha_publicacion || a.creado_en).getTime();
+        const timeB = new Date(b.fecha_publicacion || b.creado_en).getTime();
+        return timeB - timeA;
+      });
+
+      articulos = visibles.length > 0 ? visibles : fallbackArticulos;
     } else {
       articulos = fallbackArticulos;
     }

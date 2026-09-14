@@ -317,7 +317,7 @@ export default function ConfiguracionTab({
     emailNotificaciones: isFr ? "E-mail de Notification des Ventes" : "Correo de Notificaciones de Ventas",
     whatsappNumber: isFr ? "Numéro WhatsApp du Professeur" : "Número de WhatsApp / Celular del Profesor",
     subtituloHero: isFr ? "Sous-titre descriptif (Hero Banner)" : "Subtítulo Descriptivo (Hero Banner)",
-    tagHero: isFr ? "Badge / Tag du Hero Banner (ex: Professeur Natif de Paris)" : "Etiqueta / Tag del Hero Banner (ej: Profesor Nativo de París)",
+    tagHero: isFr ? "Badge / Tag du Hero Banner (ex: Professeur Natif de France)" : "Etiqueta / Tag del Hero Banner (ej: Profesor Nativo de Francia)",
     seoGoogle: isFr ? "Référencement Google (SEO / Métadonnées)" : "Posicionamiento en Google (SEO / Metadatos)",
     metaTitulo: isFr ? "Titre SEO du site (Meta Title)" : "Título SEO del Sitio (Meta Title)",
     metaDesc: isFr ? "Description Meta (Meta Description)" : "Descripción Meta (Meta Description)",
@@ -389,7 +389,7 @@ export default function ConfiguracionTab({
   };
 
   const zonasHorarias = [
-    { value: "Europe/Paris", label: isFr ? "Paris, France (CET/CEST)" : "París, Francia (CET/CEST)" },
+    { value: "Europe/Paris", label: isFr ? "France (CET/CEST)" : "Francia (CET/CEST)" },
     { value: "Europe/Madrid", label: isFr ? "Madrid, Espagne (CET/CEST)" : "Madrid, España (CET/CEST)" },
     { value: "America/Lima", label: "Lima, Perú (PET - UTC-5)" },
     { value: "America/Bogota", label: "Bogotá, Colombia (COT - UTC-5)" },

@@ -9,6 +9,7 @@ import ArticleContent from "@/components/blog/ArticleContent";
 import ArticleShareBar from "@/components/blog/ArticleShareBar";
 import { Language, translations } from "@/lib/translations";
 import { ArticuloItem } from "@/components/blog/BlogGrid";
+import { translateLongText, translateTextChunk } from "@/lib/translator";
 
 interface ArticleClientViewProps {
   articulo: any;
@@ -66,33 +67,51 @@ export default function ArticleClientView({ articulo, relacionados }: ArticleCli
           setDynamicContent(articulo.contenido_fr);
           setIsAutoTranslated(false);
         } else {
-          // Fallback a traducción automática gratuita con MyMemory
+          // Fallback a traducción automática de artículo completo
+          const cacheKey = `florentin_art_tr_${articulo.id || articulo.slug}_fr`;
+          if (typeof window !== "undefined") {
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+              try {
+                const parsed = JSON.parse(cached);
+                if (parsed.title && parsed.content) {
+                  setDynamicTitle(parsed.title);
+                  setDynamicExtracto(parsed.extracto || "");
+                  setDynamicContent(parsed.content);
+                  setIsAutoTranslated(true);
+                  return;
+                }
+              } catch {}
+            }
+          }
+
           setTranslatingOnFly(true);
           try {
-            const res = await fetch(
-              `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-                articulo.titulo
-              )}&langpair=es|fr`
-            );
-            const data = await res.json();
-            if (!cancelled && data?.responseData?.translatedText) {
-              setDynamicTitle(data.responseData.translatedText);
-            }
-          } catch (e) {}
+            const [trTitle, trExtracto, trContent] = await Promise.all([
+              articulo.titulo ? translateTextChunk(articulo.titulo, "es", "fr") : Promise.resolve(""),
+              articulo.extracto ? translateTextChunk(articulo.extracto, "es", "fr") : Promise.resolve(""),
+              articulo.contenido ? translateLongText(articulo.contenido, "es", "fr") : Promise.resolve("")
+            ]);
 
-          try {
-            const resC = await fetch(
-              `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-                articulo.contenido.slice(0, 500)
-              )}&langpair=es|fr`
-            );
-            const dataC = await resC.json();
-            if (!cancelled && dataC?.responseData?.translatedText) {
-              setDynamicContent(dataC.responseData.translatedText + "\n\n*(Suite traduite automatiquement)*");
+            if (!cancelled) {
+              if (trTitle) setDynamicTitle(trTitle);
+              if (trExtracto) setDynamicExtracto(trExtracto);
+              if (trContent) setDynamicContent(trContent);
               setIsAutoTranslated(true);
+
+              if (typeof window !== "undefined") {
+                sessionStorage.setItem(
+                  cacheKey,
+                  JSON.stringify({ title: trTitle, extracto: trExtracto, content: trContent })
+                );
+              }
             }
           } catch (e) {
-            if (!cancelled) setDynamicContent(articulo.contenido);
+            if (!cancelled) {
+              setDynamicTitle(articulo.titulo);
+              setDynamicExtracto(articulo.extracto || "");
+              setDynamicContent(articulo.contenido);
+            }
           } finally {
             if (!cancelled) setTranslatingOnFly(false);
           }
@@ -104,33 +123,51 @@ export default function ArticleClientView({ articulo, relacionados }: ArticleCli
           setDynamicContent(articulo.contenido_en);
           setIsAutoTranslated(false);
         } else {
-          // Fallback a traducción automática gratuita con MyMemory
+          // Fallback a traducción automática de artículo completo
+          const cacheKey = `florentin_art_tr_${articulo.id || articulo.slug}_en`;
+          if (typeof window !== "undefined") {
+            const cached = sessionStorage.getItem(cacheKey);
+            if (cached) {
+              try {
+                const parsed = JSON.parse(cached);
+                if (parsed.title && parsed.content) {
+                  setDynamicTitle(parsed.title);
+                  setDynamicExtracto(parsed.extracto || "");
+                  setDynamicContent(parsed.content);
+                  setIsAutoTranslated(true);
+                  return;
+                }
+              } catch {}
+            }
+          }
+
           setTranslatingOnFly(true);
           try {
-            const res = await fetch(
-              `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-                articulo.titulo
-              )}&langpair=es|en`
-            );
-            const data = await res.json();
-            if (!cancelled && data?.responseData?.translatedText) {
-              setDynamicTitle(data.responseData.translatedText);
-            }
-          } catch (e) {}
+            const [trTitle, trExtracto, trContent] = await Promise.all([
+              articulo.titulo ? translateTextChunk(articulo.titulo, "es", "en") : Promise.resolve(""),
+              articulo.extracto ? translateTextChunk(articulo.extracto, "es", "en") : Promise.resolve(""),
+              articulo.contenido ? translateLongText(articulo.contenido, "es", "en") : Promise.resolve("")
+            ]);
 
-          try {
-            const resC = await fetch(
-              `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-                articulo.contenido.slice(0, 500)
-              )}&langpair=es|en`
-            );
-            const dataC = await resC.json();
-            if (!cancelled && dataC?.responseData?.translatedText) {
-              setDynamicContent(dataC.responseData.translatedText + "\n\n*(Remainder auto-translated)*");
+            if (!cancelled) {
+              if (trTitle) setDynamicTitle(trTitle);
+              if (trExtracto) setDynamicExtracto(trExtracto);
+              if (trContent) setDynamicContent(trContent);
               setIsAutoTranslated(true);
+
+              if (typeof window !== "undefined") {
+                sessionStorage.setItem(
+                  cacheKey,
+                  JSON.stringify({ title: trTitle, extracto: trExtracto, content: trContent })
+                );
+              }
             }
           } catch (e) {
-            if (!cancelled) setDynamicContent(articulo.contenido);
+            if (!cancelled) {
+              setDynamicTitle(articulo.titulo);
+              setDynamicExtracto(articulo.extracto || "");
+              setDynamicContent(articulo.contenido);
+            }
           } finally {
             if (!cancelled) setTranslatingOnFly(false);
           }
@@ -273,7 +310,7 @@ export default function ArticleClientView({ articulo, relacionados }: ArticleCli
                     {articulo.autor || "Florentin"}
                   </div>
                   <div className="text-xs text-slate-500 font-medium">
-                    {t.blogAuthorRole || "Profesor Nativo de París • Le Français avec Florentin"}
+                    {t.blogAuthorRole || "Profesor Nativo de Francia • Le Français avec Florentin"}
                   </div>
                 </div>
               </div>
@@ -330,7 +367,7 @@ export default function ArticleClientView({ articulo, relacionados }: ArticleCli
                 </h3>
                 <p className="text-slate-300 text-sm leading-relaxed mb-6">
                   {t.blogAuthorCtaDesc ||
-                    "Soy Florentin, profesor nativo de París. En mis clases personalizadas 1 a 1 nos enfocamos en tus objetivos reales: fluidez, pronunciación exacta, preparación de exámenes DELF o conversación cotidiana."}
+                    "Soy Florentin, profesor nativo de Francia. En mis clases personalizadas 1 a 1 nos enfocamos en tus objetivos reales: fluidez, pronunciación exacta, preparación de exámenes DELF o conversación cotidiana."}
                 </p>
                 <div className="flex flex-col sm:flex-row gap-3 justify-center md:justify-start">
                   <Link

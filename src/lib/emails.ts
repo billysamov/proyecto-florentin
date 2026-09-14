@@ -169,7 +169,7 @@ export async function enviarCorreoConfirmacionPago(
       <div style="text-align: center; padding-top: 8px;">
         <img src="${BASE_URL}/logo.png" alt="Le Français avec Florentin" style="height: 42px; max-width: 180px; object-fit: contain; margin-bottom: 8px;" />
         <p style="font-size: 11px; color: #94a3b8; margin: 0;">
-          Florentin • © ${new Date().getFullYear()} París, Francia.
+          Florentin • © ${new Date().getFullYear()} Francia.
         </p>
       </div>
     </div>

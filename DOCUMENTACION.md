@@ -81,7 +81,7 @@ graph TD
 *   **Profesor:** Ve aparecer el nuevo estudiante con su plan activo en su lista del panel administrativo.
 
 ### Paso 4: Autogestión de Reservas y Horarios Globales
-*   **Alumno:** Ingresa al portal y selecciona una fecha. El sistema **detecta automáticamente su país y huso horario (Timezone)**, traduciendo el horario laboral del profesor (ej. hora de París) a la hora local exacta del alumno.
+*   **Alumno:** Ingresa al portal y selecciona una fecha. El sistema **detecta automáticamente su país y huso horario (Timezone)**, traduciendo el horario laboral del profesor (ej. hora de Francia) a la hora local exacta del alumno.
 *   **Sistema:** Calcula la disponibilidad en tiempo real mediante conversiones UTC para evitar solapamientos, descuenta 1 clase de su saldo y genera la cita asociándole un enlace de videoconferencia (Google Meet).
 *   **Profesor:** Ve la nueva clase programada en su agenda y prepara la sesión.
 
@@ -222,4 +222,18 @@ Se han implementado mejoras significativas en la robustez, seguridad y rendimien
 *   **Rediseño de Componentes Clave:**
     *   **Landing Page:** Se reemplazó el logotipo textual del Navbar por un componente `<Image>` dinámico con fallback integrado. El degradado del Hero ahora transiciona de Azul a Rojo, y se agregaron auroras de fondo en azul y rojo franceses de gran impacto.
     *   **Portal de Alumnos:** Adaptada la visualización del Login y del Header logueado al estilo tipográfico e identidad cromática del nuevo logotipo oficial.
+
+### H. Sistema de Blog y Artículos Multilingüe con Soporte Ilimitado
+*   **Motor de Traducción por Fragmentos (`/src/lib/translator.ts`):**
+    *   Algoritmo inteligente de división (*chunking*) que segmenta artículos de cualquier longitud (1,000 a 50,000+ caracteres) en fragmentos seguros (< 320 caracteres) para procesar con APIs de traducción gratuitas sin exceder cuotas de longitud.
+    *   Preservación absoluta de la sintaxis Markdown (títulos `##`, citas `> 💡`, listas `-`, negritas `**`) y decodificación automática de entidades HTML.
+    *   Filtro anti-errores que evita cualquier inyección accidental de mensajes de la API como `"QUERY LENGTH LIMIT EXCEEDED"`.
+*   **Panel de Administración de Artículos (`/src/components/admin/ArticulosTab.tsx`):**
+    *   Auto-traducción en un solo clic a Francés e Inglés con reporte de progreso en vivo.
+    *   Botones de auto-traducción individual por idioma (Francés e Inglés).
+    *   Contador en tiempo real de palabras y caracteres con insignia de longitud ilimitada.
+*   **Vista Pública y Rendimiento (`/src/components/blog/ArticleClientView.tsx`):**
+    *   Caché en `sessionStorage` para traducciones dinámicas al vuelo sin re-consumo de red en visitas repetidas.
+    *   Eliminación de truncamientos artificiales para lectura completa y fluida en los 3 idiomas (ES, FR, EN).
+
 

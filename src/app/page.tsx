@@ -6,6 +6,7 @@ import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
+import { translateTextChunk } from "@/lib/translator";
 import WelcomeModal from "@/components/WelcomeModal";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
@@ -210,15 +211,8 @@ export default function Home() {
 
   const translateText = async (text: string, from: string, to: string): Promise<string> => {
     try {
-      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=${from}|${to}`);
-      const data = await res.json();
-      if (data?.responseStatus === 200 && data?.responseData?.translatedText) {
-        return data.responseData.translatedText;
-      }
-      console.warn("MyMemory API rate limit alcanzado o inactivo. Usando texto por defecto.");
-      return text;
-    } catch (err) {
-      console.warn("Error al conectar con MyMemory API. Usando texto por defecto.");
+      return await translateTextChunk(text, from, to as "fr" | "en");
+    } catch {
       return text;
     }
   };
@@ -333,18 +327,16 @@ export default function Home() {
 
       // Traducir las claves personalizadas que cambiaron y no tienen shortcodes
       if (changedKeys.length > 0) {
-        const texts = changedKeys.map(k => String(sourceConfig[k]));
-        const joined = texts.join(" [SEP999] ");
         try {
-          const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(joined)}&langpair=es|${targetLang}`);
-          const data = await res.json();
-          if (data?.responseStatus === 200 && data?.responseData?.translatedText) {
-            const translated = data.responseData.translatedText;
-            const parts = translated.split(/\s*\[SEP999\]\s*/i);
-            changedKeys.forEach((key, idx) => {
-              translatedConfig[key] = (parts[idx] || texts[idx]).trim();
-            });
-          }
+          await Promise.all(
+            changedKeys.map(async (key) => {
+              const original = String(sourceConfig[key]);
+              if (original && original.trim()) {
+                const tr = await translateTextChunk(original, "es", targetLang as "fr" | "en");
+                if (tr) translatedConfig[key] = tr;
+              }
+            })
+          );
         } catch (err) {
           console.warn("Fallo de API de traducción para textos personalizados del CMS, usando español");
         }
@@ -548,7 +540,7 @@ export default function Home() {
 
     // 2. Actualizar Descripción Meta
     let metaDesc = document.querySelector('meta[name="description"]');
-    const seoDesc = parseMultilingualText(config.meta_descripcion, lang) || "Clases particulares de francés con un profesor parisino nativo. Clases personalizadas, flexibles y adaptadas a tu nivel.";
+    const seoDesc = parseMultilingualText(config.meta_descripcion, lang) || "Clases particulares de francés con un profesor nativo de Francia. Clases personalizadas, flexibles y adaptadas a tu nivel.";
     if (!metaDesc) {
       metaDesc = document.createElement('meta');
       metaDesc.setAttribute('name', 'description');
@@ -558,7 +550,7 @@ export default function Home() {
 
     // 3. Actualizar Palabras Clave
     let metaKeywords = document.querySelector('meta[name="keywords"]');
-    const seoKeywords = parseMultilingualText(config.palabras_clave, lang) || "francés, clases de francés, profesor nativo francés, aprender francés, parisino";
+    const seoKeywords = parseMultilingualText(config.palabras_clave, lang) || "francés, clases de francés, profesor nativo francés, aprender francés, francia";
     if (!metaKeywords) {
       metaKeywords = document.createElement('meta');
       metaKeywords.setAttribute('name', 'keywords');
@@ -878,14 +870,13 @@ export default function Home() {
             "url": "https://lefrancaisavecflorentin.com",
             "logo": "https://lefrancaisavecflorentin.com/icon.jpeg",
             "image": "https://lefrancaisavecflorentin.com/icon.jpeg",
-            "description": "Aprende francés con clases personalizadas online 1 a 1 de la mano de Florentin, profesor nativo de París.",
+            "description": "Aprende francés con clases personalizadas online 1 a 1 de la mano de Florentin, profesor nativo de Francia.",
             "provider": {
               "@type": "Person",
               "name": "Florentin",
               "jobTitle": "Profesor de Francés Nativo",
               "address": {
                 "@type": "PostalAddress",
-                "addressLocality": "París",
                 "addressCountry": "FR"
               }
             },
@@ -1157,12 +1148,12 @@ export default function Home() {
           1. HERO — Split Conversion Layout
       ═══════════════════════════════════════ */}
       <section className="relative min-h-[100svh] flex items-center pt-28 sm:pt-32 pb-16 sm:pb-20 px-4 sm:px-6 lg:px-8">
-        {/* Fondo con atmósfera parisina sutil */}
+        {/* Fondo con atmósfera francesa sutil */}
         <div className="absolute inset-0 overflow-hidden pointer-events-none">
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(59,130,246,0.06)_0%,rgba(248,250,252,1)_70%)] z-10" />
           <img 
             src="https://images.unsplash.com/photo-1502602898657-3e91760cbb34?q=80&w=2073&auto=format&fit=crop" 
-            alt="Paris" 
+            alt="Francia" 
             className="hero-bg-img w-full h-full object-cover opacity-[0.07] mix-blend-overlay scale-105" 
           />
         </div>

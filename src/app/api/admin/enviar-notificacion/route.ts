@@ -74,7 +74,7 @@ export async function POST(request: Request) {
         </p>
         <hr style="border: 0; border-top: 1px solid #eaeaea; margin: 30px 0;" />
         <p style="font-size: 12px; color: #9a9a9a; text-align: center;">
-          Florentin French. París, Francia.
+          Florentin French. Francia.
         </p>
       </div>
     `;

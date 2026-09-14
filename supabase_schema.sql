@@ -132,7 +132,7 @@ CREATE TABLE configuracion_sitio (
   id INT PRIMARY KEY DEFAULT 1,
   titulo_hero TEXT DEFAULT 'Domina el francés con clases personalizadas',
   subtitulo_hero TEXT DEFAULT 'Aprende a tu ritmo con un profesor nativo. Flexibilidad, material exclusivo y enfoque en la conversación fluida.',
-  hero_badge TEXT DEFAULT 'Profesor Nativo de París',
+  hero_badge TEXT DEFAULT 'Profesor Nativo de Francia',
   stripe_public_key TEXT,
   google_analytics_id TEXT,
   meta_pixel_id TEXT,
@@ -245,6 +245,7 @@ CREATE TABLE IF NOT EXISTS public.articulos (
   idioma TEXT DEFAULT 'es' CHECK (idioma IN ('es', 'fr', 'en')),
   autor TEXT DEFAULT 'Florentin',
   publicado BOOLEAN DEFAULT false,
+  fecha_publicacion TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
   visitas INTEGER DEFAULT 0,
   creado_en TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW()),
   actualizado_en TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc', NOW())
@@ -252,10 +253,11 @@ CREATE TABLE IF NOT EXISTS public.articulos (
 
 CREATE INDEX IF NOT EXISTS idx_articulos_slug ON public.articulos(slug);
 CREATE INDEX IF NOT EXISTS idx_articulos_publicado ON public.articulos(publicado);
+CREATE INDEX IF NOT EXISTS idx_articulos_fecha_publicacion ON public.articulos(fecha_publicacion);
 CREATE INDEX IF NOT EXISTS idx_articulos_idioma ON public.articulos(idioma);
 CREATE INDEX IF NOT EXISTS idx_articulos_categoria ON public.articulos(categoria);
 
 ALTER TABLE public.articulos ENABLE ROW LEVEL SECURITY;
-CREATE POLICY "Lectura publica articulos publicados" ON public.articulos FOR SELECT USING (publicado = true OR public.es_admin(auth.uid()));
+CREATE POLICY "Lectura publica articulos publicados" ON public.articulos FOR SELECT USING ((publicado = true AND (fecha_publicacion IS NULL OR fecha_publicacion <= TIMEZONE('utc', NOW()))) OR public.es_admin(auth.uid()));
 CREATE POLICY "Gestion articulos solo admin" ON public.articulos FOR ALL USING (public.es_admin(auth.uid()));
 

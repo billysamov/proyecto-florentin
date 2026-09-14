@@ -26,6 +26,7 @@ export interface ArticuloItem {
   autor: string | null;
   visitas: number | null;
   creado_en: string;
+  fecha_publicacion?: string | null;
 }
 
 interface BlogGridProps {
@@ -171,7 +172,7 @@ export default function BlogGrid({ articulos, initialLang = "es" }: BlogGridProp
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {filtered.map((art) => {
             const localeCode = lang === "fr" ? "fr-FR" : lang === "en" ? "en-US" : "es-ES";
-            const fecha = new Date(art.creado_en).toLocaleDateString(localeCode, {
+            const fecha = new Date(art.fecha_publicacion || art.creado_en).toLocaleDateString(localeCode, {
               day: "numeric",
               month: "short",
               year: "numeric"

@@ -164,13 +164,13 @@ export default function LandingV2Replica() {
   };
 
   const banderasMarquee = [
-    { flag: "🇫🇷", label: "Francés Nativo de París" },
+    { flag: "🇫🇷", label: "Francés Nativo de Francia" },
     { icon: "🥐", label: "Pronunciación Auténtica" },
     { icon: "💼", label: "Francés para Negocios" },
     { icon: "✈️", label: "Francés para Viajes & Vida Diaria" },
     { icon: "🎓", label: "Exámenes DELF (A1-B2)" },
     { icon: "📜", label: "Exámenes DALF (C1-C2)" },
-    { icon: "🍷", label: "Conversación & Cultura Parisina" }
+    { icon: "🍷", label: "Conversación & Cultura Francesa" }
   ];
 
   // Duplicamos el array para que el scroll del Marquee sea 100% perfecto y continuo sin saltos ni cortes
@@ -324,7 +324,7 @@ export default function LandingV2Replica() {
             <div style={{ width: "38px", height: "38px", borderRadius: "10px", backgroundColor: "rgba(255, 255, 255, 0.18)", color: "#ffffff", display: "flex", alignItems: "center", justifyContent: "center", flexShrink: 0 }}>
               <Check size={18} strokeWidth={3} />
             </div>
-            <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>100% Profesor Nativo Parisino</span>
+            <span style={{ fontSize: "15px", fontWeight: 700, letterSpacing: "-0.01em", color: "#ffffff" }}>100% Profesor Nativo de Francia</span>
           </div>
 
           <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "14px" }}>
@@ -573,7 +573,7 @@ export default function LandingV2Replica() {
             CONFIADO POR MÁS DE 200 ALUMNOS Y PROFESIONALES EN TODO EL MUNDO
           </span>
           <div style={{ display: "flex", justifyContent: "center", alignItems: "center", gap: "48px", flexWrap: "wrap", opacity: 0.7 }}>
-            <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>🇫🇷 París, Francia</span>
+            <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>🇫🇷 Francia</span>
             <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>🌐 Microsoft Teams</span>
             <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>📜 DALF C2 Certified</span>
             <span style={{ fontSize: "16px", fontWeight: 800, color: "#475569" }}>💳 Stripe Payments</span>
@@ -806,7 +806,7 @@ export default function LandingV2Replica() {
             />
             {/* Badges Flotantes de Glassmorphism en la Ilustración */}
             <div style={{ position: "absolute", top: "16px", left: "16px", backgroundColor: "rgba(255,255,255,0.85)", backdropFilter: "blur(10px)", padding: "8px 14px", borderRadius: "16px", boxShadow: "0 8px 20px rgba(0,0,0,0.08)", fontSize: "12px", fontWeight: 800, color: "#0f172a" }}>
-              🇫🇷 París (Francia)
+              🇫🇷 Francia
             </div>
             <div style={{ position: "absolute", bottom: "16px", right: "16px", backgroundColor: "rgba(255,255,255,0.85)", backdropFilter: "blur(10px)", padding: "8px 14px", borderRadius: "16px", boxShadow: "0 8px 20px rgba(0,0,0,0.08)", fontSize: "12px", fontWeight: 800, color: "#0f172a" }}>
               🌎 Latam (🇵🇪 🇨🇴 🇦🇷)
@@ -1088,7 +1088,7 @@ export default function LandingV2Replica() {
             <div>
               <h4 style={{ fontSize: "16px", fontWeight: 800, color: "#ffffff", marginBottom: "20px" }}>Contacto Directo</h4>
               <ul style={{ listStyle: "none", padding: 0, margin: 0, fontSize: "14px", fontWeight: 500, color: "#94a3b8", display: "flex", flexDirection: "column", gap: "12px" }}>
-                <li>📍 París, Francia</li>
+                <li>📍 Francia</li>
                 <li>
                   <a 
                     href={`mailto:${config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}`}

@@ -2503,7 +2503,7 @@ export default function AlumnoPortal() {
                       onChange={(e) => setUserTimeZone(e.target.value)}
                       style={{ cursor: "pointer", padding: "10px 14px", borderRadius: "8px", border: "1px solid #cbd5e1" }}
                     >
-                      <option value="Europe/Paris">París, Francia (CET/CEST)</option>
+                      <option value="Europe/Paris">Francia (CET/CEST)</option>
                       <option value="Europe/Madrid">Madrid, España (CET/CEST)</option>
                       <option value="America/Lima">Lima, Perú (PET - UTC-5)</option>
                       <option value="America/Bogota">Bogotá, Colombia (COT - UTC-5)</option>

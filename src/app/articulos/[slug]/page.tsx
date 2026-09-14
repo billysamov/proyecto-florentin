@@ -17,7 +17,7 @@ const fallbackArticulos = [
     slug: "como-pronunciar-la-r-francesa-guia-definitiva",
     titulo: "Cómo pronunciar la \"R\" francesa sin morir en el intento",
     extracto:
-      "Descubre el método anatómico y los 3 ejercicios prácticos que uso con mis alumnos de París para dominar la R gutural francesa desde la primera semana.",
+      "Descubre el método anatómico y los 3 ejercicios prácticos que uso con mis alumnos para dominar la R gutural francesa desde la primera semana.",
     contenido: `## El mito del sonido imposible
 
 Para la gran mayoría de hispanohablantes, la **R francesa** (técnicamente conocida como fricativa uvular sonora) parece un obstáculo insuperable. Sin embargo, no se trata de fuerza ni de suerte: se trata de comprender **dónde** se produce el sonido en tu boca.
@@ -34,7 +34,7 @@ El mejor punto de partida es imitar la posición que adopta tu garganta al hacer
 2. Siente cómo la parte posterior de la lengua sube ligeramente hacia el velo del paladar.
 3. Exhala aire suavemente: notarás una vibración suave sin forzar la laringe.
 
-> **💡 Consejo parisino:** No intentes raspar la garganta con agresividad como si fuera una "J" española fuerte. La R francesa moderna en París es suave y fluida, casi un suspiro con fricción.
+> **💡 Consejo de pronunciación:** No intentes raspar la garganta con agresividad como si fuera una "J" española fuerte. La R francesa moderna es suave y fluida, casi un suspiro con fricción.
 
 ---
 
@@ -44,7 +44,7 @@ Apoya la punta de tu lengua detrás de los dientes incisivos inferiores y **mant
 
 - **Tra** -> *Train* (Tren)
 - **Gra** -> *Grand* (Grande)
-- **Par** -> *Paris* (París)
+- **Fra** -> *France* (Francia)
 - **Mer** -> *Merci* (Gracias)
 
 Notarás que al principio suena exagerado, pero con 5 minutos de práctica diaria frente al espejo, tu cerebro creará el nuevo camino neuromuscular.
@@ -56,7 +56,7 @@ Notarás que al principio suena exagerado, pero con 5 minutos de práctica diari
 En mis clases individuales 1 a 1 corregimos tu postura vocal, entonación y ritmo desde la primera lección para que hables con total naturalidad y seguridad. ¡Reserva tu sesión de prueba gratuita y compruébalo tú mismo!`,
     titulo_fr: "Comment prononcer le \"R\" français sans effort",
     extracto_fr:
-      "Découvrez la méthode anatomique et les 3 exercices pratiques que j'utilise avec mes élèves à Paris pour maîtriser le R français dès la première semaine.",
+      "Découvrez la méthode anatomique et les 3 exercices pratiques que j'utilise avec mes élèves pour maîtriser le R français dès la première semaine.",
     contenido_fr: `## Le mythe du son impossible
 
 Pour beaucoup d'apprenants, le **R français** semble être un obstacle insurmontable. Pourtant, ce n'est ni une question de force ni de hasard : il s'agit simplement de comprendre **où** le son est produit dans votre bouche.
@@ -73,7 +73,7 @@ Le meilleur point de départ est d'imiter la position de votre gorge lorsque vou
 2. Sentez l'arrière de votre langue remonter vers le voile du palais.
 3. Expirez doucement : vous obtiendrez une légère vibration sans forcer sur les cordes vocales.
 
-> **💡 Conseil parisien :** Ne forcez pas la gorge de manière agressive. Le R parisien moderne est doux, fluide et presque aérien.
+> **💡 Conseil de prononciation :** Ne forcez pas la gorge de manière agressive. Le R français moderne est doux, fluide et presque aérien.
 
 ---
 
@@ -83,7 +83,7 @@ Gardez la pointe de la langue bien collée derrière vos dents du bas. Répétez
 
 - **Train**
 - **Grand**
-- **Paris**
+- **France**
 - **Merci**
 
 ---
@@ -93,7 +93,7 @@ Gardez la pointe de la langue bien collée derrière vos dents du bas. Répétez
 Dans mes cours particuliers 1 à 1, nous travaillons votre prononciation et votre aisance pour que vous parliez avec plaisir et confiance. Réservez votre séance d'essai gratuite !`,
     titulo_en: "How to Pronounce the French \"R\" Without the Struggle",
     extracto_en:
-      "Discover the anatomical technique and 3 practical exercises I use with my students in Paris to master the French guttural R from week one.",
+      "Discover the anatomical technique and 3 practical exercises I use with my students to master the French guttural R from week one.",
     contenido_en: `## The Myth of the Impossible Sound
 
 For many learners, the **French R** seems like an insurmountable barrier. However, it is not about force or throat scraping: it is about understanding **where** the sound is produced in your mouth.
@@ -110,7 +110,7 @@ The easiest way to locate the right muscle is to mimic the gentle throat positio
 2. Feel the back of your tongue rise toward your soft palate.
 3. Exhale smoothly: you will produce a gentle friction sound.
 
-> **💡 Parisian Tip:** Never scrape aggressively. The modern Parisian R is soft, subtle, and effortless.
+> **💡 Pronunciation Tip:** Never scrape aggressively. The modern French R is soft, subtle, and effortless.
 
 ---
 
@@ -120,7 +120,7 @@ Keep the tip of your tongue locked behind your lower teeth and pronounce:
 
 - **Train**
 - **Grand**
-- **Paris**
+- **France**
 - **Merci**
 
 ---
@@ -134,7 +134,7 @@ In my 1-on-1 private lessons, we refine your accent and natural flow from day on
     palabras_clave: "pronunciacion francesa, r francesa, hablar frances, fonetica francesa",
     meta_titulo: "Cómo pronunciar la R francesa: Guía paso a paso | Florentin",
     meta_descripcion:
-      "Aprende a pronunciar la R francesa de forma natural con técnicas anatómicas y ejercicios prácticos de un profesor nativo parisino.",
+      "Aprende a pronunciar la R francesa de forma natural con técnicas anatómicas y ejercicios prácticos de un profesor nativo de Francia.",
     tiempo_lectura: 4,
     idioma: "es",
     autor: "Florentin",
@@ -258,13 +258,13 @@ A determiner means an article (*un, une, le, la*) or a possessive (*mon, ma, ton
   },
   {
     id: 3,
-    slug: "vocabulario-esencial-restaurante-paris",
-    titulo: "Cómo pedir en un restaurante en París como un auténtico local",
+    slug: "vocabulario-esencial-restaurante-francia",
+    titulo: "Cómo pedir en un restaurante en Francia como un auténtico local",
     extracto:
-      "Las frases indispensables, las normas de cortesía que los parisinos aprecian y los errores más comunes al pedir la cuenta.",
-    contenido: `## La gastronomía en París: Una experiencia cultural
+      "Las frases indispensables, las normas de cortesía que los franceses aprecian y los errores más comunes al pedir la cuenta.",
+    contenido: `## La gastronomía en Francia: Una experiencia cultural
 
-Comer en un bistró o café en París es mucho más que alimentarse: es un ritual social. Para disfrutarlo al máximo y recibir un servicio amable, hay una serie de fórmulas de cortesía y vocabulario clave que debes conocer.
+Comer en un bistró o café en Francia es mucho más que alimentarse: es un ritual social. Para disfrutarlo al máximo y recibir un servicio amable, hay una serie de fórmulas de cortesía y vocabulario clave que debes conocer.
 
 ---
 
@@ -292,12 +292,12 @@ Si pides una mesa o la carta directamente sin saludar, en la cultura francesa pu
 #### Al momento de pagar:
 - **L'addition, s'il vous plaît.** *(La cuenta, por favor.)*
 - **Est-ce que je peux payer par carte ?** *(¿Puedo pagar con tarjeta?)*`,
-    titulo_fr: "Comment commander au restaurant à Paris comme un vrai local",
+    titulo_fr: "Comment commander au restaurant en France comme un vrai local",
     extracto_fr:
-      "Les phrases indispensables, les codes de politesse parisiens et les astuces pour profiter pleinement des cafés et bistrots.",
-    contenido_fr: `## La gastronomie à Paris : Un rituel culturel
+      "Les phrases indispensables, les codes de politesse français et les astuces pour profiter pleinement des cafés et bistrots.",
+    contenido_fr: `## La gastronomie en France : Un rituel culturel
 
-Prendre un café ou déjeuner dans un bistrot parisien est un art de vivre. Voici les expressions clés et les formules de politesse indispensables.
+Prendre un café ou déjeuner dans un bistrot français est un art de vivre. Voici les expressions clés et les formules de politesse indispensables.
 
 ---
 
@@ -317,12 +317,12 @@ Un *"Bonjour"* souriant transforme immédiatement l'accueil et la relation avec 
 - **Pour moi, ce sera le plat du jour.**
 - **Une carafe d'eau, s'il vous plaît.** *(L'eau du robinet est excellente et toujours gratuite en France !)*
 - **L'addition, s'il vous plaît.**`,
-    titulo_en: "How to Order at a Restaurant in Paris Like a True Local",
+    titulo_en: "How to Order at a Restaurant in France Like a True Local",
     extracto_en:
-      "Essential phrases, cultural etiquette that Parisians appreciate, and tips on water, tipping, and paying the bill.",
-    contenido_en: `## Dining in Paris: A Cultural Ritual
+      "Essential phrases, cultural etiquette that French people appreciate, and tips on water, tipping, and paying the bill.",
+    contenido_en: `## Dining in France: A Cultural Ritual
 
-Sitting at a Parisian terrace or bistro is a cherished cultural experience. Here are the polite formulas and essential vocabulary to enjoy it like a Parisian.
+Sitting at a terrace or bistro is a cherished cultural experience in France. Here are the polite formulas and essential vocabulary to enjoy it like a local.
 
 ---
 
@@ -345,10 +345,10 @@ In French culture, greeting first is essential polite etiquette that sets a frie
     imagen_portada:
       "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=80",
     categoria: "Cultura & Viajes",
-    palabras_clave: "frances para viajar, restaurante paris, vocabulario frances comida",
-    meta_titulo: "Vocabulario Francés para Restaurantes en París | Florentin",
+    palabras_clave: "frances para viajar, restaurante francia, vocabulario frances comida",
+    meta_titulo: "Vocabulario Francés para Restaurantes en Francia | Florentin",
     meta_descripcion:
-      "Aprende las frases esenciales y fórmulas de cortesía para ordenar en cafés y restaurantes parisinos como un local.",
+      "Aprende las frases esenciales y fórmulas de cortesía para ordenar en cafés y restaurantes franceses como un local.",
     tiempo_lectura: 3,
     idioma: "es",
     autor: "Florentin",
@@ -367,6 +367,13 @@ async function getArticuloBySlug(slug: string) {
       .single();
 
     if (!error && data) {
+      // Si el artículo es un borrador o está programado para el futuro, no es visible públicamente
+      const now = new Date();
+      if (!data.publicado) return null;
+      if (data.fecha_publicacion && new Date(data.fecha_publicacion) > now) {
+        return null;
+      }
+
       supabase
         .from("articulos")
         .update({ visitas: (data.visitas || 0) + 1 })

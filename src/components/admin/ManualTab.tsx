@@ -279,7 +279,7 @@ export default function ManualTab({ lang = "es" }: ManualTabProps) {
         {/* Firma de Autenticidad */}
         <div style={{ marginTop: "60px", paddingTop: "20px", borderTop: "1px solid #e2e8f0", display: "flex", justifyContent: "space-between", fontSize: "12px", color: "#64748b" }}>
           <span>© {new Date().getFullYear()} Florentin Portal. {isFr ? "Documentation Interne." : "Documentación Interna."}</span>
-          <span>{isFr ? "Paris, France" : "París, Francia"}</span>
+          <span>{isFr ? "France" : "Francia"}</span>
         </div>
 
       </div>

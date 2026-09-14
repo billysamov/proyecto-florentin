@@ -88,16 +88,16 @@ renderSectionWithImage(2, 'Hero Principal (Portada)', 'section_2.png', [
   { code: '2.1', label: 'Insignia de Calificación Superior:', current: '4.9/5 • +200 Alumnos Formados' },
   { code: '2.2', label: 'Titular H1 Principal (Línea 1):', current: 'Habla Francés,' },
   { code: '2.3', label: 'Titular H1 Principal (Línea 2):', current: 'Conéctate con el Mundo' },
-  { code: '2.4', label: 'Subtítulo Descriptivo de Portada:', current: 'Aprende francés fluido con Florentin, profesor nativo nacido en París. Clases particulares 1 a 1 en vivo por Google Meet, corrigiendo tu acento en tiempo real.', multiline: true },
+  { code: '2.4', label: 'Subtítulo Descriptivo de Portada:', current: 'Aprende francés fluido con Florentin, profesor nativo de Francia. Clases particulares 1 a 1 en vivo por Google Meet, corrigiendo tu acento en tiempo real.', multiline: true },
   { code: '2.5', label: 'Texto Botón Primario CTA:', current: 'Agendar Clase Gratuita' },
   { code: '2.6', label: 'Texto Sub-etiqueta Botón CTA:', current: 'Sin compromisos de tarjeta' },
-  { code: '2.7', label: 'Badge Flotante en Foto Hero (Título & Texto):', current: 'Florentin • Nativo de París | Clases 100% Personalizadas 1 a 1', multiline: true },
+  { code: '2.7', label: 'Badge Flotante en Foto Hero (Título & Texto):', current: 'Florentin • Nativo de Francia | Clases 100% Personalizadas 1 a 1', multiline: true },
   { code: '2.8', label: 'Items Marquee Banderas / Especialidades:', current: 'Francés Nativo, Pronunciación, Negocios, Viajes, DELF, DALF, Cultura', multiline: true }
 ]);
 
 // 3. Cinta Azul de Garantías
 renderSectionWithImage(3, 'Cinta Azul de Garantías Clave', 'section_3.png', [
-  { code: '3.1', label: 'Garantía 1 (Recuadro 1):', current: '100% Profesor Nativo Parisino' },
+  { code: '3.1', label: 'Garantía 1 (Recuadro 1):', current: '100% Profesor Nativo de Francia' },
   { code: '3.2', label: 'Garantía 2 (Recuadro 2):', current: 'Reserva Flexible 24/7' },
   { code: '3.3', label: 'Garantía 3 (Recuadro 3):', current: 'Enfoque Conversacional Real' },
   { code: '3.4', label: 'Garantía 4 (Recuadro 4):', current: 'Preparación DELF / DALF' }
@@ -121,7 +121,7 @@ renderSectionWithImage(4, 'Tarjetas Bento ("¿Por Qué Elegir a Florentin?")', '
 // 5. Barra de Confianza / Logos
 renderSectionWithImage(5, 'Barra de Respaldos y Confianza', 'section_5.png', [
   { code: '5.1', label: 'Título Superior de Barra:', current: 'CONFIADO POR MÁS DE 200 ALUMNOS Y PROFESIONALES EN TODO EL MUNDO' },
-  { code: '5.2', label: 'Elementos de Confianza (París, Google Meet, DALF C2, Stripe, 4.9/5):', current: 'París, Francia | Google Meet | DALF C2 Certified | Stripe | 4.9/5', multiline: true }
+  { code: '5.2', label: 'Elementos de Confianza (Francia, Google Meet, DALF C2, Stripe, 4.9/5):', current: 'Francia | Google Meet | DALF C2 Certified | Stripe | 4.9/5', multiline: true }
 ]);
 
 // 6. Clases desde Casa
@@ -179,7 +179,7 @@ renderSectionWithImage(11, 'Sección Doble: Particulares vs. Empresas', 'section
 // 12. Pie de Página Footer
 renderSectionWithImage(12, 'Pie de Página Footer (Ling+)', 'section_12.png', [
   { code: '12.1', label: 'Columna 1 - Cursos & Niveles:', current: 'Francés Principiantes (A1-A2), Intermedio (B1-B2), Avanzado (C1-C2), Exámenes DELF & DALF', multiline: true },
-  { code: '12.2', label: 'Columna 2 - Contacto Directo:', current: '📍 París, Francia | 💬 WhatsApp: +33 7 44 32 13 56 | 🌐 Clases Online por Google Meet', multiline: true },
+  { code: '12.2', label: 'Columna 2 - Contacto Directo:', current: '📍 Francia | 💬 WhatsApp: +33 7 44 32 13 56 | 🌐 Clases Online por Google Meet', multiline: true },
   { code: '12.3', label: 'Columna 3 - Recursos & Enlaces:', current: 'Portal Alumnos, Acceso Administrador, Privacidad, Términos y Condiciones', multiline: true },
   { code: '12.4', label: 'Nombre de Marca Gigante & Copyright:', current: 'Ling+ | © 2026 Florentin French • Ling+ Edition. Todos los derechos reservados.' }
 ]);

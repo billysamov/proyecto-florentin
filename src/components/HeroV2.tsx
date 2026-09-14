@@ -37,7 +37,7 @@ const DEFAULT_BADGES: HeroBadgeItem[] = [
 ];
 
 const DEFAULT_MARQUEE = [
-  { flag: "🇫🇷", label: "Nativo de Paris"       },
+  { flag: "🇫🇷", label: "Nativo de Francia"     },
   { flag: "🎙️", label: "Correccion de Acento" },
   { flag: "📅", label: "Horarios Flexibles"   },
   { flag: "💻", label: "Clases 1 a 1"         },

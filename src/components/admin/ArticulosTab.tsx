@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleContent from "@/components/blog/ArticleContent";
+import { translateArticleBundle, translateTextChunk, translateLongText } from "@/lib/translator";
 import {
   Plus,
   Search,
@@ -48,6 +49,7 @@ export interface ArticuloAdmin {
   idioma: string;
   autor: string | null;
   publicado: boolean;
+  fecha_publicacion?: string | null;
   visitas: number;
   creado_en: string;
   actualizado_en: string;
@@ -60,15 +62,15 @@ interface ArticulosTabProps {
 // Portadas predefinidas de alta calidad para selección rápida
 const PRESET_IMAGES = [
   {
-    name: "París & Torre Eiffel",
+    name: "Francia & Cultura",
     url: "https://images.unsplash.com/photo-1502602898657-3e91760cbb34?auto=format&fit=crop&w=1200&q=80"
   },
   {
-    name: "Café / Bistro Parisino",
+    name: "Café & Bistro Francés",
     url: "https://images.unsplash.com/photo-1550966871-3ed3cdb5ed0c?auto=format&fit=crop&w=1200&q=80"
   },
   {
-    name: "Calles de Montmartre",
+    name: "Calles de Francia",
     url: "https://images.unsplash.com/photo-1499856871958-5b9627545d1a?auto=format&fit=crop&w=1200&q=80"
   },
   {
@@ -103,7 +105,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
   const [articulos, setArticulos] = useState<ArticuloAdmin[]>([]);
   const [loading, setLoading] = useState(true);
   const [searchTerm, setSearchTerm] = useState("");
-  const [filtroEstado, setFiltroEstado] = useState<"todos" | "publicados" | "borradores">("todos");
+  const [filtroEstado, setFiltroEstado] = useState<"todos" | "publicados" | "programados" | "borradores">("todos");
   const [tableMissing, setTableMissing] = useState(false);
 
   // Estados del Modal de Edición / Creación
@@ -113,6 +115,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
   const [previewMode, setPreviewMode] = useState(false);
   const [guardando, setGuardando] = useState(false);
   const [autoTraduciendo, setAutoTraduciendo] = useState(false);
+  const [estadoTraduccion, setEstadoTraduccion] = useState<string | null>(null);
   const [mensajeExito, setMensajeExito] = useState<string | null>(null);
   const [mensajeError, setMensajeError] = useState<string | null>(null);
 
@@ -143,6 +146,8 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
   const [formMetaDesc, setFormMetaDesc] = useState("");
   const [formTiempoLectura, setFormTiempoLectura] = useState(5);
   const [formPublicado, setFormPublicado] = useState(false);
+  const [tipoPublicacion, setTipoPublicacion] = useState<"borrador" | "inmediato" | "programado">("borrador");
+  const [formFechaProgramada, setFormFechaProgramada] = useState("");
 
   // Estados para subida de imagen
   const [subiendoImagen, setSubiendoImagen] = useState(false);
@@ -271,7 +276,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
     setFormSlug("");
     setFormExtracto("");
     setFormContenido(
-      `## Introducción al tema\n\nEscribe aquí el contenido de tu artículo. Puedes usar negritas con **palabras clave**, listas y consejos.\n\n> 💡 Consejo de Florentin: Los parisinos aprecian que uses expresiones auténticas.`
+      `## Introducción al tema\n\nEscribe aquí el contenido de tu artículo. Puedes usar negritas con **palabras clave**, listas y consejos.\n\n> 💡 Consejo de Florentin: Los franceses aprecian que uses expresiones auténticas.`
     );
     // Limpiar campos FR
     setFormTituloFr("");
@@ -289,6 +294,13 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
     setFormMetaDesc("");
     setFormTiempoLectura(3);
     setFormPublicado(false);
+    setTipoPublicacion("borrador");
+    // Fecha sugerida: Mañana a las 09:00 AM
+    const manana = new Date();
+    manana.setDate(manana.getDate() + 1);
+    manana.setHours(9, 0, 0, 0);
+    const localIso = new Date(manana.getTime() - manana.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+    setFormFechaProgramada(localIso);
     setMensajeError(null);
     setMensajeExito(null);
     setModalOpen(true);
@@ -321,12 +333,30 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
     setFormMetaDesc(art.meta_descripcion || "");
     setFormTiempoLectura(art.tiempo_lectura || 5);
     setFormPublicado(art.publicado);
+    
+    // Determinar si es borrador, publicado o programado
+    const now = new Date();
+    if (!art.publicado) {
+      setTipoPublicacion("borrador");
+      const defaultD = new Date(now.getTime() + 24 * 60 * 60 * 1000);
+      defaultD.setHours(9, 0, 0, 0);
+      setFormFechaProgramada(new Date(defaultD.getTime() - defaultD.getTimezoneOffset() * 60000).toISOString().slice(0, 16));
+    } else if (art.fecha_publicacion && new Date(art.fecha_publicacion) > now) {
+      setTipoPublicacion("programado");
+      const d = new Date(art.fecha_publicacion);
+      setFormFechaProgramada(new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16));
+    } else {
+      setTipoPublicacion("inmediato");
+      const d = art.fecha_publicacion ? new Date(art.fecha_publicacion) : new Date(art.creado_en);
+      setFormFechaProgramada(new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 16));
+    }
+
     setMensajeError(null);
     setMensajeExito(null);
     setModalOpen(true);
   };
 
-  // Asistente de Auto-Traducción con MyMemory (Gratuito y sin coste de cuota)
+  // Asistente de Auto-Traducción Inteligente Multilingüe (Sin límite de caracteres)
   const handleAutoTraducir = async () => {
     if (!formTitulo.trim() && !formContenido.trim()) {
       alert("Escribe primero el título o contenido en español para traducirlo.");
@@ -335,64 +365,96 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
 
     setAutoTraduciendo(true);
     setMensajeError(null);
+    setEstadoTraduccion("Iniciando auto-traducción completa...");
+
     try {
       // 1. Traducir a Francés
-      if (formTitulo.trim()) {
-        const rTitFr = await fetch(
-          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(formTitulo)}&langpair=es|fr`
-        );
-        const dTitFr = await rTitFr.json();
-        if (dTitFr?.responseData?.translatedText) setFormTituloFr(dTitFr.responseData.translatedText);
-      }
-      if (formExtracto.trim()) {
-        const rExtFr = await fetch(
-          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(formExtracto)}&langpair=es|fr`
-        );
-        const dExtFr = await rExtFr.json();
-        if (dExtFr?.responseData?.translatedText) setFormExtractoFr(dExtFr.responseData.translatedText);
-      }
-      if (formContenido.trim()) {
-        const rCntFr = await fetch(
-          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-            formContenido.slice(0, 1500)
-          )}&langpair=es|fr`
-        );
-        const dCntFr = await rCntFr.json();
-        if (dCntFr?.responseData?.translatedText) setFormContenidoFr(dCntFr.responseData.translatedText);
-      }
+      const bundleFr = await translateArticleBundle(
+        {
+          titulo: formTitulo,
+          extracto: formExtracto,
+          contenido: formContenido
+        },
+        "es",
+        "fr",
+        (status) => setEstadoTraduccion(status)
+      );
+
+      if (bundleFr.titulo) setFormTituloFr(bundleFr.titulo);
+      if (bundleFr.extracto) setFormExtractoFr(bundleFr.extracto);
+      if (bundleFr.contenido) setFormContenidoFr(bundleFr.contenido);
 
       // 2. Traducir a Inglés
-      if (formTitulo.trim()) {
-        const rTitEn = await fetch(
-          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(formTitulo)}&langpair=es|en`
-        );
-        const dTitEn = await rTitEn.json();
-        if (dTitEn?.responseData?.translatedText) setFormTituloEn(dTitEn.responseData.translatedText);
-      }
-      if (formExtracto.trim()) {
-        const rExtEn = await fetch(
-          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(formExtracto)}&langpair=es|en`
-        );
-        const dExtEn = await rExtEn.json();
-        if (dExtEn?.responseData?.translatedText) setFormExtractoEn(dExtEn.responseData.translatedText);
-      }
-      if (formContenido.trim()) {
-        const rCntEn = await fetch(
-          `https://api.mymemory.translated.net/get?q=${encodeURIComponent(
-            formContenido.slice(0, 1500)
-          )}&langpair=es|en`
-        );
-        const dCntEn = await rCntEn.json();
-        if (dCntEn?.responseData?.translatedText) setFormContenidoEn(dCntEn.responseData.translatedText);
+      const bundleEn = await translateArticleBundle(
+        {
+          titulo: formTitulo,
+          extracto: formExtracto,
+          contenido: formContenido
+        },
+        "es",
+        "en",
+        (status) => setEstadoTraduccion(status)
+      );
+
+      if (bundleEn.titulo) setFormTituloEn(bundleEn.titulo);
+      if (bundleEn.extracto) setFormExtractoEn(bundleEn.extracto);
+      if (bundleEn.contenido) setFormContenidoEn(bundleEn.contenido);
+
+      setMensajeExito(
+        "✨ ¡Auto-traducción completada con éxito! Se han generado las versiones en Francés e Inglés sin límite de caracteres."
+      );
+      setTimeout(() => setMensajeExito(null), 5000);
+    } catch (e: any) {
+      console.error(e);
+      setMensajeError("Hubo un problema al auto-traducir: " + (e.message || "Error de red"));
+    } finally {
+      setAutoTraduciendo(false);
+      setEstadoTraduccion(null);
+    }
+  };
+
+  // Traducción individual por idioma bajo demanda
+  const handleTraducirIndividual = async (targetLang: "fr" | "en") => {
+    if (!formTitulo.trim() && !formContenido.trim()) {
+      alert("Escribe primero el título o contenido en español.");
+      return;
+    }
+
+    setAutoTraduciendo(true);
+    setMensajeError(null);
+    const langNombre = targetLang === "fr" ? "Francés" : "Inglés";
+    setEstadoTraduccion(`Traduciendo a ${langNombre}...`);
+
+    try {
+      const bundle = await translateArticleBundle(
+        {
+          titulo: formTitulo,
+          extracto: formExtracto,
+          contenido: formContenido
+        },
+        "es",
+        targetLang,
+        (status) => setEstadoTraduccion(status)
+      );
+
+      if (targetLang === "fr") {
+        if (bundle.titulo) setFormTituloFr(bundle.titulo);
+        if (bundle.extracto) setFormExtractoFr(bundle.extracto);
+        if (bundle.contenido) setFormContenidoFr(bundle.contenido);
+      } else {
+        if (bundle.titulo) setFormTituloEn(bundle.titulo);
+        if (bundle.extracto) setFormExtractoEn(bundle.extracto);
+        if (bundle.contenido) setFormContenidoEn(bundle.contenido);
       }
 
-      setMensajeExito("¡Auto-traducción completada! Revisa las pestañas [Français] y [English] para ajustar detalles.");
+      setMensajeExito(`✨ ¡Traducción a ${langNombre} completada con éxito!`);
       setTimeout(() => setMensajeExito(null), 4000);
     } catch (e: any) {
       console.error(e);
-      alert("Error al auto-traducir: " + e.message);
+      setMensajeError(`Error al traducir a ${langNombre}: ` + (e.message || "Error de conexión"));
     } finally {
       setAutoTraduciendo(false);
+      setEstadoTraduccion(null);
     }
   };
 
@@ -410,6 +472,21 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
 
     setGuardando(true);
     setMensajeError(null);
+
+    // Determinar publicado y fecha_publicacion según el tipo seleccionado
+    let publicadoBool = false;
+    let fechaPublicacionIso: string | null = null;
+
+    if (tipoPublicacion === "inmediato") {
+      publicadoBool = true;
+      fechaPublicacionIso = new Date().toISOString();
+    } else if (tipoPublicacion === "programado") {
+      publicadoBool = true;
+      fechaPublicacionIso = formFechaProgramada ? new Date(formFechaProgramada).toISOString() : new Date().toISOString();
+    } else {
+      publicadoBool = false;
+      fechaPublicacionIso = null;
+    }
 
     const payload = {
       titulo: formTitulo.trim(),
@@ -429,7 +506,8 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
       meta_descripcion: formMetaDesc.trim() || formExtracto.trim(),
       tiempo_lectura: formTiempoLectura,
       idioma: "es",
-      publicado: formPublicado,
+      publicado: publicadoBool,
+      fecha_publicacion: fechaPublicacionIso,
       autor: "Florentin",
       actualizado_en: new Date().toISOString()
     };
@@ -508,17 +586,34 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
         (art.titulo_fr && art.titulo_fr.toLowerCase().includes(searchTerm.toLowerCase())) ||
         (art.titulo_en && art.titulo_en.toLowerCase().includes(searchTerm.toLowerCase()));
 
+      const now = new Date();
+      const esProgramado = art.publicado && !!art.fecha_publicacion && new Date(art.fecha_publicacion) > now;
+      const esPublicado = art.publicado && (!art.fecha_publicacion || new Date(art.fecha_publicacion) <= now);
+      const esBorrador = !art.publicado;
+
       const matchEstado =
-        filtroEstado === "todos" ? true : filtroEstado === "publicados" ? art.publicado : !art.publicado;
+        filtroEstado === "todos"
+          ? true
+          : filtroEstado === "publicados"
+          ? esPublicado
+          : filtroEstado === "programados"
+          ? esProgramado
+          : esBorrador;
 
       return matchSearch && matchEstado;
     });
   }, [articulos, searchTerm, filtroEstado]);
 
   // Métricas
+  const now = new Date();
   const totalArticulos = articulos.length;
-  const totalPublicados = articulos.filter((a) => a.publicado).length;
-  const totalBorradores = totalArticulos - totalPublicados;
+  const totalPublicados = articulos.filter(
+    (a) => a.publicado && (!a.fecha_publicacion || new Date(a.fecha_publicacion) <= now)
+  ).length;
+  const totalProgramados = articulos.filter(
+    (a) => a.publicado && !!a.fecha_publicacion && new Date(a.fecha_publicacion) > now
+  ).length;
+  const totalBorradores = articulos.filter((a) => !a.publicado).length;
   const totalVisitas = articulos.reduce((acc, curr) => acc + (curr.visitas || 0), 0);
 
   // Inserciones rápidas en el editor Markdown
@@ -582,7 +677,19 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
           <div>
             <div className="text-2xl font-black text-emerald-600">{totalPublicados}</div>
             <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
-              {lang === "fr" ? "Publiés en Ligne" : "Publicados en Línea"}
+              {lang === "fr" ? "Publiés en Ligne" : "Publicados"}
+            </div>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-2xl p-6 border border-slate-200 shadow-sm flex items-center gap-4">
+          <div className="w-12 h-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <Clock size={24} />
+          </div>
+          <div>
+            <div className="text-2xl font-black text-blue-600">{totalProgramados}</div>
+            <div className="text-xs font-bold text-slate-400 uppercase tracking-wider">
+              {lang === "fr" ? "Programmés" : "Programados"}
             </div>
           </div>
         </div>
@@ -635,6 +742,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
           >
             <option value="todos">{lang === "fr" ? "Tous les états" : "Todos los estados"}</option>
             <option value="publicados">{lang === "fr" ? "Publiés" : "Publicados"}</option>
+            <option value="programados">{lang === "fr" ? "Programmés (🕒)" : "Programados (🕒)"}</option>
             <option value="borradores">{lang === "fr" ? "Brouillons" : "Borradores"}</option>
           </select>
         </div>
@@ -756,22 +864,54 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                         </div>
                       </td>
 
-                      {/* Switch Publicado */}
+                      {/* Estado y Programación */}
                       <td className="py-4 px-6">
-                        <button
-                          type="button"
-                          onClick={() => togglePublicado(art)}
-                          className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer select-none ${
-                            art.publicado
-                              ? "bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100"
-                              : "bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200"
-                          }`}
-                        >
-                          <span
-                            className={`w-2 h-2 rounded-full ${art.publicado ? "bg-emerald-500 animate-pulse" : "bg-slate-400"}`}
-                          />
-                          {art.publicado ? (lang === "fr" ? "Publié" : "Publicado") : (lang === "fr" ? "Brouillon" : "Borrador")}
-                        </button>
+                        {(() => {
+                          const now = new Date();
+                          const esProgramado = art.publicado && !!art.fecha_publicacion && new Date(art.fecha_publicacion) > now;
+                          const esPublicado = art.publicado && (!art.fecha_publicacion || new Date(art.fecha_publicacion) <= now);
+
+                          if (esProgramado) {
+                            const fechaProg = new Date(art.fecha_publicacion!);
+                            return (
+                              <div className="space-y-1">
+                                <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-bold bg-blue-50 text-blue-700 border border-blue-200 shadow-xs">
+                                  <Clock size={12} className="text-blue-600 animate-spin-slow" />
+                                  {lang === "fr" ? "Programmé" : "Programado"}
+                                </span>
+                                <div className="text-[10px] text-slate-500 font-semibold flex items-center gap-1">
+                                  <span>📅 {fechaProg.toLocaleDateString(lang === "fr" ? "fr-FR" : "es-ES", { day: "numeric", month: "short" })} · {fechaProg.toLocaleTimeString(lang === "fr" ? "fr-FR" : "es-ES", { hour: "2-digit", minute: "2-digit" })}</span>
+                                </div>
+                              </div>
+                            );
+                          }
+
+                          if (esPublicado) {
+                            return (
+                              <button
+                                type="button"
+                                onClick={() => togglePublicado(art)}
+                                title="Clic para cambiar a borrador"
+                                className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer select-none bg-emerald-50 text-emerald-700 border border-emerald-200 hover:bg-emerald-100 shadow-xs"
+                              >
+                                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+                                {lang === "fr" ? "Publié" : "Publicado"}
+                              </button>
+                            );
+                          }
+
+                          return (
+                            <button
+                              type="button"
+                              onClick={() => togglePublicado(art)}
+                              title="Clic para publicar de inmediato"
+                              className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-bold transition-all cursor-pointer select-none bg-slate-100 text-slate-500 border border-slate-200 hover:bg-slate-200"
+                            >
+                              <span className="w-2 h-2 rounded-full bg-slate-400" />
+                              {lang === "fr" ? "Brouillon" : "Borrador"}
+                            </button>
+                          );
+                        })()}
                       </td>
 
                       {/* Visitas */}
@@ -915,10 +1055,10 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                   onClick={handleAutoTraducir}
                   disabled={autoTraduciendo}
                   className="inline-flex items-center gap-1.5 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700 text-white px-4 py-2 rounded-xl text-xs font-bold shadow-sm transition-all hover:scale-105 disabled:opacity-50"
-                  title="Traduce automáticamente desde el español hacia el francés y el inglés de forma gratuita"
+                  title="Traduce automáticamente el artículo completo a Francés e Inglés sin límite de longitud"
                 >
                   <Sparkles size={14} className={autoTraduciendo ? "animate-spin" : ""} />
-                  {autoTraduciendo ? "Traduciendo a FR y EN..." : "✨ Auto-traducir a FR y EN"}
+                  {autoTraduciendo ? (estadoTraduccion || "Traduciendo a FR y EN...") : "✨ Auto-traducir a FR y EN (Completo)"}
                 </button>
               </div>
 
@@ -928,8 +1068,9 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                 {/* 🇪🇸 CAPA ESPAÑOL */}
                 {capaIdioma === "es" && (
                   <div className="space-y-5 bg-blue-50/20 p-5 rounded-2xl border border-blue-100">
-                    <div className="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center gap-1">
+                    <div className="text-xs font-bold text-blue-900 uppercase tracking-wider flex items-center justify-between">
                       <span>🇪🇸 Contenido en Español (Versión Base)</span>
+                      <span className="text-[11px] text-blue-700 font-medium">Idioma principal de redacción</span>
                     </div>
 
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
@@ -997,8 +1138,20 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                 {/* 🇫🇷 CAPA FRANCÉS */}
                 {capaIdioma === "fr" && (
                   <div className="space-y-5 bg-indigo-50/30 p-5 rounded-2xl border border-indigo-100">
-                    <div className="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1">
-                      <span>🇫🇷 Contenu en Français</span>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-indigo-900 uppercase tracking-wider flex items-center gap-1">
+                        <span>🇫🇷 Contenu en Français</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleTraducirIndividual("fr")}
+                        disabled={autoTraduciendo}
+                        className="text-xs font-bold text-indigo-600 hover:text-indigo-800 flex items-center gap-1 bg-white px-3 py-1 rounded-xl border border-indigo-200 shadow-sm transition-all hover:scale-105 disabled:opacity-50"
+                        title="Auto-traducir todo el artículo a francés"
+                      >
+                        <Sparkles size={13} className={autoTraduciendo ? "animate-spin" : ""} />
+                        Auto-traducir a Francés
+                      </button>
                     </div>
 
                     <div>
@@ -1032,8 +1185,20 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                 {/* 🇬🇧 CAPA INGLÉS */}
                 {capaIdioma === "en" && (
                   <div className="space-y-5 bg-purple-50/30 p-5 rounded-2xl border border-purple-100">
-                    <div className="text-xs font-bold text-purple-900 uppercase tracking-wider flex items-center gap-1">
-                      <span>🇬🇧 English Content</span>
+                    <div className="flex items-center justify-between">
+                      <div className="text-xs font-bold text-purple-900 uppercase tracking-wider flex items-center gap-1">
+                        <span>🇬🇧 English Content</span>
+                      </div>
+                      <button
+                        type="button"
+                        onClick={() => handleTraducirIndividual("en")}
+                        disabled={autoTraduciendo}
+                        className="text-xs font-bold text-purple-600 hover:text-purple-800 flex items-center gap-1 bg-white px-3 py-1 rounded-xl border border-purple-200 shadow-sm transition-all hover:scale-105 disabled:opacity-50"
+                        title="Auto-traducir todo el artículo a inglés"
+                      >
+                        <Sparkles size={13} className={autoTraduciendo ? "animate-spin" : ""} />
+                        Auto-translate to English
+                      </button>
                     </div>
 
                     <div>
@@ -1143,6 +1308,14 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                         >
                           • Lista
                         </button>
+                        <button
+                          type="button"
+                          onClick={() => insertarEnContenido("<br>\n")}
+                          className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-100 font-mono text-slate-700"
+                          title="Insertar salto de línea explícito (<br>)"
+                        >
+                          ↵ &lt;br&gt;
+                        </button>
                       </div>
                     )}
                   </div>
@@ -1177,6 +1350,30 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                         <ArticleContent content={currentCapaContent} />
                       </div>
                     )}
+
+                    {/* Barra de estadísticas y longitud ilimitada */}
+                    <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 mt-2 text-xs text-slate-500">
+                      <div className="flex items-center gap-2">
+                        <span className="font-bold text-slate-700">
+                          📊 {(capaIdioma === "fr" ? formContenidoFr : capaIdioma === "en" ? formContenidoEn : formContenido).trim() ? (capaIdioma === "fr" ? formContenidoFr : capaIdioma === "en" ? formContenidoEn : formContenido).trim().split(/\s+/).filter(Boolean).length : 0} palabras · {(capaIdioma === "fr" ? formContenidoFr : capaIdioma === "en" ? formContenidoEn : formContenido).length.toLocaleString()} caracteres
+                        </span>
+                        <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                          ✓ Longitud Ilimitada
+                        </span>
+                      </div>
+
+                      {capaIdioma !== "es" && (
+                        <button
+                          type="button"
+                          onClick={() => handleTraducirIndividual(capaIdioma)}
+                          disabled={autoTraduciendo}
+                          className="inline-flex items-center gap-1 font-bold text-blue-600 hover:text-blue-800 hover:underline disabled:opacity-50"
+                        >
+                          <Sparkles size={12} className={autoTraduciendo ? "animate-spin" : ""} />
+                          {autoTraduciendo ? (estadoTraduccion || "Traduciendo...") : `Re-traducir solo este cuerpo (${capaIdioma.toUpperCase()})`}
+                        </button>
+                      )}
+                    </div>
                   </div>
                 </div>
 
@@ -1225,7 +1422,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                         Imagen de Portada del Artículo
                       </label>
                       <p className="text-[11px] text-slate-500 mt-0.5">
-                        Sube una foto desde tu equipo, ingresa un enlace de internet o elige una postal de París.
+                        Sube una foto desde tu equipo, ingresa un enlace de internet o elige una postal de Francia.
                       </p>
                     </div>
 
@@ -1355,7 +1552,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                     </div>
                   )}
 
-                  {/* MODO 3: PRESETS PARÍS */}
+                  {/* MODO 3: PRESETS FRANCIA */}
                   {modoImagen === "presets" && (
                     <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
                       {PRESET_IMAGES.map((img, idx) => (
@@ -1379,26 +1576,97 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                   )}
                 </div>
 
-                {/* Switch de Publicación */}
-                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 flex items-center justify-between">
-                  <div>
-                    <div className="font-bold text-sm text-slate-900">Visibilidad del artículo</div>
-                    <div className="text-xs text-slate-500">
-                      {formPublicado
-                        ? "Visible para todos en /articulos en los idiomas disponibles"
-                        : "Borrador privado (solo visible para el administrador)"}
+                {/* Selector de Publicación y Programación */}
+                <div className="bg-slate-50 p-5 rounded-2xl border border-slate-200 space-y-4">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                    <div>
+                      <div className="font-bold text-sm text-slate-900 flex items-center gap-1.5">
+                        <Clock size={16} className="text-[#c99a3c]" />
+                        {lang === "fr" ? "Statut de publication & Planification" : "Estado de Publicación & Planificación"}
+                      </div>
+                      <div className="text-xs text-slate-500 mt-0.5">
+                        {lang === "fr"
+                          ? "Choisissez de garder en brouillon, de publier immédiatement ou de programmer pour une date future."
+                          : "Elige guardar como borrador privado, publicar de inmediato o programar para que salga público en una fecha y hora exacta."}
+                      </div>
+                    </div>
+
+                    {/* Botones de selección de estado */}
+                    <div className="flex bg-white p-1 rounded-xl border border-slate-200 text-xs font-bold shadow-xs shrink-0">
+                      <button
+                        type="button"
+                        onClick={() => setTipoPublicacion("borrador")}
+                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                          tipoPublicacion === "borrador"
+                            ? "bg-slate-800 text-white shadow-xs"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        {lang === "fr" ? "Brouillon" : "Borrador"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTipoPublicacion("inmediato")}
+                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer ${
+                          tipoPublicacion === "inmediato"
+                            ? "bg-emerald-600 text-white shadow-xs"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        {lang === "fr" ? "Publier maintenant" : "Publicar Ahora"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setTipoPublicacion("programado")}
+                        className={`px-3 py-1.5 rounded-lg transition-all cursor-pointer flex items-center gap-1 ${
+                          tipoPublicacion === "programado"
+                            ? "bg-blue-600 text-white shadow-xs"
+                            : "text-slate-600 hover:text-slate-900"
+                        }`}
+                      >
+                        <Clock size={12} />
+                        {lang === "fr" ? "Programmer" : "Programar"}
+                      </button>
                     </div>
                   </div>
 
-                  <button
-                    type="button"
-                    onClick={() => setFormPublicado(!formPublicado)}
-                    className={`px-4 py-2 rounded-xl text-xs font-bold transition-all ${
-                      formPublicado ? "bg-emerald-600 text-white shadow-sm" : "bg-slate-200 text-slate-600"
-                    }`}
-                  >
-                    {formPublicado ? "✓ Publicado" : "Borrador Privado"}
-                  </button>
+                  {/* Campo desplegable para fecha y hora programada */}
+                  {tipoPublicacion === "programado" && (
+                    <div className="bg-blue-50/70 border border-blue-200 rounded-xl p-4 space-y-2 animate-in fade-in duration-200">
+                      <label className="text-xs font-bold text-blue-950 flex items-center gap-1.5">
+                        <Clock size={14} className="text-blue-600" />
+                        {lang === "fr" ? "Date et heure de publication automatique :" : "Fecha y hora de publicación automática:"}
+                      </label>
+                      <div className="flex flex-col sm:flex-row sm:items-center gap-3">
+                        <input
+                          type="datetime-local"
+                          value={formFechaProgramada}
+                          onChange={(e) => setFormFechaProgramada(e.target.value)}
+                          className="px-3.5 py-2 rounded-xl border border-blue-300 text-xs font-bold text-slate-800 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 shadow-xs"
+                        />
+                        <span className="text-xs text-blue-900 font-medium">
+                          {formFechaProgramada ? (
+                            <span>
+                              🕒 {lang === "fr" ? "Sera publié automatiquement le" : "Se publicará automáticamente el"}{" "}
+                              <strong>
+                                {new Date(formFechaProgramada).toLocaleString(lang === "fr" ? "fr-FR" : "es-ES", {
+                                  dateStyle: "full",
+                                  timeStyle: "short"
+                                })}
+                              </strong>
+                            </span>
+                          ) : (
+                            lang === "fr" ? "Veuillez sélectionner la date et l'heure" : "Selecciona la fecha y hora deseada"
+                          )}
+                        </span>
+                      </div>
+                      <p className="text-[11px] text-blue-700/80">
+                        💡 {lang === "fr" 
+                          ? "L'article restera caché pour les élèves jusqu'à l'heure exacte choisie, puis deviendra public automatiquement."
+                          : "El artículo permanecerá oculto para los visitantes hasta el minuto exacto programado, y se volverá público de forma automática sin intervención."}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </form>
             </div>

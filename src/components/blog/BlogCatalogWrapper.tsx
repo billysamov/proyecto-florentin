@@ -57,7 +57,7 @@ export default function BlogCatalogWrapper({ articulos }: BlogCatalogWrapperProp
           {/* Subtítulo */}
           <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed font-medium mb-8">
             {t.blogHeroSubtitle ||
-              "Guías prácticas de fonética, gramática explicada de forma sencilla y secretos de la vida en Francia directamente desde París por Florentin."}
+              "Guías prácticas de fonética, gramática explicada de forma sencilla y secretos de la vida en Francia directamente por Florentin."}
           </p>
         </div>
       </section>
@@ -79,7 +79,7 @@ export default function BlogCatalogWrapper({ articulos }: BlogCatalogWrapperProp
             </h2>
             <p className="text-slate-300 text-base leading-relaxed mb-8">
               {t.blogCtaDesc ||
-                "Sin libros aburridos ni métodos tradicionales obsoletos. Aprende a comunicarte como en la vida real en París con clases personalizadas a tu ritmo y objetivos."}
+                "Sin libros aburridos, ni métodos tradicionales obsoletos. Aprende a comunicarte con claridad como en la vida real o prepárate a un examen u objetivos específicos."}
             </p>
             <div className="flex flex-col sm:flex-row gap-4">
               <Link
