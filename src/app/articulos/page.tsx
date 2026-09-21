@@ -4,7 +4,7 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 import BlogCatalogWrapper from "@/components/blog/BlogCatalogWrapper";
 import { ArticuloItem } from "@/components/blog/BlogGrid";
 
-export const revalidate = 60; // Regeneración estática incremental cada 60 segundos
+export const dynamic = "force-dynamic";
 
 export const metadata: Metadata = {
   title: "Artículos y Guías para Aprender Francés | Le Français avec Florentin",
@@ -21,6 +21,28 @@ export const metadata: Metadata = {
 
 // Artículos de respaldo si la base de datos aún no ha sido migrada o está vacía (con 3 capas de idioma)
 const fallbackArticulos: ArticuloItem[] = [
+  {
+    id: 10,
+    slug: "el-frances-vivo-la-lengua-que-los-manuales-no-te-ensenan",
+    titulo: "El francés vivo: la lengua que los manuales no te enseñan",
+    extracto:
+      "Has aprendido francés con libros, apruebas tus ejercicios… ¿y sin embargo, cuando un francés te habla, no reconoces casi nada? Descubre las claves del francés real y cotidiano.",
+    titulo_fr: "Le français vivant : la langue que les manuels ne vous apprennent pas",
+    extracto_fr:
+      "Vous avez appris le français avec des livres... et pourtant quand un Français vous parle, vous hésitez ? Découvrez les clés du vrai français parlé au quotidien.",
+    titulo_en: "Living French: The Language Textbooks Don't Teach You",
+    extracto_en:
+      "Learned French with books but struggle to understand native speakers? Discover the real spoken French heard on the streets, at work and among friends.",
+    imagen_portada:
+      "https://images.unsplash.com/photo-1456513080510-7bf3a84b82f8?auto=format&fit=crop&w=1200&q=80",
+    categoria: "Consejos",
+    palabras_clave: "frances real, frances vivo, hablar frances",
+    tiempo_lectura: 6,
+    idioma: "es",
+    autor: "Florentin",
+    visitas: 61,
+    creado_en: "2026-09-08T15:24:11.491Z"
+  },
   {
     id: 1,
     slug: "como-pronunciar-la-r-francesa-guia-definitiva",
@@ -41,7 +63,7 @@ const fallbackArticulos: ArticuloItem[] = [
     idioma: "es",
     autor: "Florentin",
     visitas: 142,
-    creado_en: new Date().toISOString()
+    creado_en: "2026-09-05T23:43:27.359Z"
   },
   {
     id: 2,
@@ -63,18 +85,18 @@ const fallbackArticulos: ArticuloItem[] = [
     idioma: "es",
     autor: "Florentin",
     visitas: 98,
-    creado_en: new Date().toISOString()
+    creado_en: "2026-09-05T23:43:27.359Z"
   },
   {
     id: 3,
-    slug: "vocabulario-esencial-restaurante-francia",
-    titulo: "Cómo pedir en un restaurante en Francia como un auténtico local",
+    slug: "vocabulario-esencial-restaurante-paris",
+    titulo: "Cómo pedir en un restaurante en París como un auténtico local",
     extracto:
       "Las frases indispensables, las normas de cortesía que los franceses aprecian y los errores más comunes al pedir la cuenta.",
-    titulo_fr: "Comment commander au restaurant en France comme un vrai local",
+    titulo_fr: "Comment commander au restaurant à Paris comme un vrai local",
     extracto_fr:
       "Les phrases indispensables, les codes de politesse français et les astuces pour profiter pleinement des cafés et bistrots.",
-    titulo_en: "How to Order at a Restaurant in France Like a True Local",
+    titulo_en: "How to Order at a Restaurant in Paris Like a True Local",
     extracto_en:
       "Essential phrases, cultural etiquette that French people appreciate, and tips on water, tipping, and paying the bill.",
     imagen_portada:
@@ -85,7 +107,7 @@ const fallbackArticulos: ArticuloItem[] = [
     idioma: "es",
     autor: "Florentin",
     visitas: 210,
-    creado_en: new Date().toISOString()
+    creado_en: "2026-09-05T23:43:27.359Z"
   }
 ];
 
@@ -96,32 +118,31 @@ export default async function ArticulosPage() {
     const supabase = getSupabaseAdmin();
     const now = new Date();
 
-    // Consultamos los artículos publicados
+    // Consultamos los artículos publicados en Supabase
     const { data, error } = await supabase
       .from("articulos")
-      .select("id, slug, titulo, extracto, titulo_fr, extracto_fr, contenido_fr, titulo_en, extracto_en, contenido_en, imagen_portada, categoria, palabras_clave, tiempo_lectura, idioma, autor, visitas, creado_en, fecha_publicacion")
-      .eq("publicado", true);
+      .select("id, slug, titulo, extracto, titulo_fr, extracto_fr, contenido_fr, titulo_en, extracto_en, contenido_en, imagen_portada, categoria, palabras_clave, tiempo_lectura, idioma, autor, visitas, creado_en")
+      .eq("publicado", true)
+      .order("creado_en", { ascending: false });
 
     if (!error && data && data.length > 0) {
-      // Filtrar únicamente los que ya alcanzaron su fecha y hora de publicación
+      // Filtrar únicamente los que ya alcanzaron su fecha de publicación (si existiera)
       const visibles = data.filter((art: any) => {
-        if (!art.fecha_publicacion) return true;
-        return new Date(art.fecha_publicacion) <= now;
-      });
-
-      // Ordenar cronológicamente por fecha de publicación (más recientes primero)
-      visibles.sort((a: any, b: any) => {
-        const timeA = new Date(a.fecha_publicacion || a.creado_en).getTime();
-        const timeB = new Date(b.fecha_publicacion || b.creado_en).getTime();
-        return timeB - timeA;
+        if (art.fecha_publicacion && new Date(art.fecha_publicacion) > now) {
+          return false;
+        }
+        return true;
       });
 
       articulos = visibles.length > 0 ? visibles : fallbackArticulos;
     } else {
+      if (error) {
+        console.error("Error al cargar artículos desde Supabase:", error);
+      }
       articulos = fallbackArticulos;
     }
   } catch (err) {
-    console.error("Error al cargar artículos desde Supabase:", err);
+    console.error("Error inesperado al cargar artículos:", err);
     articulos = fallbackArticulos;
   }
 

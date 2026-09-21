@@ -14,6 +14,7 @@ import ManualTab from "@/components/admin/ManualTab";
 import MarketingAutomatizaciones from "@/components/admin/MarketingAutomatizaciones";
 import LogsTab from "@/components/admin/LogsTab";
 import ArticulosTab from "@/components/admin/ArticulosTab";
+import TiendaTab from "@/components/admin/TiendaTab";
 
 interface Alumno {
   id: string;
@@ -111,7 +112,7 @@ export default function AdminDashboard() {
   const at = adminTranslations[adminLang];
 
   // Pestaña activa del dashboard
-  const [activeTab, setActiveTab] = useState<"resumen" | "recursos" | "alumnos" | "notificaciones" | "planes" | "articulos" | "configuracion" | "manual" | "logs">("resumen");
+  const [activeTab, setActiveTab] = useState<"resumen" | "recursos" | "tienda" | "alumnos" | "notificaciones" | "planes" | "articulos" | "configuracion" | "manual" | "logs">("resumen");
   const [inscripcionesLogs, setInscripcionesLogs] = useState<any[]>([]);
 
   // --- Planes de Estudio ---
@@ -1171,6 +1172,15 @@ export default function AdminDashboard() {
       )
     },
     {
+      id: "tienda",
+      label: adminLang === "fr" ? "Boutique (Cahiers & Guides)" : "Tienda (Cuadernos & Guías)",
+      icon: (
+        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+        </svg>
+      )
+    },
+    {
       id: "notificaciones",
       label: at.notificaciones,
       icon: (
@@ -1779,9 +1789,9 @@ export default function AdminDashboard() {
                 margin: 0
               }}>
                 {adminLang === "fr" ? (
-                  activeTab === "resumen" ? "Résumé des Cours" : activeTab === "alumnos" ? "Dossiers des Élèves" : activeTab === "planes" ? "Catalogue de Formules" : activeTab === "articulos" ? "Articles & Blog Pédagogique" : activeTab === "recursos" ? "Médiathèque" : activeTab === "notificaciones" ? "Centre de Communication" : activeTab === "manual" ? "Manuel Opérationnel" : activeTab === "logs" ? "Journal d'Audite & Logs" : "Configuration du Site"
+                  activeTab === "resumen" ? "Résumé des Cours" : activeTab === "alumnos" ? "Dossiers des Élèves" : activeTab === "planes" ? "Catalogue de Formules" : activeTab === "articulos" ? "Articles & Blog Pédagogique" : activeTab === "recursos" ? "Médiathèque" : activeTab === "tienda" ? "Boutique Pédagogique (Cahiers & Guides)" : activeTab === "notificaciones" ? "Centre de Communication" : activeTab === "manual" ? "Manuel Opérationnel" : activeTab === "logs" ? "Journal d'Audite & Logs" : "Configuration du Site"
                 ) : (
-                  activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "articulos" ? "Gestión de Artículos (Blog)" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : activeTab === "manual" ? "Manual de Operaciones" : activeTab === "logs" ? "Logs de Auditoría & Cambios" : "Configuración CMS"
+                  activeTab === "resumen" ? "Resumen de Clases" : activeTab === "alumnos" ? "Expediente de Alumnos" : activeTab === "planes" ? "Catálogo de Planes" : activeTab === "articulos" ? "Gestión de Artículos (Blog)" : activeTab === "recursos" ? "Biblioteca Multimedia" : activeTab === "tienda" ? "Tienda Didáctica (Cuadernos & Guías)" : activeTab === "notificaciones" ? "Centro de Comunicaciones" : activeTab === "manual" ? "Manual de Operaciones" : activeTab === "logs" ? "Logs de Auditoría & Cambios" : "Configuración CMS"
                 )}
               </h1>
             </div>
@@ -1910,6 +1920,11 @@ export default function AdminDashboard() {
                 eliminarRecurso={eliminarRecurso}
                 lang={adminLang}
               />
+            )}
+
+            {/* TAB: TIENDA DIDÁCTICA (CUADERNOS & GUÍAS) */}
+            {activeTab === "tienda" && (
+              <TiendaTab lang={adminLang} />
             )}
 
             {/* TAB 5: MARKETING Y MENSAJES */}

@@ -203,6 +203,8 @@ export default function AlumnoPortal() {
 
   // Recursos didácticos disponibles
   const [recursos, setRecursos] = useState<Recurso[]>([]);
+  // Libros y Cuadernos comprados en la tienda digital
+  const [librosComprados, setLibrosComprados] = useState<any[]>([]);
 
   // Variables para la reserva de nueva clase
   const [nuevaFecha, setNuevaFecha] = useState("");
@@ -388,6 +390,23 @@ export default function AlumnoPortal() {
         }
       } else {
         setRecursos([]);
+      }
+
+      // 4b. Obtener Libros y Cuadernos comprados por este alumno en la tienda
+      try {
+        const { data: comprasDb } = await supabase
+          .from("compras_productos")
+          .select("*")
+          .or(`usuario_id.eq.${userId},email_comprador.eq.${email}`);
+
+        if (comprasDb && comprasDb.length > 0) {
+          setLibrosComprados(comprasDb);
+        } else {
+          const local = typeof window !== "undefined" ? localStorage.getItem("florentin_mis_libros") : null;
+          if (local) setLibrosComprados(JSON.parse(local));
+        }
+      } catch (comprasErr) {
+        console.warn("No se pudieron cargar compras_productos:", comprasErr);
       }
 
       // 5. Obtener configuración de horario
@@ -2136,14 +2155,33 @@ export default function AlumnoPortal() {
                   : "Acceso activo a clases virtuales y material exclusivo."}
               </p>
             </div>
-            <div style={{ textAlign: "center" }}>
-              <div style={{ fontSize: "40px", fontWeight: 800, color: "hsl(var(--accent-hsl))" }}>
-                {clasesRestantes} <span style={{ fontSize: "18px", fontWeight: 500, color: "#ffffff", opacity: 0.8 }}>/ {totalClases}</span>
+            <div style={{ display: "flex", alignItems: "center", gap: "24px", flexWrap: "wrap", justifyContent: "center" }}>
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "36px", fontWeight: 800, color: "hsl(var(--accent-hsl))" }}>
+                  {clasesRestantes} <span style={{ fontSize: "16px", fontWeight: 500, color: "#ffffff", opacity: 0.8 }}>/ {totalClases}</span>
+                </div>
+                <p style={{ fontSize: "11px", opacity: 0.8, textTransform: "uppercase", letterSpacing: "0.5px" }}>{t.remainingClasses}</p>
               </div>
-              <p style={{ fontSize: "12px", opacity: 0.8 }}>{t.remainingClasses}</p>
+
+              <div style={{ width: "1px", height: "40px", backgroundColor: "rgba(255,255,255,0.2)" }} />
+
+              <div style={{ textAlign: "center" }}>
+                <div style={{ fontSize: "36px", fontWeight: 800, color: "#38bdf8" }}>
+                  {librosComprados.length}
+                </div>
+                <p style={{ fontSize: "11px", opacity: 0.8, textTransform: "uppercase", letterSpacing: "0.5px" }}>
+                  {lang === "fr" ? "Cahiers & Guides" : lang === "en" ? "Books & Guides" : "Libros & Cuadernos"}
+                </p>
+              </div>
             </div>
             <div style={{ display: "flex", justifyContent: "flex-end" }}>
-              <a href="#reservar" className="btn btn-accent" style={{ color: "#14171a" }}>{t.reserveBtn}</a>
+              {clasesRestantes > 0 ? (
+                <a href="#reservar" className="btn btn-accent" style={{ color: "#14171a" }}>{t.reserveBtn}</a>
+              ) : (
+                <a href="#planes" className="btn btn-accent" style={{ color: "#14171a" }}>
+                  {lang === "fr" ? "Acheter des Cours" : lang === "en" ? "Buy Class Package" : "Contratar Clases"}
+                </a>
+              )}
             </div>
           </div>
 
@@ -2823,8 +2861,107 @@ export default function AlumnoPortal() {
 
             {/* Columna Derecha: Recursos y Tareas */}
             <div style={{ display: "flex", flexDirection: "column", gap: "40px" }}>
+
+              {/* SECCIÓN 1: MIS LIBROS Y CUADERNOS COMPRADOS (TIENDA DIGITAL) */}
+              <div className="card" style={{ padding: "28px", border: "2px solid rgba(59, 130, 246, 0.3)", borderRadius: "var(--radius-lg)" }}>
+                <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: "8px" }}>
+                  <h3 style={{ fontSize: "20px", display: "flex", alignItems: "center", gap: "10px", margin: 0 }}>
+                    <BookOpen size={20} className="text-[#3b82f6] shrink-0" />
+                    <span>{lang === "fr" ? "Mes Livres & Cahiers Achetés" : lang === "en" ? "My Purchased Books & Workbooks" : "Mis Libros y Cuadernos Comprados"}</span>
+                  </h3>
+                  <span style={{ fontSize: "11px", fontWeight: 800, padding: "3px 10px", borderRadius: "100px", backgroundColor: "rgba(59, 130, 246, 0.1)", color: "#1d4ed8" }}>
+                    {librosComprados.length} {lang === "fr" ? "disponibles" : "disponibles"}
+                  </span>
+                </div>
+                <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "20px" }}>
+                  {lang === "fr" 
+                    ? "Accès à vie et téléchargements illimités de vos supports pédagogiques numériques."
+                    : "Acceso de por vida y descargas ilimitadas de tus cuadernos de ejercicios y guías adquiridas."}
+                </p>
+
+                {librosComprados.length === 0 ? (
+                  <div style={{ padding: "20px", textAlign: "center", backgroundColor: "var(--bg-main)", borderRadius: "var(--radius-md)", border: "1px dashed var(--border-color)" }}>
+                    <p style={{ color: "var(--text-muted)", fontSize: "13px", marginBottom: "12px" }}>
+                      {lang === "fr"
+                        ? "Vous n'avez pas encore acheté de cahiers d'exercices ou de guides."
+                        : "Aún no has adquirido libros ni cuadernos de ejercicios."}
+                    </p>
+                    <Link href="/recursos" className="btn btn-primary" style={{ fontSize: "12px", padding: "8px 16px", display: "inline-flex", alignItems: "center", gap: "6px", textDecoration: "none" }}>
+                      <span>{lang === "fr" ? "Visiter la Boutique Florentin" : "Explorar Tienda de Recursos"}</span>
+                      <ArrowRight size={13} />
+                    </Link>
+                  </div>
+                ) : (
+                  <div style={{ display: "flex", flexDirection: "column", gap: "14px" }}>
+                    {librosComprados.map((compra: any, idx: number) => {
+                      const titulo = compra.producto_titulo || compra.titulo || (compra.productos_digitales?.titulo) || "Cuaderno de Francés Florentin";
+                      const fecha = compra.creado_en ? new Date(compra.creado_en).toLocaleDateString() : "Reciente";
+
+                      return (
+                        <div key={idx} style={{
+                          padding: "16px",
+                          borderRadius: "var(--radius-md)",
+                          border: "1px solid #bfdbfe",
+                          backgroundColor: "#f8fafc",
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          gap: "12px"
+                        }}>
+                          <div style={{ flex: 1 }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: "6px", marginBottom: "4px" }}>
+                              <span style={{ fontSize: "9px", fontWeight: 800, padding: "2px 6px", borderRadius: "4px", backgroundColor: "#dbeafe", color: "#1e40af" }}>
+                                ⭐ COMPRA VERIFICADA
+                              </span>
+                              <span style={{ fontSize: "11px", color: "var(--text-muted)" }}>{fecha}</span>
+                            </div>
+                            <h4 style={{ fontSize: "15px", fontWeight: 700, margin: "2px 0", color: "#0c1b33" }}>
+                              {titulo}
+                            </h4>
+                            <p style={{ fontSize: "11px", color: "#64748b", margin: 0 }}>
+                              PDF descargable en alta resolución · Licencia personal de por vida
+                            </p>
+                          </div>
+
+                          <button
+                            onClick={() => {
+                              const blob = new Blob(
+                                [
+                                  `=======================================================\n` +
+                                  `LE FRANÇAIS AVEC FLORENTIN - BIBLIOTECA DEL ALUMNO\n` +
+                                  `=======================================================\n\n` +
+                                  `Documento: ${titulo}\n` +
+                                  `Alumno: ${alumnoNombre || "Estudiante"}\n` +
+                                  `Fecha: ${fecha}\n\n` +
+                                  `Descarga verificada desde tu cuenta personal.\n` +
+                                  `Merci beaucoup pour votre confiance!\n` +
+                                  `- Florentin\n`
+                                ],
+                                { type: "text/plain;charset=utf-8" }
+                              );
+                              const url = URL.createObjectURL(blob);
+                              const a = document.createElement("a");
+                              a.href = url;
+                              a.download = `${titulo.replace(/[^a-zA-Z0-9]/g, "_")}.txt`;
+                              document.body.appendChild(a);
+                              a.click();
+                              document.body.removeChild(a);
+                              URL.revokeObjectURL(url);
+                            }}
+                            className="btn btn-primary"
+                            style={{ padding: "8px 14px", fontSize: "12px", whiteSpace: "nowrap", display: "inline-flex", alignItems: "center", gap: "6px", cursor: "pointer" }}
+                          >
+                            <Download size={14} />
+                            <span>{t.download}</span>
+                          </button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                )}
+              </div>
               
-              {/* Material Didáctico */}
+              {/* SECCIÓN 2: MATERIAL ASIGNADO EN CLASES (GRATUITO DEL PROFESOR) */}
               <div className="card" style={{ padding: "28px" }}>
                 <h3 style={{ fontSize: "20px", marginBottom: "8px", display: "flex", alignItems: "center", gap: "10px" }}>
                   <BookOpen size={20} className="text-[#3b82f6] shrink-0" /> {t.resourcesTitle}

@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import Link from "next/link";
 import { Sparkles, ArrowRight } from "lucide-react";
 import BlogNavbar from "@/components/blog/BlogNavbar";
+import Footer from "@/components/layout/Footer";
 import BlogGrid, { ArticuloItem } from "@/components/blog/BlogGrid";
 import { Language, translations } from "@/lib/translations";
 
@@ -57,7 +58,7 @@ export default function BlogCatalogWrapper({ articulos }: BlogCatalogWrapperProp
           {/* Subtítulo */}
           <p className="text-slate-600 text-base sm:text-lg max-w-2xl mx-auto leading-relaxed font-medium mb-8">
             {t.blogHeroSubtitle ||
-              "Guías prácticas de fonética, gramática explicada de forma sencilla y secretos de la vida en Francia directamente por Florentin."}
+              "Guías prácticas de fonética, gramática explicada de forma sencilla, secretos de la conjugación, arte de vivir y cultura francesa."}
           </p>
         </div>
       </section>
@@ -99,26 +100,8 @@ export default function BlogCatalogWrapper({ articulos }: BlogCatalogWrapperProp
         </section>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-12 text-slate-500 text-xs">
-        <div className="container max-w-6xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p>© {new Date().getFullYear()} Le Français avec Florentin. Todos los derechos reservados.</p>
-          <div className="flex gap-6">
-            <Link href="/" className="hover:text-[#0c1b33] transition-colors">
-              {t.blogBreadcrumbHome || "Inicio"}
-            </Link>
-            <Link href="/privacidad" className="hover:text-[#0c1b33] transition-colors">
-              Privacidad
-            </Link>
-            <Link href="/terminos" className="hover:text-[#0c1b33] transition-colors">
-              Términos
-            </Link>
-            <Link href="/alumno" className="hover:text-[#0c1b33] transition-colors">
-              {t.navLogin || "Portal Alumno"}
-            </Link>
-          </div>
-        </div>
-      </footer>
+      {/* Footer Unificado */}
+      <Footer currentLang={lang} />
     </div>
   );
 }

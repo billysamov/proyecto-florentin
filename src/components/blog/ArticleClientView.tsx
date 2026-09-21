@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { Clock, Calendar, ChevronRight, ArrowLeft, ArrowRight, Sparkles, Globe } from "lucide-react";
 import BlogNavbar from "@/components/blog/BlogNavbar";
+import Footer from "@/components/layout/Footer";
 import ArticleContent from "@/components/blog/ArticleContent";
 import ArticleShareBar from "@/components/blog/ArticleShareBar";
 import { Language, translations } from "@/lib/translations";
@@ -446,26 +447,8 @@ export default function ArticleClientView({ articulo, relacionados }: ArticleCli
         </article>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-slate-200 bg-white py-12 text-slate-500 text-xs">
-        <div className="container max-w-4xl mx-auto px-4 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p>© {new Date().getFullYear()} Le Français avec Florentin. Todos los derechos reservados.</p>
-          <div className="flex gap-6">
-            <Link href="/" className="hover:text-[#0c1b33] transition-colors">
-              {t.blogBreadcrumbHome || "Inicio"}
-            </Link>
-            <Link href="/articulos" className="hover:text-[#0c1b33] transition-colors">
-              {t.blogBreadcrumbArticles || "Artículos"}
-            </Link>
-            <Link href="/privacidad" className="hover:text-[#0c1b33] transition-colors">
-              Privacidad
-            </Link>
-            <Link href="/terminos" className="hover:text-[#0c1b33] transition-colors">
-              Términos
-            </Link>
-          </div>
-        </div>
-      </footer>
+      {/* Footer Unificado */}
+      <Footer currentLang={lang} />
     </div>
   );
 }

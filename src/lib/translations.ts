@@ -3,10 +3,15 @@ export type Language = "es" | "fr" | "en";
 export const translations = {
   es: {
     // Navbar
-    navMethod: "Método",
-    navPlans: "Planes",
-    navPlansResources: "Planes y Recursos",
+    navAcademy: "La academia",
+    navClasses: "Clases",
+    navResources: "Recursos",
     navArticles: "Artículos",
+    navMethod: "Método",
+    navWhy: "¿Por qué?",
+    navForWhom: "Para quién",
+    navPlans: "Clases",
+    navPlansResources: "Clases y Recursos",
     navTeacher: "Profesor",
     navFaq: "FAQ",
     navContact: "Contacto",
@@ -17,7 +22,7 @@ export const translations = {
     // Blog
     blogHeroBadge: "BLOG & RECURSOS EDUCATIVOS",
     blogHeroTitle: "Aprende francés con método, cultura y naturalidad.",
-    blogHeroSubtitle: "Guías prácticas de fonética, gramática explicada de forma sencilla y secretos del idioma y la cultura francesa por Florentin.",
+    blogHeroSubtitle: "Guías prácticas de fonética, gramática explicada de forma sencilla, secretos de la conjugación, arte de vivir y cultura francesa.",
     blogSearchPlaceholder: "Buscar por tema, palabra clave o título...",
     blogLanguageFilter: "Idioma:",
     blogAllFilter: "Todos",
@@ -71,8 +76,8 @@ export const translations = {
     heroStat1Label: "alumnos formados",
     heroStat2Num: "+15",
     heroStat2Label: "países diferentes",
-    heroStat3Num: "4.9 ★",
-    heroStat3Label: "valoración media",
+    heroStat3Num: "+5",
+    heroStat3Label: "años de experiencia",
 
     // Problem-Solution
     psBadge: "¿POR QUÉ FLORENTIN?",
@@ -175,11 +180,16 @@ export const translations = {
     testim4Country: "Argentina",
     testim4Text: "Preparé mi examen DELF B2 con Florentin y lo aprobé con excelente calificación. Su conocimiento de la cultura francesa hace las clases únicas.",
 
+    startNow: "Empezar ahora",
     // CTA WhatsApp
     ctaBadge: "¿LISTO PARA EMPEZAR?",
-    ctaTitle: "Agenda tu clase gratuita",
-    ctaSubtitle: "Escríbeme por WhatsApp y coordinamos tu primera sesión de prueba. Sin compromiso, sin pagos.",
-    ctaBtn: "Agendar por WhatsApp",
+    ctaTitle: "Prueba una clase de prueba gratuita de 30 minutos",
+    ctaSubtitle: "y descubre cómo podemos trabajar juntos.",
+    ctaItemMeet: "Conocernos",
+    ctaItemLevel: "Evaluar tu nivel",
+    ctaBtn: "Reservar mi clase gratuita",
+    ctaNoCommitment: "Sin compromiso",
+    ctaWhatsappQuestion: "¿Tienes una pregunta? Escríbeme por WhatsApp",
     ctaBtnAlt: "También puedes escribirme un email",
 
     // Footer
@@ -237,10 +247,15 @@ export const translations = {
 
   fr: {
     // Navbar
-    navMethod: "Méthode",
-    navPlans: "Tarifs",
-    navPlansResources: "Tarifs & Ressources",
+    navAcademy: "L'Académie",
+    navClasses: "Cours",
+    navResources: "Ressources",
     navArticles: "Articles",
+    navMethod: "Méthode",
+    navWhy: "Pourquoi ?",
+    navForWhom: "Pour qui",
+    navPlans: "Cours",
+    navPlansResources: "Cours & Ressources",
     navTeacher: "Professeur",
     navFaq: "FAQ",
     navContact: "Contact",
@@ -251,7 +266,7 @@ export const translations = {
     // Blog
     blogHeroBadge: "BLOG & RESSOURCES PÉDAGOGIQUES",
     blogHeroTitle: "Apprenez le français avec méthode, culture et naturel.",
-    blogHeroSubtitle: "Guides pratiques de phonétique, grammaire simplifiée et secrets de la langue et de la culture française par Florentin.",
+    blogHeroSubtitle: "Guides pratiques de phonétique, grammaire expliquée simplement, secrets de la conjugaison, art de vivre et culture française.",
     blogSearchPlaceholder: "Rechercher par sujet, mot-clé ou titre...",
     blogLanguageFilter: "Langue :",
     blogAllFilter: "Tous",
@@ -305,8 +320,8 @@ export const translations = {
     heroStat1Label: "élèves guidés",
     heroStat2Num: "+15",
     heroStat2Label: "pays différents",
-    heroStat3Num: "4,9 ★",
-    heroStat3Label: "sur Trustpilot",
+    heroStat3Num: "+5",
+    heroStat3Label: "ans d'expérience",
 
     // Problem-Solution
     psBadge: "POURQUOI FLORENTIN ?",
@@ -409,11 +424,16 @@ export const translations = {
     testim4Country: "Argentine",
     testim4Text: "J'ai préparé mon examen DELF B2 avec Florentin et je l'ai réussi avec une excellente note. Sa connaissance de la culture française rend les cours uniques.",
 
+    startNow: "Commencer maintenant",
     // CTA WhatsApp
     ctaBadge: "PRÊT À COMMENCER ?",
-    ctaTitle: "Réservez votre cours gratuit",
-    ctaSubtitle: "Écrivez-moi sur WhatsApp et nous coordonnons votre première session d'essai. Sans engagement, sans paiement.",
-    ctaBtn: "Réserver via WhatsApp",
+    ctaTitle: "Essayez un cours d'essai gratuit de 30 minutes",
+    ctaSubtitle: "et découvrez comment nous pouvons travailler ensemble.",
+    ctaItemMeet: "Faire connaissance",
+    ctaItemLevel: "Évaluer votre niveau",
+    ctaBtn: "Réserver mon cours gratuit",
+    ctaNoCommitment: "Sans engagement",
+    ctaWhatsappQuestion: "Vous avez une question ? Écrivez-moi sur WhatsApp",
     ctaBtnAlt: "Vous pouvez aussi m'écrire par email",
 
     // Footer
@@ -471,10 +491,15 @@ export const translations = {
 
   en: {
     // Navbar
-    navMethod: "Method",
-    navPlans: "Plans",
-    navPlansResources: "Plans & Resources",
+    navAcademy: "The Academy",
+    navClasses: "Classes",
+    navResources: "Resources",
     navArticles: "Articles",
+    navMethod: "Method",
+    navWhy: "Why?",
+    navForWhom: "For whom",
+    navPlans: "Classes",
+    navPlansResources: "Classes & Resources",
     navTeacher: "Teacher",
     navFaq: "FAQ",
     navContact: "Contact",
@@ -485,7 +510,7 @@ export const translations = {
     // Blog
     blogHeroBadge: "BLOG & LEARNING RESOURCES",
     blogHeroTitle: "Learn French with method, culture, and ease.",
-    blogHeroSubtitle: "Practical guides to phonetics, simplified grammar, and French language and culture tips by Florentin.",
+    blogHeroSubtitle: "Practical guides to phonetics, grammar explained simply, secrets of conjugation, French lifestyle, and culture.",
     blogSearchPlaceholder: "Search by topic, keyword, or title...",
     blogLanguageFilter: "Language:",
     blogAllFilter: "All",
@@ -539,8 +564,8 @@ export const translations = {
     heroStat1Label: "students guided",
     heroStat2Num: "+15",
     heroStat2Label: "different countries",
-    heroStat3Num: "4.9 ★",
-    heroStat3Label: "average rating",
+    heroStat3Num: "+5",
+    heroStat3Label: "years of experience",
 
     // Problem-Solution
     psBadge: "WHY FLORENTIN?",
@@ -643,11 +668,16 @@ export const translations = {
     testim4Country: "Argentina",
     testim4Text: "I prepared my DELF B2 exam with Florentin and passed with an excellent grade. His knowledge of French culture makes the classes unique.",
 
+    startNow: "Start now",
     // CTA WhatsApp
     ctaBadge: "READY TO START?",
-    ctaTitle: "Book your free class",
-    ctaSubtitle: "Message me on WhatsApp and we'll coordinate your first trial session. No commitment, no payments.",
-    ctaBtn: "Book via WhatsApp",
+    ctaTitle: "Try a 30-minute free trial class",
+    ctaSubtitle: "and discover how we can work together.",
+    ctaItemMeet: "Get to know each other",
+    ctaItemLevel: "Assess your level",
+    ctaBtn: "Book my free class",
+    ctaNoCommitment: "No commitment",
+    ctaWhatsappQuestion: "Have a question? Text me on WhatsApp",
     ctaBtnAlt: "You can also email me",
 
     // Footer

@@ -14,9 +14,9 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
   ArrowRight, Menu, X, ChevronDown, ChevronLeft, ChevronRight,
   Plane, Briefcase, Heart, Rocket,
-  XCircle, CheckCircle, Clock, MessageCircle, CalendarCheck,
+  XCircle, CheckCircle, MessageCircle, CalendarCheck,
   Award, Globe2, Users, Star, BadgeCheck, BookOpen, Headphones, Building2,
-  Smartphone, Coins, PlayCircle, Play, Mail, Phone,
+  User, BarChart2, Coins, PlayCircle, Play, Mail, Phone,
   GraduationCap, Landmark, Languages, MessageSquare, CheckCircle2
 } from "lucide-react";
 
@@ -78,9 +78,9 @@ const defaultSpanishConfig: Record<string, string> = {
   for_whom_4_title: "Empiezas desde cero",
   for_whom_4_desc: "No importa tu nivel. Diseño cada clase según tu ritmo y necesidades específicas.",
   cta_badge: "¿LISTO PARA EMPEZAR?",
-  cta_title: "Agenda tu clase gratuita",
-  cta_subtitle: "Escríbeme por WhatsApp y coordinamos tu primera sesión de prueba. Sin compromiso, sin pagos.",
-  cta_btn_text: "Agendar por WhatsApp"
+  cta_title: "Prueba una clase de prueba gratuita de 30 minutos",
+  cta_subtitle: "y descubre cómo podemos trabajar juntos.",
+  cta_btn_text: "Reservar mi clase gratuita"
 };
 
 const defaultKeysMap: Record<string, string> = {
@@ -193,10 +193,12 @@ export default function Home() {
   const plansContainerRef = useRef<HTMLDivElement>(null);
   const langRef = useRef<HTMLDivElement>(null);
   const divisaRef = useRef<HTMLDivElement>(null);
+  const academyRef = useRef<HTMLDivElement>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
   const [langDropdownOpen, setLangDropdownOpen] = useState(false);
   const [divisaDropdownOpen, setDivisaDropdownOpen] = useState(false);
+  const [academyOpen, setAcademyOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
 
   const t = translations[lang] as any;
@@ -567,6 +569,9 @@ export default function Home() {
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
+      if (academyRef.current && !academyRef.current.contains(event.target as Node)) {
+        setAcademyOpen(false);
+      }
       if (langRef.current && !langRef.current.contains(event.target as Node)) {
         setLangDropdownOpen(false);
       }
@@ -788,11 +793,13 @@ export default function Home() {
   }, { scope: containerRef });
 
   const mobileNavLinks = [
-    { href: "#teacher", label: t.navTeacher },
-    { href: "#method", label: t.navMethod },
-    { href: "#for-whom", label: lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom' },
+    { href: "#teacher", label: t.navTeacher || (lang === 'es' ? 'Profesor' : lang === 'fr' ? 'Professeur' : 'Teacher') },
+    { href: "#method", label: t.navMethod || (lang === 'es' ? 'Método' : lang === 'fr' ? 'Méthode' : 'Method') },
+    { href: "#why", label: (t as any).navWhy || (lang === 'es' ? '¿Por qué?' : lang === 'fr' ? 'Pourquoi ?' : 'Why?') },
+    { href: "#for-whom", label: (t as any).navForWhom || (lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom') },
     { href: "#faq", label: t.navFaq },
-    { href: "#plans", label: (t as any).navPlansResources || t.navPlans },
+    { href: "/clases", label: lang === 'es' ? 'Clases' : lang === 'fr' ? 'Cours' : 'Classes' },
+    { href: "/recursos", label: lang === 'es' ? 'Recursos' : lang === 'fr' ? 'Ressources' : 'Resources' },
     { href: "/articulos", label: (t as any).navArticles || (lang === 'fr' ? 'Articles' : 'Artículos') },
     { href: "#contact", label: t.navContact },
   ];
@@ -969,23 +976,84 @@ export default function Home() {
 
         {/* Desktop Links */}
         <div className="hidden md:flex gap-6 lg:gap-8 text-sm font-semibold text-slate-600 items-center">
-          {/* Dropdown El Curso */}
-          <div className="relative group py-1 flex items-center">
-            <button className="flex items-center gap-1 hover:text-[#0c1b33] transition-colors cursor-pointer select-none">
-              {lang === 'es' ? 'El Curso' : lang === 'fr' ? 'Le Cours' : 'The Course'}
-              <ChevronDown size={14} className="transition-transform duration-300 group-hover:rotate-180 text-slate-400" />
+          {/* Dropdown La Academia */}
+          <div
+            ref={academyRef}
+            className="relative py-2 flex items-center group"
+            onMouseEnter={() => setAcademyOpen(true)}
+            onMouseLeave={() => setAcademyOpen(false)}
+          >
+            <button
+              onClick={() => setAcademyOpen(!academyOpen)}
+              className="flex items-center gap-1 hover:text-[#0c1b33] transition-colors cursor-pointer select-none"
+            >
+              {lang === 'es' ? 'La academia' : lang === 'fr' ? "L'Académie" : 'The Academy'}
+              <ChevronDown
+                size={14}
+                className={`transition-transform duration-300 text-slate-400 ${
+                  academyOpen ? "rotate-180 text-[#0c1b33]" : "group-hover:rotate-180"
+                }`}
+              />
             </button>
-            <div className="absolute left-1/2 -translate-x-1/2 top-full hidden group-hover:block w-52 bg-white border border-slate-200/80 rounded-2xl shadow-xl py-2 z-50 mt-2">
-              <a href="#teacher" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navTeacher}</a>
-              <a href="#method" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navMethod}</a>
-              <a href="#for-whom" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom'}</a>
-              <a href="#faq" className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold">{t.navFaq}</a>
+            <div
+              className={`absolute left-1/2 -translate-x-1/2 top-full pt-2.5 z-50 transition-all duration-200 ${
+                academyOpen
+                  ? "opacity-100 visible translate-y-0 pointer-events-auto"
+                  : "opacity-0 invisible -translate-y-1 pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:translate-y-0 group-hover:pointer-events-auto"
+              }`}
+            >
+              <div className="w-52 bg-white border border-slate-200/80 rounded-2xl shadow-xl py-2 overflow-hidden">
+                <a
+                  href="#teacher"
+                  onClick={() => setAcademyOpen(false)}
+                  className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold"
+                >
+                  {t.navTeacher}
+                </a>
+                <a
+                  href="#method"
+                  onClick={() => setAcademyOpen(false)}
+                  className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold"
+                >
+                  {t.navMethod}
+                </a>
+                <a
+                  href="#why"
+                  onClick={() => setAcademyOpen(false)}
+                  className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold"
+                >
+                  {(t as any).navWhy || (lang === 'es' ? '¿Por qué?' : lang === 'fr' ? 'Pourquoi ?' : 'Why?')}
+                </a>
+                <a
+                  href="#for-whom"
+                  onClick={() => setAcademyOpen(false)}
+                  className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold"
+                >
+                  {lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom'}
+                </a>
+                <a
+                  href="#faq"
+                  onClick={() => setAcademyOpen(false)}
+                  className="block px-4 py-2 hover:bg-slate-50 text-slate-600 hover:text-[#0c1b33] transition-colors font-semibold"
+                >
+                  {t.navFaq}
+                </a>
+              </div>
             </div>
           </div>
 
-          <a href="#plans" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{(t as any).navPlansResources || t.navPlans}</a>
-          <Link href="/articulos" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{(t as any).navArticles || (lang === 'fr' ? 'Articles' : 'Artículos')}</Link>
-          <a href="#contact" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">{t.navContact}</a>
+          <Link href="/clases" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">
+            {lang === 'es' ? 'Clases' : lang === 'fr' ? 'Cours' : 'Classes'}
+          </Link>
+          <Link href="/recursos" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">
+            {lang === 'es' ? 'Recursos' : lang === 'fr' ? 'Ressources' : 'Resources'}
+          </Link>
+          <Link href="/articulos" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">
+            {(t as any).navArticles || (lang === 'fr' ? 'Articles' : 'Artículos')}
+          </Link>
+          <a href="#contact" className="hover:text-[#0c1b33] transition-colors whitespace-nowrap">
+            {t.navContact}
+          </a>
         </div>
 
         {/* Right CTA & Controls */}
@@ -1217,12 +1285,11 @@ export default function Home() {
                 <div className="h-10 w-px bg-slate-200" />
 
                 <div>
-                  <div className="text-2xl sm:text-3xl font-black text-[#0c1b33] tracking-tight font-serif flex items-center gap-1">
-                    <span>4.9</span>
-                    <span className="text-amber-500 text-xl sm:text-2xl">★</span>
+                  <div className="text-2xl sm:text-3xl font-black text-[#0c1b33] tracking-tight font-serif">
+                    {t.heroStat3Num || "+5"}
                   </div>
                   <div className="text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
-                    {t.heroStat3Label || (lang === "fr" ? "sur Trustpilot" : lang === "en" ? "average rating" : "valoración media")}
+                    {t.heroStat3Label || (lang === "fr" ? "ans d'expérience" : lang === "en" ? "years of experience" : "años de experiencia")}
                   </div>
                 </div>
               </div>
@@ -1348,28 +1415,13 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 sm:gap-14 relative items-start">
             {/* Columna Izquierda: Sticky Grid Item */}
             <div 
-              className="lg:col-span-5 w-full flex flex-col items-center gap-8 lg:sticky lg:top-[120px] lg:self-start transition-all duration-300"
+              className="lg:col-span-5 w-full flex flex-col items-center justify-center lg:sticky lg:top-[120px] lg:self-start transition-all duration-300"
               style={{ position: "sticky", top: "120px", alignSelf: "flex-start" }}
             >
               {/* Photo */}
-              <div className="relative flex justify-center w-full">
-                <div className="relative w-full max-w-[340px] sm:max-w-[380px] aspect-[4/5] h-auto rounded-3xl overflow-hidden border border-slate-200/90 shadow-xl animate-float-slow hover:shadow-2xl transition-all duration-500">
-                  <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 300px, 380px" priority />
-                </div>
-                {/* Floating badges */}
-                <div className="absolute -bottom-4 left-1/2 -translate-x-1/2 flex gap-2 sm:gap-3 z-20 w-[95%] sm:w-auto justify-center">
-                  {[
-                    { icon: <Users size={15} />, text: config?.teacher_students || t.teacherStudents },
-                    { icon: <Globe2 size={15} />, text: config?.teacher_countries || t.teacherCountries },
-                    { icon: <Clock size={15} />, text: config?.teacher_experience || t.teacherExperience },
-                  ].map((badge, i) => (
-                    <div 
-                      key={i} 
-                      className="bg-white/95 backdrop-blur-md border border-slate-200/90 rounded-full px-3 sm:px-4 py-2 flex items-center gap-1.5 sm:gap-2 text-[10px] sm:text-xs font-bold text-slate-700 shadow-md transition-all duration-300 hover:border-[#3b82f6]/40 hover:bg-slate-50 cursor-default"
-                    >
-                      <span className="text-[#0055a5]">{badge.icon}</span>{badge.text}
-                    </div>
-                  ))}
+              <div className="relative flex justify-center items-center w-full">
+                <div className="relative w-full max-w-[380px] sm:max-w-[440px] lg:max-w-[460px] aspect-[4/5] h-auto rounded-3xl overflow-hidden border border-slate-200/90 shadow-xl animate-float-slow hover:shadow-2xl transition-all duration-500">
+                  <Image src="/perfilfoto.jpeg" alt="Profesor Florentin" fill className="object-cover" sizes="(max-width: 640px) 380px, (max-width: 1024px) 440px, 460px" priority />
                 </div>
               </div>
             </div>
@@ -1504,10 +1556,10 @@ export default function Home() {
 
 
       {/* ═══════════════════════════════════════
-          2.5. SECCIÓN DE VIDEO PRESENTACIÓN INTERACTIVO
+          2.5. SECCIÓN DE MÉTODO Y VIDEO PRESENTACIÓN
       ═══════════════════════════════════════ */}
       {config?.mostrar_seccion_video !== false && (
-        <section id="video-demo" className="relative reveal-section py-20 sm:py-28 px-4 sm:px-6 bg-[#f8fafc] overflow-hidden border-y border-slate-200/80">
+        <section id="method" className="relative reveal-section py-20 sm:py-28 px-4 sm:px-6 bg-[#f8fafc] overflow-hidden border-y border-slate-200/80">
           {/* Fondo Estilo Tranqui / Pastel - Más Azul */}
           <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[70%] max-w-4xl aspect-video bg-blue-400/30 blur-[120px] rounded-full pointer-events-none"></div>
           <div className="absolute top-0 right-0 w-[40%] h-[40%] bg-blue-300/25 blur-[100px] rounded-full pointer-events-none"></div>
@@ -1561,20 +1613,14 @@ export default function Home() {
 
 
       {/* ═══════════════════════════════════════
-          3. PROBLEMA → SOLUCIÓN (Método)
+          3. PROBLEMA → SOLUCIÓN (¿Por qué?)
       ═══════════════════════════════════════ */}
-      <section id="method" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
+      <section id="why" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            {(() => {
-              const badgeText = config ? parseMultilingualText(config.ps_badge, lang) : t.psBadge;
-              if (config?.mostrar_ps_badge === false || !badgeText) return null;
-              return (
-                <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-                  {badgeText}
-                </span>
-              );
-            })()}
+            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-extrabold tracking-[4px] uppercase bg-[#3b82f6]/10 text-[#0055a5] border border-[#3b82f6]/20 mb-6 shadow-xs">
+              {lang === "es" ? "¿POR QUÉ?" : lang === "fr" ? "POURQUOI ?" : "WHY?"}
+            </span>
             <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter">
               {config?.ps_title || t.psTitle}
             </h2>
@@ -1655,158 +1701,15 @@ export default function Home() {
               </div>
             ))}
           </div>
-        </div>
-      </section>
 
-
-      {/* ═══════════════════════════════════════
-          5. PLANES — Carrusel & Tarjetas V2 Réplica
-      ═══════════════════════════════════════ */}
-      <section id="plans" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-[#ffffff]">
-        <div className="max-w-7xl mx-auto">
-          
-          <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-6 mb-10">
-            <div>
-              <span className="reveal-item inline-block text-xs sm:text-sm font-extrabold text-[#0055a5] tracking-[0.1em] uppercase mb-3">
-                • {lang === 'es' ? 'NUESTROS PLANES DE ESTUDIO' : lang === 'fr' ? 'NOS FORMULES D\'ÉTUDE' : 'OUR STUDY PLANS'}
-              </span>
-              <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-extrabold tracking-tight text-[#0f172a] font-serif">
-                {lang === 'es' ? 'Explora los planes' : lang === 'fr' ? 'Explorez Nos Formules' : 'Explore Our Plans'}
-              </h2>
-            </div>
-
-            {/* Selector de divisa EUR / USD */}
-            <div className="reveal-item flex items-center gap-2 bg-[#f8fafc] p-1.5 rounded-full border border-slate-200">
-              {(["eur", "usd"] as const).map((d) => (
-                <button 
-                  key={d} 
-                  onClick={() => changeDivisa(d)} 
-                  className={`px-5 py-2 rounded-full font-bold text-xs sm:text-sm transition-all ${divisa === d ? "bg-[#0055a5] text-white shadow-sm" : "text-slate-600 hover:text-slate-900"}`}
-                >
-                  {d.toUpperCase()}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Grid de Tarjetas de Planes V2 con Imágenes y Checklists */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mt-8">
-            
-            {/* 💎 Planes Dinámicos desde Supabase (Gestionables desde el Admin) */}
-            {planes.map((plan, idx) => {
-              const isFreePlan = Number(plan.precio) === 0 || plan.tipo === 'clase_gratis';
-              const featuresList = plan.caracteristicas 
-                ? plan.caracteristicas.split('\n').filter((f: string) => f.trim().length > 0)
-                : [];
-
-              const getUniquePlanImage = (name: string, isFree: boolean, i: number) => {
-                const n = (name || "").toLowerCase();
-                if (isFree || n.includes('prueba')) return '/teacher_hero.png';
-                if (n.includes('libre')) return '/photo_libre.png';
-                if (n.includes('4')) return '/photo_pack_4.png';
-                if (n.includes('8')) return '/photo_pack_8.png';
-                if (n.includes('3') || n.includes('semana')) return '/photo_intensive_3.png';
-                if (n.includes('preply')) return '/photo_preply.png';
-                if (n.includes('alexandra')) return '/photo_alexandra.png';
-                if (n.includes('eugenia')) return '/photo_eugenia.png';
-                if (n.includes('erick')) return '/photo_erick.png';
-                
-                const fallbacks = ['/photo_pack_8.png', '/photo_intensive_3.png', '/photo_libre.png', '/photo_pack_4.png'];
-                return fallbacks[i % fallbacks.length];
-              };
-
-              const planImgSrc = plan.imagen_url || getUniquePlanImage(plan.nombre, isFreePlan, idx);
-
-              return (
-                <div 
-                  key={plan.id || idx} 
-                  className={`reveal-item rounded-[24px] overflow-hidden bg-white flex flex-col justify-between relative transition-all hover:scale-[1.02] ${
-                    isFreePlan
-                      ? 'border-2 border-[#10b981] shadow-lg shadow-[#10b981]/10'
-                      : plan.recomendado 
-                        ? 'border-2 border-[#0055a5] shadow-xl shadow-[#0055a5]/10' 
-                        : 'border border-slate-200 shadow-sm'
-                  }`}
-                >
-                  <div>
-                    <div className="relative h-[190px] w-full">
-                      <Image 
-                        src={planImgSrc} 
-                        alt={plan.nombre} 
-                        fill 
-                        className="object-cover" 
-                      />
-                      <span className={`absolute top-3 left-3 px-3.5 py-1 rounded-full text-xs font-extrabold shadow-md flex items-center gap-1.5 ${
-                        isFreePlan 
-                          ? 'bg-[#10b981] text-white' 
-                          : plan.recomendado
-                            ? 'bg-[#0055a5] text-white border border-[#0055a5] shadow-blue-500/20'
-                            : 'bg-white text-slate-800 border border-slate-100'
-                      }`}>
-                        {isFreePlan 
-                          ? '⭐ GRATIS' 
-                          : plan.recomendado 
-                            ? '🇫🇷 Recomendado' 
-                            : (plan.badge && plan.badge !== 'FR Más Popular' && plan.badge !== 'Más Popular' ? plan.badge : 'Flexible')}
-                      </span>
-                    </div>
-
-                    <div className="p-5 sm:p-6">
-                      <h3 className="text-lg sm:text-xl font-extrabold text-[#0f172a] mb-2 leading-snug">
-                        {plan.nombre}
-                      </h3>
-                      <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed mb-4">
-                        {plan.descripcion}
-                      </p>
-                      <p className={`text-xs font-bold mb-4 ${isFreePlan ? 'text-[#10b981]' : 'text-[#0055a5]'}`}>
-                        {plan.nivel || 'Todos los Niveles'} • {plan.duracion || (plan.total_clases > 0 ? `${plan.total_clases} ${t.planClasses}` : '1 Sesión')}
-                      </p>
-
-                      {featuresList.length > 0 && (
-                        <ul className="space-y-2.5 pt-3 border-t border-slate-100">
-                          {featuresList.map((feature: string, fIdx: number) => (
-                            <li key={fIdx} className="flex items-center gap-2 text-xs font-semibold text-slate-700">
-                              <CheckCircle size={14} className={isFreePlan ? "text-[#10b981] shrink-0" : "text-[#10b981] shrink-0"} />
-                              <span>{feature.replace(/^[✓\s-]+/, '')}</span>
-                            </li>
-                          ))}
-                        </ul>
-                      )}
-                    </div>
-                  </div>
-
-                  <div className="p-5 border-t border-slate-100 flex items-center justify-between gap-3 bg-slate-50/50">
-                    <div>
-                      <span className="text-2xl font-extrabold text-[#0f172a]">
-                        {isFreePlan ? (lang === 'es' ? 'GRATIS' : lang === 'fr' ? 'GRATUIT' : 'FREE') : formatPrecio(plan.precio)}
-                      </span>
-                      {!isFreePlan && plan.total_clases > 0 && (
-                        <span className="text-[11px] text-slate-400 font-medium block">/ {plan.total_clases} {t.planClasses}</span>
-                      )}
-                    </div>
-
-                    {isFreePlan ? (
-                      <a 
-                        href={whatsappUrl} 
-                        target="_blank" 
-                        rel="noopener noreferrer" 
-                        className="px-5 py-2.5 rounded-xl bg-[#10b981] hover:bg-[#059669] text-white text-xs font-extrabold transition-all shadow-md"
-                      >
-                        {lang === 'es' ? 'Agendar →' : lang === 'fr' ? 'Réserver →' : 'Book →'}
-                      </a>
-                    ) : (
-                      <Link 
-                        href="/alumno" 
-                        className="px-5 py-2.5 rounded-xl bg-[#0055a5] hover:bg-[#003d7a] text-white text-xs font-extrabold transition-all shadow-md"
-                      >
-                        {lang === 'es' ? 'Elegir Plan →' : lang === 'fr' ? 'Choisir →' : 'Choose →'}
-                      </Link>
-                    )}
-                  </div>
-                </div>
-              );
-            })}
-
+          {/* Botón CTA entre Para Quién y Clases */}
+          <div className="mt-10 sm:mt-14 flex justify-center">
+            <Link
+              href="/clases"
+              className="inline-flex items-center justify-center px-7 sm:px-8 py-3 rounded-full bg-[#ef4444] hover:bg-[#dc2626] text-white text-sm sm:text-base font-bold shadow-md shadow-red-500/20 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer"
+            >
+              {t.startNow || (lang === 'fr' ? 'Commencer maintenant' : lang === 'en' ? 'Start now' : 'Empezar ahora')}
+            </Link>
           </div>
         </div>
       </section>
@@ -1880,35 +1783,73 @@ export default function Home() {
 
 
       {/* ═══════════════════════════════════════
-          8. CTA — WhatsApp (Glassmorphic Redesign)
+          8. CTA — RESERVA DE CLASE GRATUITA (Tarjeta Limpia Centrada)
       ═══════════════════════════════════════ */}
-      <section id="contact" className="reveal-section py-24 sm:py-32 px-4 sm:px-6 bg-[#f1f5f9] relative overflow-hidden">
-        {/* Radial Blue Glow behind the card */}
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(59,130,246,0.03)_0%,transparent_70%)] pointer-events-none" />
+      <section id="contact" className="reveal-section py-20 sm:py-28 px-4 sm:px-6 bg-[#f8fafc] relative overflow-hidden">
+        {/* Glow sutil de fondo */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(59,130,246,0.04)_0%,transparent_70%)] pointer-events-none" />
 
-        <div className="reveal-item max-w-4xl mx-auto bg-white border border-slate-200/80 rounded-2xl sm:rounded-[2.5rem] p-8 sm:p-16 text-center relative z-10 shadow-lg">
-          <span className="inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
-            {config?.cta_badge || t.ctaBadge}
-          </span>
-          <h2 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black tracking-tighter text-[#0c1b33] mb-6 font-serif">
-            {config?.cta_title || t.ctaTitle}
+        <div className="reveal-item max-w-2xl sm:max-w-3xl mx-auto bg-white border border-slate-200/80 rounded-3xl sm:rounded-[2.5rem] p-7 sm:p-12 md:p-14 text-center relative z-10 shadow-xl shadow-slate-200/50">
+          
+          {/* Título Principal */}
+          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0c1b33] font-serif leading-tight mb-2 sm:mb-3">
+            {config?.cta_title && config.cta_title !== "Agenda tu clase gratuita" ? config.cta_title : t.ctaTitle}
           </h2>
-          <p className="text-base sm:text-lg md:text-xl text-slate-500 font-semibold max-w-xl mx-auto mb-10 leading-relaxed">
-            {config?.cta_subtitle || t.ctaSubtitle}
+
+          {/* Subtítulo: No tan destacado, más pequeño */}
+          <p className="text-base sm:text-lg md:text-xl font-bold font-serif text-[#0055a5] sm:text-[#0c1b33]/85 mb-7 sm:mb-8">
+            {config?.cta_subtitle && !config.cta_subtitle.includes("Escríbeme por WhatsApp") ? config.cta_subtitle : t.ctaSubtitle}
           </p>
-          <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
+
+          {/* Fila Centrada: Conocernos y Evaluar tu nivel */}
+          <div className="flex items-center justify-center gap-4 sm:gap-8 mb-8 sm:mb-9 text-slate-700">
+            <div className="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm font-bold text-slate-800">
+              <div className="w-8 h-8 rounded-full bg-[#eff6ff] text-[#0055a5] flex items-center justify-center shrink-0">
+                <User size={16} />
+              </div>
+              <span>{t.ctaItemMeet || (lang === 'fr' ? 'Faire connaissance' : lang === 'en' ? 'Get to know each other' : 'Conocernos')}</span>
+            </div>
+
+            <div className="h-4 sm:h-5 w-px bg-slate-200" />
+
+            <div className="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm font-bold text-slate-800">
+              <div className="w-8 h-8 rounded-full bg-[#eff6ff] text-[#0055a5] flex items-center justify-center shrink-0">
+                <BarChart2 size={16} />
+              </div>
+              <span>{t.ctaItemLevel || (lang === 'fr' ? 'Évaluer votre niveau' : lang === 'en' ? 'Assess your level' : 'Evaluar tu nivel')}</span>
+            </div>
+          </div>
+
+          {/* Botón Principal: Reservar mi clase gratuita */}
+          <div className="flex flex-col items-center justify-center">
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="bg-[#0c1b33] hover:bg-[#152e54] text-white px-10 py-5 rounded-full text-lg font-bold flex items-center gap-3 transition-all hover:scale-105 shadow-xl shadow-[#0c1b33]/15"
+              className="inline-flex items-center justify-center gap-2.5 bg-[#003d7a] hover:bg-[#002b57] text-white px-8 sm:px-10 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold shadow-lg shadow-blue-950/20 hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
             >
-              <Smartphone size={24} /> {config?.cta_btn_text || t.ctaBtn}
+              <span>{config?.cta_btn_text && config.cta_btn_text !== "Agendar por WhatsApp" ? config.cta_btn_text : t.ctaBtn}</span>
+              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+            </a>
+
+            {/* Sin compromiso */}
+            <span className="text-[11px] sm:text-xs text-slate-400 font-medium tracking-wide mt-3 mb-5 select-none">
+              — {t.ctaNoCommitment || (lang === 'fr' ? 'Sans engagement' : lang === 'en' ? 'No commitment' : 'Sin compromiso')} —
+            </span>
+
+            {/* Enlace de WhatsApp con Icono */}
+            <a
+              href={`https://wa.me/${config?.whatsapp_number || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33685744973'}?text=${encodeURIComponent(lang === 'es' ? 'Hola Florentin, tengo una pregunta sobre las clases.' : lang === 'fr' ? 'Bonjour Florentin, j\'ai une question sur les cours.' : 'Hi Florentin, I have a question about the classes.')}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0055a5] transition-colors"
+            >
+              <svg className="w-4 h-4 fill-[#25D366] shrink-0" viewBox="0 0 24 24">
+                <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.333 4.982L2 22l5.202-1.362a9.92 9.92 0 004.808 1.258h.005c5.507 0 9.99-4.478 9.99-9.988C22.007 6.478 17.52 2 12.012 2zm6.657 14.184c-.273.768-1.579 1.393-2.185 1.48-.56.08-1.288.125-2.072-.125a10.05 10.05 0 01-4.444-2.82 10.15 10.15 0 01-2.316-3.878c-.286-.777.01-1.39.29-1.68.21-.22.47-.56.71-.85.24-.29.33-.48.49-.8.16-.33.08-.62-.04-.89-.12-.27-1.07-2.58-1.47-3.53-.39-.95-.79-.82-1.08-.83h-.92c-.31 0-.82.12-1.25.59-.43.47-1.64 1.6-1.64 3.9s1.68 4.52 1.91 4.83c.24.31 3.3 5.04 8.01 7.07 1.12.48 2 .77 2.68.99 1.13.36 2.16.31 2.97.19.9-.13 2.18-.89 2.49-1.75.31-.86.31-1.6.22-1.75-.09-.15-.35-.24-.76-.44z"/>
+              </svg>
+              <span>{t.ctaWhatsappQuestion || (lang === 'fr' ? 'Vous avez une question ? Écrivez-moi sur WhatsApp' : lang === 'en' ? 'Have a question? Text me on WhatsApp' : '¿Tienes una pregunta? Escríbeme por WhatsApp')}</span>
             </a>
           </div>
-          <a href={`mailto:${config?.email_notificaciones || 'lefrancaisavecflorentin@outlook.com'}`} className="inline-block text-sm text-slate-400 hover:text-[#3b82f6] transition-colors mt-6 font-semibold">
-            {t.ctaBtnAlt}
-          </a>
         </div>
       </section>
 
@@ -1979,38 +1920,50 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Columna 2: NAVEGACIÓN */}
+          {/* Columna 2: LA ACADEMIA */}
           <div className="flex flex-col gap-4">
             <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">
-              {lang === 'es' ? 'Navegación' : lang === 'fr' ? 'Navigation' : 'Navigation'}
+              {lang === 'es' ? 'La academia' : lang === 'fr' ? "L'Académie" : 'The Academy'}
             </h4>
             <div className="flex flex-col gap-2.5 text-sm text-slate-500 font-semibold">
-              <a href="#method" className="hover:text-[#0c1b33] transition-colors">
-                {lang === 'es' ? 'Método' : lang === 'fr' ? 'Méthode' : 'Method'}
-              </a>
               <a href="#teacher" className="hover:text-[#0c1b33] transition-colors">
-                {lang === 'es' ? 'Profesor' : lang === 'fr' ? 'Professeur' : 'Teacher'}
+                {t.navTeacher || (lang === 'es' ? 'Profesor' : lang === 'fr' ? 'Professeur' : 'Teacher')}
+              </a>
+              <a href="#method" className="hover:text-[#0c1b33] transition-colors">
+                {t.navMethod || (lang === 'es' ? 'Método' : lang === 'fr' ? 'Méthode' : 'Method')}
+              </a>
+              <a href="#why" className="hover:text-[#0c1b33] transition-colors">
+                {(t as any).navWhy || (lang === 'es' ? '¿Por qué?' : lang === 'fr' ? 'Pourquoi ?' : 'Why?')}
+              </a>
+              <a href="#for-whom" className="hover:text-[#0c1b33] transition-colors">
+                {(t as any).navForWhom || (lang === 'es' ? 'Para quién' : lang === 'fr' ? 'Pour qui' : 'For whom')}
+              </a>
+              <a href="#faq" className="hover:text-[#0c1b33] transition-colors">
+                {t.navFaq || 'FAQ'}
               </a>
               <a href="#contact" className="hover:text-[#0c1b33] transition-colors">
-                {lang === 'es' ? 'Contacto' : lang === 'fr' ? 'Contact' : 'Contact'}
+                {t.navContact || (lang === 'fr' ? 'Contact' : 'Contacto')}
               </a>
             </div>
           </div>
 
-          {/* Columna 3: ACADEMIA */}
+          {/* Columna 3: ACADEMIA / CURSOS */}
           <div className="flex flex-col gap-4">
             <h4 className="font-bold text-[#0c1b33] text-sm uppercase tracking-wider">
-              {lang === 'es' ? 'Academia' : lang === 'fr' ? 'Académie' : 'Academy'}
+              {lang === 'es' ? 'Cursos & Blog' : lang === 'fr' ? 'Cours & Blog' : 'Courses & Blog'}
             </h4>
             <div className="flex flex-col gap-2.5 text-sm text-slate-500 font-semibold">
-              <a href="#plans" className="hover:text-[#0c1b33] transition-colors">
-                {lang === 'es' ? 'Planes' : lang === 'fr' ? 'Formules' : 'Plans'}
-              </a>
-              <a href="#faq" className="hover:text-[#0c1b33] transition-colors">
-                {lang === 'es' ? 'Preguntas' : lang === 'fr' ? 'FAQ' : 'FAQ'}
-              </a>
+              <Link href="/clases" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Clases' : lang === 'fr' ? 'Cours' : 'Classes'}
+              </Link>
+              <Link href="/recursos" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Recursos' : lang === 'fr' ? 'Ressources' : 'Resources'}
+              </Link>
+              <Link href="/articulos" className="hover:text-[#0c1b33] transition-colors">
+                {lang === 'es' ? 'Artículos' : lang === 'fr' ? 'Articles' : 'Articles'}
+              </Link>
               <Link href="/alumno" className="hover:text-[#0c1b33] transition-colors">
-                {lang === 'es' ? 'Portal Alumnos' : lang === 'fr' ? "Portail de l'Élève" : 'Student Portal'}
+                {t.navLogin || (lang === 'es' ? 'Portal Alumnos' : lang === 'fr' ? "Portail de l'Élève" : 'Student Portal')}
               </Link>
             </div>
           </div>
