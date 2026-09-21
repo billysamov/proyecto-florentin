@@ -602,6 +602,32 @@ export default function Home() {
     return () => clearTimeout(timer);
   }, []);
 
+  const changeLang = async (newLang: Language) => {
+    setLang(newLang);
+    setLangDropdownOpen(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("florentin_lang", newLang);
+      window.dispatchEvent(new CustomEvent("florentin_lang_changed", { detail: newLang }));
+    }
+    if (originalConfig) {
+      const translated = await translateConfigObject(originalConfig, newLang);
+      if (translated) setConfig(translated);
+    }
+    if (originalPlanes.length > 0) {
+      const translatedP = await translatePlanesObject(originalPlanes, newLang);
+      if (translatedP) setPlanes(translatedP);
+    }
+  };
+
+  const changeDivisa = (newDivisa: "eur" | "usd") => { 
+    setDivisa(newDivisa); 
+    setDivisaDropdownOpen(false);
+    if (typeof window !== "undefined") {
+      localStorage.setItem("florentin_divisa", newDivisa); 
+      window.dispatchEvent(new CustomEvent("florentin_divisa_changed", { detail: newDivisa }));
+    }
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       setScrolled(window.scrollY > 20);
@@ -628,32 +654,6 @@ export default function Home() {
       window.removeEventListener("florentin_lang_changed", handleLangEvent);
     };
   }, [lang]);
-
-  const changeLang = async (newLang: Language) => {
-    setLang(newLang);
-    setLangDropdownOpen(false);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("florentin_lang", newLang);
-      window.dispatchEvent(new CustomEvent("florentin_lang_changed", { detail: newLang }));
-    }
-    if (originalConfig) {
-      const translated = await translateConfigObject(originalConfig, newLang);
-      if (translated) setConfig(translated);
-    }
-    if (originalPlanes.length > 0) {
-      const translatedP = await translatePlanesObject(originalPlanes, newLang);
-      if (translatedP) setPlanes(translatedP);
-    }
-  };
-
-  const changeDivisa = (newDivisa: "eur" | "usd") => { 
-    setDivisa(newDivisa); 
-    setDivisaDropdownOpen(false);
-    if (typeof window !== "undefined") {
-      localStorage.setItem("florentin_divisa", newDivisa); 
-      window.dispatchEvent(new CustomEvent("florentin_divisa_changed", { detail: newDivisa }));
-    }
-  };
 
   const handleWelcomeConfirm = async (selectedLang: Language, selectedDivisa: "eur" | "usd") => {
     await changeLang(selectedLang);

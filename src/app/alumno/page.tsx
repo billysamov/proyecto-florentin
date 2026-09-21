@@ -5,7 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
-import { MessageSquare, Calendar, BookOpen, Download, TrendingUp, HelpCircle, User, Mail, Lock, Phone, GraduationCap, Globe, Target, Key, ArrowLeft, CheckCircle2 } from "lucide-react";
+import { MessageSquare, Calendar, BookOpen, Download, TrendingUp, HelpCircle, User, Mail, Lock, Phone, GraduationCap, Globe, Target, Key, ArrowLeft, ArrowRight, CheckCircle2 } from "lucide-react";
 
 interface Clase {
   id: string;
@@ -394,10 +394,14 @@ export default function AlumnoPortal() {
 
       // 4b. Obtener Libros y Cuadernos comprados por este alumno en la tienda
       try {
-        const { data: comprasDb } = await supabase
-          .from("compras_productos")
-          .select("*")
-          .or(`usuario_id.eq.${userId},email_comprador.eq.${email}`);
+        const userEmail = perfil?.email || email;
+        let comprasQuery = supabase.from("compras_productos").select("*");
+        if (userEmail) {
+          comprasQuery = comprasQuery.or(`usuario_id.eq.${userId},email_comprador.eq.${userEmail}`);
+        } else {
+          comprasQuery = comprasQuery.eq("usuario_id", userId);
+        }
+        const { data: comprasDb } = await comprasQuery;
 
         if (comprasDb && comprasDb.length > 0) {
           setLibrosComprados(comprasDb);
