@@ -7,7 +7,7 @@ import { translations, Language } from "@/lib/translations";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import {
-  ArrowRight, ChevronDown, CheckCircle,
+  ArrowRight, ChevronDown, CheckCircle, CheckCircle2,
   Globe2, Coins, User, BarChart2,
   CalendarCheck, MessageSquare, Clock, Headphones, BookOpen
 } from "lucide-react";
@@ -469,7 +469,7 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
       caracteristicas: plan.caracteristicas && plan.caracteristicas.trim().length > 0
         ? plan.caracteristicas.split("\n").filter((f: string) => f.trim().length > 0)
         : [
-            currentLang === "fr" ? "Cours 1 à 1 avec Florentin" : currentLang === "en" ? "1-on-1 class with Florentin" : "Clase 1 a 1 con Florentin",
+            currentLang === "fr" ? "Cours 1 à 1 avec moi" : currentLang === "en" ? "1-on-1 class with me" : "Clase 1 a 1 conmigo",
             currentLang === "fr" ? "Supports de cours personnalisés" : currentLang === "en" ? "Personalized learning materials" : "Material didáctico personalizado",
             currentLang === "fr" ? "Flexibilité d'horaires" : currentLang === "en" ? "Schedule flexibility" : "Flexibilidad de horario"
           ]
@@ -529,10 +529,6 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
       ═══════════════════════════════════════ */}
       <section className="pt-32 sm:pt-40 pb-12 sm:pb-16 px-4 sm:px-6 bg-gradient-to-b from-blue-50/50 via-white to-[#f8fafc]">
         <div className="max-w-6xl mx-auto text-center">
-          
-          <span className="inline-block px-5 py-2 rounded-full text-xs sm:text-sm font-extrabold tracking-[3px] uppercase bg-[#3b82f6]/10 text-[#0055a5] border border-[#3b82f6]/20 mb-6 shadow-xs">
-            • {lang === "es" ? "NUESTROS PLANES DE ESTUDIO" : lang === "fr" ? "NOS FORMULES D'ÉTUDE" : "OUR STUDY PLANS"}
-          </span>
 
           <h1 className="text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight text-[#0f172a] font-serif mb-6 leading-tight">
             {lang === "es" ? "Explora los planes de clases" : lang === "fr" ? "Explorez nos formules de cours" : "Explore our French classes"}
@@ -540,10 +536,10 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
 
           <p className="text-base sm:text-lg md:text-xl text-slate-600 max-w-2xl mx-auto font-normal leading-relaxed mb-8">
             {lang === "es"
-              ? "Clases particulares individuales 1 a 1 por Microsoft Teams con Florentin, profesor nativo certificado. Flexibilidad, inmersión y metodología personalizada para tus metas."
+              ? "Clases particulares individuales 1 a 1 por Microsoft Teams conmigo, profesor nativo certificado. Flexibilidad, inmersión y metodología personalizada para tus metas."
               : lang === "fr"
-              ? "Cours particuliers en ligne 1 à 1 via Microsoft Teams avec Florentin, professeur natif certifié. Flexibilité, immersion et pédagogie sur mesure."
-              : "Private 1-on-1 French lessons via Microsoft Teams with Florentin, certified native teacher. Full flexibility and personalized immersion."}
+              ? "Cours particuliers en ligne 1 à 1 via Microsoft Teams avec moi, professeur natif certifié. Flexibilité, immersion et pédagogie sur mesure."
+              : "Private 1-on-1 French lessons via Microsoft Teams with me, certified native teacher. Full flexibility and personalized immersion."}
           </p>
 
           {/* Selector de divisa EUR / USD */}
@@ -683,7 +679,7 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
               {lang === "es" ? "GARANTÍA PEDAGÓGICA" : lang === "fr" ? "GARANTIE PÉDAGOGIQUE" : "PEDAGOGICAL GUARANTEE"}
             </span>
             <h2 className="text-2xl sm:text-4xl font-extrabold text-[#0c1b33] font-serif">
-              {lang === "es" ? "Todo lo que incluye aprender con Florentin" : lang === "fr" ? "Ce qui est inclus dans chaque formule" : "What is included in every plan"}
+              {lang === "es" ? "Todo lo que incluye aprender conmigo" : lang === "fr" ? "Ce qui est inclus quand vous apprenez avec moi" : "What is included when learning with me"}
             </h2>
           </div>
 
@@ -777,9 +773,19 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
           TARJETA DE CLASE DE PRUEBA GRATUITA (CTA)
       ═══════════════════════════════════════ */}
       <section className="py-16 sm:py-24 px-4 sm:px-6 bg-[#f1f5f9] relative overflow-hidden">
-        <div className="max-w-2xl sm:max-w-3xl mx-auto bg-white border border-slate-200/80 rounded-3xl sm:rounded-[2.5rem] p-7 sm:p-12 md:p-14 text-center relative z-10 shadow-xl shadow-slate-200/50">
+        <div className="max-w-4xl lg:max-w-5xl mx-auto bg-white border border-slate-200/90 rounded-[2.25rem] sm:rounded-[3rem] px-6 py-12 sm:px-12 sm:py-16 md:px-16 md:py-18 text-center relative z-10 shadow-2xl shadow-slate-300/40 overflow-hidden">
           
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0c1b33] font-serif leading-tight mb-2 sm:mb-3">
+          {/* Luces ambientales decorativas dentro de la tarjeta */}
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[240px] bg-gradient-to-b from-[#3b82f6]/10 via-[#c99a3c]/8 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 right-10 w-[300px] h-[180px] bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+
+          {/* Badge Superior */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold uppercase tracking-widest bg-blue-50 text-[#0055a5] border border-blue-200/60 mb-5 sm:mb-6 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-[#0055a5] animate-ping" />
+            <span>{lang === "fr" ? "SÉANCE DÉCOUVERTE OFFERTE" : lang === "en" ? "FREE DISCOVERY SESSION" : "CLASE DE PRUEBA GRATUITA"}</span>
+          </div>
+
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] font-serif leading-[1.16] tracking-tight max-w-3xl mx-auto mb-3 sm:mb-4">
             {lang === "fr" 
               ? "Essayez un cours d'essai gratuit de 30 minutes"
               : lang === "en" 
@@ -787,7 +793,7 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
                 : "Prueba una clase de prueba gratuita de 30 minutos"}
           </h2>
 
-          <p className="text-base sm:text-lg md:text-xl font-bold font-serif text-[#0055a5] sm:text-[#0c1b33]/85 mb-7 sm:mb-8">
+          <p className="text-base sm:text-lg md:text-xl font-medium text-slate-600 max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-10">
             {lang === "fr" 
               ? "et découvrez comment nous pouvons travailler ensemble." 
               : lang === "en" 
@@ -795,21 +801,33 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
                 : "y descubre cómo podemos trabajar juntos."}
           </p>
 
-          <div className="flex items-center justify-center gap-4 sm:gap-8 mb-8 sm:mb-9 text-slate-700">
-            <div className="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm font-bold text-slate-800">
-              <div className="w-8 h-8 rounded-full bg-[#eff6ff] text-[#0055a5] flex items-center justify-center shrink-0">
+          {/* Fila Panorámica: Beneficios de la sesión */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 mb-8 sm:mb-10 text-slate-700">
+            <div className="flex items-center gap-3 bg-slate-50/90 border border-slate-200/80 px-4 sm:px-5 py-2.5 rounded-2xl shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-blue-100/70 text-[#0055a5] flex items-center justify-center shrink-0">
                 <User size={16} />
               </div>
-              <span>{lang === "fr" ? "Faire connaissance" : lang === "en" ? "Get to know each other" : "Conocernos"}</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-800">
+                {lang === "fr" ? "Faire connaissance" : lang === "en" ? "Get to know each other" : "Conocernos"}
+              </span>
             </div>
 
-            <div className="h-4 sm:h-5 w-px bg-slate-200" />
-
-            <div className="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm font-bold text-slate-800">
-              <div className="w-8 h-8 rounded-full bg-[#eff6ff] text-[#0055a5] flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-3 bg-slate-50/90 border border-slate-200/80 px-4 sm:px-5 py-2.5 rounded-2xl shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-blue-100/70 text-[#0055a5] flex items-center justify-center shrink-0">
                 <BarChart2 size={16} />
               </div>
-              <span>{lang === "fr" ? "Évaluer votre niveau" : lang === "en" ? "Assess your level" : "Evaluar tu nivel"}</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-800">
+                {lang === "fr" ? "Évaluer votre niveau" : lang === "en" ? "Assess your level" : "Evaluar tu nivel"}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 bg-slate-50/90 border border-slate-200/80 px-4 sm:px-5 py-2.5 rounded-2xl shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-amber-100/70 text-[#b45309] flex items-center justify-center shrink-0">
+                <CheckCircle2 size={16} />
+              </div>
+              <span className="text-xs sm:text-sm font-bold text-slate-800">
+                {lang === "fr" ? "Sans engagement" : lang === "en" ? "Zero commitment" : "Sin compromiso"}
+              </span>
             </div>
           </div>
 
@@ -818,13 +836,13 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2.5 bg-[#003d7a] hover:bg-[#002b57] text-white px-8 sm:px-10 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold shadow-lg shadow-blue-950/20 hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
+              className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#003d7a] via-[#004e9a] to-[#003d7a] hover:from-[#002b57] hover:to-[#003d7a] text-white px-9 sm:px-12 py-4 sm:py-4.5 rounded-full text-sm sm:text-base font-extrabold shadow-xl shadow-blue-950/20 hover:shadow-2xl hover:shadow-blue-950/30 hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
             >
               <span>{lang === "fr" ? "Réserver mon cours gratuit" : lang === "en" ? "Book my free class" : "Reservar mi clase gratuita"}</span>
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform duration-300" />
             </a>
 
-            <span className="text-[11px] sm:text-xs text-slate-400 font-medium tracking-wide mt-3 mb-5 select-none">
+            <span className="text-xs text-slate-400 font-semibold tracking-wider uppercase mt-3.5 mb-5 select-none">
               — {lang === "fr" ? "Sans engagement" : lang === "en" ? "No commitment" : "Sin compromiso"} —
             </span>
 
@@ -834,7 +852,7 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
               )}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0055a5] transition-colors"
+              className="inline-flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0055a5] bg-slate-50 hover:bg-slate-100 border border-slate-200/80 px-5 py-2.5 rounded-full transition-all duration-200 shadow-2xs"
             >
               <svg className="w-4 h-4 fill-[#25D366] shrink-0" viewBox="0 0 24 24">
                 <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.333 4.982L2 22l5.202-1.362a9.92 9.92 0 004.808 1.258h.005c5.507 0 9.99-4.478 9.99-9.988C22.007 6.478 17.52 2 12.012 2zm6.657 14.184c-.273.768-1.579 1.393-2.185 1.48-.56.08-1.288.125-2.072-.125a10.05 10.05 0 01-4.444-2.82 10.15 10.15 0 01-2.316-3.878c-.286-.777.01-1.39.29-1.68.21-.22.47-.56.71-.85.24-.29.33-.48.49-.8.16-.33.08-.62-.04-.89-.12-.27-1.07-2.58-1.47-3.53-.39-.95-.79-.82-1.08-.83h-.92c-.31 0-.82.12-1.25.59-.43.47-1.64 1.6-1.64 3.9s1.68 4.52 1.91 4.83c.24.31 3.3 5.04 8.01 7.07 1.12.48 2 .77 2.68.99 1.13.36 2.16.31 2.97.19.9-.13 2.18-.89 2.49-1.75.31-.86.31-1.6.22-1.75-.09-.15-.35-.24-.76-.44z"/>

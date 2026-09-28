@@ -29,6 +29,7 @@ export default function MarketingAutomatizaciones({
   const [guardando, setGuardando] = useState(false);
   const [mensajeExito, setMensajeExito] = useState("");
   const [recordatoriosClaseCount, setRecordatoriosClaseCount] = useState<number>(0);
+  const [reprogramacionesCount, setReprogramacionesCount] = useState<number>(1);
 
   // Estados para el Historial de Envíos (Logs)
   const [logs, setLogs] = useState<EmailLogItem[]>([]);
@@ -49,7 +50,7 @@ export default function MarketingAutomatizaciones({
       if (!logError && dbLogs && dbLogs.length > 0) {
         setLogs(dbLogs);
       } else {
-        // Fallback inteligente: Construir historial sintético en base a clases enviadas e inscripciones
+        // Fallback inteligente: Construir historial sintético en base a clases enviadas, reprogramaciones e inscripciones
         const logsSinteticos: EmailLogItem[] = [];
 
         // Clases con recordatorio enviado
@@ -72,6 +73,30 @@ export default function MarketingAutomatizaciones({
                 tipo: 'recordatorio_clase',
                 estado: 'enviado',
                 creado_en: new Date(fObj.getTime() - 24 * 60 * 60 * 1000).toISOString()
+              });
+            }
+          }
+        }
+
+        // Clases reprogramadas
+        const { data: clasesReprogramadas } = await supabase
+          .from('clases')
+          .select('id, fecha_hora, creado_en, reprogramaciones_restantes, usuarios(email, nombre)')
+          .lt('reprogramaciones_restantes', 2)
+          .order('creado_en', { ascending: false })
+          .limit(10);
+
+        if (clasesReprogramadas) {
+          for (const cr of clasesReprogramadas) {
+            const u = Array.isArray(cr.usuarios) ? cr.usuarios[0] : cr.usuarios;
+            if (u?.email) {
+              logsSinteticos.push({
+                id: `repro-${cr.id}`,
+                destinatario: u.email,
+                asunto: `Cambio de horario: tu clase de francés 🕒`,
+                tipo: 'reprogramacion',
+                estado: 'enviado',
+                creado_en: cr.creado_en || new Date().toISOString()
               });
             }
           }
@@ -121,6 +146,16 @@ export default function MarketingAutomatizaciones({
         if (count !== null && count !== undefined) {
           setRecordatoriosClaseCount(count);
         }
+
+        const { count: reproCount } = await supabase
+          .from('clases')
+          .select('id', { count: 'exact', head: true })
+          .lt('reprogramaciones_restantes', 2);
+        if (reproCount !== null && reproCount !== undefined && reproCount > 0) {
+          setReprogramacionesCount(reproCount);
+        } else {
+          setReprogramacionesCount(1);
+        }
       } catch (err) {
         console.error("Error obteniendo conteo de recordatorios:", err);
       }
@@ -132,6 +167,7 @@ export default function MarketingAutomatizaciones({
   // Estados para el Modal de Previsualización
   const [previewEmail, setPreviewEmail] = useState<"bienvenida" | "recordatorio" | "renovacion" | "recordatorio_clase" | "reprogramacion" | null>(null);
   const [previewLang, setPreviewLang] = useState<"es" | "fr" | "en">("es");
+  const [previewPasoRecordatorio, setPreviewPasoRecordatorio] = useState<"3dias" | "7dias">("3dias");
 
   const t = {
     titulo: isFr ? "Automatisation des E-mails (Lead Nurturing)" : "Automatizaciones de Correo (Lead Nurturing)",
@@ -142,10 +178,10 @@ export default function MarketingAutomatizaciones({
     bienvenidaDesc: isFr 
       ? "Envoye instantanement lors de l'inscription d'un utilisateur sans formule active." 
       : "Se envía instantáneamente tras el registro de un usuario sin plan activo.",
-    recordatorioTitulo: isFr ? "Relance apres 3 Jours" : "Recordatorio de 3 Días",
+    recordatorioTitulo: isFr ? "Rappels d'Inactivité (3 Jours et 1 Semaine)" : "Recordatorio de Inactividad (3 Días y 1 Semana)",
     recordatorioDesc: isFr 
-      ? "Envoye 3 jours apres l'inscription si l'utilisateur n'a pas encore achete de formule." 
-      : "Se envía 3 días después del registro si el usuario sigue sin adquirir ningún plan.",
+      ? "Séquence automatique envoyée à l'élève sans formule : étape 1 à 3 jours et étape 2 après 1 semaine (7 jours)." 
+      : "Secuencia continua enviada al alumno sin plan o sin renovación: paso 1 a los 3 días y paso 2 tras 1 semana (7 días).",
     renovacionTitulo: isFr ? "Alerte de Renouvellement" : "Aviso de Renovación",
     renovacionDesc: isFr 
       ? "S'envoie lorsqu'il reste 2 cours ou moins dans le forfait de l'élève." 
@@ -349,7 +385,87 @@ export default function MarketingAutomatizaciones({
         };
       }
     } else if (previewEmail === "recordatorio") {
-      // Recordatorio a los 3 días de inactividad
+      if (previewPasoRecordatorio === "7dias") {
+        // Recordatorio a los 7 días (1 semana)
+        if (previewLang === "fr") {
+          return {
+            asunto: "Toujours envie d'apprendre le français ? Ne laissez pas passer votre moment 🇫🇷",
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+                <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Bonjour [Nom de l'élève] :</h2>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Cela fait maintenant une semaine que vous avez rejoint ma plateforme, et je voulais prendre un moment pour vous écrire personnellement.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Je sais qu'il n'est pas toujours évident de franchir le pas : on attend souvent le « moment parfait » ou on hésite face au premier cours. Mais la vérité, c'est que la confiance vient avec la pratique !</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Dans mes cours particuliers 1 à 1, nous avançons à votre propre rythme, dans une ambiance bienveillante et focalisée à 100% sur vos objectifs.</p>
+                <div style="text-align: center; margin: 18px 0;">
+                  <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Choisir mon forfait</span>
+                </div>
+                <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                  <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0055a5;">💬 Une question ou une hésitation ?</p>
+                  <p style="margin: 0; font-size: 12.5px; color: #475569;">Répondez simplement à cet e-mail. Je lirai votre message et je vous orienterai avec plaisir sur la formule la plus adaptée à vos besoins.</p>
+                </div>
+                <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Au plaisir de vous retrouver en classe,</p>
+                <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+                <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                  <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                  <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+                </div>
+              </div>
+            `
+          };
+        } else if (previewLang === "en") {
+          return {
+            asunto: "Still thinking about learning French? Don't let your moment pass 🇫🇷",
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+                <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hello [Student's Name]:</h2>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">It's been a week since you joined my platform, and I wanted to take a moment to write to you personally.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">I know taking that first step isn't always easy: we often wait for the 'perfect time' or feel unsure before the first lesson. But the truth is, confidence comes with practice!</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">In my 1-on-1 private lessons, we progress entirely at your own pace, in an encouraging environment tailored 100% to your needs.</p>
+                <div style="text-align: center; margin: 18px 0;">
+                  <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Choose My Plan</span>
+                </div>
+                <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                  <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0055a5;">💬 Have a question or hesitating?</p>
+                  <p style="margin: 0; font-size: 12.5px; color: #475569;">Simply reply to this email. I read every message and will be glad to help you pick the best option for your goals.</p>
+                </div>
+                <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Looking forward to seeing you in class,</p>
+                <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+                <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                  <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                  <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+                </div>
+              </div>
+            `
+          };
+        } else {
+          return {
+            asunto: "¿Aún pensando en aprender francés? No dejes pasar tu oportunidad 🇫🇷",
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+                <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hola [Nombre]:</h2>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Hace ya una semana que creaste tu cuenta en mi plataforma y quería tomarme un momento para escribirte personalmente.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Sé que dar el primer paso a veces genera dudas o esperamos al «momento perfecto» para empezar. Pero la verdad es que la confianza al hablar solo se construye practicando.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">En mis clases particulares 1 a 1 avanzaremos a tu propio ritmo, en un ambiente agradable y enfocado al 100% en lo que tú necesitas.</p>
+                <div style="text-align: center; margin: 18px 0;">
+                  <span style="background-color: #0055a5; color: #ffffff; padding: 10px 24px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">Elegir mi Plan de Clases</span>
+                </div>
+                <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                  <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0055a5;">💬 ¿Tienes alguna pregunta o duda?</p>
+                  <p style="margin: 0; font-size: 12.5px; color: #475569;">Solo responde a este correo. Leeré tu mensaje y te aconsejaré encantado sobre la opción que mejor se adapte a tu nivel y metas.</p>
+                </div>
+                <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Espero verte muy pronto en clase,</p>
+                <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+                <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                  <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                  <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+                </div>
+              </div>
+            `
+          };
+        }
+      }
+
+      // Recordatorio a los 3 días de inactividad (Paso 1)
       if (previewLang === "fr") {
         return {
           asunto: "Prêt à faire votre premier pas en français ? 🇫🇷",
@@ -1021,7 +1137,7 @@ export default function MarketingAutomatizaciones({
           <div style={{ borderTop: "1px solid var(--border-color)", paddingTop: "14px", marginTop: "14px", display: "flex", justifyContent: "space-between", alignItems: "center", fontSize: "12px" }}>
             <span style={{ color: "var(--text-muted)" }}>{t.estadisticas}</span>
             <span style={{ fontWeight: 600, color: "var(--text-main)" }}>
-              {t.enviosTotales} <strong style={{ color: "#3b82f6" }}>0</strong>
+              {t.enviosTotales} <strong style={{ color: "#3b82f6" }}>{reprogramacionesCount}</strong>
             </span>
           </div>
         </div>
@@ -1327,7 +1443,15 @@ export default function MarketingAutomatizaciones({
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "20px", borderBottom: "1px solid var(--border-color)", paddingBottom: "14px" }}>
               <h3 style={{ fontSize: "18px", fontWeight: 700, margin: 0, display: "flex", alignItems: "center", gap: "8px" }}>
                 <Mail size={18} className="text-[#3b82f6]" /> 
-                {previewEmail === "bienvenida" ? t.bienvenidaTitulo : previewEmail === "recordatorio" ? t.recordatorioTitulo : previewEmail === "recordatorio_clase" ? t.clasesTitulo : t.renovacionTitulo}
+                {previewEmail === "bienvenida" 
+                  ? t.bienvenidaTitulo 
+                  : previewEmail === "recordatorio" 
+                    ? t.recordatorioTitulo 
+                    : previewEmail === "recordatorio_clase" 
+                      ? t.clasesTitulo 
+                      : previewEmail === "reprogramacion" 
+                        ? t.reprogramacionTitulo 
+                        : t.renovacionTitulo}
               </h3>
               <button 
                 onClick={() => setPreviewEmail(null)}
@@ -1336,6 +1460,56 @@ export default function MarketingAutomatizaciones({
                 <X size={20} />
               </button>
             </div>
+
+            {/* Selector de Etapa si es Recordatorio de Inactividad (Secuencia de 3 días y 1 semana) */}
+            {previewEmail === "recordatorio" && (
+              <div style={{ 
+                display: "flex", 
+                gap: "6px", 
+                marginBottom: "16px", 
+                padding: "4px", 
+                backgroundColor: "var(--bg-light)", 
+                borderRadius: "10px", 
+                border: "1px solid var(--border-color)" 
+              }}>
+                <button
+                  type="button"
+                  onClick={() => setPreviewPasoRecordatorio("3dias")}
+                  style={{
+                    flex: 1,
+                    padding: "8px 12px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                    backgroundColor: previewPasoRecordatorio === "3dias" ? "#3b82f6" : "transparent",
+                    color: previewPasoRecordatorio === "3dias" ? "#ffffff" : "var(--text-muted)",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  {isFr ? "Étape 1 : À 3 Jours" : "Paso 1: A los 3 Días"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewPasoRecordatorio("7dias")}
+                  style={{
+                    flex: 1,
+                    padding: "8px 12px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                    backgroundColor: previewPasoRecordatorio === "7dias" ? "#3b82f6" : "transparent",
+                    color: previewPasoRecordatorio === "7dias" ? "#ffffff" : "var(--text-muted)",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  {isFr ? "Étape 2 : Après 1 Semaine (7 Jours)" : "Paso 2: Después de 1 Semana (7 Días)"}
+                </button>
+              </div>
+            )}
 
             {/* Selector de Idioma */}
             <div style={{ display: "flex", gap: "8px", marginBottom: "20px" }}>

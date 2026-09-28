@@ -111,7 +111,7 @@ export const translations = {
 
     // For Whom
     forWhomBadge: "¿PARA QUIÉN ES?",
-    forWhomTitle: "Florentin es para ti si…",
+    forWhomTitle: "Aprender conmigo es para ti si…",
     forWhom1Title: "Quieres vivir en Francia",
     forWhom1Desc: "Prepárate para mudarte con confianza. Aprende el francés que realmente necesitas para la vida diaria.",
     forWhom2Title: "Estudias o trabajas",
@@ -355,7 +355,7 @@ export const translations = {
 
     // For Whom
     forWhomBadge: "POUR QUI ?",
-    forWhomTitle: "Florentin est pour vous si…",
+    forWhomTitle: "Apprendre avec moi est pour vous si…",
     forWhom1Title: "Vous voulez vivre en France",
     forWhom1Desc: "Préparez-vous à déménager avec confiance. Apprenez le français dont vous avez vraiment besoin.",
     forWhom2Title: "Vous étudiez ou travaillez",
@@ -599,7 +599,7 @@ export const translations = {
 
     // For Whom
     forWhomBadge: "WHO IS IT FOR?",
-    forWhomTitle: "Florentin is for you if…",
+    forWhomTitle: "Learning with me is for you if…",
     forWhom1Title: "You want to live in France",
     forWhom1Desc: "Prepare to move with confidence. Learn the French you actually need for daily life.",
     forWhom2Title: "You study or work",

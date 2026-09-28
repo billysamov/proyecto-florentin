@@ -4,10 +4,11 @@ import { notFound } from "next/navigation";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import ArticleClientView from "@/components/blog/ArticleClientView";
 
-export const revalidate = 60; // ISR cada 60 segundos
+export const dynamic = "force-dynamic";
 
 interface PageProps {
   params: Promise<{ slug: string }>;
+  searchParams?: Promise<{ preview?: string }>;
 }
 
 // Artículos de respaldo con las 3 capas lingüísticas
@@ -357,7 +358,7 @@ In French culture, greeting first is essential polite etiquette that sets a frie
   }
 ];
 
-async function getArticuloBySlug(slug: string) {
+async function getArticuloBySlug(slug: string, isPreview: boolean = false) {
   try {
     const supabase = getSupabaseAdmin();
     const { data, error } = await supabase
@@ -367,18 +368,23 @@ async function getArticuloBySlug(slug: string) {
       .single();
 
     if (!error && data) {
-      // Si el artículo es un borrador o está programado para el futuro, no es visible públicamente
       const now = new Date();
-      if (!data.publicado) return null;
-      if (data.fecha_publicacion && new Date(data.fecha_publicacion) > now) {
-        return null;
+      const esProgramado = data.fecha_publicacion && new Date(data.fecha_publicacion) > now;
+      const esBorrador = !data.publicado;
+
+      // Si no es modo previsualización de admin, no permitir acceso si es borrador o programado futuro
+      if (!isPreview) {
+        if (esBorrador || esProgramado) return null;
       }
 
-      supabase
-        .from("articulos")
-        .update({ visitas: (data.visitas || 0) + 1 })
-        .eq("id", data.id)
-        .then(() => {});
+      // Solo contar visitas reales en artículos ya disponibles públicamente
+      if (!isPreview && !esBorrador && !esProgramado) {
+        supabase
+          .from("articulos")
+          .update({ visitas: (data.visitas || 0) + 1 })
+          .eq("id", data.id)
+          .then(() => {});
+      }
 
       return data;
     }
@@ -390,9 +396,11 @@ async function getArticuloBySlug(slug: string) {
   return fallback || null;
 }
 
-export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
+export async function generateMetadata({ params, searchParams }: PageProps): Promise<Metadata> {
   const { slug } = await params;
-  const art = await getArticuloBySlug(slug);
+  const sParams = searchParams ? await searchParams : {};
+  const isPreview = sParams.preview === "true" || sParams.preview === "1";
+  const art = await getArticuloBySlug(slug, isPreview);
 
   if (!art) {
     return {
@@ -401,7 +409,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   }
 
   const title = art.meta_titulo || `${art.titulo} | Le Français avec Florentin`;
-  const description = art.meta_descripcion || art.extracto || "Aprende francés con Florentin.";
+  const description = art.meta_descripcion || art.extracto || "Aprende francés conmigo.";
   const image = art.imagen_portada || "/french_hero.png";
 
   return {
@@ -432,13 +440,19 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   };
 }
 
-export default async function ArticuloIndividualPage({ params }: PageProps) {
+export default async function ArticuloIndividualPage({ params, searchParams }: PageProps) {
   const { slug } = await params;
-  const articulo = await getArticuloBySlug(slug);
+  const sParams = searchParams ? await searchParams : {};
+  const isPreview = sParams.preview === "true" || sParams.preview === "1";
+  const articulo = await getArticuloBySlug(slug, isPreview);
 
   if (!articulo) {
     notFound();
   }
+
+  const now = new Date();
+  const esProgramado = articulo.fecha_publicacion && new Date(articulo.fecha_publicacion) > now;
+  const esBorrador = !articulo.publicado;
 
   // Schema.org para Google Rich Snippets
   const jsonLd = {
@@ -467,6 +481,17 @@ export default async function ArticuloIndividualPage({ params }: PageProps) {
 
   return (
     <>
+      {isPreview && (esProgramado || esBorrador) && (
+        <div className="bg-gradient-to-r from-amber-600 via-amber-500 to-amber-600 text-white px-4 py-3 text-center text-xs sm:text-sm font-bold shadow-md sticky top-0 z-50 flex flex-wrap items-center justify-center gap-2">
+          <span>🕒 VISTA PREVIA ADMINISTRADOR:</span>
+          <span className="font-medium">
+            {esBorrador
+              ? "Este artículo está guardado como Borrador."
+              : `Este artículo está programado para publicarse el ${new Date(articulo.fecha_publicacion).toLocaleString("es-ES", { day: "numeric", month: "long", year: "numeric", hour: "2-digit", minute: "2-digit" })}.`}
+          </span>
+          <span className="bg-black/25 px-2 py-0.5 rounded text-[11px] font-mono">Oculto al público en el catálogo</span>
+        </div>
+      )}
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

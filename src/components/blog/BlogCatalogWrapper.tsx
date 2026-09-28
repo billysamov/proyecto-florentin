@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
-import { Sparkles, ArrowRight } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import BlogNavbar from "@/components/blog/BlogNavbar";
 import Footer from "@/components/layout/Footer";
 import BlogGrid, { ArticuloItem } from "@/components/blog/BlogGrid";
@@ -44,12 +44,6 @@ export default function BlogCatalogWrapper({ articulos }: BlogCatalogWrapperProp
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[350px] bg-gradient-to-tr from-[#3b82f6]/10 via-[#c99a3c]/10 to-transparent blur-3xl rounded-full pointer-events-none" />
 
         <div className="container max-w-6xl mx-auto px-4 relative z-10 text-center">
-          {/* Badge */}
-          <div className="inline-flex items-center gap-2 bg-white border border-slate-200/80 px-4 py-1.5 rounded-full text-xs font-bold text-slate-700 shadow-sm mb-6">
-            <Sparkles size={14} className="text-[#c99a3c]" />
-            <span>{t.blogHeroBadge || "BLOG & RECURSOS EDUCATIVOS"}</span>
-          </div>
-
           {/* Título Principal */}
           <h1 className="text-4xl sm:text-5xl lg:text-6xl font-black font-serif text-[#0c1b33] tracking-tight max-w-3xl mx-auto leading-[1.15] mb-6">
             {t.blogHeroTitle || "Aprende francés con método, cultura y naturalidad."}

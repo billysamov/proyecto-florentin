@@ -68,7 +68,7 @@ const defaultSpanishConfig: Record<string, string> = {
   ps_sol_3_title: "Flexibilidad total",
   ps_sol_3_desc: "Tú eliges el día y la hora. Clases por Microsoft Teams desde donde estés, en tu zona horaria.",
   for_whom_badge: "¿PARA QUIÉN ES?",
-  for_whom_title: "Florentin es para ti si…",
+  for_whom_title: "Aprender conmigo es para ti si…",
   for_whom_1_title: "Quieres vivir en Francia",
   for_whom_1_desc: "Prepárate para mudarte con confianza. Aprende el francés que realmente necesitas para la vida diaria.",
   for_whom_2_title: "Estudias o trabajas",
@@ -869,6 +869,7 @@ export default function Home() {
       {/* Datos Estructurados Schema.org JSON-LD para Google */}
       <script
         type="application/ld+json"
+        suppressHydrationWarning
         dangerouslySetInnerHTML={{
           __html: JSON.stringify({
             "@context": "https://schema.org",
@@ -877,7 +878,7 @@ export default function Home() {
             "url": "https://lefrancaisavecflorentin.com",
             "logo": "https://lefrancaisavecflorentin.com/icon.jpeg",
             "image": "https://lefrancaisavecflorentin.com/icon.jpeg",
-            "description": "Aprende francés con clases personalizadas online 1 a 1 de la mano de Florentin, profesor nativo de Francia.",
+            "description": "Aprende francés con clases personalizadas online 1 a 1 conmigo, profesor nativo de Francia.",
             "provider": {
               "@type": "Person",
               "name": "Florentin",
@@ -1678,10 +1679,10 @@ export default function Home() {
       <section id="for-whom" className="reveal-section py-20 sm:py-32 px-4 sm:px-6 bg-white text-black">
         <div className="max-w-6xl mx-auto">
           <div className="text-center mb-14 sm:mb-20">
-            <span className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
+            <span suppressHydrationWarning className="reveal-item inline-block px-6 py-2.5 rounded-full text-[13px] font-bold tracking-[4px] uppercase bg-[#3b82f6]/8 text-[#3b82f6] border border-[#3b82f6]/18 mb-6 shadow-sm">
               {config?.for_whom_badge || t.forWhomBadge}
             </span>
-            <h2 className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-[#0c1b33] font-serif">
+            <h2 suppressHydrationWarning className="reveal-item text-3xl sm:text-4xl md:text-5xl font-black tracking-tighter text-[#0c1b33] font-serif">
               {config?.for_whom_title || t.forWhomTitle}
             </h2>
           </div>
@@ -1789,51 +1790,72 @@ export default function Home() {
         {/* Glow sutil de fondo */}
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[radial-gradient(circle,rgba(59,130,246,0.04)_0%,transparent_70%)] pointer-events-none" />
 
-        <div className="reveal-item max-w-2xl sm:max-w-3xl mx-auto bg-white border border-slate-200/80 rounded-3xl sm:rounded-[2.5rem] p-7 sm:p-12 md:p-14 text-center relative z-10 shadow-xl shadow-slate-200/50">
+        <div className="reveal-item max-w-4xl lg:max-w-5xl mx-auto bg-white border border-slate-200/90 rounded-[2.25rem] sm:rounded-[3rem] px-6 py-12 sm:px-12 sm:py-16 md:px-16 md:py-18 text-center relative z-10 shadow-2xl shadow-slate-300/40 overflow-hidden">
+          
+          {/* Luces ambientales decorativas dentro de la tarjeta */}
+          <div className="absolute -top-24 left-1/2 -translate-x-1/2 w-[700px] h-[240px] bg-gradient-to-b from-[#3b82f6]/10 via-[#c99a3c]/8 to-transparent rounded-full blur-3xl pointer-events-none" />
+          <div className="absolute -bottom-20 right-10 w-[300px] h-[180px] bg-blue-500/5 rounded-full blur-2xl pointer-events-none" />
+
+          {/* Badge Superior */}
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-[11px] sm:text-xs font-extrabold uppercase tracking-widest bg-blue-50 text-[#0055a5] border border-blue-200/60 mb-5 sm:mb-6 shadow-2xs">
+            <span className="w-2 h-2 rounded-full bg-[#0055a5] animate-ping" />
+            <span>{t.ctaBadge || (lang === 'fr' ? 'SÉANCE DÉCOUVERTE OFFERTE' : lang === 'en' ? 'FREE DISCOVERY SESSION' : 'CLASE DE PRUEBA GRATUITA')}</span>
+          </div>
           
           {/* Título Principal */}
-          <h2 className="text-2xl sm:text-3xl md:text-4xl font-black text-[#0c1b33] font-serif leading-tight mb-2 sm:mb-3">
+          <h2 className="text-3xl sm:text-4xl md:text-5xl font-black text-[#0c1b33] font-serif leading-[1.16] tracking-tight max-w-3xl mx-auto mb-3 sm:mb-4">
             {config?.cta_title && config.cta_title !== "Agenda tu clase gratuita" ? config.cta_title : t.ctaTitle}
           </h2>
 
-          {/* Subtítulo: No tan destacado, más pequeño */}
-          <p className="text-base sm:text-lg md:text-xl font-bold font-serif text-[#0055a5] sm:text-[#0c1b33]/85 mb-7 sm:mb-8">
+          {/* Subtítulo */}
+          <p className="text-base sm:text-lg md:text-xl font-medium text-slate-600 max-w-2xl mx-auto leading-relaxed mb-8 sm:mb-10">
             {config?.cta_subtitle && !config.cta_subtitle.includes("Escríbeme por WhatsApp") ? config.cta_subtitle : t.ctaSubtitle}
           </p>
 
-          {/* Fila Centrada: Conocernos y Evaluar tu nivel */}
-          <div className="flex items-center justify-center gap-4 sm:gap-8 mb-8 sm:mb-9 text-slate-700">
-            <div className="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm font-bold text-slate-800">
-              <div className="w-8 h-8 rounded-full bg-[#eff6ff] text-[#0055a5] flex items-center justify-center shrink-0">
+          {/* Fila Panorámica: Beneficios de la sesión */}
+          <div className="flex flex-wrap items-center justify-center gap-3 sm:gap-5 mb-8 sm:mb-10 text-slate-700">
+            <div className="flex items-center gap-3 bg-slate-50/90 border border-slate-200/80 px-4 sm:px-5 py-2.5 rounded-2xl shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-blue-100/70 text-[#0055a5] flex items-center justify-center shrink-0">
                 <User size={16} />
               </div>
-              <span>{t.ctaItemMeet || (lang === 'fr' ? 'Faire connaissance' : lang === 'en' ? 'Get to know each other' : 'Conocernos')}</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-800">
+                {t.ctaItemMeet || (lang === 'fr' ? 'Faire connaissance' : lang === 'en' ? 'Get to know each other' : 'Conocernos')}
+              </span>
             </div>
 
-            <div className="h-4 sm:h-5 w-px bg-slate-200" />
-
-            <div className="flex items-center gap-2 sm:gap-2.5 text-xs sm:text-sm font-bold text-slate-800">
-              <div className="w-8 h-8 rounded-full bg-[#eff6ff] text-[#0055a5] flex items-center justify-center shrink-0">
+            <div className="flex items-center gap-3 bg-slate-50/90 border border-slate-200/80 px-4 sm:px-5 py-2.5 rounded-2xl shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-blue-100/70 text-[#0055a5] flex items-center justify-center shrink-0">
                 <BarChart2 size={16} />
               </div>
-              <span>{t.ctaItemLevel || (lang === 'fr' ? 'Évaluer votre niveau' : lang === 'en' ? 'Assess your level' : 'Evaluar tu nivel')}</span>
+              <span className="text-xs sm:text-sm font-bold text-slate-800">
+                {t.ctaItemLevel || (lang === 'fr' ? 'Évaluer votre niveau' : lang === 'en' ? 'Assess your level' : 'Evaluar tu nivel')}
+              </span>
+            </div>
+
+            <div className="flex items-center gap-3 bg-slate-50/90 border border-slate-200/80 px-4 sm:px-5 py-2.5 rounded-2xl shadow-xs">
+              <div className="w-8 h-8 rounded-xl bg-amber-100/70 text-[#b45309] flex items-center justify-center shrink-0">
+                <CheckCircle2 size={16} />
+              </div>
+              <span className="text-xs sm:text-sm font-bold text-slate-800">
+                {lang === 'fr' ? 'Sans engagement' : lang === 'en' ? 'Zero commitment' : 'Sin compromiso'}
+              </span>
             </div>
           </div>
 
-          {/* Botón Principal: Reservar mi clase gratuita */}
+          {/* Botón Principal y Canales de Acción */}
           <div className="flex flex-col items-center justify-center">
             <a
               href={whatsappUrl}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center justify-center gap-2.5 bg-[#003d7a] hover:bg-[#002b57] text-white px-8 sm:px-10 py-3.5 sm:py-4 rounded-full text-sm sm:text-base font-bold shadow-lg shadow-blue-950/20 hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
+              className="inline-flex items-center justify-center gap-3 bg-gradient-to-r from-[#003d7a] via-[#004e9a] to-[#003d7a] hover:from-[#002b57] hover:to-[#003d7a] text-white px-9 sm:px-12 py-4 sm:py-4.5 rounded-full text-sm sm:text-base font-extrabold shadow-xl shadow-blue-950/20 hover:shadow-2xl hover:shadow-blue-950/30 hover:scale-105 active:scale-95 transition-all duration-300 group cursor-pointer"
             >
               <span>{config?.cta_btn_text && config.cta_btn_text !== "Agendar por WhatsApp" ? config.cta_btn_text : t.ctaBtn}</span>
-              <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
+              <ArrowRight size={18} className="group-hover:translate-x-1.5 transition-transform duration-300" />
             </a>
 
             {/* Sin compromiso */}
-            <span className="text-[11px] sm:text-xs text-slate-400 font-medium tracking-wide mt-3 mb-5 select-none">
+            <span className="text-xs text-slate-400 font-semibold tracking-wider uppercase mt-3.5 mb-5 select-none">
               — {t.ctaNoCommitment || (lang === 'fr' ? 'Sans engagement' : lang === 'en' ? 'No commitment' : 'Sin compromiso')} —
             </span>
 
@@ -1842,7 +1864,7 @@ export default function Home() {
               href={`https://wa.me/${config?.whatsapp_number || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33685744973'}?text=${encodeURIComponent(lang === 'es' ? 'Hola Florentin, tengo una pregunta sobre las clases.' : lang === 'fr' ? 'Bonjour Florentin, j\'ai une question sur les cours.' : 'Hi Florentin, I have a question about the classes.')}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0055a5] transition-colors"
+              className="inline-flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0055a5] bg-slate-50 hover:bg-slate-100 border border-slate-200/80 px-5 py-2.5 rounded-full transition-all duration-200 shadow-2xs"
             >
               <svg className="w-4 h-4 fill-[#25D366] shrink-0" viewBox="0 0 24 24">
                 <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.333 4.982L2 22l5.202-1.362a9.92 9.92 0 004.808 1.258h.005c5.507 0 9.99-4.478 9.99-9.988C22.007 6.478 17.52 2 12.012 2zm6.657 14.184c-.273.768-1.579 1.393-2.185 1.48-.56.08-1.288.125-2.072-.125a10.05 10.05 0 01-4.444-2.82 10.15 10.15 0 01-2.316-3.878c-.286-.777.01-1.39.29-1.68.21-.22.47-.56.71-.85.24-.29.33-.48.49-.8.16-.33.08-.62-.04-.89-.12-.27-1.07-2.58-1.47-3.53-.39-.95-.79-.82-1.08-.83h-.92c-.31 0-.82.12-1.25.59-.43.47-1.64 1.6-1.64 3.9s1.68 4.52 1.91 4.83c.24.31 3.3 5.04 8.01 7.07 1.12.48 2 .77 2.68.99 1.13.36 2.16.31 2.97.19.9-.13 2.18-.89 2.49-1.75.31-.86.31-1.6.22-1.75-.09-.15-.35-.24-.76-.44z"/>
@@ -2065,7 +2087,7 @@ export default function Home() {
           }}
         >
           <a 
-            href={`https://api.whatsapp.com/send?text=${encodeURIComponent("Aprende francés con el profesor Florentin. Visita su plataforma oficial en: https://lefrancaisavecflorentin.com")}`}
+            href={`https://api.whatsapp.com/send?text=${encodeURIComponent("Aprende francés conmigo, profesor nativo de Francia. Visita mi plataforma oficial en: https://lefrancaisavecflorentin.com")}`}
             target="_blank"
             rel="noopener noreferrer"
             style={{

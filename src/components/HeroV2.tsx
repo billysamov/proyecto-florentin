@@ -59,7 +59,7 @@ export default function HeroV2({
       { src: "/perfilfoto.jpeg", alt: "Alumno 2" },
       { src: "/perfilfoto.jpeg", alt: "Alumno 3" },
     ],
-    text: "Mas de 200 alumnos aprenden con Florentin.",
+    text: "Más de 200 alumnos aprenden conmigo.",
   },
   heroImage     = { src: "/teacher_hero.png",  alt: "Profesor de frances sonriendo, camisa verde" },
   progressImage = { src: "/level_progress_clay.png", alt: "Niveles de idioma A1 a C2" },

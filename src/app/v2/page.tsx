@@ -823,9 +823,6 @@ export default function LandingV2Replica() {
           
           <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", marginBottom: "30px" }} className="flex-col md:flex-row gap-4">
             <div>
-              <span style={{ fontSize: "12px", fontWeight: 800, color: "#0055a5", letterSpacing: "0.08em", textTransform: "uppercase", display: "block", marginBottom: "8px" }}>
-                • NUESTROS PLANES DE ESTUDIO
-              </span>
               <h2 style={{ fontSize: "38px", fontWeight: 800, letterSpacing: "-0.025em", color: "#0f172a", margin: 0 }}>
                 Explora los planes
               </h2>

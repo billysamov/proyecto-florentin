@@ -10,7 +10,18 @@ interface ArticleContentProps {
 export default function ArticleContent({ content }: ArticleContentProps) {
   if (!content) return null;
 
-  // Renderizador limpio y seguro de bloques de texto/Markdown
+  // Si el contenido contiene etiquetas HTML enriquecidas (de Word / WYSIWYG / Multimedia), renderizar directamente
+  const isHtml = /<(p|h[1-6]|ul|ol|li|blockquote|div|table|strong|b|em|i|u|span|br|hr|figure|figcaption|img|iframe|video)\b[^>]*>/i.test(content);
+  if (isHtml) {
+    return (
+      <div
+        className="rich-text-content article-body font-sans text-slate-700"
+        dangerouslySetInnerHTML={{ __html: content }}
+      />
+    );
+  }
+
+  // Renderizador limpio y seguro de bloques de texto/Markdown (compatibilidad con artículos antiguos)
   const renderBlocks = (raw: string) => {
     const lines = raw.split("\n");
     const elements: React.ReactNode[] = [];

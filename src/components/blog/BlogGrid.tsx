@@ -249,7 +249,7 @@ export default function BlogGrid({ articulos, initialLang = "es" }: BlogGridProp
 
                     {/* Extracto */}
                     <p className="text-slate-600 text-sm leading-relaxed line-clamp-3 mb-4 font-medium">
-                      {extractoMostrar || "Aprende los mejores consejos y métodos para dominar el francés con Florentin."}
+                      {extractoMostrar || "Aprende los mejores consejos y métodos para dominar el francés conmigo."}
                     </p>
                   </div>
 

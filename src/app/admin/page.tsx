@@ -162,7 +162,7 @@ export default function AdminDashboard() {
     video_badge: "VIDEO DE PRESENTACIÓN",
     mostrar_video_badge: true,
     video_titulo: "Conoce a tu Profesor y su Método de Enseñanza",
-    video_subtitulo: "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural.",
+    video_subtitulo: "Mira este breve video interactivo donde te explico cómo lograr fluidez en francés de forma rápida y natural.",
     video_url: "https://www.youtube.com/embed/dQw4w9WgXcQ",
     // Sección Problema/Solución
     ps_badge: "¿POR QUÉ FLORENTIN?",
@@ -615,7 +615,7 @@ export default function AdminDashboard() {
           video_badge: configDb.video_badge || "VIDEO DE PRESENTACIÓN",
           mostrar_video_badge: configDb.mostrar_video_badge !== false,
           video_titulo: configDb.video_titulo || "Conoce a tu Profesor y su Método de Enseñanza",
-          video_subtitulo: configDb.video_subtitulo || "Mira este breve video interactivo donde Florentin te explica cómo lograr fluidez en francés de forma rápida y natural.",
+          video_subtitulo: configDb.video_subtitulo || "Mira este breve video interactivo donde te explico cómo lograr fluidez en francés de forma rápida y natural.",
           video_url: configDb.video_url || "https://www.youtube.com/embed/dQw4w9WgXcQ",
           ps_badge: configDb.ps_badge || "¿POR QUÉ FLORENTIN?",
           mostrar_ps_badge: configDb.mostrar_ps_badge !== false,

@@ -51,7 +51,7 @@ const defaultGuias = [
     id: 3,
     tagline: "A2–B2 · CONJUGACIÓN SIN MIEDO",
     titulo: "Passé Composé vs Imparfait: Sin Dudas",
-    subtitulo_italica: "El método visual de Florentin para elegir siempre el tiempo correcto en 2 segundos.",
+    subtitulo_italica: "Mi método visual para elegir siempre el tiempo correcto en 2 segundos.",
     bullets: [
       "La técnica de la 'Línea de Tiempo Cinematográfica' que elimina la confusión",
       "Lista de verbos clave con Être y Avoir explicados con lógica",
@@ -108,7 +108,7 @@ const defaultCuadernos = [
       "Módulo 3: La vida cotidiana, números, horas y hacer preguntas sin miedo",
       "Módulo 4: Pedir en un restaurante, comprar y desenvolverse en la ciudad",
       "Módulo 5: Verbos del primer grupo (-er) y los irregulares clave (être, avoir, aller, faire)",
-      "Módulo 6: Solucionario completo con comentarios pedagógicos de Florentin"
+      "Módulo 6: Solucionario completo con mis comentarios pedagógicos"
     ],
     url_preview: "/preview-cuaderno-a1.pdf",
     url_archivo: "privado/cuaderno-a1-completo.pdf",
@@ -132,7 +132,7 @@ const defaultCuadernos = [
         desc: "Entrenamiento exhaustivo de Passé Composé vs Imparfait con la lógica nativa."
       },
       {
-        titulo: "Conectores del Francés Real Parisino",
+        titulo: "Conectores del Francés Real de Francia",
         desc: "Aprende a usar 'en fait', 'du coup', 'alors' y 'pourtant' para sonar fluido y natural."
       },
       {

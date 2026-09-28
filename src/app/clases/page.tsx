@@ -8,7 +8,7 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Clases y Packs de Estudio de Francés | Le Français avec Florentin",
   description:
-    "Explora los planes de estudio y clases particulares de francés 1 a 1 por Teams con Florentin, profesor nativo certificado. Reserva tu sesión de diagnóstico gratuita de 30 minutos.",
+    "Explora los planes de estudio y clases particulares de francés 1 a 1 por Teams conmigo, profesor nativo certificado. Reserva tu sesión de diagnóstico gratuita de 30 minutos.",
   openGraph: {
     title: "Clases y Packs de Estudio de Francés | Le Français avec Florentin",
     description:

@@ -1,5 +1,6 @@
 import nodemailer from 'nodemailer';
 import path from 'path';
+import fs from 'fs';
 
 const BASE_URL = process.env.NEXT_PUBLIC_APP_URL || 'https://www.lefrancaisavecflorentin.com';
 const smtpHost = process.env.SMTP_HOST || '';
@@ -11,7 +12,10 @@ const smtpFrom = process.env.SMTP_FROM || 'Florentin <contacto@lefrancaisavecflo
 // Limpiar comillas innecesarias que Vercel o dotenv puedan arrastrar
 const cleanSmtpFrom = smtpFrom.replace(/^['"]|['"]$/g, '');
 
-// Configurar transportador SMTP si las credenciales existen
+// Clave API de Resend directa (si existe RESEND_API_KEY o si SMTP_PASS empieza por re_)
+const resendApiKey = process.env.RESEND_API_KEY || (smtpPass.startsWith('re_') ? smtpPass : '');
+
+// Configurar transportador SMTP si las credenciales existen (como respaldo)
 const transporter = smtpHost && smtpUser && smtpPass
   ? nodemailer.createTransport({
       host: smtpHost,
@@ -24,9 +28,9 @@ const transporter = smtpHost && smtpUser && smtpPass
       tls: {
         rejectUnauthorized: false // Permite conexiones locales o autofirmadas de desarrollo
       },
-      connectionTimeout: 10000, // Prevenir congelamiento de hilos en Vercel
-      greetingTimeout: 10000,
-      socketTimeout: 10000
+      connectionTimeout: 8000,
+      greetingTimeout: 8000,
+      socketTimeout: 8000
     })
   : null;
 
@@ -54,8 +58,8 @@ function htmlToPlainText(html: string): string {
 }
 
 /**
- * Envía un correo electrónico transaccional seguro utilizando SMTP con soporte multipart (HTML + Texto).
- * Cuenta con fallback a consola en entornos de desarrollo sin credenciales SMTP.
+ * Envía un correo electrónico transaccional seguro utilizando prioritariamente la API HTTPS
+ * de Resend (para evitar bloqueos de sockets SMTP en localhost/Vercel) con fallback a Nodemailer SMTP.
  */
 export async function sendEmail({ 
   to, 
@@ -77,16 +81,81 @@ export async function sendEmail({
   let estado = 'enviado';
   let errorMsg: string | null = null;
   let messageId: string | null = null;
+  const plainText = text || htmlToPlainText(html);
 
-  if (!transporter) {
-    console.log(`[EMAIL SIMULADO (Nodemailer)]
-Para: ${to}
-Asunto: ${subject}
-Contenido: ${html.substring(0, 150)}... [Simulado]`);
-    estado = 'simulado';
-  } else {
+  // 1. Prioridad: API REST HTTPS de Resend (Rápida, confiable, 100% visible en Resend dashboard)
+  if (resendApiKey) {
     try {
-      const plainText = text || htmlToPlainText(html);
+      let formattedAttachments: Array<{ filename: string; content: string }> | undefined = undefined;
+      if (attachments && Array.isArray(attachments) && attachments.length > 0) {
+        formattedAttachments = attachments.map(att => {
+          if (att.content && typeof att.content === 'string') {
+            return { filename: att.filename, content: att.content };
+          }
+          if (att.path && fs.existsSync(att.path)) {
+            const fileBuf = fs.readFileSync(att.path);
+            return { filename: att.filename, content: fileBuf.toString('base64') };
+          }
+          return { filename: att.filename, content: '' };
+        }).filter(a => a.content);
+      }
+
+      const resendRes = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${resendApiKey}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          from: cleanSmtpFrom,
+          to: [to],
+          subject,
+          text: plainText,
+          html,
+          reply_to: replyTo || process.env.SMTP_REPLY_TO || cleanSmtpFrom,
+          ...(formattedAttachments && formattedAttachments.length > 0 ? { attachments: formattedAttachments } : {})
+        })
+      });
+
+      const resendData = await resendRes.json();
+      if (resendRes.ok && resendData?.id) {
+        messageId = resendData.id;
+        estado = 'enviado';
+        console.log(`[RESEND HTTPS] Correo (${tipo}) enviado exitosamente a ${to}. ID: ${messageId}`);
+      } else {
+        throw new Error(resendData?.message || resendData?.error?.message || `Error HTTP ${resendRes.status}`);
+      }
+    } catch (resendErr: any) {
+      console.warn(`[RESEND HTTPS Falló] Error al enviar correo directo:`, resendErr?.message);
+      errorMsg = resendErr?.message;
+
+      // Fallback secundario a Nodemailer si existe transporter
+      if (transporter) {
+        try {
+          const info = await transporter.sendMail({
+            from: cleanSmtpFrom,
+            to,
+            subject,
+            text: plainText,
+            html,
+            replyTo: replyTo || process.env.SMTP_REPLY_TO || cleanSmtpFrom,
+            attachments
+          });
+          messageId = info.messageId;
+          estado = 'enviado';
+          errorMsg = null;
+          console.log(`[NODEMAILER SMTP Fallback] Correo enviado a ${to}. ID: ${messageId}`);
+        } catch (smtpErr: any) {
+          estado = 'error';
+          errorMsg = `Resend: ${resendErr?.message} | SMTP: ${smtpErr?.message}`;
+        }
+      } else {
+        estado = 'error';
+      }
+    }
+  } else if (transporter) {
+    // 2. Sin clave Resend, usar SMTP Nodemailer
+    try {
       const info = await transporter.sendMail({
         from: cleanSmtpFrom,
         to,
@@ -106,6 +175,12 @@ Contenido: ${html.substring(0, 150)}... [Simulado]`);
       estado = 'error';
       errorMsg = error?.message || 'Error SMTP desconocido';
     }
+  } else {
+    console.log(`[EMAIL SIMULADO]
+Para: ${to}
+Asunto: ${subject}
+Contenido: ${html.substring(0, 150)}... [Simulado]`);
+    estado = 'simulado';
   }
 
   // Guardar registro histórico en la base de datos (no bloqueante)
@@ -584,6 +659,105 @@ export async function enviarCorreoRecordatorioInactividad(email: string, nombre:
 }
 
 /**
+ * Correo de recordatorio a los 7 días (1 semana) de inactividad o sin compra de plan (Lead Nurturing y Recompra).
+ * Escrito en primera persona por Florentin (empático, motivador y directo).
+ */
+export async function enviarCorreoRecordatorioInactividadSemanal(
+  email: string, 
+  nombre: string, 
+  idioma: string = 'es'
+) {
+  const isFr = idioma === 'fr';
+  const isEn = idioma === 'en';
+
+  let subject = "¿Aún pensando en aprender francés? No dejes pasar tu oportunidad 🇫🇷";
+  if (isFr) {
+    subject = "Toujours envie d'apprendre le français ? Ne laissez pas passer votre moment 🇫🇷";
+  } else if (isEn) {
+    subject = "Still thinking about learning French? Don't let your moment pass 🇫🇷";
+  }
+
+  const htmlContent = `
+    <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 16px; background-color: #ffffff;">
+      
+      <h2 style="color: #0c1b33; font-size: 20px; font-weight: 800; margin-bottom: 16px;">
+        ${isFr ? `Bonjour ${nombre} :` : isEn ? `Hello ${nombre}:` : `Hola ${nombre}:`}
+      </h2>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 14px;">
+        ${isFr 
+          ? "Cela fait maintenant une semaine que vous avez rejoint ma plateforme, et je voulais prendre un moment pour vous écrire personnellement." 
+          : isEn
+            ? "It's been a week since you joined my platform, and I wanted to take a moment to write to you personally."
+            : "Hace ya una semana que creaste tu cuenta en mi plataforma y quería tomarme un momento para escribirte personalmente."}
+      </p>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 14px;">
+        ${isFr
+          ? "Je sais qu'il n'est pas toujours évident de franchir le pas : on attend souvent le « moment parfait » ou on hésite face au premier cours. Mais la vérité, c'est que la confiance vient avec la pratique !"
+          : isEn
+            ? "I know taking that first step isn't always easy: we often wait for the 'perfect time' or feel unsure before the first lesson. But the truth is, confidence comes with practice!"
+            : "Sé que dar el primer paso a veces genera dudas o esperamos al «momento perfecto» para empezar. Pero la verdad es que la confianza al hablar solo se construye practicando."}
+      </p>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 24px;">
+        ${isFr
+          ? "Dans mes cours particuliers 1 à 1, nous avançons à votre propre rythme, dans une ambiance bienveillante et focalisée à 100% sur vos objectifs."
+          : isEn
+            ? "In my 1-on-1 private lessons, we progress entirely at your own pace, in an encouraging environment tailored 100% to your needs."
+            : "En mis clases particulares 1 a 1 avanzaremos a tu propio ritmo, en un ambiente agradable y enfocado al 100% en lo que tú necesitas."}
+      </p>
+
+      <!-- Botón de Acción -->
+      <div style="text-align: center; margin: 26px 0;">
+        <a href="${BASE_URL}/alumno" 
+           style="background-color: #0055a5; color: #ffffff; padding: 14px 34px; text-decoration: none; border-radius: 30px; font-weight: 700; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(0, 85, 165, 0.25);">
+          ${isFr ? "Choisir mon forfait" : isEn ? "Choose My Plan" : "Elegir mi Plan de Clases"}
+        </a>
+      </div>
+
+      <!-- Caja de soporte personal -->
+      <div style="margin: 24px 0; padding: 20px; background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; text-align: left;">
+        <h4 style="margin: 0 0 8px 0; font-size: 15px; color: #0055a5; font-weight: 700;">
+          💬 ${isFr ? "¿Une question ou une hésitation ?" : isEn ? "Have a question or hesitating?" : "¿Tienes alguna pregunta o duda?"}
+        </h4>
+        <p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.6;">
+          ${isFr
+            ? "Répondez simplement à cet e-mail. Je lirai votre message et je vous orienterai avec plaisir sur la formule la plus adaptée à vos besoins."
+            : isEn
+              ? "Simply reply to this email. I read every message and will be glad to help you pick the best option for your goals."
+              : "Solo responde a este correo. Leeré tu mensaje y te aconsejaré encantado sobre la opción que mejor se adapte a tu nivel y metas."}
+        </p>
+      </div>
+
+      <p style="font-size: 15px; color: #334155; margin-top: 24px; margin-bottom: 4px; font-weight: 600;">
+        ${isFr ? "Au plaisir de vous retrouver en classe," : isEn ? "Looking forward to seeing you in class," : "Espero verte muy pronto en clase,"}
+      </p>
+      <p style="font-size: 18px; color: #0055a5; font-weight: 800; margin-top: 0; margin-bottom: 24px;">
+        Florentin
+      </p>
+
+      <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 24px 0 20px;" />
+
+      <!-- Logo abajo con espacio -->
+      <div style="text-align: center; padding-top: 8px;">
+        <img src="${BASE_URL}/logo.png" alt="Le Français avec Florentin" style="height: 42px; max-width: 180px; object-fit: contain; margin-bottom: 8px;" />
+        <p style="font-size: 11px; color: #94a3b8; margin: 0;">
+          Le Français avec Florentin • Clases Personalizadas 1 a 1 de Francés Nativo
+        </p>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html: htmlContent,
+    tipo: 'inactividad_7dias'
+  });
+}
+
+/**
  * Correo de advertencia cuando al alumno le quedan pocas clases (Renovación).
  */
 export async function enviarCorreoRenovacionPlan(email: string, nombre: string, clasesRestantes: number = 2, idioma: string = 'es') {
@@ -701,7 +875,8 @@ export async function enviarCorreoReprogramacionClase(
   nuevaHora: string,
   horaAnterior: string,
   idioma: string = 'es',
-  enlaceMeet?: string
+  enlaceMeet?: string,
+  origen: 'admin' | 'alumno' = 'admin'
 ) {
   const isFr = idioma === 'fr';
   const isEn = idioma === 'en';
@@ -713,6 +888,21 @@ export async function enviarCorreoReprogramacionClase(
     subject = `Schedule update: your French class on ${fecha} 🕒`;
   }
 
+  // Mensaje de explicación según si lo reprogramó el profesor o la alumna
+  let explicacion = `Quería informarte de que he actualizado el horario de nuestra clase del <strong>${fecha}</strong>: ahora tendrá lugar a las <strong>${nuevaHora}</strong> en lugar de las <strong>${horaAnterior}</strong>.`;
+  if (origen === 'alumno') {
+    explicacion = `Te confirmamos que tu clase del <strong>${fecha}</strong> ha sido reprogramada con éxito para las <strong>${nuevaHora}</strong> (horario anterior: <strong>${horaAnterior}</strong>).`;
+  }
+  if (isFr) {
+    explicacion = origen === 'alumno'
+      ? `Nous vous confirmons que votre cours du <strong>${fecha}</strong> a été reprogrammé avec succès pour <strong>${nuevaHora}</strong> (ancien horaire : <strong>${horaAnterior}</strong>).`
+      : `Je tenais à vous informer que j'ai mis à jour l'horaire de notre cours du <strong>${fecha}</strong> : il aura désormais lieu à <strong>${nuevaHora}</strong> au lieu de <strong>${horaAnterior}</strong>.`;
+  } else if (isEn) {
+    explicacion = origen === 'alumno'
+      ? `We confirm that your class on <strong>${fecha}</strong> has been successfully rescheduled to <strong>${nuevaHora}</strong> (previous time: <strong>${horaAnterior}</strong>).`
+      : `I wanted to let you know that I have updated the schedule for our lesson on <strong>${fecha}</strong>: it will now take place at <strong>${nuevaHora}</strong> instead of <strong>${horaAnterior}</strong>.`;
+  }
+
   const htmlContent = `
     <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 16px; background-color: #ffffff;">
       
@@ -721,11 +911,7 @@ export async function enviarCorreoReprogramacionClase(
       </h2>
 
       <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 14px;">
-        ${isFr 
-          ? `Je tenais à vous informer que votre cours du <strong>${fecha}</strong> aura lieu à <strong>${nuevaHora}</strong> au lieu de <strong>${horaAnterior}</strong>.` 
-          : isEn 
-            ? `I wanted to let you know that your class on <strong>${fecha}</strong> will take place at <strong>${nuevaHora}</strong> instead of <strong>${horaAnterior}</strong>.` 
-            : `Quería informarte de que tu clase del <strong>${fecha}</strong> tendrá lugar a las <strong>${nuevaHora}</strong> en lugar de las <strong>${horaAnterior}</strong>.`}
+        ${explicacion}
       </p>
 
       <!-- Caja Detalles del Nuevo Horario -->

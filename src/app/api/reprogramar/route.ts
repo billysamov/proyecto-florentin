@@ -203,15 +203,16 @@ export async function POST(request: Request) {
           .single(),
         supabaseAdmin
           .from('configuracion_sitio')
-          .select('email_notificaciones')
+          .select('email_notificaciones, email_reprogramacion_activo')
           .eq('id', 1)
           .single()
       ]);
 
       const usuario = usuarioRes.data;
       const emailProfesor = configRes.data?.email_notificaciones || process.env.SMTP_USER || 'lefrancaisavecflorentin@outlook.com';
+      const reprogramacionActiva = configRes.data ? configRes.data.email_reprogramacion_activo !== false : true;
 
-      if (usuario?.email) {
+      if (reprogramacionActiva && usuario?.email) {
         const fechaOld = new Date(clase.fecha_hora);
         const fechaNew = new Date(nuevaFecha);
         const cleanIdioma = (usuario.idioma || 'es').toLowerCase();
@@ -223,21 +224,24 @@ export async function POST(request: Request) {
         const fechaStr = fechaNew.toLocaleDateString(localeStr, opcionesFecha);
         const nuevaHoraStr = fechaNew.toLocaleTimeString(localeStr, opcionesHora);
         const horaAnteriorStr = fechaOld.toLocaleTimeString(localeStr, opcionesHora);
+        const origen = es_admin ? 'admin' : 'alumno';
 
         // 1. Enviar correo al estudiante (en su idioma)
-        await enviarCorreoReprogramacionClase(
+        const resAlumno = await enviarCorreoReprogramacionClase(
           usuario.email,
           usuario.nombre || 'Estudiante',
           fechaStr,
           nuevaHoraStr,
           horaAnteriorStr,
           cleanIdioma,
-          clase.enlace_meet
+          clase.enlace_meet,
+          origen
         );
+        console.log(`[Reprogramar] Notificación enviada al estudiante (${usuario.email}):`, resAlumno?.success ? `OK ID=${resAlumno.id}` : `Error=${resAlumno?.error}`);
 
         // 2. Enviar correo de notificación al profesor (siempre informado)
         if (emailProfesor) {
-          await enviarCorreoReprogramacionProfesor(
+          const resProfesor = await enviarCorreoReprogramacionProfesor(
             emailProfesor,
             usuario.nombre || 'Estudiante',
             usuario.email,
@@ -246,6 +250,7 @@ export async function POST(request: Request) {
             horaAnteriorStr,
             clase.enlace_meet
           );
+          console.log(`[Reprogramar] Notificación enviada al profesor (${emailProfesor}):`, resProfesor?.success ? `OK ID=${resProfesor.id}` : `Error=${resProfesor?.error}`);
         }
       }
     } catch (mailErr) {

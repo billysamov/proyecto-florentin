@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { supabase } from "@/lib/supabase";
 import ArticleContent from "@/components/blog/ArticleContent";
+import RichTextEditor from "@/components/admin/RichTextEditor";
 import { translateArticleBundle, translateTextChunk, translateLongText } from "@/lib/translator";
 import {
   Plus,
@@ -247,9 +248,10 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
     cargarArticulos();
   }, []);
 
-  // Calcular tiempo de lectura automático
+  // Calcular tiempo de lectura automático (limpiando etiquetas HTML)
   const calcularTiempoLectura = (texto: string) => {
-    const palabras = texto.trim().split(/\s+/).filter(Boolean).length;
+    const textoLimpio = texto.replace(/<[^>]+>/g, " ").trim();
+    const palabras = textoLimpio.split(/\s+/).filter(Boolean).length;
     return Math.max(1, Math.ceil(palabras / 200));
   };
 
@@ -276,7 +278,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
     setFormSlug("");
     setFormExtracto("");
     setFormContenido(
-      `## Introducción al tema\n\nEscribe aquí el contenido de tu artículo. Puedes usar negritas con **palabras clave**, listas y consejos.\n\n> 💡 Consejo de Florentin: Los franceses aprecian que uses expresiones auténticas.`
+      `<h2>Introducción al tema</h2><p>Escribe o pega aquí el contenido de tu artículo desde Word. Puedes usar negritas en <strong>palabras clave</strong>, listas y consejos.</p><blockquote>💡 <strong>Consejo pedagógico:</strong> Los franceses aprecian que uses expresiones auténticas y naturales.</blockquote>`
     );
     // Limpiar campos FR
     setFormTituloFr("");
@@ -616,17 +618,6 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
   const totalBorradores = articulos.filter((a) => !a.publicado).length;
   const totalVisitas = articulos.reduce((acc, curr) => acc + (curr.visitas || 0), 0);
 
-  // Inserciones rápidas en el editor Markdown
-  const insertarEnContenido = (prefijo: string, sufijo: string = "") => {
-    if (capaIdioma === "fr") {
-      setFormContenidoFr((prev) => `${prev}\n${prefijo}texte${sufijo}\n`);
-    } else if (capaIdioma === "en") {
-      setFormContenidoEn((prev) => `${prev}\n${prefijo}text${sufijo}\n`);
-    } else {
-      setFormContenido((prev) => `${prev}\n${prefijo}texto${sufijo}\n`);
-    }
-  };
-
   // Contenido y título según la capa activa para vista previa
   const currentCapaContent =
     capaIdioma === "fr" ? formContenidoFr || formContenido : capaIdioma === "en" ? formContenidoEn || formContenido : formContenido;
@@ -798,6 +789,11 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                 </tr>
               ) : (
                 articulosFiltrados.map((art) => {
+                  const now = new Date();
+                  const esProgramado = art.publicado && !!art.fecha_publicacion && new Date(art.fecha_publicacion) > now;
+                  const esPublicado = art.publicado && (!art.fecha_publicacion || new Date(art.fecha_publicacion) <= now);
+                  const previewHref = `/articulos/${art.slug}${esProgramado || !art.publicado ? "?preview=true" : ""}`;
+
                   const fecha = new Date(art.creado_en).toLocaleDateString(lang === "fr" ? "fr-FR" : "es-ES", {
                     day: "2-digit",
                     month: "short",
@@ -825,10 +821,10 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                             <div className="text-slate-400 font-mono text-[11px] flex items-center gap-1 mt-0.5">
                               <span>/articulos/{art.slug}</span>
                               <Link
-                                href={`/articulos/${art.slug}`}
+                                href={previewHref}
                                 target="_blank"
                                 className="text-[#3b82f6] hover:text-[#1d4ed8]"
-                                title="Abrir vista pública"
+                                title={esProgramado ? "Previsualizar (programado)" : !art.publicado ? "Previsualizar (borrador)" : "Abrir vista pública"}
                               >
                                 <ExternalLink size={12} />
                               </Link>
@@ -867,10 +863,6 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                       {/* Estado y Programación */}
                       <td className="py-4 px-6">
                         {(() => {
-                          const now = new Date();
-                          const esProgramado = art.publicado && !!art.fecha_publicacion && new Date(art.fecha_publicacion) > now;
-                          const esPublicado = art.publicado && (!art.fecha_publicacion || new Date(art.fecha_publicacion) <= now);
-
                           if (esProgramado) {
                             const fechaProg = new Date(art.fecha_publicacion!);
                             return (
@@ -931,10 +923,10 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                       <td className="py-4 px-6 text-right">
                         <div className="flex items-center justify-end gap-1.5">
                           <Link
-                            href={`/articulos/${art.slug}`}
+                            href={previewHref}
                             target="_blank"
                             className="p-2 text-slate-500 hover:text-[#0c1b33] hover:bg-slate-100 rounded-lg transition-colors"
-                            title={lang === "fr" ? "Voir en direct" : "Ver en vivo"}
+                            title={esProgramado ? (lang === "fr" ? "Aperçu programmé" : "Previsualizar artículo programado") : !art.publicado ? (lang === "fr" ? "Aperçu brouillon" : "Previsualizar borrador") : (lang === "fr" ? "Voir en direct" : "Ver en vivo")}
                           >
                             <ExternalLink size={15} />
                           </Link>
@@ -1229,7 +1221,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                   </div>
                 )}
 
-                {/* EDITOR DE CONTENIDO DE LA CAPA SELECCIONADA */}
+                {/* EDITOR DE CONTENIDO DE LA CAPA SELECCIONADA CON RICH TEXT (ESTILO WORD) */}
                 <div className="border border-slate-200 rounded-2xl overflow-hidden">
                   <div className="bg-slate-50 px-4 py-2.5 border-b border-slate-200 flex flex-wrap items-center justify-between gap-3">
                     <div className="flex items-center gap-2">
@@ -1244,7 +1236,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                             !previewMode ? "bg-white text-[#0c1b33] shadow-sm" : "text-slate-500 hover:text-slate-800"
                           }`}
                         >
-                          ✏️ Editor
+                          ✏️ Editor Visual
                         </button>
                         <button
                           type="button"
@@ -1257,73 +1249,11 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                         </button>
                       </div>
                     </div>
-
-                    {!previewMode && (
-                      <div className="flex flex-wrap gap-1 text-xs">
-                        <button
-                          type="button"
-                          onClick={() => insertarEnContenido("## ")}
-                          className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-100 font-bold"
-                          title="H2"
-                        >
-                          H2
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => insertarEnContenido("### ")}
-                          className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-100 font-bold"
-                          title="H3"
-                        >
-                          H3
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => insertarEnContenido("**", "**")}
-                          className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-100 font-bold"
-                          title="Negrita"
-                        >
-                          B
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => insertarEnContenido("*", "*")}
-                          className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-100 italic"
-                          title="Cursiva"
-                        >
-                          I
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => insertarEnContenido("> 💡 Consejo de Florentin: ")}
-                          className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-100 text-amber-800 font-bold"
-                          title="Tip Box"
-                        >
-                          💡 Tip
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => insertarEnContenido("- ")}
-                          className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-100"
-                          title="Lista"
-                        >
-                          • Lista
-                        </button>
-                        <button
-                          type="button"
-                          onClick={() => insertarEnContenido("<br>\n")}
-                          className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-100 font-mono text-slate-700"
-                          title="Insertar salto de línea explícito (<br>)"
-                        >
-                          ↵ &lt;br&gt;
-                        </button>
-                      </div>
-                    )}
                   </div>
 
                   <div className="p-4 bg-white">
                     {!previewMode ? (
-                      <textarea
-                        rows={12}
+                      <RichTextEditor
                         value={
                           capaIdioma === "fr"
                             ? formContenidoFr
@@ -1331,22 +1261,21 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                             ? formContenidoEn
                             : formContenido
                         }
-                        onChange={(e) => {
-                          if (capaIdioma === "fr") setFormContenidoFr(e.target.value);
-                          else if (capaIdioma === "en") setFormContenidoEn(e.target.value);
-                          else handleContenidoChange(e.target.value);
+                        onChange={(newHtml) => {
+                          if (capaIdioma === "fr") setFormContenidoFr(newHtml);
+                          else if (capaIdioma === "en") setFormContenidoEn(newHtml);
+                          else handleContenidoChange(newHtml);
                         }}
                         placeholder={
                           capaIdioma === "fr"
-                            ? "Rédigez le corps de l'article en français (ou cliquez sur ✨ Auto-traduire)..."
+                            ? "Rédigez ou collez le corps de l'article en français (Word / Docs)..."
                             : capaIdioma === "en"
-                            ? "Write article body in English (or click on ✨ Auto-translate)..."
-                            : "Escribe el cuerpo del artículo en español..."
+                            ? "Write or paste article body in English (Word / Docs)..."
+                            : "Escribe o pega aquí el contenido de tu artículo desde Word..."
                         }
-                        className="w-full font-sans text-sm leading-relaxed text-slate-800 focus:outline-none resize-y"
                       />
                     ) : (
-                      <div className="min-h-[250px] max-h-[400px] overflow-y-auto p-4 border border-slate-100 rounded-xl bg-slate-50/50">
+                      <div className="min-h-[250px] max-h-[500px] overflow-y-auto p-6 border border-slate-100 rounded-xl bg-slate-50/50">
                         <ArticleContent content={currentCapaContent} />
                       </div>
                     )}
@@ -1355,7 +1284,7 @@ export default function ArticulosTab({ lang = "es" }: ArticulosTabProps) {
                     <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-slate-100 mt-2 text-xs text-slate-500">
                       <div className="flex items-center gap-2">
                         <span className="font-bold text-slate-700">
-                          📊 {(capaIdioma === "fr" ? formContenidoFr : capaIdioma === "en" ? formContenidoEn : formContenido).trim() ? (capaIdioma === "fr" ? formContenidoFr : capaIdioma === "en" ? formContenidoEn : formContenido).trim().split(/\s+/).filter(Boolean).length : 0} palabras · {(capaIdioma === "fr" ? formContenidoFr : capaIdioma === "en" ? formContenidoEn : formContenido).length.toLocaleString()} caracteres
+                          📊 {(currentCapaContent || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim() ? (currentCapaContent || "").replace(/<[^>]+>/g, " ").replace(/\s+/g, " ").trim().split(" ").filter(Boolean).length : 0} palabras · {(currentCapaContent || "").replace(/<[^>]+>/g, "").trim().length.toLocaleString()} caracteres netos
                         </span>
                         <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">
                           ✓ Longitud Ilimitada

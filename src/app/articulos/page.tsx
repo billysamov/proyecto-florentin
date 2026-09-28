@@ -9,11 +9,11 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Artículos y Guías para Aprender Francés | Le Français avec Florentin",
   description:
-    "Descubre artículos exclusivos, técnicas de pronunciación nativa, gramática simplificada y consejos culturales para dominar el francés con Florentin.",
+    "Descubre artículos exclusivos, técnicas de pronunciación nativa, gramática simplificada y consejos culturales para dominar el francés conmigo.",
   openGraph: {
     title: "Artículos y Guías para Aprender Francés | Le Français avec Florentin",
     description:
-      "Aprende francés con método, fonética práctica y cultura francesa. Artículos y recursos educativos por Florentin.",
+      "Aprende francés con método, fonética práctica y cultura francesa. Artículos y recursos educativos conmigo.",
     type: "website",
     locale: "es_ES"
   }
@@ -90,13 +90,13 @@ const fallbackArticulos: ArticuloItem[] = [
   {
     id: 3,
     slug: "vocabulario-esencial-restaurante-paris",
-    titulo: "Cómo pedir en un restaurante en París como un auténtico local",
+    titulo: "Cómo pedir en un restaurante en Francia como un auténtico local",
     extracto:
       "Las frases indispensables, las normas de cortesía que los franceses aprecian y los errores más comunes al pedir la cuenta.",
-    titulo_fr: "Comment commander au restaurant à Paris comme un vrai local",
+    titulo_fr: "Comment commander au restaurant en France comme un vrai local",
     extracto_fr:
       "Les phrases indispensables, les codes de politesse français et les astuces pour profiter pleinement des cafés et bistrots.",
-    titulo_en: "How to Order at a Restaurant in Paris Like a True Local",
+    titulo_en: "How to Order at a Restaurant in France Like a True Local",
     extracto_en:
       "Essential phrases, cultural etiquette that French people appreciate, and tips on water, tipping, and paying the bill.",
     imagen_portada:
@@ -118,15 +118,15 @@ export default async function ArticulosPage() {
     const supabase = getSupabaseAdmin();
     const now = new Date();
 
-    // Consultamos los artículos publicados en Supabase
+    // Consultamos los artículos publicados en Supabase (incluyendo fecha_publicacion para respetar el cronograma)
     const { data, error } = await supabase
       .from("articulos")
-      .select("id, slug, titulo, extracto, titulo_fr, extracto_fr, contenido_fr, titulo_en, extracto_en, contenido_en, imagen_portada, categoria, palabras_clave, tiempo_lectura, idioma, autor, visitas, creado_en")
+      .select("id, slug, titulo, extracto, titulo_fr, extracto_fr, contenido_fr, titulo_en, extracto_en, contenido_en, imagen_portada, categoria, palabras_clave, tiempo_lectura, idioma, autor, visitas, creado_en, fecha_publicacion")
       .eq("publicado", true)
       .order("creado_en", { ascending: false });
 
     if (!error && data && data.length > 0) {
-      // Filtrar únicamente los que ya alcanzaron su fecha de publicación (si existiera)
+      // Filtrar estrictamente: solo los que ya alcanzaron su fecha programada o no tienen fecha futura
       const visibles = data.filter((art: any) => {
         if (art.fecha_publicacion && new Date(art.fecha_publicacion) > now) {
           return false;

@@ -90,7 +90,7 @@ const guiasData: GuiaIdiomaItem[] = [
     id: 3,
     tagline: "A2–B2 · CONJUGACIÓN SIN MIEDO",
     titulo: "Passé Composé vs Imparfait: Sin Dudas",
-    subtitulo_italica: "El método visual de Florentin para elegir siempre el tiempo correcto en 2 segundos.",
+    subtitulo_italica: "Mi método visual para elegir siempre el tiempo correcto en 2 segundos.",
     bullets: [
       "La técnica de la 'Línea de Tiempo Cinematográfica' que elimina la confusión",
       "Lista de verbos clave con Être y Avoir explicados con lógica sin excepciones absurdas",
@@ -145,7 +145,7 @@ const cuadernosData: CuadernoNivelItem[] = [
       "Módulo 3: La vida cotidiana, números, horas y hacer preguntas sin miedo",
       "Módulo 4: Pedir en un restaurante, comprar y desenvolverse en la ciudad",
       "Módulo 5: Verbos del primer grupo (-er) y los irregulares clave (être, avoir, aller, faire)",
-      "Módulo 6: Solucionario completo con comentarios pedagógicos de Florentin"
+      "Módulo 6: Solucionario completo con mis comentarios pedagógicos"
     ],
     url_preview: "/preview-cuaderno-a1.pdf"
   },
@@ -167,7 +167,7 @@ const cuadernosData: CuadernoNivelItem[] = [
         desc: "Entrenamiento exhaustivo de Passé Composé vs Imparfait con la lógica nativa."
       },
       {
-        titulo: "Conectores del Francés Real Parisino",
+        titulo: "Conectores del Francés Real de Francia",
         desc: "Aprende a usar 'en fait', 'du coup', 'alors' y 'pourtant' para sonar fluido y natural."
       },
       {
@@ -443,8 +443,8 @@ export default function RecursosClientView({
       link: "/articulos/diferencia-entre-c-est-y-il-est"
     },
     {
-      titulo: "Kit de Vocabulario para Viajar a París",
-      desc: "Frases reales para restaurantes, metro, emergencias y compras cotidianas.",
+      titulo: "Kit de Vocabulario para Viajar a Francia",
+      desc: "Frases reales para restaurantes, transporte, emergencias y compras cotidianas.",
       badge: "Viajes y Vida",
       icono: <Sparkles className="text-[#0055a5]" size={22} />,
       link: "/articulos/vocabulario-esencial-restaurante-paris"
@@ -961,7 +961,7 @@ export default function RecursosClientView({
                 🎁 Biblioteca de Acceso Libre
               </span>
               <h2 className="text-2xl sm:text-3xl font-extrabold text-[#0c1b33] font-serif mb-2">
-                Fichas y Guías Gratuitas de Florentin
+                Mis Fichas y Guías Gratuitas
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
                 Material descargable sin coste para que empieces a mejorar tu francés hoy mismo con explicaciones claras.

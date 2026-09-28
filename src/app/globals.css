@@ -456,3 +456,310 @@ html, body {
   box-shadow: 0 0 40px rgba(201, 154, 60, 0.15);
 }
 
+/* ==========================================================================
+   📝 ESTILOS DE CONTENIDO ENRIQUECIDO (WORD / WYSIWYG) PARA ARTÍCULOS Y BLOG
+   ========================================================================== */
+.rich-text-content {
+  color: #334155;
+  font-size: 1.0625rem;
+  line-height: 1.8;
+  word-break: break-word;
+}
+
+.rich-text-content [contenteditable]:focus {
+  outline: none;
+}
+
+.rich-text-content:empty:before,
+.rich-text-content[data-placeholder]:empty:before {
+  content: attr(data-placeholder);
+  color: #94a3b8;
+  pointer-events: none;
+  font-style: italic;
+}
+
+.rich-text-content h1 {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-size: 2rem;
+  font-weight: 800;
+  color: #0c1b33;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+  line-height: 1.25;
+  letter-spacing: -0.02em;
+}
+
+.rich-text-content h2 {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-size: 1.625rem;
+  font-weight: 700;
+  color: #0c1b33;
+  margin-top: 1.85rem;
+  margin-bottom: 0.85rem;
+  line-height: 1.3;
+  letter-spacing: -0.015em;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid #f1f5f9;
+}
+
+.rich-text-content h3 {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif !important;
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1e293b;
+  margin-top: 1.5rem;
+  margin-bottom: 0.65rem;
+  line-height: 1.35;
+}
+
+.rich-text-content p {
+  margin-bottom: 1.25rem;
+  color: #334155;
+  line-height: 1.8;
+}
+
+.rich-text-content strong,
+.rich-text-content b {
+  font-weight: 700;
+  color: #0c1b33;
+}
+
+.rich-text-content em,
+.rich-text-content i {
+  font-style: italic;
+}
+
+.rich-text-content u {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.rich-text-content ul {
+  list-style-type: disc;
+  padding-left: 1.75rem;
+  margin-top: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.rich-text-content ol {
+  list-style-type: decimal;
+  padding-left: 1.75rem;
+  margin-top: 0.75rem;
+  margin-bottom: 1.25rem;
+}
+
+.rich-text-content li {
+  margin-bottom: 0.5rem;
+  line-height: 1.7;
+}
+
+.rich-text-content li::marker {
+  color: #0055a5;
+}
+
+.rich-text-content blockquote {
+  border-left: 4px solid #f59e0b;
+  background-color: #fffbeb;
+  padding: 1rem 1.25rem;
+  border-radius: 0 0.75rem 0.75rem 0;
+  margin: 1.5rem 0;
+  color: #92400e;
+  font-size: 0.98rem;
+  line-height: 1.65;
+}
+
+.rich-text-content blockquote strong {
+  color: #78350f;
+}
+
+.rich-text-content a {
+  color: #0055a5;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+  font-weight: 600;
+  transition: color 0.15s ease;
+}
+
+.rich-text-content a:hover {
+  color: #003a70;
+}
+
+.rich-text-content code {
+  background-color: #f1f5f9;
+  color: #db2777;
+  padding: 0.15rem 0.4rem;
+  border-radius: 0.25rem;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.875em;
+}
+
+.rich-text-content hr {
+  border: 0;
+  border-top: 1px solid #e2e8f0;
+  margin: 2.25rem 0;
+}
+
+.rich-text-content img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 0.875rem;
+  margin: 1.5rem auto;
+  display: block;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.rich-text-content table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5rem 0;
+  font-size: 0.95rem;
+}
+
+.rich-text-content th,
+.rich-text-content td {
+  border: 1px solid #e2e8f0;
+  padding: 0.75rem 1rem;
+  text-align: left;
+}
+
+.rich-text-content th {
+  background-color: #f8fafc;
+  font-weight: 700;
+  color: #0c1b33;
+}
+
+/* --- Figuras de Imágenes dentro del Contenido (Alineación y Tamaños) --- */
+.rich-text-content .media-figure {
+  margin: 1.75rem 0;
+  display: block;
+  clear: both;
+}
+
+.rich-text-content .media-figure.media-align-center {
+  margin-left: auto;
+  margin-right: auto;
+  text-align: center;
+}
+
+.rich-text-content .media-figure.media-align-left {
+  float: left;
+  margin: 0.5rem 1.75rem 1.25rem 0;
+  clear: none;
+}
+
+.rich-text-content .media-figure.media-align-right {
+  float: right;
+  margin: 0.5rem 0 1.25rem 1.75rem;
+  clear: none;
+}
+
+.rich-text-content .media-figure.media-align-full {
+  width: 100% !important;
+  max-width: 100% !important;
+  margin: 2.25rem 0;
+  clear: both;
+}
+
+/* Tamaños de imagen */
+.rich-text-content .media-figure.media-size-sm {
+  width: 32%;
+  max-width: 280px;
+}
+
+.rich-text-content .media-figure.media-size-md {
+  width: 55%;
+  max-width: 520px;
+}
+
+.rich-text-content .media-figure.media-size-lg {
+  width: 80%;
+  max-width: 760px;
+}
+
+.rich-text-content .media-figure.media-size-full {
+  width: 100%;
+  max-width: 100%;
+}
+
+.rich-text-content .media-img {
+  width: 100%;
+  height: auto;
+  border-radius: 0.875rem;
+  box-shadow: 0 4px 15px -2px rgba(12, 27, 51, 0.08);
+  display: block;
+  margin: 0 auto;
+}
+
+.rich-text-content .media-caption {
+  font-size: 0.85rem;
+  color: #64748b;
+  margin-top: 0.5rem;
+  text-align: center;
+  font-style: italic;
+  line-height: 1.4;
+  padding: 0 0.5rem;
+}
+
+/* Responsive para imágenes flotantes en móviles */
+@media (max-width: 640px) {
+  .rich-text-content .media-figure.media-align-left,
+  .rich-text-content .media-figure.media-align-right {
+    float: none !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 1.5rem auto !important;
+    clear: both;
+  }
+
+  .rich-text-content .media-figure.media-size-sm,
+  .rich-text-content .media-figure.media-size-md,
+  .rich-text-content .media-figure.media-size-lg {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+}
+
+/* --- Contenedor de Videos Responsivos (YouTube, Vimeo, MP4) --- */
+.rich-text-content .media-video-container {
+  margin: 2rem 0;
+  clear: both;
+}
+
+.rich-text-content .media-video-container.media-video-md {
+  max-width: 680px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.rich-text-content .media-video-container.media-video-full {
+  width: 100%;
+}
+
+.rich-text-content .media-video-aspect {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 8px 25px -4px rgba(12, 27, 51, 0.15);
+  background-color: #0c1b33;
+}
+
+.rich-text-content .media-video-aspect iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0;
+}
+
+.rich-text-content .media-video-aspect video {
+  width: 100%;
+  height: 100%;
+  border-radius: 1rem;
+  object-fit: cover;
+}
+
+
+

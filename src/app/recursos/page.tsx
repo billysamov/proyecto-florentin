@@ -8,11 +8,11 @@ export const dynamic = "force-dynamic";
 export const metadata: Metadata = {
   title: "Recursos y Materiales de Francés | Le Français avec Florentin",
   description:
-    "Descarga guías gratuitas en PDF, ejercicios de pronunciación y materiales exclusivos para acelerar tu aprendizaje del francés con Florentin.",
+    "Descarga guías gratuitas en PDF, ejercicios de pronunciación y materiales exclusivos para acelerar tu aprendizaje del francés conmigo.",
   openGraph: {
     title: "Recursos y Materiales de Francés | Le Français avec Florentin",
     description:
-      "Descarga guías gratuitas en PDF, ejercicios de pronunciación y materiales didácticos con Florentin.",
+      "Descarga guías gratuitas en PDF, ejercicios de pronunciación y materiales didácticos conmigo.",
     type: "website",
     locale: "es_ES"
   }
