@@ -8,11 +8,12 @@ import { supabase } from "@/lib/supabase";
 import { translations, Language } from "@/lib/translations";
 import { translateTextChunk } from "@/lib/translator";
 import WelcomeModal from "@/components/WelcomeModal";
+import SocialSidebar from "@/components/layout/SocialSidebar";
 import gsap from "gsap";
 import { useGSAP } from "@gsap/react";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import {
-  ArrowRight, Menu, X, ChevronDown, ChevronLeft, ChevronRight,
+  ArrowRight, ArrowUpRight, Menu, X, ChevronDown, ChevronLeft, ChevronRight,
   Plane, Briefcase, Heart, Rocket,
   XCircle, CheckCircle, MessageCircle, CalendarCheck,
   Award, Globe2, Users, Star, BadgeCheck, BookOpen, Headphones, Building2,
@@ -1231,157 +1232,135 @@ export default function Home() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-12 items-center">
             
             {/* ═══════════════════════════════════════
-                COLUMNA IZQUIERDA: Titular, Propuesta & Métricas
+                COLUMNA IZQUIERDA: Titular, Propuesta & Formulario Directo
             ═══════════════════════════════════════ */}
             <div className="lg:col-span-7 flex flex-col items-start text-left">
-              {/* Badge Social Proof (Trustpilot / Alumnos) */}
-              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-50 border border-amber-200/80 text-amber-900 text-xs font-bold mb-6 shadow-xs animate-in fade-in slide-in-from-bottom-2 duration-500">
-                <span className="text-amber-500 font-black">★</span>
-                <span>{(config && config.hero_trust_badge) ? config.hero_trust_badge : (t.heroTrustBadge || (lang === "fr" ? "★ 4,9/5 sur Trustpilot · Avis vérifiés" : lang === "en" ? "★ 4.9/5 on Trustpilot · Verified reviews" : "★ 4.9/5 valoración de alumnos · Clases 1 a 1"))}</span>
+              {/* Badge: 🇫🇷 Clases de francés en línea */}
+              <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-slate-50 border border-slate-200/90 text-slate-700 text-xs font-bold mb-6 shadow-xs animate-in fade-in slide-in-from-bottom-2 duration-500">
+                <span>🇫🇷</span>
+                <span>{lang === "fr" ? "Cours de français en ligne" : lang === "en" ? "Online French classes" : "Clases de francés en línea"}</span>
               </div>
 
-              {/* Titular H1 de Impacto */}
-              <h1 className="hero-text text-[clamp(2.3rem,4.4vw,4.1rem)] font-black leading-[1.04] tracking-tight text-[#0c1b33] mb-5 font-serif">
-                {(() => {
-                  const baseTitle = config?.titulo_hero || (t.heroTitle1 + " " + t.heroTitle2);
-                  const highlight = (config && config.hero_highlight_text) ? config.hero_highlight_text : (t.heroHighlightText || (lang === "fr" ? "dès cette semaine." : lang === "en" ? "starting this week." : "desde esta semana."));
-                  return (
-                    <>
-                      {renderFormattedTitle(baseTitle)}{" "}
-                      <span className="text-[#0055a5] inline-block">
-                        {highlight}
-                      </span>
-                    </>
-                  );
-                })()}
+              {/* Titular H1 de Impacto con subrayado amarillo suave */}
+              <h1 className="hero-text text-[clamp(2.3rem,4.4vw,4.1rem)] font-black leading-[1.08] tracking-tight text-[#0c1b33] mb-5 font-serif">
+                {lang === "fr" ? (
+                  <>Dominez le français avec des cours personnalisés <span className="relative inline-block"><span className="relative z-10">dès cette semaine.</span><span className="absolute bottom-1.5 left-0 w-full h-3 bg-[#fde047] -z-0 opacity-80 rounded-sm"></span></span></>
+                ) : lang === "en" ? (
+                  <>Master French with personalized classes <span className="relative inline-block"><span className="relative z-10">starting this week.</span><span className="absolute bottom-1.5 left-0 w-full h-3 bg-[#fde047] -z-0 opacity-80 rounded-sm"></span></span></>
+                ) : (
+                  <>Domina el francés con clases personalizadas <span className="relative inline-block"><span className="relative z-10">desde esta semana.</span><span className="absolute bottom-1.5 left-0 w-full h-3 bg-[#fde047] -z-0 opacity-80 rounded-sm"></span></span></>
+                )}
               </h1>
 
-              {/* Subtítulo Persuasivo */}
+              {/* Subtítulo Persuasivo con palabras clave en negrita */}
               <p className="hero-text text-base sm:text-lg text-slate-600 font-normal leading-relaxed mb-8 max-w-xl">
-                {config?.subtitulo_hero || t.heroSubtitle}
+                {lang === "fr" ? (
+                  <>Apprenez à votre propre rythme avec <strong className="font-bold text-slate-800">un professeur natif et diplômé qui parle votre langue</strong>. Flexibilité, matériel pédagogique et conversation fluide.</>
+                ) : lang === "en" ? (
+                  <>Learn at your own pace with <strong className="font-bold text-slate-800">a native, certified teacher who speaks your language</strong>. Flexibility, learning materials, and fluent conversation.</>
+                ) : (
+                  <>Aprende a tu propio ritmo con <strong className="font-bold text-slate-800">un profesor nativo y diplomado que habla tu idioma</strong>. Flexibilidad, materiales didácticos y conversación fluida.</>
+                )}
               </p>
 
-              {/* Barra de Métricas (Reubicada desde la foto de Florentin) */}
-              <div className="w-full pt-6 border-t border-slate-200/80 flex items-center justify-between sm:justify-start sm:gap-10">
-                <div>
-                  <div className="text-2xl sm:text-3xl font-black text-[#0c1b33] tracking-tight font-serif">
-                    {config?.teacher_students ? config.teacher_students.split(" ")[0] : (t.heroStat1Num || "+200")}
-                  </div>
-                  <div className="text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
-                    {t.heroStat1Label || (lang === "fr" ? "élèves guidés" : lang === "en" ? "students taught" : "alumnos formados")}
-                  </div>
-                </div>
-
-                <div className="h-10 w-px bg-slate-200" />
-
-                <div>
-                  <div className="text-2xl sm:text-3xl font-black text-[#0c1b33] tracking-tight font-serif">
-                    {config?.teacher_countries ? config.teacher_countries.split(" ")[0] : (t.heroStat2Num || "+15")}
-                  </div>
-                  <div className="text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
-                    {t.heroStat2Label || (lang === "fr" ? "pays différents" : lang === "en" ? "countries" : "países diferentes")}
-                  </div>
-                </div>
-
-                <div className="h-10 w-px bg-slate-200" />
-
-                <div>
-                  <div className="text-2xl sm:text-3xl font-black text-[#0c1b33] tracking-tight font-serif">
-                    {t.heroStat3Num || "+5"}
-                  </div>
-                  <div className="text-xs sm:text-sm font-semibold text-slate-500 mt-0.5">
-                    {t.heroStat3Label || (lang === "fr" ? "ans d'expérience" : lang === "en" ? "years of experience" : "años de experiencia")}
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* ═══════════════════════════════════════
-                COLUMNA DERECHA: Tarjeta Flotante de Captación Rápida
-            ═══════════════════════════════════════ */}
-            <div className="hero-btn lg:col-span-5 w-full max-w-md mx-auto lg:max-w-none">
-              <div className="relative bg-white rounded-3xl p-7 sm:p-9 shadow-2xl shadow-slate-900/10 border border-slate-200/80 transition-all">
-                {/* Insignia Flotante Superior */}
-                <div className="absolute -top-3.5 left-7 sm:left-9 bg-[#0c1b33] text-white text-[10px] sm:text-xs font-black px-3.5 py-1 rounded-full uppercase tracking-wider shadow-md">
-                  {(config && config.hero_card_badge) ? config.hero_card_badge : (t.heroCardBadge || (lang === "fr" ? "ACCÈS GRATUIT" : lang === "en" ? "FREE ACCESS" : "ACCESO GRATUITO"))}
-                </div>
-
-                {/* Título y Promesa de la Tarjeta */}
-                <div className="mb-6 pt-1">
-                  <h3 className="text-xl sm:text-2xl font-black text-[#0c1b33] tracking-tight font-serif">
-                    {(config && config.hero_card_title) ? config.hero_card_title : (t.heroCardTitle || (lang === "fr" ? "Commencez maintenant" : lang === "en" ? "Start today" : "Empieza hoy mismo"))}
-                  </h3>
-                  <p className="text-xs sm:text-sm text-slate-500 mt-1">
-                    {(config && config.hero_card_subtitle) ? config.hero_card_subtitle : (t.heroCardSubtitle || (lang === "fr" ? "Vos premières leçons vous attendent. Aucune carte bancaire." : lang === "en" ? "Your first lessons await. No credit card required." : "Tu primera sesión te espera. Sin tarjeta de crédito."))}
-                  </p>
-                </div>
-
-                {/* Mensaje de Error si los campos están incompletos */}
+              {/* Formulario Rápido Horizontal */}
+              <div className="w-full max-w-xl">
                 {heroError && (
-                  <div className="mb-4 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
+                  <div className="mb-3 p-2.5 rounded-xl bg-rose-50 border border-rose-200 text-rose-700 text-xs font-semibold flex items-center gap-2">
                     <span className="shrink-0 text-rose-500">⚠</span>
                     <span>{heroError}</span>
                   </div>
                 )}
 
-                {/* Formulario Rápido que Conecta con /alumno */}
-                <form onSubmit={handleHeroSubmit} className="space-y-4">
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                      {t.heroCardNameLabel || (lang === "fr" ? "Votre prénom *" : lang === "en" ? "Your name *" : "Tu nombre *")}
-                    </label>
-                    <input
-                      type="text"
-                      value={heroNombre}
-                      onChange={(e) => {
-                        setHeroNombre(e.target.value);
-                        if (heroError) setHeroError("");
-                      }}
-                      placeholder={t.heroCardNamePlaceholder || (lang === "fr" ? "Prénom" : lang === "en" ? "Your name" : "Ej. Carlos")}
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0c1b33]/15 focus:border-[#0c1b33] transition-all"
-                      required
-                    />
+                <form onSubmit={handleHeroSubmit} className="space-y-3">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    <div>
+                      <input
+                        type="text"
+                        value={heroNombre}
+                        onChange={(e) => {
+                          setHeroNombre(e.target.value);
+                          if (heroError) setHeroError("");
+                        }}
+                        placeholder={t.heroCardNamePlaceholder || (lang === "fr" ? "Votre prénom" : lang === "en" ? "Your name" : "Tu nombre")}
+                        className="w-full px-4 py-3.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0c1b33]/15 focus:border-[#0c1b33] shadow-xs transition-all"
+                        required
+                      />
+                    </div>
+
+                    <div>
+                      <input
+                        type="email"
+                        value={heroEmail}
+                        onChange={(e) => {
+                          setHeroEmail(e.target.value);
+                          if (heroError) setHeroError("");
+                        }}
+                        placeholder={t.heroCardEmailPlaceholder || (lang === "fr" ? "vous@email.fr" : lang === "en" ? "you@email.com" : "tu@email.com")}
+                        className="w-full px-4 py-3.5 rounded-xl bg-white border border-slate-200 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-[#0c1b33]/15 focus:border-[#0c1b33] shadow-xs transition-all"
+                        required
+                      />
+                    </div>
                   </div>
 
-                  <div>
-                    <label className="block text-xs font-bold text-slate-700 mb-1.5">
-                      {t.heroCardEmailLabel || (lang === "fr" ? "Votre email *" : lang === "en" ? "Your email *" : "Tu correo electrónico *")}
-                    </label>
-                    <input
-                      type="email"
-                      value={heroEmail}
-                      onChange={(e) => {
-                        setHeroEmail(e.target.value);
-                        if (heroError) setHeroError("");
-                      }}
-                      placeholder={t.heroCardEmailPlaceholder || (lang === "fr" ? "vous@email.fr" : lang === "en" ? "you@email.com" : "tu@email.com")}
-                      className="w-full px-4 py-3 rounded-xl bg-slate-50 border border-slate-200 text-sm font-semibold text-slate-900 placeholder:text-slate-400 focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#0c1b33]/15 focus:border-[#0c1b33] transition-all"
-                      required
-                    />
-                  </div>
-
-                  {/* Nota Legal Discreta */}
-                  <p className="text-[11px] text-slate-400 leading-snug">
-                    {t.heroCardLegalNotice || (lang === "fr" ? "En créant votre compte, vous acceptez nos conditions générales d'utilisation." : lang === "en" ? "By creating your account, you agree to our terms and privacy policy." : "Al crear tu cuenta, aceptas nuestros términos y condiciones de uso.")}
-                  </p>
-
-                  {/* Botón Principal CTA con el color de la marca Florentin */}
                   <button
                     type="submit"
                     disabled={heroSubmitting}
-                    className="w-full bg-[#0c1b33] hover:bg-[#152e54] text-white py-3.5 px-6 rounded-xl font-bold text-base transition-all duration-300 hover:scale-[1.02] shadow-lg shadow-[#0c1b33]/20 flex items-center justify-center gap-2 cursor-pointer select-none"
+                    className="w-full bg-[#dc2626] hover:bg-[#b91c1c] active:scale-[0.99] text-white py-3.5 px-6 rounded-xl font-bold text-base transition-all duration-300 shadow-md shadow-red-600/20 flex items-center justify-center gap-2 cursor-pointer select-none"
                   >
-                    <span>{(config && config.hero_card_btn) ? config.hero_card_btn : (t.heroCardBtn || (lang === "fr" ? "Je commence gratuitement" : lang === "en" ? "Start for free" : "Comenzar gratuitamente"))}</span>
-                    <ArrowRight size={18} />
+                    <span>{lang === "fr" ? "Commencer gratuitement →" : lang === "en" ? "Start for free →" : "Comenzar gratuitamente →"}</span>
                   </button>
 
-                  {/* Reassurance Footer */}
-                  <div className="pt-2 text-center">
-                    <span className="text-xs font-semibold text-slate-500">
-                      {(config && config.hero_card_reassurance) ? config.hero_card_reassurance : (t.heroCardReassurance || (lang === "fr" ? "✓ Sans engagement · 100% en ligne" : lang === "en" ? "✓ No commitment · 100% online" : "✓ Sin compromiso · 100% online"))}
-                    </span>
-                  </div>
+                  <p className="text-[11px] text-slate-400 leading-snug text-center sm:text-left pt-1">
+                    ✓ {lang === "fr" ? "Sans engagement · 100% en ligne · En créant votre compte, vous acceptez nos conditions générales." : lang === "en" ? "No commitment · 100% online · By creating your account, you agree to our terms of service." : "Sin compromiso · 100% online · Al crear tu cuenta, aceptas nuestros términos y condiciones de uso."}
+                  </p>
                 </form>
+              </div>
+            </div>
+
+            {/* ═══════════════════════════════════════
+                COLUMNA DERECHA: Marco Girado 3° con Badges Flotantes
+            ═══════════════════════════════════════ */}
+            <div className="hero-btn lg:col-span-5 w-full flex justify-center items-center relative mt-12 lg:mt-0 px-4 sm:px-6">
+              <div className="relative w-full max-w-[360px] sm:max-w-[420px]">
+                {/* Marco con giro de 3 grados y sombra profunda */}
+                <div className="hero-visual-card relative w-full">
+                  <Image
+                    src="/florentin.jpg"
+                    alt="Florentin, profesor de francés nativo"
+                    fill
+                    priority
+                    className="w-full h-full object-cover object-top select-none pointer-events-none"
+                    sizes="(max-width: 640px) 360px, 420px"
+                  />
+                </div>
+
+                {/* 1. Badge Superior Derecho: ❤️ +1000 alumnos (retraso -1.3s) */}
+                <div className="hero-pill hero-pill-2 -top-2 -right-3 sm:-right-8 sm:top-8 text-xs sm:text-[14px]">
+                  <span className="text-red-500">❤️</span>
+                  <span>+1000 alumnos</span>
+                </div>
+
+                {/* 2. Badge Centro Izquierda: ✓ Primera clase gratis */}
+                <div className="hero-pill hero-pill-1 -left-3 sm:-left-12 top-[44%] text-xs sm:text-[14px]">
+                  <span className="hero-pill-dot">✓</span>
+                  <span>{lang === "fr" ? "Premier cours gratuit" : lang === "en" ? "First class free" : "Primera clase gratis"}</span>
+                </div>
+
+                {/* 3. Badge Inferior Derecho: 🌎 Alumnos en +15 países (retraso -2.6s) */}
+                <div className="hero-pill hero-pill-3 -right-3 sm:-right-8 bottom-[14%] text-xs sm:text-[14px]">
+                  <span>🌎</span>
+                  <span>{lang === "fr" ? "Élèves dans +15 pays" : lang === "en" ? "Students in +15 countries" : "Alumnos en +15 países"}</span>
+                </div>
+
+                {/* 4. Badge Inferior Izquierda: 🇫🇷 Nativo · 🇪🇸 Habla español (retraso -0.7s) */}
+                <div className="hero-pill hero-pill-4 -left-3 sm:-left-8 -bottom-4 text-xs sm:text-[14px]">
+                  <span className="hero-flag-fr"><i></i><i></i><i></i></span>
+                  <span>{lang === "fr" ? "Natif" : lang === "en" ? "Native" : "Nativo"}</span>
+                  <span className="text-slate-300">·</span>
+                  <span className="hero-flag-es"><i></i><i></i><i></i></span>
+                  <span>{lang === "fr" ? "Parle espagnol" : lang === "en" ? "Speaks Spanish" : "Habla español"}</span>
+                </div>
               </div>
             </div>
 
@@ -1688,17 +1667,75 @@ export default function Home() {
           </div>
           <div className="forwhom-grid grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5 sm:gap-6">
             {[
-              { icon: <Plane size={32} />, title: config?.for_whom_1_title || t.forWhom1Title, desc: config?.for_whom_1_desc || t.forWhom1Desc },
-              { icon: <Briefcase size={32} />, title: config?.for_whom_2_title || t.forWhom2Title, desc: config?.for_whom_2_desc || t.forWhom2Desc },
-              { icon: <Heart size={32} />, title: config?.for_whom_3_title || t.forWhom3Title, desc: config?.for_whom_3_desc || t.forWhom3Desc },
-              { icon: <Rocket size={32} />, title: config?.for_whom_4_title || t.forWhom4Title, desc: config?.for_whom_4_desc || t.forWhom4Desc },
+              {
+                icon: <Plane size={24} />,
+                title: config?.for_whom_1_title || t.forWhom1Title,
+                desc: config?.for_whom_1_desc || t.forWhom1Desc,
+                bg: "bg-[#edf5ff]",
+                iconBg: "bg-[#0055a5]/15",
+                iconColor: "text-[#0055a5]",
+                border: "border-[#bfdbfe]/60",
+                btnBg: "bg-[#0055a5] hover:bg-[#004080]",
+                href: "/clases"
+              },
+              {
+                icon: <Briefcase size={24} />,
+                title: config?.for_whom_2_title || t.forWhom2Title,
+                desc: config?.for_whom_2_desc || t.forWhom2Desc,
+                bg: "bg-[#e0f7fa]",
+                iconBg: "bg-[#0891b2]/15",
+                iconColor: "text-[#0891b2]",
+                border: "border-[#a5f3fc]/60",
+                btnBg: "bg-[#0055a5] hover:bg-[#004080]",
+                href: "/clases"
+              },
+              {
+                icon: <Heart size={24} />,
+                title: config?.for_whom_3_title || t.forWhom3Title,
+                desc: config?.for_whom_3_desc || t.forWhom3Desc,
+                bg: "bg-[#f3e8ff]",
+                iconBg: "bg-[#7c3aed]/15",
+                iconColor: "text-[#7c3aed]",
+                border: "border-[#e9d5ff]/60",
+                btnBg: "bg-[#0055a5] hover:bg-[#004080]",
+                href: "/clases"
+              },
+              {
+                icon: <Rocket size={24} />,
+                title: config?.for_whom_4_title || t.forWhom4Title,
+                desc: config?.for_whom_4_desc || t.forWhom4Desc,
+                bg: "bg-[#e6f4ea]",
+                iconBg: "bg-[#059669]/15",
+                iconColor: "text-[#059669]",
+                border: "border-[#bbf7d0]/60",
+                btnBg: "bg-[#0055a5] hover:bg-[#004080]",
+                href: "/clases"
+              },
             ].map((item, idx) => (
-              <div key={idx} className="forwhom-card group bg-white border border-slate-200/80 rounded-2xl p-7 sm:p-8 hover:border-[#3b82f6]/30 hover:shadow-md hover:scale-[1.02] transition-all duration-500 cursor-default shadow-sm">
-                <div className="w-14 h-14 rounded-2xl bg-[#3b82f6]/8 group-hover:bg-[#3b82f6]/15 flex items-center justify-center text-[#3b82f6] mb-5 transition-colors">
-                  {item.icon}
+              <div
+                key={idx}
+                className={`forwhom-card group ${item.bg} border ${item.border} rounded-3xl p-7 sm:p-8 flex flex-col justify-between hover:shadow-xl hover:-translate-y-1 transition-all duration-300 min-h-[290px]`}
+              >
+                <div>
+                  <div className={`w-12 h-12 rounded-xl ${item.iconBg} ${item.iconColor} flex items-center justify-center mb-6 shadow-2xs group-hover:scale-105 transition-transform duration-300`}>
+                    {item.icon}
+                  </div>
+                  <h3 className="text-xl font-extrabold mb-2.5 text-[#0f172a] tracking-tight leading-snug">
+                    {item.title}
+                  </h3>
+                  <p className="text-sm text-slate-600 font-medium leading-relaxed">
+                    {item.desc}
+                  </p>
                 </div>
-                <h3 className="text-lg font-bold mb-2 text-[#0c1b33] transition-colors">{item.title}</h3>
-                <p className="text-sm text-slate-500 font-medium leading-relaxed transition-colors">{item.desc}</p>
+                <div className="flex justify-start mt-6 pt-2">
+                  <Link
+                    href={item.href}
+                    className={`w-9 h-9 rounded-xl ${item.btnBg} text-white flex items-center justify-center transition-all shadow-xs hover:scale-110 active:scale-95`}
+                    aria-label={`Ver información sobre ${item.title}`}
+                  >
+                    <ArrowUpRight size={18} />
+                  </Link>
+                </div>
               </div>
             ))}
           </div>
@@ -1933,10 +1970,22 @@ export default function Home() {
 
             {/* Redes Sociales */}
             <div className="flex items-center gap-3 mt-3">
-              <a href="#" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#0055a5] hover:text-white transition-all">
+              <a
+                href="https://www.facebook.com/lefrancaisavecflorentin"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Facebook de Florentin"
+                className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#1877f2] hover:text-white transition-all shadow-2xs"
+              >
                 <Facebook size={16} />
               </a>
-              <a href="#" target="_blank" rel="noopener noreferrer" className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#e1306c] hover:text-white transition-all">
+              <a
+                href="https://www.instagram.com/lefrancaisavecflorentin"
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram de Florentin"
+                className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#e1306c] hover:text-white transition-all shadow-2xs"
+              >
                 <Instagram size={16} />
               </a>
             </div>
@@ -2032,6 +2081,9 @@ export default function Home() {
       </footer>
 
 
+      {/* Barra lateral flotante de redes sociales (Facebook e Instagram) */}
+      <SocialSidebar />
+
       {/* Botón flotante de WhatsApp superpuesto */}
       <a
         href={whatsappUrl}
@@ -2042,7 +2094,7 @@ export default function Home() {
       >
         <div className="relative">
           <svg className="w-6 h-6 fill-white" viewBox="0 0 24 24">
-            <path d="M12.012 2c-5.506 0-9.989 4.478-9.99 9.984a9.96 9.96 0 001.333 4.982L2 22l5.202-1.362a9.92 9.92 0 004.808 1.258h.005c5.507 0 9.99-4.478 9.99-9.988C22.007 6.478 17.52 2 12.012 2zm6.657 14.184c-.273.768-1.579 1.393-2.185 1.48-.56.08-1.288.125-2.072-.125a10.05 10.05 0 01-4.444-2.82 10.15 10.15 0 01-2.316-3.878c-.286-.777.01-1.39.29-1.68.21-.22.47-.56.71-.85.24-.29.33-.48.49-.8.16-.33.08-.62-.04-.89-.12-.27-1.07-2.58-1.47-3.53-.39-.95-.79-.82-1.08-.83h-.92c-.31 0-.82.12-1.25.59-.43.47-1.64 1.6-1.64 3.9s1.68 4.52 1.91 4.83c.24.31 3.3 5.04 8.01 7.07 1.12.48 2 .77 2.68.99 1.13.36 2.16.31 2.97.19.9-.13 2.18-.89 2.49-1.75.31-.86.31-1.6.22-1.75-.09-.15-.35-.24-.76-.44z"/>
+            <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.652-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.197 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413Z"/>
           </svg>
           <span className="absolute -top-1.5 -right-1 flex h-2.5 w-2.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-red-400 opacity-75"></span>

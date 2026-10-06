@@ -138,20 +138,20 @@ export default function Footer({
           {/* Redes Sociales */}
           <div className="flex items-center gap-3 mt-3">
             <a
-              href="https://facebook.com"
+              href="https://www.facebook.com/lefrancaisavecflorentin"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#0055a5] hover:text-white transition-all"
-              aria-label="Facebook"
+              className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#1877f2] hover:text-white transition-all shadow-2xs"
+              aria-label="Facebook de Florentin"
             >
               <Facebook size={16} />
             </a>
             <a
-              href="https://instagram.com"
+              href="https://www.instagram.com/lefrancaisavecflorentin"
               target="_blank"
               rel="noopener noreferrer"
-              className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#e1306c] hover:text-white transition-all"
-              aria-label="Instagram"
+              className="w-8 h-8 rounded-full bg-slate-100 text-slate-500 flex items-center justify-center hover:bg-[#e1306c] hover:text-white transition-all shadow-2xs"
+              aria-label="Instagram de Florentin"
             >
               <Instagram size={16} />
             </a>
