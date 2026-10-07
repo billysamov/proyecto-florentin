@@ -6,25 +6,26 @@ import { getSupabaseAdmin } from "@/lib/supabase";
 const outfit = Outfit({
   subsets: ["latin"],
   variable: "--font-outfit",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 const plusJakarta = Plus_Jakarta_Sans({
   subsets: ["latin"],
   variable: "--font-sans",
-  weight: ["400", "500", "600", "700", "800"],
+  display: "swap",
 });
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
   variable: "--font-serif",
-  weight: ["400", "500", "600", "700", "800", "900"],
+  display: "swap",
 });
 
 const greatVibes = Great_Vibes({
   subsets: ["latin"],
   variable: "--font-script",
-  weight: ["400"],
+  weight: "400",
+  display: "swap",
 });
 
 function parseMultilingualText(text: string | null | undefined, fallback: string): string {
