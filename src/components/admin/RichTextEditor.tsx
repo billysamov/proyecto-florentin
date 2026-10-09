@@ -333,6 +333,49 @@ export default function RichTextEditor({
     emitChange();
   };
 
+  // Selector de Tipografía
+  const formatFontFamily = (fontFamily: string) => {
+    if (mode === "html" || !fontFamily) return;
+    const sel = window.getSelection();
+    if ((!sel || sel.rangeCount === 0 || !editorRef.current?.contains(sel.anchorNode)) && savedRange.current) {
+      restoreSelection();
+    }
+    document.execCommand("styleWithCSS", false, "true");
+    document.execCommand("fontName", false, fontFamily);
+    saveSelection();
+    emitChange();
+  };
+
+  // Selector de Tamaño de Letra en Píxeles
+  const formatFontSize = (sizePx: string) => {
+    if (mode === "html" || !sizePx) return;
+    const sel = window.getSelection();
+    if ((!sel || sel.rangeCount === 0 || !editorRef.current?.contains(sel.anchorNode)) && savedRange.current) {
+      restoreSelection();
+    }
+    const currentSel = window.getSelection();
+    if (!currentSel || currentSel.rangeCount === 0 || currentSel.isCollapsed) return;
+
+    try {
+      const range = currentSel.getRangeAt(0);
+      const span = document.createElement("span");
+      span.style.fontSize = sizePx;
+      span.appendChild(range.extractContents());
+      range.insertNode(span);
+
+      currentSel.removeAllRanges();
+      const newRange = document.createRange();
+      newRange.selectNodeContents(span);
+      newRange.collapse(false);
+      currentSel.addRange(newRange);
+    } catch {
+      document.execCommand("fontSize", false, sizePx === "13px" ? "2" : sizePx === "18px" ? "4" : sizePx === "22px" ? "5" : "3");
+    }
+
+    saveSelection();
+    emitChange();
+  };
+
   // Insertar HTML en la posición del cursor de forma segura
   const insertHtmlAtCursor = (htmlToInsert: string) => {
     if (editorRef.current) {
@@ -544,8 +587,8 @@ export default function RichTextEditor({
 
   return (
     <div className="border border-slate-200 rounded-2xl overflow-hidden bg-white shadow-xs focus-within:border-[#0055a5] focus-within:ring-2 focus-within:ring-[#0055a5]/10 transition-all relative">
-      {/* ── BARRA DE HERRAMIENTAS ESTILO MICROSOFT WORD ── */}
-      <div className="bg-slate-50/95 border-b border-slate-200 px-3 py-2 flex flex-wrap items-center justify-between gap-1.5 select-none">
+      {/* ── BARRA DE HERRAMIENTAS ESTILO MICROSOFT WORD (STICKY) ── */}
+      <div className="sticky top-0 z-20 bg-slate-50/95 backdrop-blur-md border-b border-slate-200 px-3 py-2 flex flex-wrap items-center justify-between gap-1.5 select-none shadow-2xs">
         <div className="flex flex-wrap items-center gap-1">
           {/* Selector de Estilo de Párrafo / Título */}
           <div className="flex items-center gap-0.5 bg-white border border-slate-200 rounded-lg p-0.5 mr-1 shadow-2xs">
@@ -573,6 +616,47 @@ export default function RichTextEditor({
             >
               H3
             </button>
+          </div>
+
+          {/* Selector de Tipo de Letra (Fuente) */}
+          <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg px-2 py-1 mr-1 shadow-2xs">
+            <span className="text-[10px] font-black text-slate-400 uppercase select-none">Fuente</span>
+            <select
+              onChange={(e) => {
+                formatFontFamily(e.target.value);
+                e.target.value = "";
+              }}
+              defaultValue=""
+              className="text-xs font-bold text-slate-700 bg-transparent border-none outline-none cursor-pointer pr-1"
+              title="Cambiar tipo de letra / tipografía"
+            >
+              <option value="" disabled>Seleccionar</option>
+              <option value="'Plus Jakarta Sans', system-ui, sans-serif">Sans (Moderna)</option>
+              <option value="'Playfair Display', Georgia, serif">Serif (Elegante)</option>
+              <option value="'Great Vibes', cursive">Script (Manuscrita)</option>
+              <option value="monospace">Código (Monospace)</option>
+            </select>
+          </div>
+
+          {/* Selector de Tamaño de Letra */}
+          <div className="flex items-center gap-1 bg-white border border-slate-200 rounded-lg px-2 py-1 mr-1 shadow-2xs">
+            <span className="text-[10px] font-black text-slate-400 uppercase select-none">Tamaño</span>
+            <select
+              onChange={(e) => {
+                formatFontSize(e.target.value);
+                e.target.value = "";
+              }}
+              defaultValue=""
+              className="text-xs font-bold text-slate-700 bg-transparent border-none outline-none cursor-pointer pr-1"
+              title="Cambiar tamaño de texto"
+            >
+              <option value="" disabled>Seleccionar</option>
+              <option value="13px">13px (Pequeño)</option>
+              <option value="16px">16px (Normal)</option>
+              <option value="18px">18px (Mediano)</option>
+              <option value="22px">22px (Grande)</option>
+              <option value="28px">28px (Titular)</option>
+            </select>
           </div>
 
           {/* Formato de Carácter (Negrita, Cursiva, Subrayado) */}
@@ -763,8 +847,8 @@ export default function RichTextEditor({
         </div>
       </div>
 
-      {/* ── ÁREA DE EDICIÓN WYSIWYG / WORD ── */}
-      <div className="relative p-6 sm:p-8 bg-white min-h-[300px]">
+      {/* ── ÁREA DE EDICIÓN WYSIWYG / WORD CON SCROLL INTERNO ── */}
+      <div className="relative p-6 sm:p-8 bg-white min-h-[340px] max-h-[520px] overflow-y-auto">
         {mode === "visual" ? (
           <div
             ref={editorRef}
@@ -789,7 +873,7 @@ export default function RichTextEditor({
               onChange(e.target.value);
             }}
             style={{ minHeight }}
-            className="w-full font-mono text-xs leading-relaxed text-slate-800 bg-slate-50 p-4 border border-slate-200 rounded-xl focus:outline-none focus:border-[#0055a5] resize-y"
+            className="w-full font-mono text-xs leading-relaxed text-slate-800 bg-slate-50 p-4 border border-slate-200 rounded-xl focus:outline-none focus:border-[#0055a5] resize-y min-h-[340px] max-h-[520px] overflow-y-auto"
             placeholder="<html>...</html>"
           />
         )}

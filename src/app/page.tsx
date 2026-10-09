@@ -959,16 +959,17 @@ export default function Home() {
       `}} />
 
       {/* ═══════════════════════════════════════
-          NAVBAR — Glass Pill Responsive
+          NAVBAR — Header Pegado al Techo (Estilo V2)
       ═══════════════════════════════════════ */}
-      <nav
-        className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[92%] max-w-6xl transition-all duration-300 rounded-full px-6 py-3.5 flex items-center justify-between ${
+      <header
+        className={`fixed top-0 left-0 w-full z-50 transition-all duration-300 border-b ${
           scrolled
-            ? "bg-white/95 backdrop-blur-md shadow-lg shadow-black/5 border border-slate-200/80"
-            : "bg-white/90 backdrop-blur-md shadow-md shadow-black/5 border border-slate-200/60"
+            ? "bg-white/95 backdrop-blur-md shadow-sm border-slate-200/80 py-3 px-4 sm:px-8"
+            : "bg-white/90 backdrop-blur-md border-slate-200/60 py-3.5 px-4 sm:px-8"
         }`}
       >
-        {/* Logo */}
+        <div className="max-w-7xl mx-auto flex items-center justify-between">
+          {/* Logo */}
         <Link href="/" className="flex items-center gap-2 group shrink-0">
           <div className="relative w-40 sm:w-48 h-10">
             <Image 
@@ -1158,7 +1159,8 @@ export default function Home() {
         >
           {menuOpen ? <X size={24} /> : <Menu size={24} />}
         </button>
-      </nav>
+      </div>
+    </header>
 
       {/* Mobile Fullscreen Menu */}
       <div
