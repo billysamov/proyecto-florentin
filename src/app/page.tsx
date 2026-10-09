@@ -39,6 +39,18 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger, useGSAP);
 }
 
+const formatFrenchPhone = (phone: string | null | undefined): string => {
+  if (!phone) return "+33 6 72 02 38 84";
+  const clean = phone.replace(/[^0-9]/g, "");
+  if (clean.startsWith("33") && clean.length >= 11) {
+    return `+33 ${clean[2]} ${clean.slice(3, 5)} ${clean.slice(5, 7)} ${clean.slice(7, 9)} ${clean.slice(9, 11)}`;
+  }
+  if (clean.startsWith("06") && clean.length === 10) {
+    return `+33 6 ${clean.slice(2, 4)} ${clean.slice(4, 6)} ${clean.slice(6, 8)} ${clean.slice(8, 10)}`;
+  }
+  return phone.startsWith("+") ? phone : `+${phone}`;
+};
+
 const defaultSpanishConfig: Record<string, string> = {
   titulo_hero: "Domina el francés con {clases personalizadas}",
   subtitulo_hero: "Aprende a tu ritmo con un profesor nativo. Flexibilidad, material exclusivo y enfoque en la conversación fluida.",
@@ -46,7 +58,7 @@ const defaultSpanishConfig: Record<string, string> = {
   meta_descripcion: "Plataforma educativa para aprender francés. Reserva tus clases en tiempo real, accede a material didáctico exclusivo y sigue tu progreso personalizado.",
   palabras_clave: "aprender frances, clases de frances, profesor de frances, frances online, reserva clases de frances",
   teacher_name: "Florentin",
-  teacher_badge: "¿QUIÉN SOY?",
+  teacher_badge: "¿Quién Soy?",
   teacher_title: "Profesor nativo de francés | Diplomado en pedagogía",
   teacher_bio: "Me llamo Florentin. Llevo más de cinco años enseñando francés a alumnos de todos los niveles, desde primaria hasta la universidad, aquí en Francia. He viajado por Latinoamérica y el Cáucaso: descubrir otras culturas me llena de energía. Aprender de ellas y acompañar a las personas en su propio cambio es una motivación. Para mí, enseñar francés no es solo transmitir reglas: es guiarte hacia una nueva cultura lingüística, histórica y geográfica.\n\nMi método se centra en la conversación y la interacción directa. En mis clases, el alumno es totalmente activo: hablarás desde la primera clase. La gramática no se memoriza con listas, se fija con práctica regular y constante, en contexto. Estoy convencido de que aprender debe ser una experiencia dinámica: el disfrute y el rigor van de la mano.",
   teacher_experience: "+5 years",
@@ -62,26 +74,28 @@ const defaultSpanishConfig: Record<string, string> = {
   ps_sol_1_desc: "Desde la primera clase hablamos en francés. Aprendes con situaciones reales, no con robots.",
   ps_prob_2_title: "Sin feedback",
   ps_prob_2_desc: "Nadie te corrige la pronunciación ni te explica por qué te equivocas.",
-  ps_sol_2_title: "Feedback personalizado",
-  ps_sol_2_desc: "Te corrijo en tiempo real, te explico las reglas y perfeccionamos tu acento juntos.",
+  ps_sol_2_title: "Devolución personalizada",
+  ps_sol_2_desc: "Te corrijo en tiempo real, te explico las reglas y perfeccionamos tu acento.",
   ps_prob_3_title: "Horarios rígidos",
-  ps_prob_3_desc: "Las academias te obligan a adaptarte a sus horarios. Tú trabajas, viajas, vives.",
+  ps_prob_3_desc: "Las academias requieren que te adaptes a sus horarios. Esto a veces puede resultar difícil, ya que tienes tu propia agenda, trabajo o compromisos de viaje.",
   ps_sol_3_title: "Flexibilidad total",
-  ps_sol_3_desc: "Tú eliges el día y la hora. Clases por Microsoft Teams desde donde estés, en tu zona horaria.",
-  for_whom_badge: "¿PARA QUIÉN ES?",
-  for_whom_title: "Aprender conmigo es para ti si…",
-  for_whom_1_title: "Quieres vivir en Francia",
-  for_whom_1_desc: "Prepárate para mudarte con confianza. Aprende el francés que realmente necesitas para la vida diaria.",
-  for_whom_2_title: "Estudias o trabajas",
-  for_whom_2_desc: "Mejora tu currículum con francés certificado. Ideal para universitarios y profesionales.",
-  for_whom_3_title: "Amas la cultura francesa",
-  for_whom_3_desc: "Cine, literatura, gastronomía… Disfruta la cultura francesa en su idioma original.",
+  ps_sol_3_desc: "Elige el día y la hora. Recibirás un enlace de acceso independientemente de su ubicación y zona horaria.",
+  for_whom_badge: "Para quién ?",
+  for_whom_title: "Puedo ayudarte si...",
+  for_whom_1_title: "Quieres vivir en Francia ?",
+  for_whom_1_desc: "Prepárate para moverte con confianza. Puedes aprender el francés que realmente necesitas en tu vida diaria.",
+  for_whom_2_title: "Estudios o trabajo ?",
+  for_whom_2_desc: "Mejora tu currículum, carte de motivacion o entreviste profesional con método Ideal para estudiantes universitarios o profesionales.",
+  for_whom_3_title: "Te gusta la cultura francesa ?",
+  for_whom_3_desc: "Cine, literatura, gastronomía… Descubre la cultura francesa en su idioma original.",
   for_whom_4_title: "Empiezas desde cero",
   for_whom_4_desc: "No importa tu nivel. Diseño cada clase según tu ritmo y necesidades específicas.",
-  cta_badge: "¿LISTO PARA EMPEZAR?",
-  cta_title: "Prueba una clase de prueba gratuita de 30 minutos",
-  cta_subtitle: "y descubre cómo podemos trabajar juntos.",
-  cta_btn_text: "Reservar mi clase gratuita"
+  cta_badge: "Listo para empezar ?",
+  cta_title: "Reserva tu primera clase gratuita de 30 minutos",
+  cta_subtitle: "Escríbeme por WhatsApp y programemos tu primera sesión. Sin compromiso.",
+  cta_btn_text: "WhatsApp",
+  whatsapp_number: "33672023884",
+  email_notificaciones: "lefrancaisavecflorentin@outlook.com"
 };
 
 const defaultKeysMap: Record<string, string> = {
@@ -681,7 +695,7 @@ export default function Home() {
     }).format(precioEur);
   };
 
-  const whatsappUrl = `https://wa.me/${config?.whatsapp_number || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33685744973'}?text=${encodeURIComponent(lang === 'es' ? 'Hola Florentin, quiero agendar mi clase de prueba gratuita.' : lang === 'fr' ? 'Bonjour Florentin, je voudrais réserver mon cours d\'essai gratuit.' : 'Hi Florentin, I want to book my free trial class.')}`;
+  const whatsappUrl = `https://wa.me/${config?.whatsapp_number || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33672023884'}?text=${encodeURIComponent(lang === 'es' ? 'Hola Florentin, quiero agendar mi clase de prueba gratuita.' : lang === 'fr' ? 'Bonjour Florentin, je voudrais réserver mon cours d\'essai gratuit.' : 'Hi Florentin, I want to book my free trial class.')}`;
 
   // GSAP Animations (Optimized for Mobile & Desktop)
   useGSAP(() => {
@@ -1898,7 +1912,7 @@ export default function Home() {
 
             {/* Enlace de WhatsApp con Icono */}
             <a
-              href={`https://wa.me/${config?.whatsapp_number || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33685744973'}?text=${encodeURIComponent(lang === 'es' ? 'Hola Florentin, tengo una pregunta sobre las clases.' : lang === 'fr' ? 'Bonjour Florentin, j\'ai une question sur les cours.' : 'Hi Florentin, I have a question about the classes.')}`}
+              href={`https://wa.me/${config?.whatsapp_number || process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33672023884'}?text=${encodeURIComponent(lang === 'es' ? 'Hola Florentin, tengo una pregunta sobre las clases.' : lang === 'fr' ? 'Bonjour Florentin, j\'ai une question sur les cours.' : 'Hi Florentin, I have a question about the classes.')}`}
               target="_blank"
               rel="noopener noreferrer"
               className="inline-flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#0055a5] bg-slate-50 hover:bg-slate-100 border border-slate-200/80 px-5 py-2.5 rounded-full transition-all duration-200 shadow-2xs"
@@ -1952,7 +1966,7 @@ export default function Home() {
               </a>
 
               <a 
-                href={`https://wa.me/${(config?.whatsapp_number || '33685744973').replace(/[^0-9]/g, '')}`}
+                href={`https://wa.me/${(config?.whatsapp_number || '33672023884').replace(/[^0-9]/g, '')}`}
                 target="_blank"
                 rel="noopener noreferrer"
                 className="flex items-center gap-2.5 text-xs sm:text-sm font-semibold text-slate-600 hover:text-[#10b981] transition-colors"
@@ -1961,9 +1975,7 @@ export default function Home() {
                   <Phone size={13} />
                 </div>
                 <span>
-                  {config?.whatsapp_number 
-                    ? (config.whatsapp_number.startsWith('+') ? config.whatsapp_number : `+${config.whatsapp_number}`)
-                    : '+33 6 85 74 49 73'}
+                  {formatFrenchPhone(config?.whatsapp_number || '33672023884')}
                 </span>
               </a>
             </div>

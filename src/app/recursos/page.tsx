@@ -19,7 +19,7 @@ export const metadata: Metadata = {
 };
 
 export default async function RecursosPage() {
-  let whatsappNumber = "33685744973";
+  let whatsappNumber = "33672023884";
 
   try {
     const supabase = getSupabaseAdmin();

@@ -533,7 +533,7 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS almuerzo_fin TEXT DEFAU
               <p style={{ fontWeight: 600, color: "#b91c1c", marginBottom: "4px" }}>💡 {t.solucionRecomendada}</p>
               <p style={{ fontSize: "12px", marginBottom: "8px" }}>{t.ejecutaScript}</p>
               <pre style={{ backgroundColor: "#1e293b", color: "#f8fafc", padding: "12px", borderRadius: "6px", fontSize: "11px", overflowX: "auto" }}>
-{`ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS whatsapp_number TEXT DEFAULT '33685744973';`}
+{`ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS whatsapp_number TEXT DEFAULT '33672023884';`}
               </pre>
             </div>
           )}
@@ -664,7 +664,7 @@ ALTER TABLE configuracion_sitio ADD COLUMN IF NOT EXISTS hero_card_reassurance T
                   type="text"
                   value={config.whatsapp_number || ""}
                   onChange={(e) => setConfig({ ...config, whatsapp_number: e.target.value })}
-                  placeholder="Ej. 33685744973"
+                  placeholder="Ej. 33672023884"
                   style={{ padding: "12px 16px" }}
                 />
               </div>

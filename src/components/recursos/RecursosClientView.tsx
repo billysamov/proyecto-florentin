@@ -276,7 +276,7 @@ interface RecursosClientViewProps {
 }
 
 export default function RecursosClientView({
-  whatsappNumber = "33685744973"
+  whatsappNumber = "33672023884"
 }: RecursosClientViewProps) {
   const [lang, setLang] = useState<Language>("es");
   const [divisa, setDivisa] = useState<"eur" | "usd">("eur");
@@ -371,7 +371,7 @@ export default function RecursosClientView({
     }
   };
 
-  const cleanWhatsapp = whatsappNumber.replace(/[^0-9]/g, "") || "33685744973";
+  const cleanWhatsapp = whatsappNumber.replace(/[^0-9]/g, "") || "33672023884";
 
   // Guía actual del slider seguro
   const guiaActual = guias[indiceGuia] || guias[0];

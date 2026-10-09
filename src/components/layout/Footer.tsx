@@ -50,7 +50,7 @@ interface FooterProps {
 
 export default function Footer({
   currentLang = "es",
-  whatsappNumber = "33685744973",
+  whatsappNumber = "33672023884",
   emailContact = "lefrancaisavecflorentin@outlook.com"
 }: FooterProps) {
   const [lang, setLang] = useState<Language>(currentLang);
@@ -75,7 +75,7 @@ export default function Footer({
 
   const t = translations[lang] || translations.es;
 
-  const cleanWhatsapp = (whatsappNumber || "33685744973").replace(/[^0-9]/g, "");
+  const cleanWhatsapp = (whatsappNumber || "33672023884").replace(/[^0-9]/g, "");
   const formattedWhatsapp = cleanWhatsapp.startsWith("33")
     ? `+33 6 ${cleanWhatsapp.slice(3, 5)} ${cleanWhatsapp.slice(5, 7)} ${cleanWhatsapp.slice(7, 9)} ${cleanWhatsapp.slice(9, 11)}`
     : `+${cleanWhatsapp}`;

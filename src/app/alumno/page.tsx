@@ -2248,7 +2248,7 @@ export default function AlumnoPortal() {
                     </div>
                     {plan.tipo === "clase_gratis" || Number(plan.precio) === 0 ? (
                       <a
-                        href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33685744973'}?text=${encodeURIComponent(
+                        href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33672023884'}?text=${encodeURIComponent(
                           lang === "fr" ? "Bonjour Florentin, je voudrais réserver mon cours d'essai gratuit." :
                           lang === "en" ? "Hi Florentin, I want to book my free trial class." :
                           "Hola Florentin, quiero agendar mi clase de prueba gratuita."
@@ -2504,7 +2504,7 @@ export default function AlumnoPortal() {
                       </code>
                     </span>
                     <a
-                      href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33685744973'}?text=${encodeURIComponent(
+                      href={`https://wa.me/${process.env.NEXT_PUBLIC_WHATSAPP_NUMBER || '33672023884'}?text=${encodeURIComponent(
                         lang === "fr" ? "Bonjour Florentin, j'ai besoin d'aide pour reprogrammer un cours. Mon ID d'achat est : " : 
                         lang === "en" ? "Hello Florentin, I need help rescheduling a class. My Purchase ID is: " :
                         "Hola Florentin, necesito ayuda para reprogramar una clase. Mi ID de Compra es: "

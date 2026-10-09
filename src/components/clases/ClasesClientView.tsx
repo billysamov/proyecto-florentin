@@ -324,7 +324,7 @@ const PLAN_TRANSLATIONS: Record<Language, Record<number, PlanTranslationData>> =
   }
 };
 
-export default function ClasesClientView({ initialPlanes, whatsappNumber = "33685744973" }: ClasesClientViewProps) {
+export default function ClasesClientView({ initialPlanes, whatsappNumber = "33672023884" }: ClasesClientViewProps) {
   const [lang, setLang] = useState<Language>("es");
   const [divisa, setDivisa] = useState<"eur" | "usd">("eur");
   const [tasaUsd, setTasaUsd] = useState(1.08);
@@ -388,7 +388,7 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3368
   const t = translations[lang] || translations.es;
   const planes = initialPlanes && initialPlanes.length > 0 ? initialPlanes : fallbackPlanesDefault;
 
-  const cleanWhatsapp = whatsappNumber.replace(/[^0-9]/g, "") || "33685744973";
+  const cleanWhatsapp = whatsappNumber.replace(/[^0-9]/g, "") || "33672023884";
   const whatsappUrl = `https://wa.me/${cleanWhatsapp}?text=${encodeURIComponent(
     lang === "fr"
       ? "Bonjour Florentin, je voudrais réserver mon cours d'essai gratuit de 30 minutes."

@@ -1096,14 +1096,12 @@ export default function LandingV2Replica() {
                 </li>
                 <li>
                   <a 
-                    href={`https://wa.me/${(config?.whatsapp_number || '33685744973').replace(/[^0-9]/g, '')}`}
+                    href={`https://wa.me/${(config?.whatsapp_number || '33672023884').replace(/[^0-9]/g, '')}`}
                     target="_blank"
                     rel="noopener noreferrer"
                     style={{ color: "inherit", textDecoration: "none", display: "inline-flex", alignItems: "center", gap: "8px" }}
                   >
-                    💬 WhatsApp / Tel: {config?.whatsapp_number 
-                      ? (config.whatsapp_number.startsWith('+') ? config.whatsapp_number : `+${config.whatsapp_number}`)
-                      : '+33 6 85 74 49 73'}
+                    💬 WhatsApp / Tel: +33 6 72 02 38 84
                   </a>
                 </li>
                 <li>🌐 Clases Online por Microsoft Teams</li>
