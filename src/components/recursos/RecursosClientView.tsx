@@ -453,7 +453,7 @@ export default function RecursosClientView({
 
   return (
     <div className="min-h-screen bg-[#fafbfc] text-slate-800 font-sans flex flex-col justify-between selection:bg-[#0055a5] selection:text-white">
-      <Navbar />
+      <Navbar activePage="recursos" />
 
       {/* ════════════════════════════════════════════════════════════
           CABECERA PRINCIPAL (IDÉNTICA A LA CAPTURA DEL USUARIO)

@@ -2,34 +2,19 @@
 
 import React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft, FileText } from "lucide-react";
+import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 
 export default function TerminosPage() {
   return (
-    <main className="min-h-screen bg-[#f8fafc] text-[#0c1b33] selection:bg-[#3b82f6]/20 selection:text-[#0c1b33] font-sans pb-20">
-      {/* Header simple */}
-      <header className="py-6 border-b border-slate-200 bg-white">
-        <div className="container max-w-5xl mx-auto px-4 flex justify-between items-center">
-          <Link href="/" className="flex items-center gap-1.5 text-slate-500 hover:text-[#0c1b33] transition-colors text-sm font-semibold">
-            <ArrowLeft size={16} /> Volver al Inicio
-          </Link>
-          <Link href="/">
-            <div className="relative w-36 h-11">
-              <Image 
-                src="/logo.png" 
-                alt="Logo Florentin" 
-                fill
-                sizes="144px"
-                className="object-contain"
-              />
-            </div>
-          </Link>
-        </div>
-      </header>
+    <div className="min-h-screen bg-[#f8fafc] text-[#0c1b33] selection:bg-[#3b82f6]/20 selection:text-[#0c1b33] font-sans flex flex-col justify-between">
+      {/* Navbar Unificado */}
+      <Navbar />
 
       {/* Contenido Legal */}
-      <article className="max-w-3xl mx-auto px-4 mt-12 sm:mt-16 leading-relaxed">
+      <main className="flex-1 pt-28 sm:pt-36 pb-20">
+        <article className="max-w-3xl mx-auto px-4 leading-relaxed">
         <div className="flex items-center gap-3 mb-6">
           <div className="p-3 bg-[#3b82f6]/8 text-[#3b82f6] rounded-2xl">
             <FileText size={28} />
@@ -98,6 +83,8 @@ export default function TerminosPage() {
           </div>
         </section>
       </article>
-    </main>
+      </main>
+      <Footer />
+    </div>
   );
 }
