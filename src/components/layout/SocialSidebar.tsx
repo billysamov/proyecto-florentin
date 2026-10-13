@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 
 interface SocialSidebarProps {
   facebookUrl?: string;
@@ -11,6 +12,11 @@ export default function SocialSidebar({
   facebookUrl = "https://www.facebook.com/lefrancaisavecflorentin",
   instagramUrl = "https://www.instagram.com/lefrancaisavecflorentin",
 }: SocialSidebarProps) {
+  const pathname = usePathname();
+
+  if (pathname?.startsWith("/admin") || pathname?.startsWith("/alumno")) {
+    return null;
+  }
   return (
     <aside
       aria-label="Redes sociales"

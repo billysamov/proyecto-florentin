@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { Outfit, Plus_Jakarta_Sans, Playfair_Display, Great_Vibes } from "next/font/google";
 import "./globals.css";
 import { getSupabaseAdmin } from "@/lib/supabase";
+import FloatingWhatsApp from "@/components/layout/FloatingWhatsApp";
+import SocialSidebar from "@/components/layout/SocialSidebar";
 
 const outfit = Outfit({
   subsets: ["latin"],
@@ -98,7 +100,7 @@ export default async function RootLayout({
   const supabaseAdmin = getSupabaseAdmin();
   const { data: config } = await supabaseAdmin
     .from("configuracion_sitio")
-    .select("google_analytics_id, meta_pixel_id")
+    .select("google_analytics_id, meta_pixel_id, whatsapp_number")
     .eq("id", 1)
     .single();
 
@@ -186,6 +188,8 @@ j=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=
         </noscript>
         {/* End Google Tag Manager (noscript) */}
         {children}
+        <SocialSidebar />
+        <FloatingWhatsApp whatsappNumber={config?.whatsapp_number || "33672023884"} />
       </body>
     </html>
   );
