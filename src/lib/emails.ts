@@ -758,6 +758,113 @@ export async function enviarCorreoRecordatorioInactividadSemanal(
 }
 
 /**
+ * Correo automatizado para estudiantes que finalizaron su primer plan
+ * y no han vuelto a comprar después de 1 semana (Recompra / Continuidad).
+ * Modelo y copy oficial proporcionado por Florentin.
+ */
+export async function enviarCorreoRecompraPlanSemanal(
+  email: string, 
+  nombre: string, 
+  idioma: string = 'es'
+) {
+  const isFr = idioma === 'fr';
+  const isEn = idioma === 'en';
+
+  let subject = `¿Te gustaría continuar con tus clases de francés, ${nombre}? 🇫🇷`;
+  if (isFr) {
+    subject = `Envie de poursuivre vos cours de français, ${nombre} ? 🇫🇷`;
+  } else if (isEn) {
+    subject = `Would you like to continue your French lessons, ${nombre}? 🇫🇷`;
+  }
+
+  const htmlContent = `
+    <div style="font-family: 'Plus Jakarta Sans', Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 24px; border: 1px solid #eaeaea; border-radius: 16px; background-color: #ffffff;">
+      
+      <h2 style="color: #0c1b33; font-size: 20px; font-weight: 800; margin-bottom: 16px;">
+        ${isFr ? `Bonjour ${nombre} :` : isEn ? `Hello ${nombre}:` : `Hola ${nombre}:`}
+      </h2>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 14px;">
+        ${isFr ? "J'espère que vous allez bien 😊" : isEn ? "I hope you are doing well 😊" : "Espero que estés bien 😊"}
+      </p>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 14px;">
+        ${isFr 
+          ? "Cela fait un petit moment que nous n'avons pas eu de cours de français et je voulais vous écrire pour savoir si vous aimeriez continuer." 
+          : isEn
+            ? "It has been a little while since our last French class, and I wanted to check in to see if you'd like to continue."
+            : "Hace un tiempo que no tenemos una clase de francés y quería escribirte para saber si te gustaría continuar."}
+      </p>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 14px;">
+        ${isFr
+          ? "Si vous souhaitez continuer à progresser en français, gagner en fluidité et vous sentir de plus en plus à l'aise à l'oral, je serai ravi de vous accompagner dans cette nouvelle étape."
+          : isEn
+            ? "If you want to keep improving your French, build fluency, and feel increasingly comfortable speaking, I'd love to accompany you in this next stage."
+            : "Si quieres seguir mejorando tu francés, ganar fluidez y sentirte cada vez más cómodo/a al hablar, estaré encantado de acompañarte en esta nueva etapa."}
+      </p>
+
+      <p style="font-size: 15px; color: #334155; line-height: 1.6; margin-bottom: 24px;">
+        ${isFr
+          ? "Vous pouvez choisir à nouveau la formule qui vous convient le mieux et réserver vos prochains cours dès que vous le souhaitez."
+          : isEn
+            ? "You can choose whichever plan best fits your needs again and book your upcoming lessons anytime."
+            : "Puedes elegir de nuevo el plan que mejor se adapte a ti y reservar tus próximas clases cuando quieras."}
+      </p>
+
+      <!-- Botón de Planes / Continuar Clases -->
+      <div style="text-align: center; margin: 26px 0;">
+        <a href="${BASE_URL}/alumno" 
+           style="background-color: #0055a5; color: #ffffff; padding: 14px 34px; text-decoration: none; border-radius: 30px; font-weight: 700; font-size: 15px; display: inline-block; box-shadow: 0 4px 12px rgba(0, 85, 165, 0.25);">
+          👉 ${isFr ? "Voir les forfaits et continuer les cours" : isEn ? "View plans & continue classes" : "Ver los planes y continuar las clases"}
+        </a>
+      </div>
+
+      <!-- Caja de soporte y contacto directo -->
+      <div style="margin: 24px 0; padding: 20px; background-color: #f8fafc; border-radius: 12px; border: 1px solid #e2e8f0; text-align: left;">
+        <h4 style="margin: 0 0 8px 0; font-size: 15px; color: #0055a5; font-weight: 700;">
+          💬 ${isFr ? "¿Une question sur vos objectifs ?" : isEn ? "Questions about your goals?" : "¿Tienes alguna duda sobre tus objetivos?"}
+        </h4>
+        <p style="margin: 0; font-size: 14px; color: #475569; line-height: 1.6;">
+          ${isFr
+            ? "Et si vous avez la moindre question ou souhaitez échanger sur vos objectifs, vous pouvez me contacter directement en répondant à cet e-mail. Je serai ravi de vous aider."
+            : isEn
+              ? "And if you have any questions or want to discuss your goals, you can contact me directly by replying to this email. I will be glad to assist you."
+              : "Y si tienes alguna duda o quieres hablar sobre tus objetivos, puedes contactarme directamente respondiendo a este correo. Estaré encantado de ayudarte."}
+        </p>
+      </div>
+
+      <p style="font-size: 15px; color: #334155; margin-top: 24px; margin-bottom: 4px; font-weight: 600;">
+        ${isFr ? "Au plaisir de vous retrouver bientôt en cours !" : isEn ? "Looking forward to seeing you in class soon!" : "¡Espero verte pronto en clase!"}
+      </p>
+      <p style="font-size: 14px; color: #64748b; margin-top: 0; margin-bottom: 4px;">
+        ${isFr ? "Un saludo," : isEn ? "Warm regards," : "Un saludo,"}
+      </p>
+      <p style="font-size: 18px; color: #0055a5; font-weight: 800; margin-top: 0; margin-bottom: 24px;">
+        Florentin
+      </p>
+
+      <hr style="border: 0; border-top: 1px solid #f1f5f9; margin: 24px 0 20px;" />
+
+      <!-- Logo abajo con espacio -->
+      <div style="text-align: center; padding-top: 8px;">
+        <img src="${BASE_URL}/logo.png" alt="Le Français avec Florentin" style="height: 42px; max-width: 180px; object-fit: contain; margin-bottom: 8px;" />
+        <p style="font-size: 11px; color: #94a3b8; margin: 0;">
+          Le Français avec Florentin • Clases Personalizadas 1 a 1 de Francés Nativo
+        </p>
+      </div>
+    </div>
+  `;
+
+  return sendEmail({
+    to: email,
+    subject,
+    html: htmlContent,
+    tipo: 'recompra_7dias'
+  });
+}
+
+/**
  * Correo de advertencia cuando al alumno le quedan pocas clases (Renovación).
  */
 export async function enviarCorreoRenovacionPlan(email: string, nombre: string, clasesRestantes: number = 2, idioma: string = 'es') {

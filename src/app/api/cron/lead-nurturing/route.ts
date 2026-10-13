@@ -2,7 +2,8 @@ import { NextResponse } from "next/server";
 import { getSupabaseAdmin } from "@/lib/supabase";
 import { 
   enviarCorreoRecordatorioInactividad, 
-  enviarCorreoRecordatorioInactividadSemanal 
+  enviarCorreoRecordatorioInactividadSemanal,
+  enviarCorreoRecompraPlanSemanal 
 } from "@/lib/emails";
 
 /**
@@ -190,7 +191,7 @@ export async function GET(request: Request) {
         if (tieneActiva && tieneActiva.length > 0) continue; // Tiene plan activo, omitir
 
         // Deduplicación: verificar que no se le haya enviado ya un correo de recompra
-        const yaEnviado = await yaSeEnvioCorreo(supabaseAdmin, u.email, "inactividad_7dias");
+        const yaEnviado = await yaSeEnvioCorreo(supabaseAdmin, u.email, "recompra_7dias");
         if (yaEnviado) {
           resultadosRecompra.push({ email: u.email, omitido: true, razon: "ya_enviado" });
           continue;
@@ -198,7 +199,7 @@ export async function GET(request: Request) {
 
         const cleanIdioma = (u.idioma || 'es').toLowerCase();
         try {
-          const res = await enviarCorreoRecordatorioInactividadSemanal(u.email, u.nombre || "Estudiante", cleanIdioma);
+          const res = await enviarCorreoRecompraPlanSemanal(u.email, u.nombre || "Estudiante", cleanIdioma);
           resultadosRecompra.push({ email: u.email, tipo: "recompra_7dias", success: res.success, messageId: res.id });
         } catch (errRecompra: any) {
           console.error(`Error enviando recordatorio recompra a ${u.email}:`, errRecompra);

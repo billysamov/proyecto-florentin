@@ -167,7 +167,7 @@ export default function MarketingAutomatizaciones({
   // Estados para el Modal de Previsualización
   const [previewEmail, setPreviewEmail] = useState<"bienvenida" | "recordatorio" | "renovacion" | "recordatorio_clase" | "reprogramacion" | null>(null);
   const [previewLang, setPreviewLang] = useState<"es" | "fr" | "en">("es");
-  const [previewPasoRecordatorio, setPreviewPasoRecordatorio] = useState<"3dias" | "7dias">("3dias");
+  const [previewPasoRecordatorio, setPreviewPasoRecordatorio] = useState<"3dias" | "7dias" | "recompra">("3dias");
 
   const t = {
     titulo: isFr ? "Automatisation des E-mails (Lead Nurturing)" : "Automatizaciones de Correo (Lead Nurturing)",
@@ -385,6 +385,92 @@ export default function MarketingAutomatizaciones({
         };
       }
     } else if (previewEmail === "recordatorio") {
+      if (previewPasoRecordatorio === "recompra") {
+        // Recompra a los 7 días de culminar su primer plan (modelo y copy de Florentin)
+        if (previewLang === "fr") {
+          return {
+            asunto: "Envie de poursuivre vos cours de français, [Nom de l'élève] ? 🇫🇷",
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+                <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Bonjour [Nom de l'élève] :</h2>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">J'espère que vous allez bien 😊</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Cela fait un petit moment que nous n'avons pas eu de cours de français et je voulais vous écrire pour savoir si vous aimeriez continuer.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Si vous souhaitez continuer à progresser en français, gagner en fluidité et vous sentir de plus en plus à l'aise à l'oral, je serai ravi de vous accompagner dans cette nouvelle étape.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Vous pouvez choisir à nouveau la formule qui vous convient le mieux et réserver vos prochains cours dès que vous le souhaitez.</p>
+                <div style="text-align: center; margin: 18px 0;">
+                  <span style="background-color: #0055a5; color: #ffffff; padding: 12px 28px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">👉 Voir les forfaits et continuer les cours</span>
+                </div>
+                <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                  <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0055a5;">💬 Une question sur vos objectifs ?</p>
+                  <p style="margin: 0; font-size: 12.5px; color: #475569;">Et si vous avez la moindre question ou souhaitez échanger sur vos objectifs, vous pouvez me contacter directement en répondant à cet e-mail. Je serai ravi de vous aider.</p>
+                </div>
+                <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Au plaisir de vous retrouver bientôt en cours !</p>
+                <p style="font-size: 13px; color: #64748b; margin-top: 0; margin-bottom: 2px;">Un saludo,</p>
+                <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+                <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                  <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                  <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+                </div>
+              </div>
+            `
+          };
+        } else if (previewLang === "en") {
+          return {
+            asunto: "Would you like to continue your French lessons, [Student's Name]? 🇫🇷",
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+                <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hello [Student's Name]:</h2>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">I hope you are doing well 😊</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">It has been a little while since our last French class, and I wanted to check in to see if you'd like to continue.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">If you want to keep improving your French, build fluency, and feel increasingly comfortable speaking, I'd love to accompany you in this next stage.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">You can choose whichever plan best fits your needs again and book your upcoming lessons anytime.</p>
+                <div style="text-align: center; margin: 18px 0;">
+                  <span style="background-color: #0055a5; color: #ffffff; padding: 12px 28px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">👉 View plans & continue classes</span>
+                </div>
+                <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                  <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0055a5;">💬 Questions about your goals?</p>
+                  <p style="margin: 0; font-size: 12.5px; color: #475569;">And if you have any questions or want to discuss your goals, you can contact me directly by replying to this email. I will be glad to assist you.</p>
+                </div>
+                <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">Looking forward to seeing you in class soon!</p>
+                <p style="font-size: 13px; color: #64748b; margin-top: 0; margin-bottom: 2px;">Warm regards,</p>
+                <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+                <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                  <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                  <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+                </div>
+              </div>
+            `
+          };
+        } else {
+          return {
+            asunto: "¿Te gustaría continuar con tus clases de francés, [Nombre]? 🇫🇷",
+            html: `
+              <div style="font-family: Arial, sans-serif; padding: 20px; border-radius: 12px; background: #ffffff;">
+                <h2 style="color: #0c1b33; font-size: 18px; margin-bottom: 12px;">Hola [Nombre]:</h2>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Espero que estés bien 😊</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Hace un tiempo que no tenemos una clase de francés y quería escribirte para saber si te gustaría continuar.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 10px;">Si quieres seguir mejorando tu francés, ganar fluidez y sentirte cada vez más cómodo/a al hablar, estaré encantado de acompañarte en esta nueva etapa.</p>
+                <p style="color: #334155; font-size: 14px; line-height: 1.5; margin-bottom: 16px;">Puedes elegir de nuevo el plan que mejor se adapte a ti y reservar tus próximas clases cuando quieras.</p>
+                <div style="text-align: center; margin: 18px 0;">
+                  <span style="background-color: #0055a5; color: #ffffff; padding: 12px 28px; border-radius: 20px; font-weight: 700; font-size: 13px; display: inline-block;">👉 Ver los planes y continuar las clases</span>
+                </div>
+                <div style="margin: 16px 0; padding: 14px; background-color: #f8fafc; border-radius: 8px; border: 1px solid #e2e8f0; text-align: left;">
+                  <p style="margin: 0 0 4px 0; font-size: 13px; font-weight: 700; color: #0055a5;">💬 ¿Tienes alguna duda sobre tus objetivos?</p>
+                  <p style="margin: 0; font-size: 12.5px; color: #475569;">Y si tienes alguna duda o quieres hablar sobre tus objetivos, puedes contactarme directamente respondiendo a este correo. Estaré encantado de ayudarte.</p>
+                </div>
+                <p style="font-size: 13px; color: #334155; margin-top: 16px; margin-bottom: 2px;">¡Espero verte pronto en clase!</p>
+                <p style="font-size: 13px; color: #64748b; margin-top: 0; margin-bottom: 2px;">Un saludo,</p>
+                <p style="font-size: 15px; color: #0055a5; font-weight: 800; margin: 0 0 16px 0;">Florentin</p>
+                <div style="text-align: center; border-top: 1px solid #f1f5f9; padding-top: 12px;">
+                  <img src="/logo.png" alt="Logo" style="height: 36px; object-fit: contain; margin-bottom: 6px;" />
+                  <p style="font-size: 10px; color: #94a3b8; margin: 0;">Le Français avec Florentin</p>
+                </div>
+              </div>
+            `
+          };
+        }
+      }
+
       if (previewPasoRecordatorio === "7dias") {
         // Recordatorio a los 7 días (1 semana)
         if (previewLang === "fr") {
@@ -1506,7 +1592,25 @@ export default function MarketingAutomatizaciones({
                     transition: "all 0.2s"
                   }}
                 >
-                  {isFr ? "Étape 2 : Après 1 Semaine (7 Jours)" : "Paso 2: Después de 1 Semana (7 Días)"}
+                  {isFr ? "Étape 2 : À 7 Jours (Lead)" : "Paso 2: A los 7 Días (Lead)"}
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setPreviewPasoRecordatorio("recompra")}
+                  style={{
+                    flex: 1,
+                    padding: "8px 12px",
+                    fontSize: "12px",
+                    fontWeight: 700,
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                    backgroundColor: previewPasoRecordatorio === "recompra" ? "#3b82f6" : "transparent",
+                    color: previewPasoRecordatorio === "recompra" ? "#ffffff" : "var(--text-muted)",
+                    transition: "all 0.2s"
+                  }}
+                >
+                  {isFr ? "Étape 3 : 1 Semaine après 1er plan (Réachat)" : "Paso 3: 1 Sem tras 1er plan (Recompra)"}
                 </button>
               </div>
             )}
