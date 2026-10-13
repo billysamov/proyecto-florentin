@@ -564,10 +564,10 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3367
       </section>
 
       {/* ═══════════════════════════════════════
-          GRID DE TARJETAS DE PLANES
+          GRID DE TARJETAS DE PLANES (CENTRADO)
       ═══════════════════════════════════════ */}
       <section className="py-12 sm:py-16 px-4 sm:px-6 max-w-7xl mx-auto">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 sm:gap-8">
+        <div className="flex flex-wrap justify-center gap-6 sm:gap-8">
           {planes.map((plan, idx) => {
             const isFreePlan = Number(plan.precio) === 0 || plan.tipo === "clase_gratis";
             const planTranslation = getPlanTranslation(plan, lang);
@@ -577,7 +577,7 @@ export default function ClasesClientView({ initialPlanes, whatsappNumber = "3367
             return (
               <div 
                 key={plan.id || idx} 
-                className={`rounded-[24px] overflow-hidden bg-white flex flex-col justify-between relative transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
+                className={`w-full sm:w-[calc(50%-1.25rem)] lg:w-[calc(33.333%-1.5rem)] xl:w-[285px] max-w-[320px] rounded-[24px] overflow-hidden bg-white flex flex-col justify-between relative transition-all duration-300 hover:scale-[1.02] hover:shadow-xl ${
                   isFreePlan
                     ? "border-2 border-[#10b981] shadow-lg shadow-[#10b981]/10"
                     : plan.recomendado 
